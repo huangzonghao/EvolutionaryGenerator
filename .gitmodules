@@ -1,0 +1,9 @@
+[submodule "Robogami/Data"]
+	path = Robogami/Data
+	url = https://git.sung.seas.upenn.edu/robogami/robogami-data.git
+[submodule "Robogami/Backend"]
+	path = Robogami/Backend
+	url = https://git.sung.seas.upenn.edu/robogami/robogami-backend.git
+[submodule "Robogami/UI"]
+	path = Robogami/UI
+	url = https://git.sung.seas.upenn.edu/robogami/robogami-ui.git
