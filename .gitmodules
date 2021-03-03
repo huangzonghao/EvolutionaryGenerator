@@ -7,3 +7,6 @@
 [submodule "Robogami/UI"]
 	path = Robogami/UI
 	url = https://git.sung.seas.upenn.edu/robogami/robogami-ui.git
+[submodule "sferes2"]
+	path = sferes2
+	url = https://git.sung.seas.upenn.edu/robogami/sferes2.git
