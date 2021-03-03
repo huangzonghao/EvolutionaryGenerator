@@ -54,6 +54,18 @@ elseif(NOT EXISTS ${RobogamiUI_ROOT})
 else()
     message(STATUS "Robogami-UI Found")
 endif()
+
+if (NOT DEFINED SFERES2_INCLUDE_DIR)
+    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/sferes2/.git)
+        execute_process(COMMAND git submodule update --init --depth 1 -- sferes2
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+    set(SFERES2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sferes2 CACHE PATH "sferes2 include directory")
+    message(STATUS "sferes2 Configured")
+else()
+    message(STATUS "sferes2 Found")
+endif()
+
 #######################################################################
 #                           Subdirectories                            #
 #######################################################################
