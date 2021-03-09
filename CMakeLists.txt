@@ -70,4 +70,5 @@ endif()
 #                           Subdirectories                            #
 #######################################################################
 add_subdirectory(Robogami/Backend)
+add_subdirectory(src)
 
