@@ -112,8 +112,8 @@ if(MSVC AND MT)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
 endif()
 
-# Need to use the filesystem of C++17
-set (CMAKE_CXX_STANDARD 17)
+# Need to use the filesystem of C++14 for Robogami
+set (CMAKE_CXX_STANDARD 14)
 
 
 #######################################################################
@@ -147,4 +147,82 @@ include(DLL_Copy_Command)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     get_target_property(TBB_DLL TBB::tbb IMPORTED_LOCATION_RELEASE)
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${TBB_DLL}" ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+set(CURRENT_TARGET_NAME robogami_test)
+
+set(Headers
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/UrdfExporter.h
+)
+set(Sources
+    UrdfExporter.cpp
+    robogami_test.cpp
+)
+
+add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
+
+target_include_directories(${CURRENT_TARGET_NAME}
+                           PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/../include
+)
+
+target_link_libraries(${CURRENT_TARGET_NAME}
+                      FBE_Manipulations
+                      FBE_Printable
+                      FBE_Conversions
+)
+
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+        # General
+            /ZI;
+            /JMC;
+            /nologo;
+            /W3;
+            /WX-;
+            /sdl;
+            /MP;
+        # Optimization
+            /Od;
+        # Code Generation
+            /MD;
+            /Gm-;
+            /EHsc;
+            /RTC1;
+            /GS
+        >
+        $<$<CONFIG:Release>:
+        # General
+            /Zi;
+            /nologo;
+            /W3;
+            /WX-;
+            /MP;
+        # Optimization
+            /O2;
+            /Oi;
+        # Code Generation
+            /Gm-;
+            /EHsc;
+            /MD;
+            /GS;
+            /Gy;
+            ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT}
+        >
+        ${DEFAULT_CXX_EXCEPTION_HANDLING}
+    )
+
+    target_link_options(${CURRENT_TARGET_NAME} PRIVATE /NOLOGO)
+endif()
+
+# copy DLLs for Windows
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
+    DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()

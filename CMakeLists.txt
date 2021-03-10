@@ -10,6 +10,21 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
+if (NOT DEFINED PROJECT_IN_FILE_OUTPUT_DIR)
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/include)
+    set(PROJECT_IN_FILE_OUTPUT_DIR ${PROJECT_BINARY_DIR}/include)
+endif()
+
+if (NOT DEFINED PROJECT_OUTPUT_DIR)
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/Output)
+    set(PROJECT_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Output)
+endif()
+
+if (NOT DEFINED ROBOT_OUTPUT_DIR)
+    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Robots)
+    set(ROBOT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Robots)
+endif()
+
 if(NOT DEFINED ROBOGAMI_DATA_PATH)
     if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data/.git)
         execute_process(COMMAND git submodule update --init --depth 1 -- Data
@@ -65,6 +80,9 @@ if (NOT DEFINED SFERES2_INCLUDE_DIR)
 else()
     message(STATUS "sferes2 Found")
 endif()
+
+set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
 
 #######################################################################
 #                           Subdirectories                            #
