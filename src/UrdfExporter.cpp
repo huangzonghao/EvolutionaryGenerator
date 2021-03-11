@@ -3,6 +3,7 @@
 #include <map>
 #include <list>
 #include <fstream>
+#include <filesystem>
 
 #include "articulation.h"
 #include "geometry.h"
@@ -33,11 +34,17 @@ void separateSTLKin(std::string protfilename, std::string robotname, std::string
 }
 
 void protoToUrdf(std::string protfilename, std::string robotname) {
+    std::string output_file(Robot_Output_Dir + "/" + robotname + "/" + robotname + ".urdf");
+
+    std::filesystem::path output_path(output_file);
+    output_path.remove_filename();
+    if (!std::filesystem::exists(output_path))
+        std::filesystem::create_directory(output_path);
+
     TemplateProtoConverter converter;
     auto protoRead = converter.loadFromFile(protfilename.c_str());
     Template *robottemp = converter.ConvertToTemplate(*protoRead);
 
-    std::string output_file(Robot_Output_Dir + "/" + robotname + ".urdf");
     std::ofstream ofs(output_file.c_str(), std::ofstream::out);
 
     ofs << "<?xml verison=\"1.0\"?>" << std::endl;
@@ -63,7 +70,7 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
     int rootindex = node2ind.find(rootpart)->second;
 
     // output the stl files
-    separateSTLKin(protfilename, robotname, Robot_Output_Dir);
+    separateSTLKin(protfilename, robotname, output_path.string());
 
     // output the base_link
     ofs << "<link name = \"base_link\">" << std::endl;
