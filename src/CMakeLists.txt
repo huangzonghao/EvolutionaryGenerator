@@ -60,6 +60,74 @@ if (NEED_TO_RETURN)
     return()
 endif()
 
+# Setup dependencies for urdf reader
+find_package(urdfdom QUIET)
+if (NOT urdfdom_FOUND)
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/urdfdom/.git")
+        execute_process(COMMAND git submodule update --init --recursive --depth 1 -- thirdparty/urdfdom
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    endif()
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/urdfdom_headers/.git")
+        execute_process(COMMAND git submodule update --init --recursive --depth 1 -- thirdparty/urdfdom_headers
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    endif()
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/console_bridge/.git")
+        execute_process(COMMAND git submodule update --init --recursive --depth 1 -- thirdparty/console_bridge
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    endif()
+
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/urdfdom
+                        ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/urdfdom_headers
+                        ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/console_bridge
+                        ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/tinyxml
+                        ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/Install)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX:PATH=${PROJECT_DEP_INSTALL_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom_headers
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/urdfdom_headers)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/urdfdom_headers)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX:PATH=${PROJECT_DEP_INSTALL_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/console_bridge
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/console_bridge)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/console_bridge)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX:PATH=${PROJECT_DEP_INSTALL_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/tinyxml
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/tinyxml)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/tinyxml)
+
+    if (WIN32) # Windows
+        # set(ENV{CL} /D_USE_MATH_DEFINES $ENV{CL})
+        # Need to do this due to a flaw of upstream library -- https://github.com/ros/urdfdom/issues/42
+        file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/urdfdom_cmakelists_patched.txt DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom/)
+        file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/urdfparser_cmakelists_patched.txt DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom/urdf_parser)
+        file(RENAME ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom/urdfdom_cmakelists_patched.txt ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom/CMakeLists.txt)
+        file(RENAME ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom/urdf_parser/urdfparser_cmakelists_patched.txt ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom/urdf_parser/CMakeLists.txt)
+    endif()
+
+    execute_process(COMMAND ${CMAKE_COMMAND}
+                            -DCMAKE_INSTALL_PREFIX:PATH=${PROJECT_DEP_INSTALL_DIR}
+                            -DTinyXML_ROOT_DIR:PATH=${PROJECT_DEP_INSTALL_DIR}
+                            -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=True
+                            ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/urdfdom
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/urdfdom)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/urdfdom")
+
+    mark_as_advanced(console_bridge_DIR)
+    mark_as_advanced(urdfdom_DIR)
+    mark_as_advanced(urdfdom_headers_DIR)
+
+    find_package(urdfdom QUIET)
+else()
+    message(STATUS "urdfdom Found")
+endif()
+
 
 #######################################################################
 #                           Platform Flags                            #

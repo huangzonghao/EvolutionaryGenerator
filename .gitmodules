@@ -10,3 +10,12 @@
 [submodule "sferes2"]
 	path = sferes2
 	url = https://git.sung.seas.upenn.edu/robogami/sferes2.git
+[submodule "thirdparty/urdfdom"]
+	path = thirdparty/urdfdom
+	url = https://github.com/ros/urdfdom.git
+[submodule "thirdparty/urdfdom_headers"]
+	path = thirdparty/urdfdom_headers
+	url = https://github.com/ros/urdfdom_headers.git
+[submodule "thirdparty/console_bridge"]
+	path = thirdparty/console_bridge
+	url = https://github.com/ros/console_bridge.git
