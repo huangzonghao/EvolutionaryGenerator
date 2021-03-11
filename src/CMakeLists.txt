@@ -112,9 +112,8 @@ if(MSVC AND MT)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
 endif()
 
-# Need to use the filesystem of C++14 for Robogami
-set (CMAKE_CXX_STANDARD 14)
-
+# Need to use the filesystem of C++17
+set (CMAKE_CXX_STANDARD 17)
 
 #######################################################################
 #                               Targets                               #

@@ -12,6 +12,8 @@
 
 #include "evo_paths.h"
 
+using namespace FabByExample;
+
 void separateSTLKin(std::string protfilename, std::string robotname, std::string directoryroot) {
     TemplateProtoConverter converter;
     auto protoRead = converter.loadFromFile(protfilename.c_str());
