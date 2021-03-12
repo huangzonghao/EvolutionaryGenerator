@@ -1,8 +1,12 @@
 // This is an auto-generated file, do not edit
 // If at any time the paths in this file become invalid,
 // try to rebuild the project.
+#ifndef EVO_PATHS_H_SQCM3M8J
+#define EVO_PATHS_H_SQCM3M8J
 
 #include <string>
 
 #define ROBOT_OUTPUT_PATH "@ROBOT_OUTPUT_DIR@"
 const std::string Robot_Output_Dir(ROBOT_OUTPUT_PATH);
+
+#endif /* end of include guard: EVO_PATHS_H_SQCM3M8J */
