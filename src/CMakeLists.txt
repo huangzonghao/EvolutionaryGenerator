@@ -293,3 +293,44 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()
+
+set(CURRENT_TARGET_NAME chrono_test)
+
+set(Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/ChUrdfDoc.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimulationManager.h)
+
+set(Sources
+    chrono_test.cpp
+    ChUrdfDoc.cpp
+    SimulationManager.cpp)
+
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+endif()
+
+add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
+
+target_link_libraries(${CURRENT_TARGET_NAME}
+                      ${CHRONO_LIBRARIES}
+                      ${urdfdom_LIBRARIES})
+
+target_include_directories(${CURRENT_TARGET_NAME}
+                           PUBLIC ${EIGEN3_INCLUDE_DIR}
+                                  ${urdfdom_INCLUDE_DIRS}
+                                  ${CHRONO_INCLUDE_DIRS}
+                                  ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES
+                      COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+                      COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
+                      LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
+    list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+    DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+endif()
