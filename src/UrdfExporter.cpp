@@ -66,6 +66,17 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
     ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
     ofs << "  </geometry> " << std::endl;
     ofs << " </visual>" << std::endl;
+    ofs << " <collision>" << std::endl;
+    ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+    ofs << "  <geometry>" << std::endl;
+    ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+    ofs << "  </geometry> " << std::endl;
+    ofs << " </collision>" << std::endl;
+    ofs << " <inertial>" << std::endl;
+    ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+    ofs << "  <mass value = \"" << "1" << "\" />" << std::endl;
+    ofs << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
+    ofs << " </inertial>" << std::endl;
     ofs << "</link>" << std::endl;
     ofs << std::endl;
 
