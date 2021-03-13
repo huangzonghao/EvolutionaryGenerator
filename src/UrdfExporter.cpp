@@ -15,25 +15,9 @@
 
 using namespace FabByExample;
 
-void separateSTLKin(std::string protfilename, std::string robotname, std::string directoryroot) {
-    TemplateProtoConverter converter;
-    auto protoRead = converter.loadFromFile(protfilename.c_str());
-    Template* temp = converter.ConvertToTemplate(*protoRead);
-
-    KinChain* kinchain = new KinChain(temp);
-    std::list<KinNode *> mynodes = kinchain->getNodes();
-    int i = 0;
-    for (auto node : mynodes) {
-        if (node->getType() == KinNode::KinNodeType::PART) {
-            std::string output_file(directoryroot + "/" + robotname + std::to_string(i) + ".stl");
-            KinNode_Part * mypart = dynamic_cast<KinNode_Part*>(node);
-            mypart->getCurrentGeoRelativeToRoot()->write(output_file);
-            i++;
-        }
-    }
-}
-
 void protoToUrdf(std::string protfilename, std::string robotname) {
+    const std::string mesh_ext = ".obj";
+
     std::string output_file(Robot_Output_Dir + "/" + robotname + "/" + robotname + ".urdf");
 
     std::filesystem::path output_path(output_file);
@@ -62,6 +46,11 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
             KinNode_Part *mypart = dynamic_cast<KinNode_Part*>(node);
             node2ind.insert(std::pair<KinNode_Part*, int>(mypart, i));
             ind2node.insert(std::pair<int, KinNode_Part*>(i, mypart));
+
+            // convert link to mesh
+            std::string output_file(output_path.string() + "/" + robotname + std::to_string(i) + mesh_ext);
+            mypart->getCurrentGeoRelativeToRoot()->write(output_file);
+
             i++;
         }
     }
@@ -69,21 +58,18 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
     KinNode_Part *rootpart = dynamic_cast<KinNode_Part*>(kinchain->getRoot());
     int rootindex = node2ind.find(rootpart)->second;
 
-    // output the stl files
-    separateSTLKin(protfilename, robotname, output_path.string());
-
     // output the base_link
     ofs << "<link name = \"base_link\">" << std::endl;
     ofs << " <visual>" << std::endl;
     ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     ofs << "  <geometry>" << std::endl;
-    ofs << "    <mesh filename = \"./" << robotname << rootindex << ".stl\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+    ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
     ofs << "  </geometry> " << std::endl;
     ofs << " </visual>" << std::endl;
     ofs << "</link>" << std::endl;
     ofs << std::endl;
 
-    // printing out the joints
+    // traverse the kinematic tree and convert child joints/links
     for (auto node : nodelist) {
         if (node->getType() == KinNode::KinNodeType::JOINT) {
             KinNode_Joint *myjoint = dynamic_cast<KinNode_Joint*>(node);
@@ -103,22 +89,24 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
                 Articulation *art = myjoint->getArticulation();
                 Eigen::Vector3d center = art->getCenter();
 
-                // Visualize parts
+                // Visualization
                 ofs << "<link name = \"" << childname << "\">" << std::endl;
                 ofs << " <visual>" << std::endl;
                 ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * 0.01 << " " << -center[1] * 0.01 << " " << -center[2] * 0.01 << "\" />" << std::endl;
                 ofs << "  <geometry>" << std::endl;
-                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << ".stl\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
                 ofs << "  </geometry>" << std::endl;
                 ofs << " </visual>" << std::endl;
-                // add collision
+
+                // Collision
                 ofs << " <collision>" << std::endl;
                 ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * 0.01 << " " << -center[1] * 0.01 << " " << -center[2] * 0.01 << "\" />" << std::endl;
                 ofs << "  <geometry>" << std::endl;
-                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << ".stl\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
                 ofs << "  </geometry>" << std::endl;
                 ofs << " </collision>" << std::endl;
-                // add physical properties (todo: mass, ix)
+
+                // Inertial
                 ofs << " <inertial>" << std::endl;
                 ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * 0.01 << " " << -center[1] * 0.01 << " " << -center[2] * 0.01 << "\" />" << std::endl;
                 ofs << "  <mass value = \"" << "1" << "\" />" << std::endl;
@@ -127,7 +115,7 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
                 ofs << "</link>" << std::endl;
                 ofs << std::endl;
 
-                // add joint
+                // Joint
                 ofs << "<joint name = \"" << parentname << "_" << childname << "\" type = \"continuous\">" << std::endl;
                 ofs << "  <parent link = \"" << parentname << "\"/>" << std::endl;
                 ofs << "  <child link = \"" << childname << "\"/>" << std::endl;
