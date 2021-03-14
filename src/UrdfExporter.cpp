@@ -17,6 +17,9 @@ using namespace FabByExample;
 
 void protoToUrdf(std::string protfilename, std::string robotname) {
     const std::string mesh_ext = ".obj";
+    constexpr double scale_x = 0.001;
+    constexpr double scale_y = 0.001;
+    constexpr double scale_z = 0.001;
 
     std::string output_file(Robot_Output_Dir + "/" + robotname + "/" + robotname + ".urdf");
 
@@ -63,13 +66,13 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
     ofs << " <visual>" << std::endl;
     ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     ofs << "  <geometry>" << std::endl;
-    ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+    ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"" << scale_x << " " << scale_y << " " << scale_z << "\" />" << std::endl;
     ofs << "  </geometry> " << std::endl;
     ofs << " </visual>" << std::endl;
     ofs << " <collision>" << std::endl;
     ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     ofs << "  <geometry>" << std::endl;
-    ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+    ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"" << scale_x << " " << scale_y << " " << scale_z << "\" />" << std::endl;
     ofs << "  </geometry> " << std::endl;
     ofs << " </collision>" << std::endl;
     ofs << " <inertial>" << std::endl;
@@ -103,23 +106,23 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
                 // Visualization
                 ofs << "<link name = \"" << childname << "\">" << std::endl;
                 ofs << " <visual>" << std::endl;
-                ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * 0.01 << " " << -center[1] * 0.01 << " " << -center[2] * 0.01 << "\" />" << std::endl;
+                ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * scale_x << " " << -center[1] * scale_y << " " << -center[2] * scale_z << "\" />" << std::endl;
                 ofs << "  <geometry>" << std::endl;
-                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << mesh_ext << "\"" << " scale = \"" << scale_x << " " << scale_y << " " << scale_z << "\" />" << std::endl;
                 ofs << "  </geometry>" << std::endl;
                 ofs << " </visual>" << std::endl;
 
                 // Collision
                 ofs << " <collision>" << std::endl;
-                ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * 0.01 << " " << -center[1] * 0.01 << " " << -center[2] * 0.01 << "\" />" << std::endl;
+                ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * scale_x << " " << -center[1] * scale_y << " " << -center[2] * scale_z << "\" />" << std::endl;
                 ofs << "  <geometry>" << std::endl;
-                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << mesh_ext << "\"" << " scale = \"0.01 0.01 0.01\" />" << std::endl;
+                ofs << "    <mesh filename = \"./" << robotname << node2ind.find(childpart)->second << mesh_ext << "\"" << " scale = \"" << scale_x << " " << scale_y << " " << scale_z << "\" />" << std::endl;
                 ofs << "  </geometry>" << std::endl;
                 ofs << " </collision>" << std::endl;
 
                 // Inertial
                 ofs << " <inertial>" << std::endl;
-                ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * 0.01 << " " << -center[1] * 0.01 << " " << -center[2] * 0.01 << "\" />" << std::endl;
+                ofs << "  <origin rpy = \"0 0 0\" xyz = \"" << -center[0] * scale_x << " " << -center[1] * scale_y << " " << -center[2] * scale_z << "\" />" << std::endl;
                 ofs << "  <mass value = \"" << "1" << "\" />" << std::endl;
                 ofs << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
                 ofs << " </inertial>" << std::endl;
@@ -130,7 +133,7 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
                 ofs << "<joint name = \"" << parentname << "_" << childname << "\" type = \"continuous\">" << std::endl;
                 ofs << "  <parent link = \"" << parentname << "\"/>" << std::endl;
                 ofs << "  <child link = \"" << childname << "\"/>" << std::endl;
-                ofs << "   <origin xyz = \"" << center[0] * 0.01 << " " << center[1] * 0.01 << " " << center[2] * 0.01 << "\" rpy = \"0 0 0\" />" << std::endl;
+                ofs << "   <origin xyz = \"" << center[0] * scale_x << " " << center[1] * scale_y << " " << center[2] * scale_z << "\" rpy = \"0 0 0\" />" << std::endl;
                 ofs << "   <axis xyz = \"" << art->transformations[0]->axis[0] << " " << art->transformations[0]->axis[1] << " " << art->transformations[0]->axis[2] << "\" />" << std::endl;
                 ofs << "</joint>" << std::endl;
                 ofs << std::endl;
