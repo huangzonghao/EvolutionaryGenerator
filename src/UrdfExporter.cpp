@@ -67,13 +67,13 @@ void protoToUrdf(std::string protfilename, std::string robotname) {
     ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     ofs << "  <geometry>" << std::endl;
     ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"" << scale_x << " " << scale_y << " " << scale_z << "\" />" << std::endl;
-    ofs << "  </geometry> " << std::endl;
+    ofs << "  </geometry>" << std::endl;
     ofs << " </visual>" << std::endl;
     ofs << " <collision>" << std::endl;
     ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     ofs << "  <geometry>" << std::endl;
     ofs << "    <mesh filename = \"./" << robotname << rootindex << mesh_ext << "\"" << " scale = \"" << scale_x << " " << scale_y << " " << scale_z << "\" />" << std::endl;
-    ofs << "  </geometry> " << std::endl;
+    ofs << "  </geometry>" << std::endl;
     ofs << " </collision>" << std::endl;
     ofs << " <inertial>" << std::endl;
     ofs << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
