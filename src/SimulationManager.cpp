@@ -1,8 +1,8 @@
 #include <chrono>
-#include "chrono_irrlicht/ChIrrApp.h"
-#include "chrono/physics/ChBodyEasy.h"
-#include "chrono_vehicle/terrain/RigidTerrain.h"
-#include "chrono/core/ChRealtimeStep.h"
+#include <chrono_irrlicht/ChIrrApp.h>
+#include <chrono/physics/ChBodyEasy.h>
+#include <chrono_vehicle/terrain/RigidTerrain.h>
+#include <chrono/core/ChRealtimeStep.h>
 
 #include "SimulationManager.h"
 
@@ -18,12 +18,15 @@ SimulationManager::SimulationManager(double step_size,
     s_friction_(system_friction_s),
     system_type_(system_type)
 {
+    payloads_.clear();
+    motors_.clear();
     ch_waypoints_.clear();
     SetChronoDataPath(CHRONO_DATA_DIR);
 }
 
 void SimulationManager::SetUrdfFile(std::string filename){
     urdf_doc_ = std::make_shared<ChUrdfDoc>(filename);
+    auxrefs_ = urdf_doc_->GetAuxRef();
 }
 
 void SimulationManager::SetEnv(std::string filename, double env_x, double env_y, double env_z){
@@ -43,6 +46,49 @@ const std::string& SimulationManager::GetUrdfFileName(){
         exit(EXIT_FAILURE);
     }
     return urdf_doc_->GetUrdfFileName();
+}
+
+void SimulationManager::AddComponent(const std::string& type_name, const std::string& body_name,
+                                     double mass, double size_x, double size_y, double size_z,
+                                     double pos_x, double pos_y, double pos_z){
+    if (!urdf_doc_){
+        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        return;
+    }
+
+    payloads_.push_back(std::make_shared<SimPayload>(type_name, body_name, mass,
+                                                     size_x, size_y, size_z,
+                                                     pos_x, pos_y, pos_z));
+    auxrefs_->insert(body_name);
+}
+
+void SimulationManager::AddMotor(const std::string& type_name, const std::string& link_name,
+                                 double mass, double size_x, double size_y, double size_z,
+                                 double pos_x, double pos_y, double pos_z){
+    motors_.push_back(std::make_shared<SimMotor>(type_name, link_name, mass,
+                                                 size_x, size_y, size_z,
+                                                 pos_x, pos_y, pos_z));
+    if (!urdf_doc_){
+        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        return;
+    }
+    auto& body_name = urdf_doc_->GetLinkBodyName(link_name, 2);
+    auxrefs_->insert(body_name);
+}
+
+void SimulationManager::AddMotor(const std::string& type_name, const std::string& body_name,
+                                 const std::string& link_name, double mass,
+                                 double size_x, double size_y, double size_z,
+                                 double pos_x, double pos_y, double pos_z){
+    if (!urdf_doc_){
+        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        return;
+    }
+
+    motors_.push_back(std::make_shared<SimMotor>(type_name, body_name, link_name,
+                                                 mass, size_x, size_y, size_z,
+                                                 pos_x, pos_y, pos_z));
+    auxrefs_->insert(body_name);
 }
 
 void SimulationManager::AddWaypoint(double x, double y, double z){
@@ -113,6 +159,14 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
         }
     }
 
+    // Add motors and extra weights to system
+    for (auto payload : payloads_) payload->AddtoSystem(ch_system_);
+    for (auto motor : motors_) motor->AddtoSystem(*urdf_doc_);
+
+    // init controller
+    // deafults to wheel
+    controller_ = std::make_shared<WheelController>(&motors_, &ch_waypoints_, urdf_doc_->GetRootBody());
+
     const std::shared_ptr<ChBody>& camera_body = urdf_doc_->GetCameraBody();
 
     std::chrono::steady_clock::time_point tik;
@@ -143,6 +197,8 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
             vis_app.DoStep();
             vis_app.EndScene();
 
+            task_done_ = controller_->Update();
+
             if (do_realtime) realtime_timer.Spin(step_size_);
         }
         tok = std::chrono::steady_clock::now();
@@ -154,6 +210,8 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
         tik = std::chrono::steady_clock::now();
         while(ch_system_->GetChTime() < timeout_ && !task_done_) {
             ch_system_->DoStepDynamics(step_size_);
+
+            task_done_ = controller_->Update();
         }
         tok = std::chrono::steady_clock::now();
     }
@@ -162,6 +220,34 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
     std::cout << "Step count: " << ch_system_->GetStepcount() << std::endl;
 
     return true;
+}
+
+void SimulationManager::
+GetActuatorVels(std::vector<std::pair<double, double> > &vels_vec) const {
+    if (vels_vec.empty()){
+        vels_vec.resize(motors_.size());
+    }
+    else if (vels_vec.size() != motors_.size()){
+        std::cerr << "Error, simulation motor number is not equal to generation motor number" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < motors_.size(); ++i){
+        vels_vec[i].second = motors_[i]->GetMaxVel();
+    }
+}
+
+void SimulationManager::
+GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const {
+    if (torqs_vec.empty()){
+        torqs_vec.resize(motors_.size());
+    }
+    else if (torqs_vec.size() != motors_.size()){
+        std::cerr << "Error, simulation motor number is not equal to generation motor number" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < motors_.size(); ++i){
+        torqs_vec[i].second = motors_[i]->GetMaxTorque();
+    }
 }
 
 /***********************

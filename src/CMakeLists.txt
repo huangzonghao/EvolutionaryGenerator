@@ -298,12 +298,19 @@ set(CURRENT_TARGET_NAME chrono_test)
 
 set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/ChUrdfDoc.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimulationManager.h)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/RobotController.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimMotor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimulationManager.h
+)
 
 set(Sources
     chrono_test.cpp
     ChUrdfDoc.cpp
-    SimulationManager.cpp)
+    RobotController.cpp
+    SimMotor.cpp
+    ChUrdfDoc.cpp
+    SimulationManager.cpp
+)
 
 if(MSVC)
     source_group("Header Files" FILES ${Headers})

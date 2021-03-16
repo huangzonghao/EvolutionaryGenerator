@@ -18,12 +18,18 @@ void load_robot(std::string robot_name){
     sm.SetFrictionS(s_friction);
     sm.SetTimeout(5000);
 
-    sm.AddWaypoint(0, 0, 2);
+    sm.AddMotor("MOTOR", "chassis_wheel_fl", 1,0.1,0.1,0.1);
+    sm.AddMotor("MOTOR", "chassis_wheel_rl", 1,0.1,0.1,0.1);
+    sm.AddMotor("MOTOR", "chassis_wheel_fr", 1,0.1,0.1,0.1);
+    sm.AddMotor("MOTOR", "chassis_wheel_rr", 1,0.1,0.1,0.1);
 
-    sm.RunSimulation();
+    sm.AddWaypoint(0.5, 0.5, 1);
+    sm.AddWaypoint(0.5, 0.8, 1);
+
+    sm.RunSimulation(true, true);
 }
 
 int main(int argc, char* argv[]) {
-    load_robot("killer");
+    load_robot("fourwheels");
     return EXIT_SUCCESS;
 }

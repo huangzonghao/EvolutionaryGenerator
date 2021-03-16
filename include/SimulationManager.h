@@ -2,6 +2,8 @@
 #define SIMULATIONMANAGER_H_TQPVGDZV
 
 #include "chrono/physics/ChSystem.h"
+#include "SimMotor.h"
+#include "RobotController.h"
 #include "ChUrdfDoc.h"
 #include <Eigen/Core>
 
@@ -17,7 +19,10 @@ class  SimulationManager {
                       SystemType system_type=NSC);
 
     ~SimulationManager(){
+        payloads_.clear();
+        motors_.clear();
         ch_waypoints_.clear();
+        auxrefs_.reset();
     }
 
     void SetSystemType(SystemType new_type) {system_type_ = new_type;}
@@ -31,11 +36,29 @@ class  SimulationManager {
     void SetFrictionK(double fk) {k_friction_ = fk;};
     void SetTimeout(double timeout) {timeout_ = timeout;};
 
+    void AddComponent(const std::string& type_name, const std::string& body_name,
+                      double mass, double size_x, double size_y, double size_z,
+                      double pos_x=0, double pos_y=0, double pos_z=0);
+    void AddMotor(const std::string& type_name, const std::string& link_name,
+                  double mass, double size_x, double size_y, double size_z,
+                  double pos_x=0, double pos_y=0, double pos_z=0);
+    void AddMotor(const std::string& type_name, const std::string& body_name,
+                  const std::string& link_name, double mass,
+                  double size_x, double size_y, double size_z,
+                  double pos_x=0, double pos_y=0, double pos_z=0);
     void AddWaypoint(double x, double y, double z);
     void AddWaypoints(const std::shared_ptr<const Eigen::MatrixXd>& waypoints_ptr);
+
+    const std::shared_ptr<SimMotor> GetMotor(int motor_idx) const { return motors_[motor_idx];}
+
     bool RunSimulation(bool do_viz=true, bool do_realtime=false);
     const std::string& GetUrdfFileName();
 
+    /** Interface functions **/
+    void GetActuatorVels(std::vector<std::pair<double, double> > &vels_vec) const;
+    void GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const;
+    int GetMotorNumber() const { return motors_.size(); }
+    int GetComponentNumber() const { return motors_.size() + payloads_.size(); }
   private:
     // map is enabled as flat ground by default.
     bool load_map_ = true;
@@ -44,10 +67,13 @@ class  SimulationManager {
     double k_friction_;
     double s_friction_;
 
+    std::vector<std::shared_ptr<SimPayload> > payloads_;
+    std::vector<std::shared_ptr<SimMotor> > motors_;
     std::vector<chrono::ChVector<> > ch_waypoints_;
     std::shared_ptr<chrono::ChUrdfDoc> urdf_doc_;
     std::shared_ptr<const Eigen::MatrixXd> eigen_waypoints_;
     std::shared_ptr<chrono::ChSystem> ch_system_;
+    std::shared_ptr<RobotController> controller_;
     std::shared_ptr<const Eigen::MatrixXd> heightmap_;
 
     bool task_done_ = false;
@@ -59,6 +85,11 @@ class  SimulationManager {
     double env_x_ = 1;
     double env_y_ = 1;
     double env_z_ = 0.08;
+
+    // names of bodies that would use ChBodyAuxRef
+    // this pointer is initialized when a urdf file has been loaded
+    std::shared_ptr<std::unordered_set<std::string> > auxrefs_;
+
 };
 
 #endif /* end of include guard: SIMULATIONMANAGER_H_TQPVGDZV */
