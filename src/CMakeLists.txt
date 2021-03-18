@@ -301,6 +301,7 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/RobotController.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimMotor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimulationManager.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
 )
 
 set(Sources
@@ -340,4 +341,102 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+set(CURRENT_TARGET_NAME Evolutionary_Generator)
+
+set(Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/ChUrdfDoc.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/RobotController.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimMotor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/SimulationManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/UrdfExporter.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
+)
+
+set(Sources
+    ChUrdfDoc.cpp
+    RobotController.cpp
+    SimMotor.cpp
+    ChUrdfDoc.cpp
+    SimulationManager.cpp
+    UrdfExporter.cpp
+    evo_main.cpp
+)
+
+add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
+
+target_link_libraries(${CURRENT_TARGET_NAME}
+                      FBE_Manipulations
+                      FBE_Printable
+                      FBE_Conversions
+                      ${CHRONO_LIBRARIES}
+                      ${urdfdom_LIBRARIES})
+
+target_include_directories(${CURRENT_TARGET_NAME}
+                           PUBLIC ${EIGEN3_INCLUDE_DIR}
+                                  ${urdfdom_INCLUDE_DIRS}
+                                  ${CHRONO_INCLUDE_DIRS}
+                                  ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES
+                      COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+                      COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
+                      LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
+    list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
+    list(APPEND CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+    DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+        # General
+            /ZI;
+            /JMC;
+            /nologo;
+            /W3;
+            /WX-;
+            /sdl;
+            /MP;
+        # Optimization
+            /Od;
+        # Code Generation
+            /MD;
+            /Gm-;
+            /EHsc;
+            /RTC1;
+            /GS
+        >
+        $<$<CONFIG:Release>:
+        # General
+            /Zi;
+            /nologo;
+            /W3;
+            /WX-;
+            /MP;
+        # Optimization
+            /O2;
+            /Oi;
+        # Code Generation
+            /Gm-;
+            /EHsc;
+            /MD;
+            /GS;
+            /Gy;
+            ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT}
+        >
+        ${DEFAULT_CXX_EXCEPTION_HANDLING}
+    )
+
+    target_link_options(${CURRENT_TARGET_NAME} PRIVATE /NOLOGO)
 endif()
