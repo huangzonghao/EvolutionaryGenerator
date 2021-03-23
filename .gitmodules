@@ -1,21 +1,21 @@
 [submodule "Robogami/Data"]
-	path = Robogami/Data
+	path = generator/Robogami/Data
 	url = https://git.sung.seas.upenn.edu/robogami/robogami-data.git
 [submodule "Robogami/Backend"]
-	path = Robogami/Backend
+	path = generator/Robogami/Backend
 	url = https://git.sung.seas.upenn.edu/robogami/robogami-backend.git
 [submodule "Robogami/UI"]
-	path = Robogami/UI
+	path = generator/Robogami/UI
 	url = https://git.sung.seas.upenn.edu/robogami/robogami-ui.git
 [submodule "sferes2"]
-	path = sferes2
+	path = generator/sferes2
 	url = https://git.sung.seas.upenn.edu/robogami/sferes2.git
 [submodule "thirdparty/urdfdom"]
-	path = thirdparty/urdfdom
+	path = simulator/thirdparty/urdfdom
 	url = https://github.com/ros/urdfdom.git
 [submodule "thirdparty/urdfdom_headers"]
-	path = thirdparty/urdfdom_headers
+	path = simulator/thirdparty/urdfdom_headers
 	url = https://github.com/ros/urdfdom_headers.git
 [submodule "thirdparty/console_bridge"]
-	path = thirdparty/console_bridge
+	path = simulator/thirdparty/console_bridge
 	url = https://github.com/ros/console_bridge.git
