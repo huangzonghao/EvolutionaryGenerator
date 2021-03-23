@@ -1,4 +1,0 @@
-Backend's submodule 'Data' and UI's submodule 'Backand' and 'Data' are not used
-and therefore not checked out. This is to make sure this 'Evolutionary
-Generator' repo has direct control over the hash of the three submodules - UI,
-Backend and Data.
