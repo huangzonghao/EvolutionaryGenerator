@@ -34,7 +34,8 @@ If any "dll not found" error occurred when executing a binary, build the corresp
 * [x] Define Internal APIs
     * [x] URDF
     * [ ] upgrade to protobuf
-* [ ] Specify Task - type/environment/dynamics
+* [x] Specify Task - type/environment/dynamics
+* [ ] Refactor code to easily pass simulation data to sferes2 (sferes2 doesn't take inputs)
 * [ ] Design experiments
 * [ ] Design evaluation metrics
 
@@ -51,8 +52,9 @@ If any "dll not found" error occurred when executing a binary, build the corresp
 
 ### Sferes2
 * [x] Solve simple test problem
-* [ ] Design algorithm structure
-* [ ] Define fitness
+* [x] Design algorithm structure
+* [x] Define fitness
+* [x] Implement algorithm
 * [ ] Understand & tune parameters
 
 ### Simulation
