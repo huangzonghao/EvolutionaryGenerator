@@ -111,13 +111,15 @@ add_subdirectory(generator)
 #######################################################################
 
 set(Headers
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/UrdfExporter.h
+    # ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/UrdfExporter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/GenerateDemoRobot.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
 )
 
 set(Sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/UrdfExporter.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/UrdfExporter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/GenerateDemoRobot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp
 )
 
@@ -127,12 +129,24 @@ target_link_libraries(${PROJECT_NAME}
                       FBE_Manipulations
                       FBE_Printable
                       FBE_Conversions
-                      Simulator)
+                      TBB::tbb
+                      Boost::serialization
+                      Boost::program_options
+                      Boost::thread
+                      Boost::date_time
+                      Boost::chrono
+                      Boost::timer
+                      Boost::filesystem
+                      Simulator
+)
 
 target_include_directories(${PROJECT_NAME}
                            PUBLIC ${EIGEN3_INCLUDE_DIR}
+                                  ${SFERES2_INCLUDE_DIR}
                                   ${PROJECT_IN_FILE_OUTPUT_DIR}
                                   ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE NO_PARALLEL)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")

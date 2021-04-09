@@ -1,8 +1,8 @@
 #include <chrono>
-#include <chrono_irrlicht/ChIrrApp.h>
-#include <chrono/physics/ChBodyEasy.h>
-#include <chrono_vehicle/terrain/RigidTerrain.h>
 #include <chrono/core/ChRealtimeStep.h>
+#include <chrono/physics/ChBodyEasy.h>
+#include <chrono_irrlicht/ChIrrApp.h>
+#include <chrono_vehicle/terrain/RigidTerrain.h>
 
 #include "SimulationManager.h"
 
@@ -177,7 +177,7 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
         using namespace irr::core;
         ChIrrApp vis_app(ch_system_.get(),
                          L"Evolutionary Algorithm Simulation",
-                         dimension2d<irr::u32>(640, 480), false);
+                         dimension2d<irr::u32>(1280, 720), false);
 
         vis_app.AddTypicalLogo();
         vis_app.AddTypicalSky();
@@ -250,6 +250,13 @@ GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const {
     }
 }
 
+double SimulationManager::GetRootBodyDisplacement() const {
+    return (ch_waypoints_[0] - urdf_doc_->GetRootBody()->GetPos()).Length();
+}
+
+double SimulationManager::GetRootBodyDisplacementX() const {
+    return  urdf_doc_->GetRootBody()->GetPos().x()- ch_waypoints_[0].x();
+}
 /***********************
 *  private functions  *
 ***********************/
@@ -263,12 +270,12 @@ void SimulationManager::load_map(){
     // the environment is placed in the way that (x,y) = (0,0) is placed at the
     // corner of the map - corresponds to the (0,0) index of a heightmap matrix
     // z = 0 is the bottom of the environment
-    if (env_file_.empty()){
+    if (env_file_.empty() || env_file_ == "ground"){
         std::cout << "Map file not initialized, building default ground" << std::endl;
         // ground body
-        auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(1, 1, 0.01, 1.0, true, true, ground_mat);
-        flat_ground->SetPos(ChVector<>(0.5, 0.5, 0.005));
-        flat_ground->SetRot(Q_ROTATE_X_TO_Y);
+        auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
+        // flat_ground->SetRot(Q_ROTATE_X_TO_Y);
+        flat_ground->SetPos(ChVector<>(env_x_ / 2, env_y_ / 2, 0.005));
         flat_ground->SetBodyFixed(true);
         auto ground_texture = chrono_types::make_shared<ChColorAsset>();
         ground_texture->SetColor(ChColor(0.2f, 0.2f, 0.2f));
