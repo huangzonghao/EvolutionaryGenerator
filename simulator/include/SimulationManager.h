@@ -29,6 +29,7 @@ class  SimulationManager {
     void SetUrdfFile(std::string filename);
     void DisableEnv() {load_map_ = false;}
     // force user to input xyz dimension of the map, especially for bmp and urdf maps
+    // use "ground" for the default flat ground
     void SetEnv(std::string filename, double env_x, double env_y, double env_z);
     // TODO: should be done within SetEnv, but currently having difficulty readin bitmap in c++
     void SetEigenHeightmap(const std::shared_ptr<const Eigen::MatrixXd>& heightmap);
@@ -59,6 +60,8 @@ class  SimulationManager {
     void GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const;
     int GetMotorNumber() const { return motors_.size(); }
     int GetComponentNumber() const { return motors_.size() + payloads_.size(); }
+    double GetRootBodyDisplacement() const;
+    double GetRootBodyDisplacementX() const;
   private:
     // map is enabled as flat ground by default.
     bool load_map_ = true;
@@ -85,6 +88,8 @@ class  SimulationManager {
     double env_x_ = 1;
     double env_y_ = 1;
     double env_z_ = 0.08;
+
+    double displacement_ = 0;
 
     // names of bodies that would use ChBodyAuxRef
     // this pointer is initialized when a urdf file has been loaded

@@ -16,17 +16,20 @@ void load_robot(std::string robot_name){
     // sm.DisableEnv();
     sm.SetFrictionK(k_friction);
     sm.SetFrictionS(s_friction);
-    sm.SetTimeout(5000);
+    sm.SetTimeout(5);
 
     sm.AddMotor("MOTOR", "chassis_wheel_fl", 1,0.1,0.1,0.1);
     sm.AddMotor("MOTOR", "chassis_wheel_rl", 1,0.1,0.1,0.1);
     sm.AddMotor("MOTOR", "chassis_wheel_fr", 1,0.1,0.1,0.1);
     sm.AddMotor("MOTOR", "chassis_wheel_rr", 1,0.1,0.1,0.1);
 
-    sm.AddWaypoint(0.5, 0.5, 1);
-    sm.AddWaypoint(0.5, 0.8, 1);
+    sm.SetEnv("ground", 5, 3, 0.01);
+    sm.AddWaypoint(0.5, 1.5, 0.3);
+    sm.AddWaypoint(0.5, 0.8, 0.3);
 
     sm.RunSimulation(true, true);
+
+    std::cout << "Root displacement: " << sm.GetRootBodyDisplacementX() << std::endl;
 }
 
 int main(int argc, char* argv[]) {
