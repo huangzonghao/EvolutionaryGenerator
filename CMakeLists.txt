@@ -38,6 +38,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(DLL_Copy_Command)
 
 set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(RESOURCE_MAP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
 
 configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
 

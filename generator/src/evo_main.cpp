@@ -99,7 +99,8 @@ public:
         sm.AddMotor("MOTOR", "chassis_wheel_fr", 1,0.1,0.1,0.1);
         sm.AddMotor("MOTOR", "chassis_wheel_rr", 1,0.1,0.1,0.1);
 
-        sm.SetEnv("ground", 5, 3, 0.01);
+        // sm.SetEnv("ground", 5, 3, 0.01);
+        sm.SetEnv(Resource_Map_Dir + "/env3.bmp", 5, 3, 0.3);
         sm.AddWaypoint(0.5, 1.5, 0.3);
 
         // sm.RunSimulation(false);
