@@ -9,4 +9,7 @@
 #define ROBOT_OUTPUT_PATH "@ROBOT_OUTPUT_DIR@"
 const std::string Robot_Output_Dir(ROBOT_OUTPUT_PATH);
 
+#define RESULT_OUTPUT_PATH "@RESULT_OUTPUT_DIR@"
+const std::string Result_Output_Dir(RESULT_OUTPUT_PATH);
+
 #endif /* end of include guard: EVO_PATHS_H_SQCM3M8J */
