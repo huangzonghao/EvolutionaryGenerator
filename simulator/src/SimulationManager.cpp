@@ -107,6 +107,16 @@ void SimulationManager::AddWaypoints(const std::shared_ptr<const Eigen::MatrixXd
     }
 }
 
+void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
+                                  double to_x, double to_y, double to_z) {
+    camera_pos_[0] = from_x;
+    camera_pos_[1] = from_y;
+    camera_pos_[2] = from_z;
+    camera_pos_[3] = to_x;
+    camera_pos_[4] = to_y;
+    camera_pos_[5] = to_z;
+}
+
 bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
     if(!urdf_doc_){
         std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
@@ -182,7 +192,8 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
         vis_app.AddTypicalLogo();
         vis_app.AddTypicalSky();
         vis_app.AddTypicalLights(vector3df(0., 0., 50.), vector3df(0., 0., -50));
-        vis_app.AddTypicalCamera(vector3df(0, -1, 1), vector3df(0, 0, 0));
+        vis_app.AddTypicalCamera(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]),
+                                 vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
 
         vis_app.AssetBindAll();
         vis_app.AssetUpdateAll();
