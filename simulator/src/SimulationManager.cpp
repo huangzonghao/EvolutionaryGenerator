@@ -289,7 +289,7 @@ void SimulationManager::load_map(){
     }
     else if (env_file_.find(".bmp") != std::string::npos){
         vehicle::RigidTerrain terrain(ch_system_.get());
-        auto patch = terrain.AddPatch(ground_mat, ChCoordsys<>(ChVector<>(env_x_ / 2, env_y_ / 2, env_z_ / 2), Q_ROTATE_X_TO_Y),
+        auto patch = terrain.AddPatch(ground_mat, ChCoordsys<>(ChVector<>(env_x_ / 2, env_y_ / 2, 0.005), QUNIT),
                                       env_file_, "ground_mesh", env_x_, env_y_, 0, env_z_);
         patch->SetColor(ChColor(0.2, 0.2, 0.2));
         terrain.Initialize();

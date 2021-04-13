@@ -9,6 +9,9 @@
 #define ROBOT_OUTPUT_PATH "@ROBOT_OUTPUT_DIR@"
 const std::string Robot_Output_Dir(ROBOT_OUTPUT_PATH);
 
+#define RESOURCE_MAP_PATH "@RESOURCE_MAP_DIR@"
+const std::string Resource_Map_Dir(RESOURCE_MAP_PATH);
+
 #define RESULT_OUTPUT_PATH "@RESULT_OUTPUT_DIR@"
 const std::string Result_Output_Dir(RESULT_OUTPUT_PATH);
 
