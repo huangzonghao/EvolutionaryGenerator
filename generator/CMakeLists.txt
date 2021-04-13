@@ -54,8 +54,6 @@ else()
     message(STATUS "sferes2 Found")
 endif()
 
-configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
-
 add_subdirectory(Robogami/Backend)
 
 #######################################################################

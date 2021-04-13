@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include <sferes/eval/parallel.hpp>
 #include <sferes/gen/evo_float.hpp>
@@ -26,7 +27,7 @@ const double s_friction = 2.0;
 const double k_friction = 1.9;
 
 std::vector<double> fitness_vec;
-std::vector<std::vector<double> > vectors_vec;
+std::vector<std::vector<double> > genome_vec;
 
 struct Params {
     struct evo_float {
@@ -107,7 +108,7 @@ public:
         this->_value = sm.GetRootBodyDisplacementX();
 
         fitness_vec.push_back(this->_value);
-        vectors_vec.push_back(tmp_vector);
+        genome_vec.push_back(tmp_vector);
 
         // std::vector<double> data = { ind.gen().data(0), ind.gen().data(1) };
         // this->set_desc(data);
@@ -147,11 +148,37 @@ int main(int argc, char **argv)
     for(int i = 0; i < fitness_vec.size(); ++i){
         std::cout << i + 1 << ", " << fitness_vec[i];
         std::cout << ", Design vector: ";
-        for(int j = 0; j < vectors_vec[i].size(); ++j){
-            std::cout << vectors_vec[i][j] << " ";
+        for(int j = 0; j < genome_vec[i].size(); ++j){
+            std::cout << genome_vec[i][j] << " ";
         }
         std::cout << std::endl;
     }
+
+    // output the data
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t  );
+
+    char time_buffer [80];
+    strftime(time_buffer, 80, "%Y%m%d%H%M%S", now);
+
+    std::ofstream data_file;
+
+    data_file.open (Result_Output_Dir + "/Result_" +
+                    "P" + std::to_string(Params::pop::size) +
+                    "G" + std::to_string(Params::pop::nb_gen) +
+                    "_" + time_buffer + ".csv");
+
+    for(int i = 0; i < fitness_vec.size(); ++i){
+        data_file << i + 1 << ", " << fitness_vec[i];
+        data_file << ", ";
+        for(int j = 0; j < genome_vec[i].size(); ++j){
+            data_file << genome_vec[i][j] << ", ";
+        }
+        data_file << std::endl;
+    }
+
+    data_file.close();
+
     std::cout << "best fitness:" << qd.stat<0>().best()->fit().value() << std::endl;
     std::cout << "archive size:" << qd.stat<1>().archive().size() << std::endl;
     return 0;

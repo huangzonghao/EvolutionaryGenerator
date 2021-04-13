@@ -28,11 +28,18 @@ if (NOT DEFINED ROBOT_OUTPUT_DIR)
     set(ROBOT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Robots)
 endif()
 
+if (NOT DEFINED RESULT_OUTPUT_DIR)
+    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Results)
+    set(RESULT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Results)
+endif()
+
 # copy DLLs for Windows
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(DLL_Copy_Command)
 
 set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
 
 # Need to use the filesystem of C++17
 set(CMAKE_CXX_STANDARD 17)
