@@ -103,6 +103,7 @@ public:
         sm.SetEnv(Resource_Map_Dir + "/env3.bmp", 5, 3, 0.3);
         sm.AddWaypoint(0.5, 1.5, 0.3);
 
+        sm.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
         // sm.RunSimulation(false);
         sm.RunSimulation();
 

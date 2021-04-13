@@ -52,6 +52,9 @@ class  SimulationManager {
 
     const std::shared_ptr<SimMotor> GetMotor(int motor_idx) const { return motors_[motor_idx];}
 
+    void SetCamera(double from_x, double from_y, double from_z,
+                   double to_x, double to_y, double to_z);
+
     bool RunSimulation(bool do_viz=true, bool do_realtime=false);
     const std::string& GetUrdfFileName();
 
@@ -90,6 +93,8 @@ class  SimulationManager {
     double env_z_ = 0.08;
 
     double displacement_ = 0;
+
+    double camera_pos_[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)
 
     // names of bodies that would use ChBodyAuxRef
     // this pointer is initialized when a urdf file has been loaded
