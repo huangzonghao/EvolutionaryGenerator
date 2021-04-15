@@ -1,0 +1,10 @@
+% This is an auto-generated file, do not edit
+% If at any time the paths in this file become invalid,
+% try to rebuild the project.
+
+function [data_matrix] = result_analysis()
+
+addpath('@EVOGEN_MATLAB_SCRIPTS_PATH@');
+data_matrix = load_csv('@RESULT_OUTPUT_DIR@');
+
+end % function
