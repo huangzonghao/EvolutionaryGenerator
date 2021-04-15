@@ -171,10 +171,9 @@ int main(int argc, char **argv)
                     "_" + time_buffer + ".csv");
 
     for(int i = 0; i < fitness_vec.size(); ++i){
-        data_file << i + 1 << ", " << fitness_vec[i];
-        data_file << ", ";
+        data_file << i + 1 << "," << fitness_vec[i];
         for(int j = 0; j < genome_vec[i].size(); ++j){
-            data_file << genome_vec[i][j] << ", ";
+            data_file << "," << genome_vec[i][j];
         }
         data_file << std::endl;
     }

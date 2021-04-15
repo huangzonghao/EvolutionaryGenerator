@@ -15,6 +15,11 @@ if (NOT DEFINED PROJECT_IN_FILE_OUTPUT_DIR)
     set(PROJECT_IN_FILE_OUTPUT_DIR ${PROJECT_BINARY_DIR}/include)
 endif()
 
+if (NOT DEFINED PROJECT_MATLAB_OUTPUT_DIR)
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/Matlab)
+    set(PROJECT_MATLAB_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Matlab CACHE PATH "Matlab scripts output dir")
+endif()
+
 set(PROJECT_DEP_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/Install)
 list(APPEND CMAKE_PREFIX_PATH ${PROJECT_DEP_INSTALL_DIR})
 
@@ -39,8 +44,10 @@ include(DLL_Copy_Command)
 
 set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(RESOURCE_MAP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
+set(EVOGEN_MATLAB_SCRIPTS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/matlab)
 
 configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
+configure_file(${PROJECT_IN_FILE_DIR}/result_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/result_analysis.m @ONLY)
 
 # Need to use the filesystem of C++17
 set(CMAKE_CXX_STANDARD 17)
