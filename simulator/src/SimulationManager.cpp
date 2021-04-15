@@ -201,7 +201,8 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
         vis_app.SetTimestep(step_size_);
 
         tik = std::chrono::steady_clock::now();
-        while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
+        // while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
+        while (ch_system_->GetChTime() < timeout_ && !task_done_) {
             vis_app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             // vis_app.GetSceneManager()->getActiveCamera()->setTarget(vector3dfCH(camera_body->GetPos()));
             vis_app.DrawAll();
@@ -212,6 +213,7 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
 
             if (do_realtime) realtime_timer.Spin(step_size_);
         }
+        vis_app.GetDevice()->closeDevice();
         tok = std::chrono::steady_clock::now();
 
     }
