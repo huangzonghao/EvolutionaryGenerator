@@ -12,7 +12,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 if (NOT DEFINED PROJECT_IN_FILE_OUTPUT_DIR)
     file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/include)
-    set(PROJECT_IN_FILE_OUTPUT_DIR ${PROJECT_BINARY_DIR}/include)
+    set(PROJECT_IN_FILE_OUTPUT_DIR ${PROJECT_BINARY_DIR}/include CACHE PATH "Partial file output dir")
 endif()
 
 if (NOT DEFINED PROJECT_MATLAB_OUTPUT_DIR)
@@ -25,17 +25,17 @@ list(APPEND CMAKE_PREFIX_PATH ${PROJECT_DEP_INSTALL_DIR})
 
 if (NOT DEFINED PROJECT_OUTPUT_DIR)
     file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/Output)
-    set(PROJECT_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Output)
+    set(PROJECT_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Output CACHE PATH "Directory containing the program generated files")
 endif()
 
 if (NOT DEFINED ROBOT_OUTPUT_DIR)
     file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Robots)
-    set(ROBOT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Robots)
+    set(ROBOT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Robots CACHE PATH "Directory containing the generated robots")
 endif()
 
 if (NOT DEFINED RESULT_OUTPUT_DIR)
     file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Results)
-    set(RESULT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Results)
+    set(RESULT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Results CACHE PATH "Directory containing the generated results")
 endif()
 
 # copy DLLs for Windows
