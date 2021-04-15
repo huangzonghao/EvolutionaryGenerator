@@ -79,20 +79,20 @@ public:
     template <typename Indiv>
     void eval(Indiv & ind) {
 
-        // where to get scales?
         double scales[7];
         std::vector<double> tmp_vector;
         for(int i = 0; i < 7; ++i) {
             scales[i] = ind.data(i);
             tmp_vector.push_back(ind.data(i));
         }
-        generate_demo_robot("leg", scales);
-        // run the simulator
+
         SimulationManager sm;
-        sm.SetUrdfFile(Robot_Output_Dir + "/temp_robot/temp_robot.urdf");
+
         sm.SetFrictionK(k_friction);
         sm.SetFrictionS(s_friction);
         sm.SetTimeout(5);
+
+        sm.LoadUrdfString(generate_demo_robot_string("leg", scales));
 
         sm.AddMotor("MOTOR", "chassis_wheel_fl", 1,0.1,0.1,0.1);
         sm.AddMotor("MOTOR", "chassis_wheel_rl", 1,0.1,0.1,0.1);

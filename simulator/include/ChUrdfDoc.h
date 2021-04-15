@@ -21,7 +21,10 @@ struct ChLinkBodies{
 class ChUrdfDoc {
   public:
     ChUrdfDoc(){}
-    ChUrdfDoc(const std::string& filename){ Load_URDF(filename); }
+    ChUrdfDoc(const std::string& inputstring, bool inputIsString = false){
+        if(inputIsString) LoadUrdfString(inputstring);
+        else LoadUrdfFile(inputstring);
+    }
 
     virtual ~ChUrdfDoc(){
         ch_materials_.clear();
@@ -34,7 +37,9 @@ class ChUrdfDoc {
 
     const std::shared_ptr<std::unordered_set<std::string> >& GetAuxRef() { return auxrefs_; }
 
-    bool Load_URDF(const std::string& filename);
+    bool LoadUrdfFile(const std::string& filename);
+    bool LoadUrdfString(const std::string& urdfstring);
+
     bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, double x=0, double y=0, double z=0, double rx=0, double ry=0, double rz=0);
     bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChVector<>& init_pos);
     bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoordsys<>& init_coord);
@@ -79,6 +84,7 @@ class ChUrdfDoc {
     bool check_inertial_pose_set(const urdf::LinkConstSharedPtr& u_link);
     // concatenates the urdf flie path and the relative path to the urdf file
     std::string urdf_file_;
+    std::string urdf_string_;
     urdf::ModelInterfaceSharedPtr urdf_robot_;
     urdf::LinkConstSharedPtr u_root_link_;
     std::shared_ptr<chrono::ChSystem> ch_system_;
