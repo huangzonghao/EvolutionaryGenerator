@@ -11,7 +11,7 @@ void load_robot(std::string robot_name){
     const std::string urdf_filename = Robot_Output_Dir + "/" + robot_name + "/" + robot_name + ".urdf";
 
     SimulationManager sm;
-    sm.SetUrdfFile(urdf_filename);
+    sm.LoadUrdfFile(urdf_filename);
     // sm.SetEnv(env_filename, 50, 50, 0.5);
     // sm.DisableEnv();
     sm.SetFrictionK(k_friction);

@@ -24,8 +24,13 @@ SimulationManager::SimulationManager(double step_size,
     SetChronoDataPath(CHRONO_DATA_DIR);
 }
 
-void SimulationManager::SetUrdfFile(std::string filename){
+void SimulationManager::LoadUrdfFile(const std::string& filename){
     urdf_doc_ = std::make_shared<ChUrdfDoc>(filename);
+    auxrefs_ = urdf_doc_->GetAuxRef();
+}
+
+void SimulationManager::LoadUrdfString(const std::string& urdfstring){
+    urdf_doc_ = std::make_shared<ChUrdfDoc>(urdfstring, true);
     auxrefs_ = urdf_doc_->GetAuxRef();
 }
 
@@ -42,7 +47,7 @@ void SimulationManager::SetEigenHeightmap(const std::shared_ptr<const Eigen::Mat
 
 const std::string& SimulationManager::GetUrdfFileName(){
     if(!urdf_doc_){
-        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        std::cerr << "Error: URDF file not set yet, call LoadUrdfFile() first" << std::endl;
         exit(EXIT_FAILURE);
     }
     return urdf_doc_->GetUrdfFileName();
@@ -52,7 +57,7 @@ void SimulationManager::AddComponent(const std::string& type_name, const std::st
                                      double mass, double size_x, double size_y, double size_z,
                                      double pos_x, double pos_y, double pos_z){
     if (!urdf_doc_){
-        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        std::cerr << "Error: No URDF loaded." << std::endl;
         return;
     }
 
@@ -69,7 +74,7 @@ void SimulationManager::AddMotor(const std::string& type_name, const std::string
                                                  size_x, size_y, size_z,
                                                  pos_x, pos_y, pos_z));
     if (!urdf_doc_){
-        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        std::cerr << "Error: No URDF loaded." << std::endl;
         return;
     }
     auto& body_name = urdf_doc_->GetLinkBodyName(link_name, 2);
@@ -81,7 +86,7 @@ void SimulationManager::AddMotor(const std::string& type_name, const std::string
                                  double size_x, double size_y, double size_z,
                                  double pos_x, double pos_y, double pos_z){
     if (!urdf_doc_){
-        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        std::cerr << "Error: No URDF loaded." << std::endl;
         return;
     }
 
@@ -119,7 +124,7 @@ void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
 
 bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
     if(!urdf_doc_){
-        std::cerr << "Error: URDF file not set yet, call SetUrdfFile() first" << std::endl;
+        std::cerr << "Error: No URDF loaded." << std::endl;
         exit(EXIT_FAILURE);
     }
 

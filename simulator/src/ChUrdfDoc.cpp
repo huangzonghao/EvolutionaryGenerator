@@ -414,7 +414,7 @@ std::shared_ptr<ChLinkLock> ChUrdfDoc::process_joints(const urdf::JointConstShar
     return ch_link;
 }
 
-bool ChUrdfDoc::Load_URDF(const std::string& filename) {
+bool ChUrdfDoc::LoadUrdfFile(const std::string& filename) {
     if (urdf_file_ == filename){
         return true;
     }
@@ -427,6 +427,27 @@ bool ChUrdfDoc::Load_URDF(const std::string& filename) {
     }
     urdf_file_ = filename;
     urdf_robot_ = urdf::parseURDFFile(filename);
+    u_root_link_ = urdf_robot_->getRoot();
+
+    if (!urdf_robot_){
+        std::cerr << "ERROR: Model Parsing the xml failed" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool ChUrdfDoc::LoadUrdfString(const std::string& urdfstring) {
+    if (urdf_string_ == urdfstring){
+        return true;
+    }
+
+    if (auxrefs_)
+        auxrefs_->clear();
+    else
+        auxrefs_ = std::make_shared<std::unordered_set<std::string> >();
+
+    urdf_string_ = urdfstring;
+    urdf_robot_ = urdf::parseURDF(urdfstring);
     u_root_link_ = urdf_robot_->getRoot();
 
     if (!urdf_robot_){
@@ -452,7 +473,7 @@ bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoords
 
 bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::shared_ptr<ChBody>& init_pos_body) {
     if (!urdf_robot_){
-        std::cerr << "ERROR: No URDF loaded, call Load_URDF first" << std::endl;
+        std::cerr << "ERROR: No URDF loaded, call LoadUrdfString or LoadUrdfFile first" << std::endl;
         return false;
     }
     // clear chrono object containers in case this urdf file has been added to system before
@@ -487,7 +508,7 @@ const ChLinkBodies& ChUrdfDoc::GetLinkBodies(const std::string& name) const {
 
 const std::string& ChUrdfDoc::GetLinkBodyName(const std::string& link_name, int body_idx){
     if (!urdf_robot_){
-        std::cerr << "ERROR: No URDF loaded, call Load_URDF first" << std::endl;
+        std::cerr << "ERROR: No URDF loaded, call LoadUrdfString or LoadUrdfFile first" << std::endl;
         exit(EXIT_FAILURE);
     }
 

@@ -26,7 +26,8 @@ class  SimulationManager {
     }
 
     void SetSystemType(SystemType new_type) {system_type_ = new_type;}
-    void SetUrdfFile(std::string filename);
+    void LoadUrdfFile(const std::string& filename);
+    void LoadUrdfString(const std::string& urdfstring);
     void DisableEnv() {load_map_ = false;}
     // force user to input xyz dimension of the map, especially for bmp and urdf maps
     // use "ground" for the default flat ground
