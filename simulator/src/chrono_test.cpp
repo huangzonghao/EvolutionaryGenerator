@@ -27,7 +27,7 @@ void load_robot(std::string robot_name){
     sm.AddWaypoint(0.5, 1.5, 0.3);
     sm.AddWaypoint(0.5, 0.8, 0.3);
 
-    sm.RunSimulation(true, true);
+    sm.RunSimulation();
 
     std::cout << "Root displacement: " << sm.GetRootBodyDisplacementX() << std::endl;
 }

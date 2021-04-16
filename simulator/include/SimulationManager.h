@@ -55,8 +55,10 @@ class  SimulationManager {
 
     void SetCamera(double from_x, double from_y, double from_z,
                    double to_x, double to_y, double to_z);
+    void SetVisualization(bool do_viz=true) { do_viz_ = do_viz; }
+    void SetRealTime(bool do_realtime=true) { do_realtime_ = do_realtime; }
 
-    bool RunSimulation(bool do_viz=true, bool do_realtime=false);
+    bool RunSimulation();
     const std::string& GetUrdfFileName();
 
     /** Interface functions **/
@@ -84,6 +86,8 @@ class  SimulationManager {
     std::shared_ptr<const Eigen::MatrixXd> heightmap_;
 
     bool task_done_ = false;
+    bool do_viz_ = true;
+    bool do_realtime_ = false;
     double step_size_;
     double timeout_;
 

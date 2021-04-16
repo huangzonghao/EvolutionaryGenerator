@@ -35,6 +35,7 @@ class ChUrdfDoc {
 
     urdf::ModelInterfaceSharedPtr GetUrdfRobot() const { return urdf_robot_; }
 
+    void SetAuxRef(const std::shared_ptr<std::unordered_set<std::string> >& auxrefs) { auxrefs_ = auxrefs; }
     const std::shared_ptr<std::unordered_set<std::string> >& GetAuxRef() { return auxrefs_; }
 
     bool LoadUrdfFile(const std::string& filename);

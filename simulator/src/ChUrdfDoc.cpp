@@ -61,7 +61,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
     std::shared_ptr<geometry::ChTriangleMeshConnected> trimesh;
     // Use auxref when seperate CoG is set in inertia tag or required by user
     bool body_use_aux;
-    if (check_inertial_pose_set(u_link) || auxrefs_->find(u_link->name) != auxrefs_->end()){
+    if (check_inertial_pose_set(u_link) || (auxrefs_ && auxrefs_->find(u_link->name) != auxrefs_->end())){
         ch_body = chrono_types::make_shared<ChBodyAuxRef>();
         body_use_aux = true;
     }
@@ -419,12 +419,6 @@ bool ChUrdfDoc::LoadUrdfFile(const std::string& filename) {
         return true;
     }
 
-    if (auxrefs_) {
-        auxrefs_->clear();
-    }
-    else {
-        auxrefs_ = std::make_shared<std::unordered_set<std::string> >();
-    }
     urdf_file_ = filename;
     urdf_robot_ = urdf::parseURDFFile(filename);
     u_root_link_ = urdf_robot_->getRoot();
@@ -440,11 +434,6 @@ bool ChUrdfDoc::LoadUrdfString(const std::string& urdfstring) {
     if (urdf_string_ == urdfstring){
         return true;
     }
-
-    if (auxrefs_)
-        auxrefs_->clear();
-    else
-        auxrefs_ = std::make_shared<std::unordered_set<std::string> >();
 
     urdf_string_ = urdfstring;
     urdf_robot_ = urdf::parseURDF(urdfstring);
