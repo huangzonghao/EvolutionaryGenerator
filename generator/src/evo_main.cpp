@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <sferes/eval/parallel.hpp>
 #include <sferes/gen/evo_float.hpp>
 #include <sferes/modif/dummy.hpp>
 #include <sferes/phen/parameters.hpp>
@@ -17,14 +16,13 @@
 #include <sferes/qd/quality_diversity.hpp>
 #include <sferes/qd/selector/uniform.hpp>
 
+#include "sferes_eval_EvoGenEval.hpp"
+
 #include "GenerateDemoRobot.h"
 #include "SimulationManager.h"
 #include "evo_paths.h"
 
 using namespace sferes::gen::evo_float;
-
-const double s_friction = 2.0;
-const double k_friction = 1.9;
 
 std::vector<double> fitness_vec;
 std::vector<std::vector<double> > genome_vec;
@@ -76,8 +74,16 @@ struct Params {
 // Evaluate the robot and generate the fitness
 FIT_QD(RobotFitness) {
 public:
+
+    // this method is used in the stat::State::show()
+    // currently setting up a place holder here
+    template <typename Indiv> void eval(Indiv& ind) {
+        SimulationManager sm;
+        eval(ind, sm);
+    }
+
     template <typename Indiv>
-    void eval(Indiv & ind) {
+    void eval(Indiv& ind, SimulationManager& sm) {
 
         double scales[7];
         std::vector<double> tmp_vector;
@@ -86,25 +92,7 @@ public:
             tmp_vector.push_back(ind.data(i));
         }
 
-        SimulationManager sm;
-
-        sm.SetFrictionK(k_friction);
-        sm.SetFrictionS(s_friction);
-        sm.SetTimeout(5);
-
         sm.LoadUrdfString(generate_demo_robot_string("leg", scales));
-
-        sm.AddMotor("MOTOR", "chassis_wheel_fl", 1,0.1,0.1,0.1);
-        sm.AddMotor("MOTOR", "chassis_wheel_rl", 1,0.1,0.1,0.1);
-        sm.AddMotor("MOTOR", "chassis_wheel_fr", 1,0.1,0.1,0.1);
-        sm.AddMotor("MOTOR", "chassis_wheel_rr", 1,0.1,0.1,0.1);
-
-        // sm.SetEnv("ground", 5, 3, 0.01);
-        sm.SetEnv(Resource_Map_Dir + "/env3.bmp", 5, 3, 0.3);
-        sm.AddWaypoint(0.5, 1.5, 0.3);
-
-        sm.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
-        // sm.RunSimulation(false);
         sm.RunSimulation();
 
         this->_value = sm.GetRootBodyDisplacementX();
@@ -132,7 +120,7 @@ int main(int argc, char **argv)
     //std::cout << "Gen: " << gen_t.data << std::endl;
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
 
-    typedef eval::Eval<Params> eval_t;
+    typedef eval::EvoGenEval<Params> eval_t;
     // typedef eval::Parallel<Params> eval_t;
 
     typedef boost::fusion::vector<sferes::stat::BestFit<phen_t, Params>,

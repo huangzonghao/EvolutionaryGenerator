@@ -22,16 +22,15 @@ SimulationManager::SimulationManager(double step_size,
     motors_.clear();
     ch_waypoints_.clear();
     SetChronoDataPath(CHRONO_DATA_DIR);
+    auxrefs_ = std::make_shared<std::unordered_set<std::string> >();
 }
 
 void SimulationManager::LoadUrdfFile(const std::string& filename){
     urdf_doc_ = std::make_shared<ChUrdfDoc>(filename);
-    auxrefs_ = urdf_doc_->GetAuxRef();
 }
 
 void SimulationManager::LoadUrdfString(const std::string& urdfstring){
     urdf_doc_ = std::make_shared<ChUrdfDoc>(urdfstring, true);
-    auxrefs_ = urdf_doc_->GetAuxRef();
 }
 
 void SimulationManager::SetEnv(std::string filename, double env_x, double env_y, double env_z){
@@ -41,6 +40,7 @@ void SimulationManager::SetEnv(std::string filename, double env_x, double env_y,
     env_z_ = env_z;
     load_map_ = true;
 }
+
 void SimulationManager::SetEigenHeightmap(const std::shared_ptr<const Eigen::MatrixXd>& heightmap){
     heightmap_ = heightmap;
 }
@@ -56,10 +56,6 @@ const std::string& SimulationManager::GetUrdfFileName(){
 void SimulationManager::AddComponent(const std::string& type_name, const std::string& body_name,
                                      double mass, double size_x, double size_y, double size_z,
                                      double pos_x, double pos_y, double pos_z){
-    if (!urdf_doc_){
-        std::cerr << "Error: No URDF loaded." << std::endl;
-        return;
-    }
 
     payloads_.push_back(std::make_shared<SimPayload>(type_name, body_name, mass,
                                                      size_x, size_y, size_z,
@@ -70,13 +66,13 @@ void SimulationManager::AddComponent(const std::string& type_name, const std::st
 void SimulationManager::AddMotor(const std::string& type_name, const std::string& link_name,
                                  double mass, double size_x, double size_y, double size_z,
                                  double pos_x, double pos_y, double pos_z){
+    if (!urdf_doc_){
+        std::cerr << "Error: No URDF loaded, cannot derive the body name to add the mass to. Specify the body name." << std::endl;
+        return;
+    }
     motors_.push_back(std::make_shared<SimMotor>(type_name, link_name, mass,
                                                  size_x, size_y, size_z,
                                                  pos_x, pos_y, pos_z));
-    if (!urdf_doc_){
-        std::cerr << "Error: No URDF loaded." << std::endl;
-        return;
-    }
     auto& body_name = urdf_doc_->GetLinkBodyName(link_name, 2);
     auxrefs_->insert(body_name);
 }
@@ -85,10 +81,6 @@ void SimulationManager::AddMotor(const std::string& type_name, const std::string
                                  const std::string& link_name, double mass,
                                  double size_x, double size_y, double size_z,
                                  double pos_x, double pos_y, double pos_z){
-    if (!urdf_doc_){
-        std::cerr << "Error: No URDF loaded." << std::endl;
-        return;
-    }
 
     motors_.push_back(std::make_shared<SimMotor>(type_name, body_name, link_name,
                                                  mass, size_x, size_y, size_z,
@@ -122,7 +114,7 @@ void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
     camera_pos_[5] = to_z;
 }
 
-bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
+bool SimulationManager::RunSimulation() {
     if(!urdf_doc_){
         std::cerr << "Error: No URDF loaded." << std::endl;
         exit(EXIT_FAILURE);
@@ -146,6 +138,8 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
     ch_system_->SetSolverMaxIterations(20);  // the higher, the easier to keep the constraints satisifed.
 
     if (load_map_) load_map();
+
+    if (!auxrefs_->empty()) urdf_doc_->SetAuxRef(auxrefs_);
 
     bool add_ok;
     if (!ch_waypoints_.empty()){
@@ -186,7 +180,7 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
 
     std::chrono::steady_clock::time_point tik;
     std::chrono::steady_clock::time_point tok;
-    if(do_viz){
+    if(do_viz_){
         ChRealtimeStepTimer realtime_timer;
         using namespace chrono::irrlicht;
         using namespace irr::core;
@@ -216,7 +210,7 @@ bool SimulationManager::RunSimulation(bool do_viz, bool do_realtime){
 
             task_done_ = controller_->Update();
 
-            if (do_realtime) realtime_timer.Spin(step_size_);
+            if (do_realtime_) realtime_timer.Spin(step_size_);
         }
         vis_app.GetDevice()->closeDevice();
         tok = std::chrono::steady_clock::now();
