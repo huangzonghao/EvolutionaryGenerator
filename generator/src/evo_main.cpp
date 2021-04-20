@@ -24,8 +24,8 @@
 
 using namespace sferes::gen::evo_float;
 
-std::vector<double> fitness_vec;
-std::vector<std::vector<double> > genome_vec;
+std::vector<float> fitness_vec;
+std::vector<std::vector<float> > genome_vec;
 
 struct Params {
     struct evo_float {
@@ -85,20 +85,13 @@ public:
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
 
-        double scales[7];
-        std::vector<double> tmp_vector;
-        for(int i = 0; i < 7; ++i) {
-            scales[i] = ind.data(i);
-            tmp_vector.push_back(ind.data(i));
-        }
-
-        sm.LoadUrdfString(generate_demo_robot_string("leg", scales));
+        sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();
 
         this->_value = sm.GetRootBodyDisplacementX();
 
         fitness_vec.push_back(this->_value);
-        genome_vec.push_back(tmp_vector);
+        genome_vec.push_back(ind.data());
 
         // std::vector<double> data = { ind.gen().data(0), ind.gen().data(1) };
         // this->set_desc(data);

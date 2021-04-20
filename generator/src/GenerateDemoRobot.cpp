@@ -1,13 +1,15 @@
 #include "GenerateDemoRobot.h"
 
 #include <map>
+#include <string>
+#include <vector>
 #include <fstream>
 #include <sstream>
 #include <filesystem>
 
 #include "evo_paths.h"
 
-std::string generate_demo_robot_string(std::string mode, double scales[7]) {
+std::string generate_demo_robot_string(std::string mode, const std::vector<float>& scales) {
 
     std::ostringstream oss;
 
@@ -190,7 +192,7 @@ std::string generate_demo_robot_string(std::string mode, double scales[7]) {
     return oss.str();
 }
 
-void generate_demo_robot(std::string mode, double scales[7]) {
+void generate_demo_robot(std::string mode, const std::vector<float>& scales) {
     std::string output_file(Robot_Output_Dir + "/temp_robot/" + "temp_robot.urdf");
 
     std::filesystem::path output_path(output_file);
