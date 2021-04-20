@@ -178,6 +178,8 @@ bool SimulationManager::RunSimulation() {
 
     const std::shared_ptr<ChBody>& camera_body = urdf_doc_->GetCameraBody();
 
+    std::cout << "Simulating robot: " << urdf_doc_->GetRobotName() << std::endl;
+
     std::chrono::steady_clock::time_point tik;
     std::chrono::steady_clock::time_point tok;
     if(do_viz_){
@@ -217,8 +219,6 @@ bool SimulationManager::RunSimulation() {
 
     }
     else{
-        std::cout << "Simulating without visualization" << std::endl;
-
         tik = std::chrono::steady_clock::now();
         while(ch_system_->GetChTime() < timeout_ && !task_done_) {
             ch_system_->DoStepDynamics(step_size_);
@@ -283,7 +283,6 @@ void SimulationManager::load_map(){
     // corner of the map - corresponds to the (0,0) index of a heightmap matrix
     // z = 0 is the bottom of the environment
     if (env_file_.empty() || env_file_ == "ground"){
-        std::cout << "Map file not initialized, building default ground" << std::endl;
         // ground body
         auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
         // flat_ground->SetRot(Q_ROTATE_X_TO_Y);
