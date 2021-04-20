@@ -128,14 +128,6 @@ int main(int argc, char **argv)
     run_ea(argc, argv, qd);
     std::cout << "Generation done" << std::endl;
     std::cout << "Fitness:" << std::endl;
-    for(int i = 0; i < fitness_vec.size(); ++i){
-        std::cout << i + 1 << ", " << fitness_vec[i];
-        std::cout << ", Design vector: ";
-        for(int j = 0; j < genome_vec[i].size(); ++j){
-            std::cout << genome_vec[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
 
     // output the data
     time_t t = time(0);   // get time now
