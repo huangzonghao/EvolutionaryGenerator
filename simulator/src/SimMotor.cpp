@@ -88,7 +88,6 @@ double SimMotorController::get_torque() {
     if (abs(target_vel_) > max_vel_) max_vel_ = abs(target_vel_);
     if (abs(target_torque_) > max_torque_) max_torque_ = abs(target_torque_);
 
-    target_torque_ = -2; // testing set up: constant torque
     return target_torque_;
 }
 
