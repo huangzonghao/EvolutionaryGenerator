@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     using namespace sferes;
 
     typedef RobotFitness<Params> fit_t;
-    typedef gen::EvoFloat<20, Params> gen_t;
+    typedef gen::EvoFloat<7, Params> gen_t;
 
     //std::cout << "Gen: " << gen_t.data << std::endl;
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
