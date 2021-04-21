@@ -72,7 +72,7 @@ struct Params {
 };
 
 // Evaluate the robot and generate the fitness
-FIT_QD(RobotFitness) {
+FIT_QD(EvoGenFitness) {
 public:
 
     // this method is used in the stat::State::show()
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 {
     using namespace sferes;
 
-    typedef RobotFitness<Params> fit_t;
+    typedef EvoGenFitness<Params> fit_t;
     typedef gen::EvoFloat<7, Params> gen_t;
 
     //std::cout << "Gen: " << gen_t.data << std::endl;
