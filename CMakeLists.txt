@@ -130,6 +130,9 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/GenerateDemoRobot.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_params.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_eval_EvoGenEval.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_fit_EvoGenFitness.hpp
 )
 
 set(Sources
