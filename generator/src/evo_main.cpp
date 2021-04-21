@@ -17,100 +17,19 @@
 #include <sferes/qd/selector/uniform.hpp>
 
 #include "sferes_eval_EvoGenEval.hpp"
+#include "sferes_fit_EvoGenFitness.hpp"
 
-#include "GenerateDemoRobot.h"
-#include "SimulationManager.h"
 #include "evo_paths.h"
 
-using namespace sferes::gen::evo_float;
-
-std::vector<float> fitness_vec;
-std::vector<std::vector<float> > genome_vec;
-
-struct Params {
-    struct evo_float {
-        // Mutation
-        // polynomial, gaussian, uniform
-        SFERES_CONST mutation_t mutation_type = polynomial;
-        SFERES_CONST float mutation_rate = 0.1f;
-        SFERES_CONST float eta_m = 10.0f;
-
-        // Crossover
-        // sbx, recombination
-        SFERES_CONST cross_over_t cross_over_type = sbx;
-        SFERES_CONST float cross_rate = 0.75f;
-        SFERES_CONST float eta_c = 10.0f;
-    };
-
-    struct pop {
-        // number of initial random points
-        SFERES_CONST size_t init_size = 10;
-        // number of initial seeds = initial_aleat * size
-        SFERES_CONST size_t initial_aleat = 1;
-        SFERES_CONST size_t size = 10;
-        SFERES_CONST size_t nb_gen = 2;
-        // number of generations to take archive
-        SFERES_CONST size_t dump_period = 1;
-    };
-
-    struct parameters {
-        SFERES_CONST float min = 0.5;
-        SFERES_CONST float max = 1.5;
-    };
-
-    struct nov {
-        SFERES_CONST size_t deep = 2;
-        SFERES_CONST double l = 1;
-        SFERES_CONST double k = 8;
-        SFERES_CONST double eps = 0.01;
-    };
-
-    struct qd {
-        SFERES_CONST size_t behav_dim = 2;
-        SFERES_ARRAY(size_t, grid_shape, 10, 10);
-    };
-};
-
-// Evaluate the robot and generate the fitness
-FIT_QD(EvoGenFitness) {
-public:
-
-    // this method is used in the stat::State::show()
-    // currently setting up a place holder here
-    template <typename Indiv> void eval(Indiv& ind) {
-        SimulationManager sm;
-        eval(ind, sm);
-    }
-
-    template <typename Indiv>
-    void eval(Indiv& ind, SimulationManager& sm) {
-
-        sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
-        sm.RunSimulation();
-
-        this->_value = sm.GetRootBodyDisplacementX();
-
-        fitness_vec.push_back(this->_value);
-        genome_vec.push_back(ind.data());
-
-        std::vector<double> feature = {ind.gen().data(0), ind.gen().data(3)};
-        this->set_desc(feature);
-
-        // if (this->mode() == sferes::fit::mode::view) {
-            // std::ofstream ofs("fit.dat");
-            // ofs << "Reading log file " << "fit.dat" << "!" << std::endl;
-        // }
-    }
-};
+#include "sferes_params.h"
 
 int main(int argc, char **argv)
 {
     using namespace sferes;
 
     typedef EvoGenFitness<Params> fit_t;
-    typedef gen::EvoFloat<7, Params> gen_t;
+    typedef gen::EvoFloat<Params::evo_float::dimension, Params> gen_t;
 
-    //std::cout << "Gen: " << gen_t.data << std::endl;
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
 
     typedef eval::EvoGenEval<Params> eval_t;
