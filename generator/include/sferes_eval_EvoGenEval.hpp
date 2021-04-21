@@ -13,17 +13,11 @@ namespace eval {
 
 SFERES_CLASS(EvoGenEval) {
   public:
-    EvoGenEval() : _nb_evals(0) {}
-    template<typename Phen>
-    void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end,
-                const typename Phen::fit_t& fit_proto) {
-        dbg::trace trace("eval", DBG_HERE);
-        assert(pop.size());
-        assert(begin < pop.size());
-        assert(end <= pop.size());
+    EvoGenEval() : _nb_evals(0) {
+        // this constructor is directly called in ea.hpp when initiating the
+        // instance, and would not take any input
 
-        SimulationManager sm;
-        sm.SetTimeout(10);
+        sm.SetTimeout(5);
         sm.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
         sm.AddWaypoint(0.5, 1.5, 0.3);
 
@@ -35,8 +29,16 @@ SFERES_CLASS(EvoGenEval) {
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fr", 1,0.1,0.1,0.1);
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rr", 1,0.1,0.1,0.1);
 
-        // sm.SetVisualization(false);
+        sm.SetVisualization(false);
         // sm.SetRealTime();
+    }
+    template<typename Phen>
+    void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end,
+                const typename Phen::fit_t& fit_proto) {
+        dbg::trace trace("eval", DBG_HERE);
+        assert(pop.size());
+        assert(begin < pop.size());
+        assert(end <= pop.size());
 
         for (size_t i = begin; i < end; ++i) {
             pop[i]->fit() = fit_proto;
@@ -48,6 +50,7 @@ SFERES_CLASS(EvoGenEval) {
     unsigned nb_evals() const { return _nb_evals; }
   protected:
     unsigned _nb_evals;
+    SimulationManager sm;
 };
 
 } // namespace eval
