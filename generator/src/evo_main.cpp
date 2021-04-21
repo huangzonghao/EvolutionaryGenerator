@@ -66,8 +66,8 @@ struct Params {
     };
 
     struct qd {
-        SFERES_CONST size_t behav_dim = 1;
-        SFERES_ARRAY(size_t, grid_shape, 4);
+        SFERES_CONST size_t behav_dim = 2;
+        SFERES_ARRAY(size_t, grid_shape, 10, 10);
     };
 };
 
@@ -93,8 +93,8 @@ public:
         fitness_vec.push_back(this->_value);
         genome_vec.push_back(ind.data());
 
-        // std::vector<double> data = { ind.gen().data(0), ind.gen().data(1) };
-        // this->set_desc(data);
+        std::vector<double> feature = {ind.gen().data(0), ind.gen().data(3)};
+        this->set_desc(feature);
 
         // if (this->mode() == sferes::fit::mode::view) {
             // std::ofstream ofs("fit.dat");
@@ -140,7 +140,8 @@ int main(int argc, char **argv)
 
     data_file.open (Result_Output_Dir + "/Result_" +
                     "P" + std::to_string(Params::pop::size) +
-                    "G" + std::to_string(Params::pop::nb_gen) +
+                    "G" + std::to_string(Params::pop::nb_gen) + "_" +
+                    std::to_string(Params::qd::grid_shape(0)) + "x" + std::to_string(Params::qd::grid_shape(1)) +
                     "_" + time_buffer + ".csv");
 
     for(int i = 0; i < fitness_vec.size(); ++i){
