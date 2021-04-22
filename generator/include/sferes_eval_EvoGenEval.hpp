@@ -7,6 +7,7 @@
 #include <sferes/stc.hpp>
 
 #include "SimulationManager.h"
+#include "SimulatorParams.h"
 
 namespace sferes {
 namespace eval {
@@ -17,20 +18,23 @@ SFERES_CLASS(EvoGenEval) {
         // this constructor is directly called in ea.hpp when initiating the
         // instance, and would not take any input
 
-        sm.SetTimeout(5);
+        sm.SetTimeout(sim_params.time_out);
         sm.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
-        sm.AddWaypoint(0.5, 1.5, 0.3);
+        for (auto& wp : sim_params.GetWaypoints())
+            sm.AddWaypoint(wp[0], wp[1], wp[2]);
 
-        sm.SetEnv("ground", 5, 3, 0.01);
-        // sm.SetEnv(Resource_Map_Dir + "/env3.bmp", 5, 3, 0.3);
+        sm.SetEnv(sim_params.env_name,
+                  sim_params.env_dim[0],
+                  sim_params.env_dim[1],
+                  sim_params.env_dim[2]);
 
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fl", 1,0.1,0.1,0.1);
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rl", 1,0.1,0.1,0.1);
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fr", 1,0.1,0.1,0.1);
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rr", 1,0.1,0.1,0.1);
 
-        sm.SetVisualization(false);
-        // sm.SetRealTime();
+        sm.SetVisualization(sim_params.do_viz);
+        sm.SetRealTime(sim_params.do_realtime);
     }
     template<typename Phen>
     void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end,

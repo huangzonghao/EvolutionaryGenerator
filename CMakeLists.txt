@@ -131,6 +131,7 @@ set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_params.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_eval_EvoGenEval.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_fit_EvoGenFitness.hpp
 )
@@ -138,6 +139,7 @@ set(Headers
 set(Sources
     # ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/UrdfExporter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/GenerateDemoRobot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp
 )
 
