@@ -23,6 +23,11 @@
 
 #include "sferes_params.h"
 
+// Setting SimulatorParams as global variable instead of SimulationManager is due to
+//      later parallelizing concerns - a SimulationManager instance would be created
+//      for each thread.
+SimulatorParams sim_params;
+
 int main(int argc, char **argv)
 {
     using namespace sferes;
@@ -43,6 +48,12 @@ int main(int argc, char **argv)
 
     typedef qd::MapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
 
+    // sim_params needs to be set before the creation of EA instance
+    sim_params.SetEnv("env3.bmp");
+    // sim_params.do_viz = true;
+    // sim_params.do_realtime = true;
+    sim_params.AddWaypoint(0.5, 1.5, 0.3);
+
     qd_t qd;
 
     // set up output dir
@@ -58,6 +69,7 @@ int main(int argc, char **argv)
                           std::to_string(Params::qd::grid_shape(1)) +
                           "_" + time_buffer;
     qd.set_res_dir(log_dir);
+
     run_ea(argc, argv, qd);
 
     // output the data
