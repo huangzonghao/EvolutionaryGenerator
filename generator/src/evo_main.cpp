@@ -44,24 +44,26 @@ int main(int argc, char **argv)
     typedef qd::MapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
 
     qd_t qd;
-    run_ea(argc, argv, qd);
-    std::cout << "Generation done" << std::endl;
-    std::cout << "Fitness:" << std::endl;
 
-    // output the data
-    time_t t = time(0);   // get time now
-    struct tm * now = localtime( & t  );
-
+    // set up output dir
+    time_t t = time(0);
+    struct tm *now = localtime(&t);
     char time_buffer [80];
     strftime(time_buffer, 80, "%Y%m%d%H%M%S", now);
 
+    std::string log_dir = Result_Output_Dir + "/Result_" +
+                          "P" + std::to_string(Params::pop::size) +
+                          "G" + std::to_string(Params::pop::nb_gen) + "_" +
+                          std::to_string(Params::qd::grid_shape(0)) + "x" +
+                          std::to_string(Params::qd::grid_shape(1)) +
+                          "_" + time_buffer;
+    qd.set_res_dir(log_dir);
+    run_ea(argc, argv, qd);
+
+    // output the data
     std::ofstream data_file;
 
-    data_file.open (Result_Output_Dir + "/Result_" +
-                    "P" + std::to_string(Params::pop::size) +
-                    "G" + std::to_string(Params::pop::nb_gen) + "_" +
-                    std::to_string(Params::qd::grid_shape(0)) + "x" + std::to_string(Params::qd::grid_shape(1)) +
-                    "_" + time_buffer + ".csv");
+    data_file.open (log_dir + "/all_robots.csv");
 
     for(int i = 0; i < fitness_vec.size(); ++i){
         data_file << i + 1 << "," << fitness_vec[i];
@@ -73,7 +75,6 @@ int main(int argc, char **argv)
 
     data_file.close();
 
-    std::cout << "best fitness:" << qd.stat<0>().best()->fit().value() << std::endl;
-    std::cout << "archive size:" << qd.stat<1>().archive().size() << std::endl;
+    std::cout << "Generation done" << std::endl;
     return 0;
 }
