@@ -32,7 +32,8 @@ struct Params {
         SFERES_CONST size_t size = 30;
         SFERES_CONST size_t nb_gen = 30;
         // number of generations to take archive
-        SFERES_CONST size_t dump_period = 1;
+        SFERES_CONST size_t dump_period = -1; // disable default archive
+        SFERES_CONST size_t evogen_dump_period = 1;
     };
 
     struct parameters {
