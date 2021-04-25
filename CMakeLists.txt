@@ -140,6 +140,7 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_eval_EvoGenEval.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_fit_EvoGenFitness.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_stat_EvoGenStat.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_qd_EvoGenQD.hpp
 )
 
 set(Sources

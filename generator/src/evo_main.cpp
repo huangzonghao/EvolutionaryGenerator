@@ -12,12 +12,12 @@
 #include <sferes/stat/qd_selection.hpp>
 #include <sferes/qd/container/archive.hpp>
 #include <sferes/qd/container/grid.hpp>
-#include <sferes/qd/quality_diversity.hpp>
 #include <sferes/qd/selector/uniform.hpp>
 
 #include "sferes_eval_EvoGenEval.hpp"
 #include "sferes_fit_EvoGenFitness.hpp"
 #include "sferes_stat_EvoGenStat.hpp"
+#include "sferes_qd_EvoGenQD.hpp"
 
 #include "evo_paths.h"
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
     typedef modif::Dummy<> modifier_t;
 
-    typedef qd::MapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
+    typedef qd::EvoGenMapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
 
     std::filesystem::create_directory(log_dir); // setting up the directory from outside since we disabled the default dump
 
