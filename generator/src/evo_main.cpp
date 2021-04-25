@@ -30,6 +30,18 @@ SimulatorParams sim_params;
 
 int main(int argc, char **argv)
 {
+    // set up output dir
+    time_t t = time(0);
+    char time_buffer [80];
+    strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
+
+    std::string log_dir = Result_Output_Dir + "/EvoGen_" +
+                          "P" + std::to_string(Params::pop::size) +
+                          "G" + std::to_string(Params::pop::nb_gen) + "_" +
+                          std::to_string(Params::qd::grid_shape(0)) + "x" +
+                          std::to_string(Params::qd::grid_shape(1)) +
+                          "_" + time_buffer;
+
     using namespace sferes;
 
     typedef EvoGenFitness<Params> fit_t;
@@ -46,27 +58,19 @@ int main(int argc, char **argv)
 
     typedef qd::MapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
 
+    std::filesystem::create_directory(log_dir); // setting up the directory from outside since we disabled the default dump
+
     // sim_params needs to be set before the creation of EA instance
-    sim_params.SetEnv("env3.bmp");
+    sim_params.SetEnv(Resource_Map_Dir + "/env3.bmp");
     // sim_params.do_viz = true;
     // sim_params.do_realtime = true;
     sim_params.AddWaypoint(0.5, 1.5, 0.3);
+    sim_params.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
+
+    sim_params.Save(log_dir + "/sim_params.csv");
 
     qd_t qd;
-
-    // set up output dir
-    time_t t = time(0);
-    char time_buffer [80];
-    strftime(time_buffer, 80, "%Y%m%d%H%M%S", localtime(&t));
-
-    std::string log_dir = Result_Output_Dir + "/Result_" +
-                          "P" + std::to_string(Params::pop::size) +
-                          "G" + std::to_string(Params::pop::nb_gen) + "_" +
-                          std::to_string(Params::qd::grid_shape(0)) + "x" +
-                          std::to_string(Params::qd::grid_shape(1)) +
-                          "_" + time_buffer;
     qd.set_res_dir(log_dir);
-    std::filesystem::create_directory(log_dir); // setting up the directory from outside since we disabled the default dump
 
     std::chrono::steady_clock::time_point tik = std::chrono::steady_clock::now();
     run_ea(argc, argv, qd);

@@ -19,7 +19,12 @@ SFERES_CLASS(EvoGenEval) {
         // instance, and would not take any input
 
         sm.SetTimeout(sim_params.time_out);
-        sm.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
+        sm.SetCamera(sim_params.camera_pos[0],
+                     sim_params.camera_pos[1],
+                     sim_params.camera_pos[2],
+                     sim_params.camera_pos[3],
+                     sim_params.camera_pos[4],
+                     sim_params.camera_pos[5]);
         for (auto& wp : sim_params.GetWaypoints())
             sm.AddWaypoint(wp[0], wp[1], wp[2]);
 
