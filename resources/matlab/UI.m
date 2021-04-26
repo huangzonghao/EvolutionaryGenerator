@@ -26,7 +26,7 @@ classdef UI < matlab.apps.AppBase
         current_gen = -1
         current_gen_archive
         params_filename = 'params.csv'
-        archive_prefix = 'archive_'
+        archive_prefix = '/archives/archive_'
         archive_subfix = '.csv'
     end
     

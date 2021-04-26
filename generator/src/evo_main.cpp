@@ -59,6 +59,7 @@ int main(int argc, char **argv)
     typedef qd::EvoGenMapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
 
     std::filesystem::create_directory(log_dir); // setting up the directory from outside since we disabled the default dump
+    std::filesystem::create_directory(log_dir + "/archives");
     if (Params::pop::dump_all_robots)
         std::filesystem::create_directory(log_dir + "/all_robots");
 
