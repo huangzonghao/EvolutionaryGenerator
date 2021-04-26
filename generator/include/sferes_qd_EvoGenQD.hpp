@@ -80,6 +80,7 @@ class EvoGenQualityDiversity
         _last_epoch_time = time_span.count(); // these two would be booked in stat
         _total_time += _last_epoch_time;
         std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
+        _dump_progress_init();
     }
 
     // Main Iteration of the QD algorithm
@@ -129,6 +130,8 @@ class EvoGenQualityDiversity
         _last_epoch_time = time_span.count(); // these two would be booked in stat
         _total_time += _last_epoch_time;
         std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
+
+        _dump_progress();
     }
 
     const Container& container() const { return _container; }
@@ -218,6 +221,22 @@ class EvoGenQualityDiversity
         ofs.close();
     }
 
+    // TODO: these two function should be part of stat, but I can't find a good way
+    // to pass on the time variables
+    void _dump_progress_init() {
+        std::ofstream ofs(_res_dir + "/progress.txt");
+        ofs << "Gen, Map size, Gen Time" << std::endl
+            << "0" << ", " << _pop.size() << ", " << _last_epoch_time << std::endl;
+        ofs.close();
+    }
+
+    void _dump_progress() {
+        std::string fname = _res_dir + "/progress.txt";
+        std::ofstream ofs(fname, std::ofstream::out | std::ofstream::app);
+        ofs << _gen + 1 << ", " << _pop.size() << ", " << _last_epoch_time << std::endl;
+        ofs.close();
+    }
+
     // ---- attributes ----
     Selector _selector;
     Container _container;
@@ -226,7 +245,6 @@ class EvoGenQualityDiversity
     std::vector<bool> _added;
 
     std::chrono::steady_clock::time_point tik;
-    std::chrono::steady_clock::time_point tok;
     std::chrono::duration<double> time_span; // in seconds
     double _last_epoch_time = 0;
     double _total_time = 0;
