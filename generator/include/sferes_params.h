@@ -34,6 +34,7 @@ struct Params {
         // number of generations to take archive
         SFERES_CONST size_t dump_period = -1; // disable default archive
         SFERES_CONST size_t evogen_dump_period = 1;
+        SFERES_CONST bool dump_all_robots = true;
     };
 
     struct parameters {

@@ -53,7 +53,7 @@ class EvoGenQualityDiversity
         }
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
         this->apply_modifier();
-
+        _dump_offspring("init_parent.csv");
         _add(_offspring, _added);
 
         this->_parents = this->_offspring;
@@ -66,6 +66,7 @@ class EvoGenQualityDiversity
 
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
         this->apply_modifier();
+        _dump_offspring("init_offspring.csv");
         _add(_offspring, _added);
 
         _container.get_full_content(this->_pop);
@@ -101,6 +102,7 @@ class EvoGenQualityDiversity
         // Evaluation of the offspring
         this->_eval_pop(_offspring, 0, _offspring.size());
         this->apply_modifier();
+        _dump_offspring(std::to_string(_gen) + ".csv");
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);
@@ -160,6 +162,23 @@ class EvoGenQualityDiversity
             parent->fit().set_curiosity(parent->fit().curiosity() - 0.5);
             return false;
         }
+    }
+
+    void _dump_offspring(const std::string& basename) {
+        if (!Params::pop::dump_all_robots)
+            return;
+
+        std::ofstream ofs(_res_dir + "/all_robots/" + basename);
+        size_t idx = 0;
+        ofs.precision(17);
+        for (auto it = _offspring.begin(); it != _offspring.end(); ++it) {
+            ofs << idx << "," << (*it)->fit().value();
+            for (size_t dim = 0; dim < (*it)->size(); ++dim)
+                ofs << "," << (*it)->data(dim);
+            ofs << std::endl;
+            ++idx;
+        }
+        ofs.close();
     }
 
     // ---- attributes ----
