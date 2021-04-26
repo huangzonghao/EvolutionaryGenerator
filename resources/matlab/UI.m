@@ -36,9 +36,9 @@ classdef UI < matlab.apps.AppBase
         function show_testinfo(app)
             [~, app.ResultNameLabel.Text, ~] = fileparts(app.evo_params.result_path);
             app.ResultInfoTextLabel.Text =...
-                sprintf('Env: %s\n# of Gen: %d\nPop size: %d\nMap size: %dx%d\nTotal time: %fs',...
+                sprintf('Env: %s\n# of Gen: %d\nPop size: %d\nMap size: %dx%d\n',...
                         app.evo_params.env_name, app.evo_params.nb_gen, app.evo_params.gen_size,...
-                        app.evo_params.griddim_0, app.evo_params.griddim_1, app.evo_params.total_time);
+                        app.evo_params.griddim_0, app.evo_params.griddim_1);
         end
         
         function plot_heatmap(app)
@@ -126,7 +126,7 @@ classdef UI < matlab.apps.AppBase
             app.evo_params.behav_dim = textout{6};
             app.evo_params.griddim_0 = textout{7};
             app.evo_params.griddim_1 = textout{8};
-            app.evo_params.total_time = textout{10} / 1000;
+            % app.evo_params.total_time = textout{10} / 1000;
             
             [~, filename, extname] = fileparts(char(textout{9}));
             app.evo_params.env_name = strcat(filename, extname);
