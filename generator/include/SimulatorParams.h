@@ -25,6 +25,9 @@ class SimulatorParams {
     bool Save(std::string filename);
     bool Load(std::string filename);
 
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version);
+
   private:
     std::vector<std::vector<double> > waypoints_;
 };
