@@ -12,6 +12,7 @@ class SimulatorParams {
     double time_out = 5;
     std::string env_name = "ground";
     double env_dim[3] = {5, 3, 0.01};
+    double env_rot[4] = {1, 0, 0, 0}; // w, x, y, z
     bool do_viz = false;
     bool do_realtime = false;
     double camera_pos[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)

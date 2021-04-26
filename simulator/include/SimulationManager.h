@@ -32,6 +32,7 @@ class  SimulationManager {
     // force user to input xyz dimension of the map, especially for bmp and urdf maps
     // use "ground" for the default flat ground
     void SetEnv(std::string filename, double env_x, double env_y, double env_z);
+    void SetEnvRot(double w, double x, double y, double z) { env_rot_ = chrono::ChQuaternion<>(w, x, y, z); }
     // TODO: should be done within SetEnv, but currently having difficulty readin bitmap in c++
     void SetEigenHeightmap(const std::shared_ptr<const Eigen::MatrixXd>& heightmap);
     void SetFrictionS(double fs) {s_friction_ = fs;};
@@ -98,6 +99,7 @@ class  SimulationManager {
     double env_x_ = 1;
     double env_y_ = 1;
     double env_z_ = 0.08;
+    chrono::ChQuaternion<> env_rot_ = chrono::QUNIT;
 
     double displacement_ = 0;
 

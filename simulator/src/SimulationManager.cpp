@@ -281,7 +281,7 @@ void SimulationManager::load_map(){
     if (env_file_.empty() || env_file_ == "ground"){
         // ground body
         auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
-        // flat_ground->SetRot(Q_ROTATE_X_TO_Y);
+        flat_ground->SetRot(env_rot_);
         flat_ground->SetPos(ChVector<>(env_x_ / 2, env_y_ / 2, 0.005));
         flat_ground->SetBodyFixed(true);
         auto ground_texture = chrono_types::make_shared<ChColorAsset>();

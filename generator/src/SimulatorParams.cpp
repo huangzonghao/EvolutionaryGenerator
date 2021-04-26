@@ -46,6 +46,7 @@ void SimulatorParams::serialize(Archive & ar, const unsigned int version) {
     ar & BOOST_SERIALIZATION_NVP(time_out);
     ar & BOOST_SERIALIZATION_NVP(env_name);
     ar & BOOST_SERIALIZATION_NVP(env_dim);
+    ar & BOOST_SERIALIZATION_NVP(env_rot);
     ar & BOOST_SERIALIZATION_NVP(do_viz);
     ar & BOOST_SERIALIZATION_NVP(do_realtime);
     ar & BOOST_SERIALIZATION_NVP(camera_pos);
@@ -56,6 +57,7 @@ std::ostream& operator<< (std::ostream &out, const SimulatorParams& sim_params) 
     out << "time_out: " << sim_params.time_out << std::endl
         << "env_name: " << sim_params.env_name << std::endl
         << "env_dim: "  << sim_params.env_dim[0] << ", " << sim_params.env_dim[1] << ", " << sim_params.env_dim[2] << std::endl
+        << "env_rot: "  << sim_params.env_rot[0] << ", " << sim_params.env_rot[1] << ", " << sim_params.env_rot[2] << ", " << sim_params.env_rot[3] << std::endl
         << "do_viz: "   << sim_params.do_viz << std::endl
         << "do_realtime: " << sim_params.do_realtime << std::endl
         << "camera_pos: "  << sim_params.camera_pos[0] << ", " << sim_params.camera_pos[1] << ", " << sim_params.camera_pos[2] << ", "
