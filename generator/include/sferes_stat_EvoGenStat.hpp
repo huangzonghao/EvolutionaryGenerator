@@ -26,10 +26,10 @@ SFERES_STAT(EvoGenStat, Stat){
     template <typename EA>
     void _write_container(const std::string& prefix, const EA& ea) const {
         std::cout << "Writing " << prefix << ea.gen() << std::endl;
-        std::string fname = ea.res_dir() + "/" + prefix
+        std::string fname = ea.res_dir() + "/archives/" + prefix
             + boost::lexical_cast<std::string>(ea.gen()) + std::string(".csv");
 
-        std::ofstream ofs(fname.c_str());
+        std::ofstream ofs(fname);
 
         size_t idx = 0;
         ofs.precision(17);
@@ -44,6 +44,7 @@ SFERES_STAT(EvoGenStat, Stat){
             ofs << std::endl;
             ++idx;
         }
+        ofs.close();
     }
 
     template<class Archive>
