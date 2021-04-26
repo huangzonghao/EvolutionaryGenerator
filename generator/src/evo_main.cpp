@@ -63,15 +63,14 @@ int main(int argc, char **argv)
     if (Params::pop::dump_all_robots)
         std::filesystem::create_directory(log_dir + "/all_robots");
 
-
     // sim_params needs to be set before the creation of EA instance
     sim_params.SetEnv(Resource_Map_Dir + "/env3.bmp");
     // sim_params.do_viz = true;
     // sim_params.do_realtime = true;
     sim_params.AddWaypoint(0.5, 1.5, 0.3);
     sim_params.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
+    sim_params.Save(log_dir + "/sim_params.xml");
 
-    sim_params.Save(log_dir + "/sim_params.csv");
 
     qd_t qd;
     qd.set_res_dir(log_dir);
