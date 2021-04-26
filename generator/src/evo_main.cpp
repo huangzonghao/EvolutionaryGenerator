@@ -59,6 +59,9 @@ int main(int argc, char **argv)
     typedef qd::EvoGenMapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
 
     std::filesystem::create_directory(log_dir); // setting up the directory from outside since we disabled the default dump
+    if (Params::pop::dump_all_robots)
+        std::filesystem::create_directory(log_dir + "/all_robots");
+
 
     // sim_params needs to be set before the creation of EA instance
     sim_params.SetEnv(Resource_Map_Dir + "/env3.bmp");
@@ -76,18 +79,8 @@ int main(int argc, char **argv)
     run_ea(argc, argv, qd);
     std::chrono::steady_clock::time_point tok = std::chrono::steady_clock::now();
 
-    // generate summary
+    // output sferes params
     std::ofstream data_file;
-
-    data_file.open (log_dir + "/all_robots.csv");
-    for(int i = 0; i < fitness_vec.size(); ++i){
-        data_file << i + 1 << "," << fitness_vec[i];
-        for(int j = 0; j < genome_vec[i].size(); ++j){
-            data_file << "," << genome_vec[i][j];
-        }
-        data_file << std::endl;
-    }
-    data_file.close();
 
     data_file.open (log_dir + "/params.csv");
     data_file << Params::pop::nb_gen << "," // 0
