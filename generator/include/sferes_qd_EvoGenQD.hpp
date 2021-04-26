@@ -53,7 +53,7 @@ class EvoGenQualityDiversity
         }
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
         this->apply_modifier();
-        _dump_offspring("init_parent.csv");
+        _dump_offspring("0_parent.csv");
         _add(_offspring, _added);
 
         this->_parents = this->_offspring;
@@ -66,10 +66,12 @@ class EvoGenQualityDiversity
 
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
         this->apply_modifier();
-        _dump_offspring("init_offspring.csv");
+        _dump_offspring("0_offspring.csv");
         _add(_offspring, _added);
 
         _container.get_full_content(this->_pop);
+
+        _dump_archive("archive_0.csv");
     }
 
     // Main Iteration of the QD algorithm
@@ -102,7 +104,7 @@ class EvoGenQualityDiversity
         // Evaluation of the offspring
         this->_eval_pop(_offspring, 0, _offspring.size());
         this->apply_modifier();
-        _dump_offspring(std::to_string(_gen) + ".csv");
+        _dump_offspring(std::to_string(_gen + 1) + ".csv");
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);
@@ -181,8 +183,28 @@ class EvoGenQualityDiversity
         ofs.close();
     }
 
-    // ---- attributes ----
+    // TODO: this function is exactly the same as the one in EvoGenStat
+    // putting it here is purely for dumping the initial archive of seeds,
+    // should come up with a better solution
+    void _dump_archive(const std::string& basename) {
+        std::ofstream ofs(_res_dir + "/archives/" + basename);
+        size_t idx = 0;
+        ofs.precision(17);
+        for (auto it = _pop.begin(); it != _pop.end(); ++it) {
+            ofs << idx << ",";
+            for (size_t dim = 0; dim < (*it)->fit().desc().size(); ++dim)
+                ofs << (*it)->fit().desc()[dim] << ",";
+            ofs << (*it)->fit().value();
 
+            for (size_t dim = 0; dim < (*it)->size(); ++dim)
+                ofs << "," << (*it)->data(dim);
+            ofs << std::endl;
+            ++idx;
+        }
+        ofs.close();
+    }
+
+    // ---- attributes ----
     Selector _selector;
     Container _container;
 

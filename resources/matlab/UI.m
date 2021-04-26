@@ -70,8 +70,12 @@ classdef UI < matlab.apps.AppBase
         end
         
         function load_gen(app, gen_to_load)
+            gen_to_load = min(max(gen_to_load, 0), app.evo_params.nb_gen);
+            if (gen_to_load == app.current_gen)
+                return
+            end
             app.current_gen = gen_to_load;
-            app.current_gen_archive = readmatrix(fullfile(app.evo_params.result_path, strcat(app.archive_prefix, num2str(app.current_gen-1), app.archive_subfix)));
+            app.current_gen_archive = readmatrix(fullfile(app.evo_params.result_path, strcat(app.archive_prefix, num2str(app.current_gen), app.archive_subfix)));
             app.GenIDField.Value = num2str(app.current_gen);
             plot_heatmap(app);
         end
@@ -128,27 +132,27 @@ classdef UI < matlab.apps.AppBase
             app.evo_params.env_name = strcat(filename, extname);
             
             show_testinfo(app);
-            load_gen(app, 1);
+            load_gen(app, 0);
         end
 
         % Button pushed function: LoadNextButton
         function LoadNextButtonPushed(app, event)
-            load_gen(app, min(app.current_gen + 1, app.evo_params.nb_gen));
+            load_gen(app, app.current_gen + 1);
         end
 
         % Button pushed function: LoadPrevButton
         function LoadPrevButtonPushed(app, event)
-            load_gen(app, max(app.current_gen - 1, 1));
+            load_gen(app, app.current_gen - 1);
         end
 
         % Button pushed function: LoadNext10Button
         function LoadNext10ButtonPushed(app, event)
-            load_gen(app, min(app.current_gen + 10, app.evo_params.nb_gen));
+            load_gen(app, app.current_gen + 10);
         end
 
         % Button pushed function: LoadPrev10Button
         function LoadPrev10ButtonPushed(app, event)
-            load_gen(app, max(app.current_gen - 10, 1));
+            load_gen(app, app.current_gen - 10);
         end
 
         % Button pushed function: ExtPlotButton
@@ -162,7 +166,7 @@ classdef UI < matlab.apps.AppBase
 
         % Value changed function: GenIDField
         function GenIDFieldValueChanged(app, event)
-            load_gen(app, max(min(str2double(app.GenIDField.Value), app.evo_params.nb_gen), 1));
+            load_gen(app, str2double(app.GenIDField.Value));
         end
     end
 
