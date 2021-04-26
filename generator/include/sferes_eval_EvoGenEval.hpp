@@ -32,6 +32,10 @@ SFERES_CLASS(EvoGenEval) {
                   sim_params.env_dim[0],
                   sim_params.env_dim[1],
                   sim_params.env_dim[2]);
+        sm.SetEnvRot(sim_params.env_rot[0],
+                     sim_params.env_rot[1],
+                     sim_params.env_rot[2],
+                     sim_params.env_rot[3]);
 
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fl", 1,0.1,0.1,0.1);
         sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rl", 1,0.1,0.1,0.1);
