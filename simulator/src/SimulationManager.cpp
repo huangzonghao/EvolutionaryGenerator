@@ -178,8 +178,6 @@ bool SimulationManager::RunSimulation() {
 
     const std::shared_ptr<ChBody>& camera_body = urdf_doc_->GetCameraBody();
 
-    std::cout << "Simulating robot: " << urdf_doc_->GetRobotName() << std::endl;
-
     std::chrono::steady_clock::time_point tik;
     std::chrono::steady_clock::time_point tok;
     if(do_viz_){
@@ -228,9 +226,7 @@ bool SimulationManager::RunSimulation() {
         tok = std::chrono::steady_clock::now();
     }
 
-    std::cout << "Simulation time: " << std::chrono::duration_cast<std::chrono::milliseconds>(tok - tik).count() << "[ms]" << std::endl;
-    std::cout << "Step count: " << ch_system_->GetStepcount() << std::endl;
-
+    last_sim_time_ = (tok - tik).count();
     return true;
 }
 

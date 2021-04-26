@@ -61,6 +61,8 @@ class  SimulationManager {
     bool RunSimulation();
     const std::string& GetUrdfFileName();
 
+    double GetLastSimTime() { return last_sim_time_; }
+
     /** Interface functions **/
     void GetActuatorVels(std::vector<std::pair<double, double> > &vels_vec) const;
     void GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const;
@@ -105,6 +107,7 @@ class  SimulationManager {
     // this pointer is initialized when a urdf file has been loaded
     std::shared_ptr<std::unordered_set<std::string> > auxrefs_;
 
+    double last_sim_time_ = 0;
 };
 
 #endif /* end of include guard: SIMULATIONMANAGER_H_TQPVGDZV */
