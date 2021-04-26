@@ -25,7 +25,6 @@ SFERES_STAT(EvoGenStat, Stat){
 
     template <typename EA>
     void _write_container(const std::string& prefix, const EA& ea) const {
-        std::cout << "Writing " << prefix << ea.gen() << std::endl;
         std::string fname = ea.res_dir() + "/archives/" + prefix
             + boost::lexical_cast<std::string>(ea.gen() + 1) + std::string(".csv");
 

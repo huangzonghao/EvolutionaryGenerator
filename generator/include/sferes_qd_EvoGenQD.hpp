@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <chrono>
 
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
@@ -42,6 +43,8 @@ class EvoGenQualityDiversity
 
     // Random initialization of _parents and _offspring
     void random_pop() {
+        std::cout << "Gen: 0/" << Params::pop::nb_gen << " ... ";
+        tik = std::chrono::steady_clock::now();
         parallel::init();
 
         this->_pop.clear();
@@ -72,10 +75,17 @@ class EvoGenQualityDiversity
         _container.get_full_content(this->_pop);
 
         _dump_archive("archive_0.csv");
+
+        time_span = std::chrono::steady_clock::now() - tik;
+        _last_epoch_time = time_span.count(); // these two would be booked in stat
+        _total_time += _last_epoch_time;
+        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
     }
 
     // Main Iteration of the QD algorithm
     void epoch() {
+        std::cout << "Gen: " << _gen + 1 << "/" << Params::pop::nb_gen << " ... ";
+        tik = std::chrono::steady_clock::now();
         _parents.resize(Params::pop::size);
 
         // Selection of the parents (will fill the _parents vector)
@@ -115,6 +125,10 @@ class EvoGenQualityDiversity
 
         // Copy of the containt of the container into the _pop object.
         _container.get_full_content(this->_pop);
+        time_span = std::chrono::steady_clock::now() - tik;
+        _last_epoch_time = time_span.count(); // these two would be booked in stat
+        _total_time += _last_epoch_time;
+        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
     }
 
     const Container& container() const { return _container; }
@@ -210,6 +224,12 @@ class EvoGenQualityDiversity
 
     pop_t _offspring, _parents;
     std::vector<bool> _added;
+
+    std::chrono::steady_clock::time_point tik;
+    std::chrono::steady_clock::time_point tok;
+    std::chrono::duration<double> time_span; // in seconds
+    double _last_epoch_time = 0;
+    double _total_time = 0;
 };
 
 template <typename Phen, typename Eval, typename Stat, typename Modifier, typename Params>
