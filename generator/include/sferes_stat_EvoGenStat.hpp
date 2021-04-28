@@ -2,6 +2,7 @@
 #define SFERES_STAT_EVOGENSTAT_HPP_HQ1F0APZ
 
 #include <numeric>
+#include <filesystem>
 #include <sferes/stat/stat.hpp>
 
 namespace sferes {
@@ -11,22 +12,70 @@ SFERES_STAT(EvoGenStat, Stat){
   public:
     typedef std::vector<boost::shared_ptr<Phen> > archive_t;
 
+    template <typename E> void make_stat_dir(const E& ea) {
+        std::filesystem::create_directory(ea.res_dir() + "/archives");
+        if (Params::pop::dump_all_robots)
+            std::filesystem::create_directory(ea.res_dir() + "/all_robots");
+    }
+
+    template <typename E> void init(const E& ea) {
+        if (Params::pop::dump_all_robots)
+            _write_parents(ea);
+        refresh(ea);
+    }
+
     template <typename E> void refresh(const E& ea) {
         _container.clear();
         for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it)
             _container.push_back(*it);
 
-        if (ea.gen() % Params::pop::evogen_dump_period == 0)
-            _write_container(std::string("archive_"), ea);
+        // dump population
+        if (ea.gen() % Params::pop::evogen_dump_period == 0) {
+            if (Params::pop::dump_all_robots)
+                _write_offspring(ea);
+            _write_archive(ea);
+            _write_progress(ea);
+        }
 
         // if (ea.gen() == Params::pop::nb_gen - 1) {
         // }
     }
 
     template <typename EA>
-    void _write_container(const std::string& prefix, const EA& ea) const {
-        std::string fname = ea.res_dir() + "/archives/" + prefix
-            + boost::lexical_cast<std::string>(ea.gen() + 1) + std::string(".csv");
+    void _write_parents(const EA& ea) const {
+        std::ofstream ofs(ea.res_dir() + "/all_robots/0_parent.csv");
+        size_t idx = 0;
+        ofs.precision(17);
+        for (auto it = ea.parents().begin(); it != ea.parents().end(); ++it) {
+            ofs << idx << "," << (*it)->fit().value();
+            for (size_t dim = 0; dim < (*it)->size(); ++dim)
+                ofs << "," << (*it)->data(dim);
+            ofs << std::endl;
+            ++idx;
+        }
+        ofs.close();
+    }
+
+    template <typename EA>
+    void _write_offspring(const EA& ea) const {
+        std::string fname = ea.res_dir() + "/all_robots/" + std::to_string(ea.gen() + 1) + ".csv";
+        std::ofstream ofs(fname);
+        size_t idx = 0;
+        ofs.precision(17);
+        for (auto it = ea.offspring().begin(); it != ea.offspring().end(); ++it) {
+            ofs << idx << "," << (*it)->fit().value();
+            for (size_t dim = 0; dim < (*it)->size(); ++dim)
+                ofs << "," << (*it)->data(dim);
+            ofs << std::endl;
+            ++idx;
+        }
+        ofs.close();
+    }
+
+    template <typename EA>
+    void _write_archive(const EA& ea) const {
+        std::string fname = ea.res_dir() + "/archives/archive_" +
+                            std::to_string(ea.gen() + 1) + ".csv";
 
         std::ofstream ofs(fname);
 
@@ -43,6 +92,15 @@ SFERES_STAT(EvoGenStat, Stat){
             ofs << std::endl;
             ++idx;
         }
+        ofs.close();
+    }
+
+    template <typename EA>
+    void _write_progress(const EA& ea) const {
+        std::ofstream ofs(ea.res_dir() + "/progress.txt", std::ofstream::out | std::ofstream::app);
+        if (ea.gen() == -1)
+            ofs << "Gen, Map size, Gen Time" << std::endl;
+        ofs << ea.gen() + 1 << ", " << ea.pop().size() << ", " << ea.last_epoch_time() << std::endl;
         ofs.close();
     }
 
