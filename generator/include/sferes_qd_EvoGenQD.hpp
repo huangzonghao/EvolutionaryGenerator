@@ -14,7 +14,6 @@
 #include <boost/multi_array.hpp>
 #include <boost/timer/timer.hpp>
 
-#include <sferes/ea/ea.hpp>
 #include <sferes/fit/fitness.hpp>
 #include <sferes/stc.hpp>
 
@@ -23,6 +22,8 @@
 #include <sferes/qd/container/sort_based_storage.hpp>
 #include <sferes/qd/selector/uniform.hpp>
 
+#include "sferes_ea_EvoGenEA.hpp"
+
 namespace sferes {
 namespace qd {
 
@@ -30,7 +31,7 @@ namespace qd {
 template <typename Phen, typename Eval, typename Stat, typename FitModifier,
           typename Selector, typename Container, typename Params, typename Exact = stc::Itself>
 class EvoGenQualityDiversity
-    : public ea::Ea<Phen, Eval, Stat, FitModifier, Params,
+    : public ea::EvoGenEA<Phen, Eval, Stat, FitModifier, Params,
             typename stc::FindExact<EvoGenQualityDiversity<Phen, Eval, Stat, FitModifier, Selector,
                                         Container, Params, Exact>, Exact>::ret> {
   public:
