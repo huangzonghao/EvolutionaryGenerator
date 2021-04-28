@@ -1,11 +1,8 @@
 // QD algorithm for EvoGen
 #ifndef SFERES_QD_EVOGENQD_HPP_URU8B21T
 #define SFERES_QD_EVOGENQD_HPP_URU8B21T
-
-
 #include <algorithm>
 #include <limits>
-#include <chrono>
 
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
@@ -44,8 +41,6 @@ class EvoGenQualityDiversity
 
     // Random initialization of _parents and _offspring
     void random_pop() {
-        std::cout << "Gen: 0/" << Params::pop::nb_gen << " ... ";
-        tik = std::chrono::steady_clock::now();
         parallel::init();
 
         this->_pop.clear();
@@ -57,7 +52,6 @@ class EvoGenQualityDiversity
         }
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
         this->apply_modifier();
-        _dump_offspring("0_parent.csv");
         _add(_offspring, _added);
 
         this->_parents = this->_offspring;
@@ -70,24 +64,13 @@ class EvoGenQualityDiversity
 
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
         this->apply_modifier();
-        _dump_offspring("0_offspring.csv");
         _add(_offspring, _added);
 
         _container.get_full_content(this->_pop);
-
-        _dump_archive("archive_0.csv");
-
-        time_span = std::chrono::steady_clock::now() - tik;
-        _last_epoch_time = time_span.count(); // these two would be booked in stat
-        _total_time += _last_epoch_time;
-        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
-        _dump_progress_init();
     }
 
     // Main Iteration of the QD algorithm
     void epoch() {
-        std::cout << "Gen: " << _gen + 1 << "/" << Params::pop::nb_gen << " ... ";
-        tik = std::chrono::steady_clock::now();
         _parents.resize(Params::pop::size);
 
         // Selection of the parents (will fill the _parents vector)
@@ -116,7 +99,6 @@ class EvoGenQualityDiversity
         // Evaluation of the offspring
         this->_eval_pop(_offspring, 0, _offspring.size());
         this->apply_modifier();
-        _dump_offspring(std::to_string(_gen + 1) + ".csv");
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);
@@ -127,12 +109,6 @@ class EvoGenQualityDiversity
 
         // Copy of the containt of the container into the _pop object.
         _container.get_full_content(this->_pop);
-        time_span = std::chrono::steady_clock::now() - tik;
-        _last_epoch_time = time_span.count(); // these two would be booked in stat
-        _total_time += _last_epoch_time;
-        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
-
-        _dump_progress();
     }
 
     const Container& container() const { return _container; }
@@ -148,6 +124,8 @@ class EvoGenQualityDiversity
 
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
+
+    const double last_epoch_time() const { return  _last_epoch_time; }
 
   protected:
     // Add the offspring into the container and update the score of the individuals from the
@@ -184,71 +162,12 @@ class EvoGenQualityDiversity
         }
     }
 
-    void _dump_offspring(const std::string& basename) {
-        if (!Params::pop::dump_all_robots)
-            return;
-
-        std::ofstream ofs(_res_dir + "/all_robots/" + basename);
-        size_t idx = 0;
-        ofs.precision(17);
-        for (auto it = _offspring.begin(); it != _offspring.end(); ++it) {
-            ofs << idx << "," << (*it)->fit().value();
-            for (size_t dim = 0; dim < (*it)->size(); ++dim)
-                ofs << "," << (*it)->data(dim);
-            ofs << std::endl;
-            ++idx;
-        }
-        ofs.close();
-    }
-
-    // TODO: this function is exactly the same as the one in EvoGenStat
-    // putting it here is purely for dumping the initial archive of seeds,
-    // should come up with a better solution
-    void _dump_archive(const std::string& basename) {
-        std::ofstream ofs(_res_dir + "/archives/" + basename);
-        size_t idx = 0;
-        ofs.precision(17);
-        for (auto it = _pop.begin(); it != _pop.end(); ++it) {
-            ofs << idx << ",";
-            for (size_t dim = 0; dim < (*it)->fit().desc().size(); ++dim)
-                ofs << (*it)->fit().desc()[dim] << ",";
-            ofs << (*it)->fit().value();
-
-            for (size_t dim = 0; dim < (*it)->size(); ++dim)
-                ofs << "," << (*it)->data(dim);
-            ofs << std::endl;
-            ++idx;
-        }
-        ofs.close();
-    }
-
-    // TODO: these two function should be part of stat, but I can't find a good way
-    // to pass on the time variables
-    void _dump_progress_init() {
-        std::ofstream ofs(_res_dir + "/progress.txt");
-        ofs << "Gen, Map size, Gen Time" << std::endl
-            << "0" << ", " << _pop.size() << ", " << _last_epoch_time << std::endl;
-        ofs.close();
-    }
-
-    void _dump_progress() {
-        std::string fname = _res_dir + "/progress.txt";
-        std::ofstream ofs(fname, std::ofstream::out | std::ofstream::app);
-        ofs << _gen + 1 << ", " << _pop.size() << ", " << _last_epoch_time << std::endl;
-        ofs.close();
-    }
-
     // ---- attributes ----
     Selector _selector;
     Container _container;
 
     pop_t _offspring, _parents;
     std::vector<bool> _added;
-
-    std::chrono::steady_clock::time_point tik;
-    std::chrono::duration<double> time_span; // in seconds
-    double _last_epoch_time = 0;
-    double _total_time = 0;
 };
 
 template <typename Phen, typename Eval, typename Stat, typename Modifier, typename Params>

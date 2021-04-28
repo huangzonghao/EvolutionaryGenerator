@@ -1,8 +1,14 @@
+// EA algorithm infrastructure for EvoGen
+// This file mainly focuse on setting up the EA structure and do book keeping,
+// while the derievd class would focus on and contain only the details of specific
+// EA algorithms
 #ifndef SFERES_EA_EVOGENEA_HPP_IKZHM4BW
 #define SFERES_EA_EVOGENEA_HPP_IKZHM4BW
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <filesystem>
+#include <chrono>
 
 #include <boost/fusion/container.hpp>
 #include <boost/fusion/algorithm.hpp>
@@ -18,8 +24,6 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/mpl/joint_view.hpp>
 
 #include <sferes/dbg/dbg.hpp>
@@ -130,7 +134,7 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef std::vector<boost::shared_ptr<Phen> > pop_t;
     typedef typename phen_t::fit_t fit_t;
 
-    EvoGenEA() : _pop(Params::pop::size), _gen(0), _stop(false) {}
+    EvoGenEA() : _pop(Params::pop::size), _gen(-1), _stop(false) {}
 
     void set_fit_proto(const fit_t& fit) { _fit_proto = fit; }
 
@@ -140,6 +144,7 @@ class EvoGenEA : public stc::Any<Exact> {
         _make_res_dir();
         _set_status("running");
         random_pop();
+        update_stats_init();
         for (_gen = 0; _gen < Params::pop::nb_gen && !_stop; ++_gen)
             _iter();
         if (!_stop)
@@ -167,13 +172,25 @@ class EvoGenEA : public stc::Any<Exact> {
     }
 
     void random_pop() {
+        std::cout << "Gen: 0/" << Params::pop::nb_gen << " ... ";
+        tik = std::chrono::steady_clock::now();
         dbg::trace trace("ea", DBG_HERE);
         stc::exact(this)->random_pop();
+        time_span = std::chrono::steady_clock::now() - tik;
+        _last_epoch_time = time_span.count(); // these two would be booked in stat
+        _total_time += _last_epoch_time;
+        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
     }
 
     void epoch() {
+        std::cout << "Gen: " << _gen + 1 << "/" << Params::pop::nb_gen << " ... ";
+        tik = std::chrono::steady_clock::now();
         dbg::trace trace("ea", DBG_HERE);
         stc::exact(this)->epoch();
+        time_span = std::chrono::steady_clock::now() - tik;
+        _last_epoch_time = time_span.count(); // these two would be booked in stat
+        _total_time += _last_epoch_time;
+        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
     }
 
     // override _set_pop if you want to customize / add treatments
@@ -218,6 +235,10 @@ class EvoGenEA : public stc::Any<Exact> {
         boost::fusion::for_each(_stat, ShowStat_f(i, os, k));
     }
 
+    void update_stats_init() {
+        boost::fusion::at_c<0>(_stat).init(stc::exact(*this));
+    }
+
     void update_stats() {
         boost::fusion::for_each(_stat, RefreshStat_f<Exact>(stc::exact(*this)));
     }
@@ -244,12 +265,17 @@ class EvoGenEA : public stc::Any<Exact> {
     pop_t _pop;
     eval_t _eval;
     stat_t _stat;
+    fit_t _fit_proto;
     modifier_t _fit_modifier;
     std::string _res_dir;
     size_t _gen;
-    fit_t _fit_proto;
     bool _stop;
     std::string _exp_name;
+
+    std::chrono::steady_clock::time_point tik;
+    std::chrono::duration<double> time_span; // in seconds
+    double _last_epoch_time = 0;
+    double _total_time = 0;
 
     void _iter() {
         epoch();
@@ -263,7 +289,7 @@ class EvoGenEA : public stc::Any<Exact> {
     // been interrupted
     // typical values: "running", "interrupted", "finished"
     void _set_status(const std::string& status) const {
-        std::string s = _res_dir + "/status";
+        std::string s = _res_dir + "/status.txt";
         std::ofstream ofs(s.c_str());
         ofs << status;
     }
@@ -278,32 +304,30 @@ class EvoGenEA : public stc::Any<Exact> {
     void _set_pop(const pop_t& p) { dbg::trace trace("ea", DBG_HERE); }
     void _make_res_dir() {
         dbg::trace trace("ea", DBG_HERE);
-        if (Params::pop::dump_period == -1)
-            return;
         if (_res_dir.empty()) {
             if (_exp_name.empty())
             _res_dir = misc::date() + "_" + misc::getpid();
             else
             _res_dir = _exp_name + "_" + misc::date() + "_" + misc::getpid();
         }
-        boost::filesystem::path my_path(_res_dir);
-        boost::filesystem::create_directory(my_path);
+        std::filesystem::create_directory(_res_dir);
+        std::filesystem::create_directory(_res_dir + "/dumps");
+        boost::fusion::at_c<0>(_stat).make_stat_dir(*this);
     }
     void _write(int gen) const {
         dbg::trace trace("ea", DBG_HERE);
         if (Params::pop::dump_period == -1)
             return;
-        std::string fname = _res_dir + std::string("/gen_")
-                            + boost::lexical_cast<std::string>(gen);
-        std::ofstream ofs(fname.c_str());
+        std::ofstream ofs(_res_dir + "/dumps/gen_" + std::to_string(gen) + ".dat");
+
 #ifdef  SFERES_XML_WRITE
         typedef boost::archive::xml_oarchive oa_t;
 #else
         typedef boost::archive::binary_oarchive oa_t;
 #endif
+
         oa_t oa(ofs);
         boost::fusion::for_each(_stat, WriteStat_f<oa_t>(oa));
-        std::cout << fname << " written" << std::endl;
     }
     void _load(const std::string& fname) {
         dbg::trace trace("ea", DBG_HERE);
