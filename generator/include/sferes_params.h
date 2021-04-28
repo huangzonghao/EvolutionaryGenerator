@@ -51,7 +51,7 @@ struct Params {
 
     struct qd {
         SFERES_CONST size_t behav_dim = 2;
-        SFERES_ARRAY(size_t, grid_shape, 10, 10);
+        SFERES_ARRAY(size_t, grid_shape, 20, 20);
     };
 };
 
