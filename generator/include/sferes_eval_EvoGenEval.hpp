@@ -1,6 +1,7 @@
 // Evaluator for sferes2
 #ifndef SFERES_EVAL_EVOGENEVAL_HPP_LJHETCPM
 #define SFERES_EVAL_EVOGENEVAL_HPP_LJHETCPM
+#include <thread>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include <sferes/dbg/dbg.hpp>
@@ -14,56 +15,97 @@ namespace eval {
 
 SFERES_CLASS(EvoGenEval) {
   public:
+    // this constructor is directly called in ea.hpp when initiating the
+    // instance, and would not take any input
     EvoGenEval() : _nb_evals(0) {
-        // this constructor is directly called in ea.hpp when initiating the
-        // instance, and would not take any input
+        num_threads = std::thread::hardware_concurrency();
+        for (int i = 0; i < num_threads; ++i) {
+            auto& sm = std::make_shared<SimulationManager>();
 
-        sm.SetTimeout(sim_params.time_out);
-        sm.SetCamera(sim_params.camera_pos[0],
-                     sim_params.camera_pos[1],
-                     sim_params.camera_pos[2],
-                     sim_params.camera_pos[3],
-                     sim_params.camera_pos[4],
-                     sim_params.camera_pos[5]);
-        for (auto& wp : sim_params.GetWaypoints())
-            sm.AddWaypoint(wp[0], wp[1], wp[2]);
+            sm->SetTimeout(sim_params.time_out);
+            sm->SetCamera(sim_params.camera_pos[0],
+                          sim_params.camera_pos[1],
+                          sim_params.camera_pos[2],
+                          sim_params.camera_pos[3],
+                          sim_params.camera_pos[4],
+                          sim_params.camera_pos[5]);
+            for (auto& wp : sim_params.GetWaypoints())
+                sm->AddWaypoint(wp[0], wp[1], wp[2]);
 
-        sm.SetEnv(sim_params.env_name,
-                  sim_params.env_dim[0],
-                  sim_params.env_dim[1],
-                  sim_params.env_dim[2]);
-        sm.SetEnvRot(sim_params.env_rot[0],
-                     sim_params.env_rot[1],
-                     sim_params.env_rot[2],
-                     sim_params.env_rot[3]);
+            sm->SetEnv(sim_params.env_name,
+                       sim_params.env_dim[0],
+                       sim_params.env_dim[1],
+                       sim_params.env_dim[2]);
+            sm->SetEnvRot(sim_params.env_rot[0],
+                          sim_params.env_rot[1],
+                          sim_params.env_rot[2],
+                          sim_params.env_rot[3]);
 
-        sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fl", 1,0.1,0.1,0.1);
-        sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rl", 1,0.1,0.1,0.1);
-        sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fr", 1,0.1,0.1,0.1);
-        sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rr", 1,0.1,0.1,0.1);
+            sm->AddMotor("MOTOR", "chassis", "chassis_wheel_fl", 1,0.1,0.1,0.1);
+            sm->AddMotor("MOTOR", "chassis", "chassis_wheel_rl", 1,0.1,0.1,0.1);
+            sm->AddMotor("MOTOR", "chassis", "chassis_wheel_fr", 1,0.1,0.1,0.1);
+            sm->AddMotor("MOTOR", "chassis", "chassis_wheel_rr", 1,0.1,0.1,0.1);
 
-        sm.SetVisualization(sim_params.do_viz);
-        sm.SetRealTime(sim_params.do_realtime);
+            // apparently no visualization and real_time in parallel mode
+            sm->SetVisualization(false);
+            sm->SetRealTime(false);
+
+            sms.push_back(sm);
+        }
     }
+
+    template<typename Phen>
+    void eval_kernel(const std::vector<boost::shared_ptr<Phen> >& pop,
+                     const std::shared_ptr<SimulationManager>& sm,
+                     size_t start_idx, size_t end_idx)
+    {
+        for (size_t i = start_idx; i < end_idx; ++i) {
+            pop[i]->develop();
+            pop[i]->fit().eval(*pop[i], *sm);
+        }
+
+    }
+
     template<typename Phen>
     void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end,
-                const typename Phen::fit_t& fit_proto) {
+              const typename Phen::fit_t& fit_proto)
+    {
         dbg::trace trace("eval", DBG_HERE);
         assert(pop.size());
         assert(begin < pop.size());
         assert(end <= pop.size());
 
-        for (size_t i = begin; i < end; ++i) {
+        for (size_t i = begin; i < end; ++i)
             pop[i]->fit() = fit_proto;
-            pop[i]->develop();
-            pop[i]->fit().eval(*pop[i], sm);
-            _nb_evals++;
+
+        std::thread *threads = new std::thread[num_threads];
+        size_t batch_size = pop.size() / num_threads;
+        size_t num_leftovers = pop.size() % num_threads;
+        int element_cursor = 0;
+        for (int i = 0; i < num_leftovers; ++i) {
+            threads[i] = std::thread(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
+                                     element_cursor, element_cursor + batch_size + 1);
+            element_cursor += batch_size + 1;
         }
+        for (int i = num_leftovers; i < num_threads; ++i) {
+            threads[i] = std::thread(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
+                                     element_cursor, element_cursor + batch_size);
+            element_cursor += batch_size;
+        }
+
+        for (int i = 0; i < num_threads; ++i)
+            threads[i].join();
+
+        _nb_evals += end - begin;
+        delete [] threads;
     }
+
     unsigned nb_evals() const { return _nb_evals; }
+
   protected:
-    unsigned _nb_evals;
-    SimulationManager sm;
+    unsigned _nb_evals; // for stat to book the total number of phen that has been evaluated
+    std::vector<std::shared_ptr<SimulationManager> > sms;
+    size_t num_threads;
 };
 
 } // namespace eval
