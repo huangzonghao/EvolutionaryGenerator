@@ -19,6 +19,7 @@ SFERES_CLASS(EvoGenEval) {
     // instance, and would not take any input
     EvoGenEval() : _nb_evals(0) {
         num_threads = std::thread::hardware_concurrency();
+        threads.resize(num_threads);
         for (int i = 0; i < num_threads; ++i) {
             auto& sm = std::make_shared<SimulationManager>();
 
@@ -63,7 +64,6 @@ SFERES_CLASS(EvoGenEval) {
             pop[i]->develop();
             pop[i]->fit().eval(*pop[i], *sm);
         }
-
     }
 
     template<typename Phen>
@@ -78,26 +78,26 @@ SFERES_CLASS(EvoGenEval) {
         for (size_t i = begin; i < end; ++i)
             pop[i]->fit() = fit_proto;
 
-        std::thread *threads = new std::thread[num_threads];
         size_t batch_size = pop.size() / num_threads;
         size_t num_leftovers = pop.size() % num_threads;
-        int element_cursor = 0;
+        size_t element_cursor = 0;
         for (int i = 0; i < num_leftovers; ++i) {
-            threads[i] = std::thread(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
-                                     element_cursor, element_cursor + batch_size + 1);
+            threads[i] = std::make_shared<std::thread>(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
+                                                       element_cursor, element_cursor + batch_size + 1);
             element_cursor += batch_size + 1;
         }
         for (int i = num_leftovers; i < num_threads; ++i) {
-            threads[i] = std::thread(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
-                                     element_cursor, element_cursor + batch_size);
+            threads[i] = std::make_shared<std::thread>(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
+                                                       element_cursor, element_cursor + batch_size);
             element_cursor += batch_size;
         }
 
-        for (int i = 0; i < num_threads; ++i)
-            threads[i].join();
+        for (auto& thread : threads)
+            thread->join();
 
+        for (auto& thread : threads)
+            thread.reset();
         _nb_evals += end - begin;
-        delete [] threads;
     }
 
     unsigned nb_evals() const { return _nb_evals; }
@@ -106,6 +106,7 @@ SFERES_CLASS(EvoGenEval) {
     unsigned _nb_evals; // for stat to book the total number of phen that has been evaluated
     std::vector<std::shared_ptr<SimulationManager> > sms;
     size_t num_threads;
+    std::vector<std::shared_ptr<std::thread> > threads;
 };
 
 } // namespace eval
