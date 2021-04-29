@@ -14,7 +14,6 @@
 #include <sferes/fit/fitness.hpp>
 #include <sferes/stc.hpp>
 
-#include <sferes/qd/container/cvt.hpp>
 #include <sferes/qd/container/grid.hpp>
 #include <sferes/qd/container/sort_based_storage.hpp>
 #include <sferes/qd/selector/uniform.hpp>
@@ -41,10 +40,7 @@ class EvoGenQualityDiversity
 
     // Random initialization of _parents and _offspring
     void random_pop() {
-        parallel::init();
-
         this->_pop.clear();
-
         _offspring.resize(Params::pop::size);
         BOOST_FOREACH (indiv_t& indiv, this->_offspring) {
             indiv = indiv_t(new Phen());
@@ -112,19 +108,12 @@ class EvoGenQualityDiversity
     }
 
     const Container& container() const { return _container; }
-
-    const pop_t& pop() const { return this->_pop; }
-    pop_t& pop() { return this->_pop; }
-
     const pop_t& offspring() const { return _offspring; }
     pop_t& offspring() { return _offspring; }
-
     const pop_t& parents() const { return _parents; }
     pop_t& parents() { return _parents; }
-
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
-
     const double last_epoch_time() const { return  _last_epoch_time; }
 
   protected:

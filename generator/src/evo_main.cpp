@@ -46,16 +46,10 @@ int main(int argc, char **argv)
 
     typedef EvoGenFitness<Params> fit_t;
     typedef gen::EvoFloat<Params::evo_float::dimension, Params> gen_t;
-
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
-
     typedef eval::EvoGenEval<Params> eval_t;
-    // typedef eval::Parallel<Params> eval_t;
-
     typedef boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> > stat_t;
-
     typedef modif::Dummy<> modifier_t;
-
     typedef qd::EvoGenMapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
 
     // sim_params needs to be set before the creation of EA instance
