@@ -27,8 +27,6 @@ struct Params {
     struct pop {
         // number of initial random points
         SFERES_CONST size_t init_size = 30;
-        // number of initial seeds = initial_aleat * size
-        SFERES_CONST size_t initial_aleat = 1;
         SFERES_CONST size_t size = 30;
         SFERES_CONST size_t nb_gen = 30;
         // number of generations to take archive
