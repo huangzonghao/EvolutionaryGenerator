@@ -45,7 +45,7 @@ SFERES_STAT(EvoGenStat, Stat){
     void _write_parents(const EA& ea) const {
         std::ofstream ofs(ea.res_dir() + "/all_robots/0_parent.csv");
         size_t idx = 0;
-        ofs.precision(17);
+        ofs.precision(5);
         for (auto it = ea.parents().begin(); it != ea.parents().end(); ++it) {
             ofs << idx << "," << (*it)->fit().value();
             for (size_t dim = 0; dim < (*it)->size(); ++dim)
@@ -61,7 +61,7 @@ SFERES_STAT(EvoGenStat, Stat){
         std::string fname = ea.res_dir() + "/all_robots/" + std::to_string(ea.gen() + 1) + ".csv";
         std::ofstream ofs(fname);
         size_t idx = 0;
-        ofs.precision(17);
+        ofs.precision(5);
         for (auto it = ea.offspring().begin(); it != ea.offspring().end(); ++it) {
             ofs << idx << "," << (*it)->fit().value();
             for (size_t dim = 0; dim < (*it)->size(); ++dim)
@@ -80,7 +80,7 @@ SFERES_STAT(EvoGenStat, Stat){
         std::ofstream ofs(fname);
 
         size_t idx = 0;
-        ofs.precision(17);
+        ofs.precision(5);
         for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it) {
             ofs << idx << ",";
             for (size_t dim = 0; dim < (*it)->fit().desc().size(); ++dim)
