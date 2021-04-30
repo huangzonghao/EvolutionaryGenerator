@@ -63,25 +63,12 @@ int main(int argc, char **argv)
     qd.set_res_dir(log_dir);
     sim_params.Save(log_dir + "/sim_params.xml");
 
-    // output sferes params
-    std::ofstream ofs;
-    ofs.open(log_dir + "/params.csv");
-    ofs << Params::pop::nb_gen << "," // 0
-        << Params::pop::initial_aleat << "," // 1
-        << Params::pop::init_size << "," // 2
-        << Params::pop::size << "," // 3
-        << Params::pop::evogen_dump_period << "," // 4
-        << Params::qd::behav_dim << "," // 5
-        << Params::qd::grid_shape(0) << "," // 6
-        << Params::qd::grid_shape(1) << "," // 7
-        << sim_params.env_name; // 8
-    ofs.close();
-
     std::chrono::duration<double> time_span; // in seconds
     std::chrono::steady_clock::time_point tik = std::chrono::steady_clock::now();
     run_ea(argc, argv, qd);
     time_span = std::chrono::steady_clock::now() - tik;
 
+    std::ofstream ofs;
     ofs.open(log_dir + "/progress.txt", std::ofstream::out | std::ofstream::app);
     ofs << "Finished in: " << time_span.count() << "s" << std::endl;
     ofs.close();
