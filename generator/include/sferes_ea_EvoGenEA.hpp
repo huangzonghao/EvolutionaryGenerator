@@ -18,11 +18,7 @@
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 #include <boost/fusion/include/for_each.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/mpl/joint_view.hpp>
 
@@ -117,16 +113,7 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef Eval eval_t;
     typedef Params params_t;
 
-    // default behavior: we automatically add a State to the stats
-    // define #SFERES_NO_STATE if you want to avoid this
-    // (e.g. the population is too big)
-#ifdef SFERES_NO_STATE
     typedef Stat stat_t;
-#else
-    typedef typename boost::fusion::vector<stat::State<Phen, Params> > state_v_t;
-    typedef typename boost::fusion::joint_view<Stat, state_v_t> joint_t;
-    typedef typename boost::fusion::result_of::as_vector<joint_t>::type  stat_t;
-#endif
 
     typedef typename
     boost::mpl::if_<boost::fusion::traits::is_sequence<FitModifier>,
@@ -134,7 +121,7 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef std::vector<boost::shared_ptr<Phen> > pop_t;
     typedef typename phen_t::fit_t fit_t;
 
-    EvoGenEA() : _pop(Params::pop::size), _gen(-1), _stop(false) {}
+    EvoGenEA() : _pop(), _gen(-1), _stop(false) {}
 
     void set_fit_proto(const fit_t& fit) { _fit_proto = fit; }
 
@@ -143,7 +130,20 @@ class EvoGenEA : public stc::Any<Exact> {
         _exp_name = exp_name;
         _make_res_dir();
         _set_status("running");
+        if (_rand_seed == 1)
+            _rand_seed = time(0) + ::getpid();
+        std::cout<<"Seed: " << _rand_seed << std::endl;
+        srand(_rand_seed);
+        std::ofstream ofs;
+        ofs.open(_res_dir + "/progress.txt");
+        ofs << "Seed: " << _rand_seed << std::endl;
+        ofs.close();
+        // TODO: config and params should ultimately be the same file
+        // Need to convert Params to a regular class first
+        _dump_config();
+        Params::Save(_res_dir + "/params.csv");
         random_pop();
+        _dump_state();
         update_stats_init();
         for (_gen = 0; _gen < Params::pop::nb_gen && !_stop; ++_gen)
             _iter();
@@ -153,18 +153,13 @@ class EvoGenEA : public stc::Any<Exact> {
 
     void resume(const std::string& fname) {
         dbg::trace trace("ea", DBG_HERE);
-        _make_res_dir();
         _set_status("resumed");
-        if (boost::fusion::find<stat::State<Phen, Params> >(_stat) == boost::fusion::end(_stat)) {
-            std::cout<<"WARNING: no State found in stat_t, cannot resume" << std::endl;
-            return;
-        }
-        _load(fname);
-        typedef typename boost::fusion::result_of::find<stat_t, stat::State<Phen, Params> >::type has_state_t;
-        Resume<stat_t, has_state_t> r;
-        r.resume(*this);
-        assert(!_pop.empty());
-        std::cout<<"resuming at:"<< gen() << std::endl;
+        std::filesystem::path fpath(fname);
+        _load_config(fpath.parent_path().string() + "/config.dat");
+        srand(_rand_seed);
+        _load_state(fname);
+        _gen = _gen + 1;
+        std::cout<<"resuming at:"<< _gen + 1 << std::endl;
         for (; _gen < Params::pop::nb_gen && !_stop; ++_gen)
             _iter();
         if (!_stop)
@@ -229,14 +224,13 @@ class EvoGenEA : public stc::Any<Exact> {
     const typename boost::fusion::result_of::value_at_c<stat_t, I>::type& stat() const {
         return boost::fusion::at_c<I>(_stat);
     }
-    void load(const std::string& fname) { _load(fname); }
+    void load(const std::string& fname) { _load_state(fname); }
 
     void show_stat(unsigned i, std::ostream& os, size_t k = 0) {
         boost::fusion::for_each(_stat, ShowStat_f(i, os, k));
     }
 
     void update_stats_init() {
-        Params::Save(_res_dir + "/params.csv");
         boost::fusion::at_c<0>(_stat).init(stc::exact(*this));
     }
 
@@ -253,8 +247,8 @@ class EvoGenEA : public stc::Any<Exact> {
     void set_gen(unsigned g) { _gen = g; }
     size_t nb_evals() const { return _eval.nb_evals(); }
     bool dump_enabled() const { return Params::pop::dump_period != -1; }
-    void write() const { _write(gen()); }
-    void write(size_t g) const { _write(g); }
+    size_t rand_seed() const { return _rand_seed; }
+    void set_rand_seed(size_t randseed) { _rand_seed = randseed; }
 
     void stop() {
         _stop = true;
@@ -272,6 +266,7 @@ class EvoGenEA : public stc::Any<Exact> {
     size_t _gen;
     bool _stop;
     std::string _exp_name;
+    size_t _rand_seed = 1;
 
     std::chrono::steady_clock::time_point tik;
     std::chrono::duration<double> time_span; // in seconds
@@ -282,7 +277,7 @@ class EvoGenEA : public stc::Any<Exact> {
         epoch();
         update_stats();
         if (_gen % Params::pop::dump_period == 0)
-            _write(_gen);
+            _dump_state();
     }
 
     // the status is a file that tells the state of the experiment
@@ -315,38 +310,56 @@ class EvoGenEA : public stc::Any<Exact> {
         std::filesystem::create_directory(_res_dir + "/dumps");
         boost::fusion::at_c<0>(_stat).make_stat_dir(*this);
     }
-    void _write(int gen) const {
+    void _dump_config() const {
         dbg::trace trace("ea", DBG_HERE);
-        if (Params::pop::dump_period == -1)
-            return;
-        std::ofstream ofs(_res_dir + "/dumps/gen_" + std::to_string(gen) + ".dat");
+        std::ofstream ofs(_res_dir + "/dumps/config.dat", std::ios::binary);
 
-#ifdef  SFERES_XML_WRITE
-        typedef boost::archive::xml_oarchive oa_t;
-#else
-        typedef boost::archive::binary_oarchive oa_t;
-#endif
-
-        oa_t oa(ofs);
-        boost::fusion::for_each(_stat, WriteStat_f<oa_t>(oa));
+        boost::archive::binary_oarchive oa(ofs);
+        oa << BOOST_SERIALIZATION_NVP(_rand_seed)
+           << BOOST_SERIALIZATION_NVP(_res_dir);
     }
-    void _load(const std::string& fname) {
+    void _load_config(const std::string& fname) {
         dbg::trace trace("ea", DBG_HERE);
-        std::cout << "loading " << fname << std::endl;
-        std::ifstream ifs(fname.c_str());
+        std::ifstream ifs(fname, std::ios::binary);
         if (ifs.fail()) {
             std::cerr << "Cannot open :" << fname
                       << "(does file exist ?)" << std::endl;
             exit(1);
         }
-#ifdef SFERES_XML_WRITE
-        typedef boost::archive::xml_iarchive ia_t;
-#else
-        typedef boost::archive::binary_iarchive ia_t;
-#endif
-        ia_t ia(ifs);
-        boost::fusion::for_each(_stat, ReadStat_f<ia_t>(ia));
+        boost::archive::binary_iarchive ia(ifs);
+        ia >> BOOST_SERIALIZATION_NVP(_rand_seed)
+           >> BOOST_SERIALIZATION_NVP(_res_dir);
     }
+    void _dump_state() const {
+        dbg::trace trace("ea", DBG_HERE);
+        if (Params::pop::dump_period == -1)
+            return;
+        std::ofstream ofs(_res_dir + "/dumps/gen_" + std::to_string(_gen + 1) + ".dat", std::ios::binary);
+
+        boost::archive::binary_oarchive oa(ofs);
+        oa << BOOST_SERIALIZATION_NVP(_gen)
+           << BOOST_SERIALIZATION_NVP(_last_epoch_time)
+           << BOOST_SERIALIZATION_NVP(_total_time)
+           << BOOST_SERIALIZATION_NVP(_pop);
+        stc::exact(this)->_dump_state_extra(oa);
+    }
+    void _dump_state_extra(boost::archive::binary_oarchive& oa) const {}
+    void _load_state(const std::string& fname) {
+        dbg::trace trace("ea", DBG_HERE);
+        std::ifstream ifs(fname, std::ios::binary);
+        if (ifs.fail()) {
+            std::cerr << "Cannot open :" << fname
+                      << "(does file exist ?)" << std::endl;
+            exit(1);
+        }
+        boost::archive::binary_iarchive ia(ifs);
+        ia >> BOOST_SERIALIZATION_NVP(_gen)
+           >> BOOST_SERIALIZATION_NVP(_last_epoch_time)
+           >> BOOST_SERIALIZATION_NVP(_total_time)
+           >> BOOST_SERIALIZATION_NVP(_pop);
+        stc::exact(this)->_load_state_extra(ia);
+    }
+    void _load_state_extra(boost::archive::binary_iarchive& ia) {}
 };
 
 } // namespace ea

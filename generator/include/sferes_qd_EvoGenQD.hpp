@@ -10,6 +10,8 @@
 #include <boost/fusion/include/for_each.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/timer/timer.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 
 #include <sferes/fit/fitness.hpp>
 #include <sferes/stc.hpp>
@@ -31,6 +33,9 @@ class EvoGenQualityDiversity
             typename stc::FindExact<EvoGenQualityDiversity<Phen, Eval, Stat, FitModifier, Selector,
                                         Container, Params, Exact>, Exact>::ret> {
   public:
+    friend class ea::EvoGenEA<Phen, Eval, Stat, FitModifier, Params,
+                              typename stc::FindExact<EvoGenQualityDiversity<Phen, Eval, Stat,
+                              FitModifier, Selector, Container, Params, Exact>, Exact>::ret>;
     typedef Phen phen_t;
     typedef boost::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
@@ -149,6 +154,14 @@ class EvoGenQualityDiversity
             parent->fit().set_curiosity(parent->fit().curiosity() - 0.5);
             return false;
         }
+    }
+
+    void _load_state_extra(boost::archive::binary_iarchive& ia) {
+        for (size_t i = 0; i < this->_pop.size(); ++i) {
+            this->_pop[i]->develop();
+            this->_pop[i]->fit().update_desc(*(this->_pop[i]));
+        }
+        _add(this->_pop, _added);
     }
 
     // ---- attributes ----
