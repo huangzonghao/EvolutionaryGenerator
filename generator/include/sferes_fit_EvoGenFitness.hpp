@@ -31,6 +31,12 @@ public:
             // ofs << "Reading log file " << "fit.dat" << "!" << std::endl;
         // }
     }
+
+    template <typename Indiv>
+    void update_desc(Indiv& ind) {
+        std::vector<double> feature = {ind.gen().data(0), ind.gen().data(3)};
+        this->set_desc(feature);
+    }
 };
 
 #endif /* end of include guard: SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA */

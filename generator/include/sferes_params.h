@@ -31,8 +31,8 @@ struct Params {
         SFERES_CONST size_t size = 30;
         SFERES_CONST size_t nb_gen = 30;
         // number of generations to take archive
-        SFERES_CONST size_t dump_period = -1; // disable default archive
-        SFERES_CONST size_t evogen_dump_period = 1;
+        SFERES_CONST size_t dump_period = 1;
+        SFERES_CONST size_t text_archive_dump_period = 1;
         SFERES_CONST bool dump_all_robots = true;
     };
 
@@ -59,7 +59,7 @@ struct Params {
         ofs << pop::nb_gen << "," // 0
             << pop::init_size << "," // 1
             << pop::size << "," // 2
-            << pop::evogen_dump_period << "," // 3
+            << pop::text_archive_dump_period << "," // 3
             << qd::behav_dim << "," // 4
             << qd::grid_shape(0) << "," // 5
             << qd::grid_shape(1); // 6

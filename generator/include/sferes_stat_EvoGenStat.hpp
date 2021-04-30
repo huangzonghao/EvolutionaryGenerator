@@ -25,12 +25,8 @@ SFERES_STAT(EvoGenStat, Stat){
     }
 
     template <typename E> void refresh(const E& ea) {
-        _container.clear();
-        for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it)
-            _container.push_back(*it);
-
         // dump population
-        if (ea.gen() % Params::pop::evogen_dump_period == 0) {
+        if (ea.gen() % Params::pop::text_archive_dump_period == 0) {
             if (Params::pop::dump_all_robots)
                 _write_offspring(ea);
             _write_archive(ea);
@@ -103,16 +99,6 @@ SFERES_STAT(EvoGenStat, Stat){
         ofs << ea.gen() + 1 << ", " << ea.pop().size() << ", " << ea.last_epoch_time() << std::endl;
         ofs.close();
     }
-
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version) {
-        ar & BOOST_SERIALIZATION_NVP(_container);
-    }
-
-    const archive_t& archive() const { return _container; }
-
-  protected:
-    archive_t _container;
 }; // EvoGenStat
 
 } // namespace stat
