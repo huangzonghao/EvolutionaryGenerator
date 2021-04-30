@@ -236,6 +236,7 @@ class EvoGenEA : public stc::Any<Exact> {
     }
 
     void update_stats_init() {
+        Params::Save(_res_dir + "/params.csv");
         boost::fusion::at_c<0>(_stat).init(stc::exact(*this));
     }
 

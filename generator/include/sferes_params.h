@@ -1,6 +1,7 @@
 #ifndef SFERES_PARAMS_H_VEZVLL4C
 #define SFERES_PARAMS_H_VEZVLL4C
 
+#include <fstream>
 #include <sferes/stc.hpp>
 #include <sferes/gen/evo_float.hpp>
 
@@ -51,6 +52,20 @@ struct Params {
         SFERES_CONST size_t behav_dim = 2;
         SFERES_ARRAY(size_t, grid_shape, 20, 20);
     };
+
+    static void Save(const std::string& filename) {
+        // output sferes params
+        std::ofstream ofs(filename);
+        ofs << pop::nb_gen << "," // 0
+            << pop::init_size << "," // 1
+            << pop::size << "," // 2
+            << pop::evogen_dump_period << "," // 3
+            << qd::behav_dim << "," // 4
+            << qd::grid_shape(0) << "," // 5
+            << qd::grid_shape(1); // 6
+        ofs.close();
+    }
+
 };
 
 

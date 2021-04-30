@@ -139,17 +139,14 @@ classdef UI < matlab.apps.AppBase
 
             app.evo_params.result_path = result_path;
             app.evo_params.nb_gen = textout{1};
-            app.evo_params.initial_aleat = textout{2};
-            app.evo_params.init_size = textout{3};
-            app.evo_params.gen_size = textout{4};
-            app.evo_params.evogen_dump_period = textout{5};
-            app.evo_params.behav_dim = textout{6};
-            app.evo_params.griddim_0 = textout{7};
-            app.evo_params.griddim_1 = textout{8};
+            app.evo_params.init_size = textout{2};
+            app.evo_params.gen_size = textout{3};
+            app.evo_params.evogen_dump_period = textout{4};
+            app.evo_params.behav_dim = textout{5};
+            app.evo_params.griddim_0 = textout{6};
+            app.evo_params.griddim_1 = textout{7};
             % app.evo_params.total_time = textout{10} / 1000;
-
-            [~, filename, extname] = fileparts(char(textout{9}));
-            app.evo_params.env_name = strcat(filename, extname);
+            app.evo_params.env_name = '';
 
             show_testinfo(app);
             load_gen(app, 0);
