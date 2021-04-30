@@ -6,7 +6,6 @@
 #include <sferes/gen/evo_float.hpp>
 #include <sferes/modif/dummy.hpp>
 #include <sferes/phen/parameters.hpp>
-#include <sferes/run.hpp>
 
 #include <sferes/fit/fit_qd.hpp>
 #include <sferes/stat/qd_selection.hpp>
@@ -30,8 +29,12 @@ SimulatorParams sim_params;
 
 int main(int argc, char **argv)
 {
-    // set up output dir
     time_t t = time(0);
+    size_t rand_seed = t + ::getpid();
+    std::cout<<"Seed: " << rand_seed << std::endl;
+    srand(rand_seed);
+
+    // set up output dir
     char time_buffer [80];
     strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
 
@@ -62,13 +65,16 @@ int main(int argc, char **argv)
     qd_t qd;
     qd.set_res_dir(log_dir);
     sim_params.Save(log_dir + "/sim_params.xml");
+    std::ofstream ofs;
+    ofs.open(log_dir + "/progress.txt");
+    ofs << "Seed: " << rand_seed << std::endl;
+    ofs.close();
 
     std::chrono::duration<double> time_span; // in seconds
     std::chrono::steady_clock::time_point tik = std::chrono::steady_clock::now();
-    run_ea(argc, argv, qd);
+    qd.run(argv[0]);
     time_span = std::chrono::steady_clock::now() - tik;
 
-    std::ofstream ofs;
     ofs.open(log_dir + "/progress.txt", std::ofstream::out | std::ofstream::app);
     ofs << "Finished in: " << time_span.count() << "s" << std::endl;
     ofs.close();
