@@ -4,17 +4,12 @@
 #include <chrono>
 
 #include <sferes/gen/evo_float.hpp>
-#include <sferes/modif/dummy.hpp>
 #include <sferes/phen/parameters.hpp>
-
-#include <sferes/fit/fit_qd.hpp>
-#include <sferes/stat/qd_selection.hpp>
+#include <sferes/modif/dummy.hpp>
 #include <sferes/qd/container/archive.hpp>
-#include <sferes/qd/container/grid.hpp>
-#include <sferes/qd/selector/uniform.hpp>
 
-#include "sferes_eval_EvoGenEval.hpp"
 #include "sferes_fit_EvoGenFitness.hpp"
+#include "sferes_eval_EvoGenEval.hpp"
 #include "sferes_stat_EvoGenStat.hpp"
 #include "sferes_qd_EvoGenQD.hpp"
 

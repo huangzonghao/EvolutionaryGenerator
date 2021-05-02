@@ -1,23 +1,13 @@
 // QD algorithm for EvoGen
 #ifndef SFERES_QD_EVOGENQD_HPP_URU8B21T
 #define SFERES_QD_EVOGENQD_HPP_URU8B21T
-#include <algorithm>
-#include <limits>
-
-#include <boost/array.hpp>
-#include <boost/foreach.hpp>
-#include <boost/fusion/algorithm/iteration/for_each.hpp>
-#include <boost/fusion/include/for_each.hpp>
 #include <boost/multi_array.hpp>
-#include <boost/timer/timer.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
 #include <sferes/fit/fitness.hpp>
 #include <sferes/stc.hpp>
-
 #include <sferes/qd/container/grid.hpp>
-#include <sferes/qd/container/sort_based_storage.hpp>
 #include <sferes/qd/selector/uniform.hpp>
 
 #include "sferes_ea_EvoGenEA.hpp"
