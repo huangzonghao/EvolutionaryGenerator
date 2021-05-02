@@ -10,22 +10,16 @@
 #include <filesystem>
 #include <chrono>
 
-#include <boost/fusion/container.hpp>
-#include <boost/fusion/algorithm.hpp>
-#include <boost/mpl/vector.hpp>
-#include <boost/fusion/support/is_sequence.hpp>
-#include <boost/fusion/include/is_sequence.hpp>
-#include <boost/fusion/algorithm/iteration/for_each.hpp>
-#include <boost/fusion/include/for_each.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/fusion/container.hpp>
+#include <boost/fusion/include/for_each.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
-#include <boost/mpl/joint_view.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 
 #include <sferes/dbg/dbg.hpp>
 #include <sferes/misc.hpp>
 #include <sferes/stc.hpp>
-#include <sferes/stat/state.hpp>
 
 #ifndef VERSION
 #define VERSION "version_unknown"

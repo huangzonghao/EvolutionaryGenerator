@@ -1,7 +1,6 @@
 #ifndef SFERES_STAT_EVOGENSTAT_HPP_HQ1F0APZ
 #define SFERES_STAT_EVOGENSTAT_HPP_HQ1F0APZ
 
-#include <numeric>
 #include <filesystem>
 #include <sferes/stat/stat.hpp>
 
