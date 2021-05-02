@@ -1,16 +1,15 @@
 // QD algorithm for EvoGen
 #ifndef SFERES_QD_EVOGENQD_HPP_URU8B21T
 #define SFERES_QD_EVOGENQD_HPP_URU8B21T
-#include <boost/multi_array.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
 #include <sferes/fit/fitness.hpp>
 #include <sferes/stc.hpp>
-#include <sferes/qd/container/grid.hpp>
 #include <sferes/qd/selector/uniform.hpp>
 
 #include "sferes_ea_EvoGenEA.hpp"
+#include "sferes_qd_container_grid.hpp"
 
 namespace sferes {
 namespace qd {
@@ -95,8 +94,6 @@ class EvoGenQualityDiversity
         _add(_offspring, _added, _parents);
 
         assert(_offspring.size() == _parents.size());
-
-        this->_pop.clear();
 
         // Copy of the containt of the container into the _pop object.
         _container.get_full_content(this->_pop);
