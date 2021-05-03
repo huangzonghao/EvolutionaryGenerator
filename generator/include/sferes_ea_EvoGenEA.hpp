@@ -21,6 +21,8 @@
 #include <sferes/misc.hpp>
 #include <sferes/stc.hpp>
 
+#include "EvoParams.h"
+
 #ifndef VERSION
 #define VERSION "version_unknown"
 #endif
@@ -106,16 +108,19 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef Phen phen_t;
     typedef Eval eval_t;
     typedef Params params_t;
-
     typedef Stat stat_t;
-
     typedef typename
     boost::mpl::if_<boost::fusion::traits::is_sequence<FitModifier>,
                     FitModifier, boost::fusion::vector<FitModifier> >::type modifier_t;
     typedef std::vector<boost::shared_ptr<Phen> > pop_t;
     typedef typename phen_t::fit_t fit_t;
 
-    EvoGenEA() : _pop(), _gen(-1), _stop(false) {}
+    EvoGenEA() : _gen(-1), _stop(false) {}
+    EvoGenEA(const EvoParams& evo_params)
+        : _evo_params(evo_params),  _gen(-1), _stop(false)
+    {
+        populate_params_();
+    }
 
     void set_fit_proto(const fit_t& fit) { _fit_proto = fit; }
 
@@ -132,14 +137,11 @@ class EvoGenEA : public stc::Any<Exact> {
         ofs.open(_res_dir + "/progress.txt");
         ofs << "Seed: " << _rand_seed << std::endl;
         ofs.close();
-        // TODO: config and params should ultimately be the same file
-        // Need to convert Params to a regular class first
         _dump_config();
-        Params::Save(_res_dir + "/params.csv");
         random_pop();
         _dump_state();
         update_stats_init();
-        for (_gen = 0; _gen < Params::pop::nb_gen && !_stop; ++_gen)
+        for (_gen = 0; _gen < _nb_gen && !_stop; ++_gen)
             _iter();
         if (!_stop)
             _set_status("finished");
@@ -154,14 +156,14 @@ class EvoGenEA : public stc::Any<Exact> {
         _load_state(fname);
         _gen = _gen + 1;
         std::cout<<"resuming at:"<< _gen + 1 << std::endl;
-        for (; _gen < Params::pop::nb_gen && !_stop; ++_gen)
+        for (; _gen < _nb_gen && !_stop; ++_gen)
             _iter();
         if (!_stop)
             _set_status("finished");
     }
 
     void random_pop() {
-        std::cout << "Gen: 0/" << Params::pop::nb_gen << " ... ";
+        std::cout << "Gen: 0/" << _nb_gen << " ... ";
         tik = std::chrono::steady_clock::now();
         dbg::trace trace("ea", DBG_HERE);
         stc::exact(this)->random_pop();
@@ -172,7 +174,7 @@ class EvoGenEA : public stc::Any<Exact> {
     }
 
     void epoch() {
-        std::cout << "Gen: " << _gen + 1 << "/" << Params::pop::nb_gen << " ... ";
+        std::cout << "Gen: " << _gen + 1 << "/" << _nb_gen << " ... ";
         tik = std::chrono::steady_clock::now();
         dbg::trace trace("ea", DBG_HERE);
         stc::exact(this)->epoch();
@@ -240,7 +242,7 @@ class EvoGenEA : public stc::Any<Exact> {
     size_t gen() const { return _gen; }
     void set_gen(unsigned g) { _gen = g; }
     size_t nb_evals() const { return _eval.nb_evals(); }
-    bool dump_enabled() const { return Params::pop::dump_period != -1; }
+    bool dump_enabled() const { return _progress_dump_period != -1; }
     size_t rand_seed() const { return _rand_seed; }
     void set_rand_seed(size_t randseed) { _rand_seed = randseed; }
 
@@ -250,7 +252,23 @@ class EvoGenEA : public stc::Any<Exact> {
     }
     bool is_stopped() const { return _stop; }
 
+    EvoParams& evo_params() { return _evo_params; }
+    // derived class should override this function to populate its own params
+    // TODO: for some reason I can not set this function to virtual, otherwise
+    // stc::exact(this) would return a shifted this pointer
+    void set_params(const EvoParams& evo_params) {
+        _evo_params = evo_params;
+        populate_params_();
+    }
+
   protected:
+    void populate_params_() {
+        _nb_gen = _evo_params.nb_gen();
+        _progress_dump_period = _evo_params.progress_dump_period();
+    }
+    EvoParams _evo_params;
+    size_t _nb_gen = 1;
+    size_t _progress_dump_period = -1;
     pop_t _pop;
     eval_t _eval;
     stat_t _stat;
@@ -270,7 +288,7 @@ class EvoGenEA : public stc::Any<Exact> {
     void _iter() {
         epoch();
         update_stats();
-        if (_gen % Params::pop::dump_period == 0)
+        if (_gen % _progress_dump_period == 0)
             _dump_state();
     }
 
@@ -310,7 +328,8 @@ class EvoGenEA : public stc::Any<Exact> {
 
         boost::archive::binary_oarchive oa(ofs);
         oa << BOOST_SERIALIZATION_NVP(_rand_seed)
-           << BOOST_SERIALIZATION_NVP(_res_dir);
+           << BOOST_SERIALIZATION_NVP(_res_dir)
+           << BOOST_SERIALIZATION_NVP(_evo_params);
     }
     void _load_config(const std::string& fname) {
         dbg::trace trace("ea", DBG_HERE);
@@ -322,11 +341,12 @@ class EvoGenEA : public stc::Any<Exact> {
         }
         boost::archive::binary_iarchive ia(ifs);
         ia >> BOOST_SERIALIZATION_NVP(_rand_seed)
-           >> BOOST_SERIALIZATION_NVP(_res_dir);
+           >> BOOST_SERIALIZATION_NVP(_res_dir)
+           >> BOOST_SERIALIZATION_NVP(_evo_params);
     }
     void _dump_state() const {
         dbg::trace trace("ea", DBG_HERE);
-        if (Params::pop::dump_period == -1)
+        if (_progress_dump_period == -1)
             return;
         std::ofstream ofs(_res_dir + "/dumps/gen_" + std::to_string(_gen + 1) + ".dat", std::ios::binary);
 

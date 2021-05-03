@@ -4,17 +4,20 @@
 #include <chrono>
 
 #include <sferes/gen/evo_float.hpp>
-#include <sferes/phen/parameters.hpp>
 #include <sferes/modif/dummy.hpp>
 
 #include "sferes_fit_EvoGenFitness.hpp"
+#include "sferes_phen_EvoGenPhen.hpp"
 #include "sferes_eval_EvoGenEval.hpp"
 #include "sferes_stat_EvoGenStat.hpp"
 #include "sferes_qd_EvoGenQD.hpp"
+#include "sferes_params.h"
+
+#include "SimulatorParams.h"
+#include "EvoParams.h"
 
 #include "evo_paths.h"
 
-#include "sferes_params.h"
 
 // Setting SimulatorParams as global variable instead of SimulationManager is due to
 //      later parallelizing concerns - a SimulationManager instance would be created
@@ -23,11 +26,12 @@ SimulatorParams sim_params;
 
 int main(int argc, char **argv)
 {
+    EvoParams evo_params;
     using namespace sferes;
 
     typedef EvoGenFitness<Params> fit_t;
     typedef gen::EvoFloat<Params::evo_float::dimension, Params> gen_t;
-    typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
+    typedef phen::EvoGenPhen<gen_t, fit_t, Params> phen_t;
     typedef eval::EvoGenEval<Params> eval_t;
     typedef boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> > stat_t;
     typedef modif::Dummy<> modifier_t;
@@ -48,10 +52,10 @@ int main(int argc, char **argv)
     strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
 
     std::string log_dir = Result_Output_Dir + "/EvoGen_" +
-                          "P" + std::to_string(Params::pop::size) +
-                          "G" + std::to_string(Params::pop::nb_gen) + "_" +
-                          std::to_string(Params::qd::grid_shape(0)) + "x" +
-                          std::to_string(Params::qd::grid_shape(1)) +
+                          "P" + std::to_string(evo_params.pop_size()) +
+                          "G" + std::to_string(evo_params.nb_gen()) + "_" +
+                          std::to_string(evo_params.grid_shape()[0]) + "x" +
+                          std::to_string(evo_params.grid_shape()[1]) +
                           "_" + time_buffer;
 
     // sim_params needs to be set before the creation of EA instance
@@ -61,7 +65,7 @@ int main(int argc, char **argv)
     sim_params.AddWaypoint(0.5, 1.5, 0.3);
     sim_params.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
 
-    qd_t qd;
+    qd_t qd(evo_params);
     qd.set_res_dir(log_dir);
     sim_params.Save(log_dir + "/sim_params.xml");
 
