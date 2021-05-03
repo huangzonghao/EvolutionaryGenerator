@@ -10,6 +10,7 @@
 
 #include "sferes_ea_EvoGenEA.hpp"
 #include "sferes_qd_container_grid.hpp"
+#include "EvoParams.h"
 
 namespace sferes {
 namespace qd {
@@ -31,13 +32,18 @@ class EvoGenQualityDiversity
     typedef typename pop_t::iterator it_t;
 
     EvoGenQualityDiversity() {}
+    EvoGenQualityDiversity(const EvoParams& evo_params)
+        : EvoGenEA(evo_params)
+    {
+        populate_params_();
+    }
 
     // Random initialization of _parents and _offspring
     void random_pop() {
         this->_pop.clear();
-        _offspring.resize(Params::pop::size);
+        _offspring.resize(_pop_size);
         BOOST_FOREACH (indiv_t& indiv, this->_offspring) {
-            indiv = indiv_t(new Phen());
+            indiv = indiv_t(new Phen(_evo_params));
             indiv->random();
         }
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
@@ -45,10 +51,10 @@ class EvoGenQualityDiversity
         _add(_offspring, _added);
 
         this->_parents = this->_offspring;
-        _offspring.resize(Params::pop::size);
+        _offspring.resize(_pop_size);
 
         BOOST_FOREACH (indiv_t& indiv, this->_offspring) {
-            indiv = indiv_t(new Phen());
+            indiv = indiv_t(new Phen(_evo_params));
             indiv->random();
         }
 
@@ -61,7 +67,7 @@ class EvoGenQualityDiversity
 
     // Main Iteration of the QD algorithm
     void epoch() {
-        _parents.resize(Params::pop::size);
+        _parents.resize(_pop_size);
 
         // Selection of the parents (will fill the _parents vector)
         _selector(_parents, *this); // not a nice API
@@ -69,13 +75,13 @@ class EvoGenQualityDiversity
         // CLEAR _offspring ONLY after selection, as it can be
         // used by the selector (via this->_offspring)
         _offspring.clear();
-        _offspring.resize(Params::pop::size);
+        _offspring.resize(_pop_size);
 
         // Generation of the offspring
         std::vector<size_t> a;
         misc::rand_ind(a, _parents.size());
-        assert(_parents.size() == Params::pop::size);
-        for (size_t i = 0; i < Params::pop::size; i += 2) {
+        assert(_parents.size() == _pop_size);
+        for (size_t i = 0; i < _pop_size; i += 2) {
             boost::shared_ptr<Phen> i1, i2;
             _parents[a[i]]->cross(_parents[a[i + 1]], i1, i2);
             i1->mutate();
@@ -107,6 +113,10 @@ class EvoGenQualityDiversity
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
     const double last_epoch_time() const { return  _last_epoch_time; }
+    void set_params(const EvoParams& evo_params) {
+        EvoGenEA::set_params(evo_params);
+        populate_params_();
+    }
 
   protected:
     // Add the offspring into the container and update the score of the individuals from the
@@ -151,7 +161,13 @@ class EvoGenQualityDiversity
         _add(this->_pop, _added);
     }
 
-    // ---- attributes ----
+    void populate_params_() {
+        _pop_size = _evo_params.pop_size();
+        _container.set_params(_evo_params);
+    }
+
+    size_t _pop_size;
+
     Selector _selector;
     Container _container;
 

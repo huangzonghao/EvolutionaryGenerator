@@ -25,22 +25,6 @@ struct Params {
         SFERES_CONST float eta_c = 10.0f;
     };
 
-    struct pop {
-        // number of initial random points
-        SFERES_CONST size_t init_size = 30;
-        SFERES_CONST size_t size = 30;
-        SFERES_CONST size_t nb_gen = 30;
-        // number of generations to take archive
-        SFERES_CONST size_t dump_period = 1;
-        SFERES_CONST size_t text_archive_dump_period = 1;
-        SFERES_CONST bool dump_all_robots = true;
-    };
-
-    struct parameters {
-        SFERES_CONST float min = 0.5;
-        SFERES_CONST float max = 1.5;
-    };
-
     struct nov {
         SFERES_CONST size_t deep = 2;
         SFERES_CONST double l = 1;
@@ -54,16 +38,16 @@ struct Params {
     };
 
     static void Save(const std::string& filename) {
-        // output sferes params
-        std::ofstream ofs(filename);
-        ofs << pop::nb_gen << "," // 0
-            << pop::init_size << "," // 1
-            << pop::size << "," // 2
-            << pop::text_archive_dump_period << "," // 3
-            << qd::behav_dim << "," // 4
-            << qd::grid_shape(0) << "," // 5
-            << qd::grid_shape(1); // 6
-        ofs.close();
+        // // output sferes params
+        // std::ofstream ofs(filename);
+        // ofs << pop::nb_gen << "," // 0
+            // << pop::init_size << "," // 1
+            // << pop::size << "," // 2
+            // << pop::text_archive_dump_period << "," // 3
+            // << qd::behav_dim << "," // 4
+            // << qd::grid_shape(0) << "," // 5
+            // << qd::grid_shape(1); // 6
+        // ofs.close();
     }
 
 };

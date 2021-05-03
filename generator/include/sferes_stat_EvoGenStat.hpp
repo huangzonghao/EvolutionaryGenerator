@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <sferes/stat/stat.hpp>
 
+#include "EvoParams.h"
+
 namespace sferes {
 namespace stat {
 
@@ -13,27 +15,24 @@ SFERES_STAT(EvoGenStat, Stat){
 
     template <typename E> void make_stat_dir(const E& ea) {
         std::filesystem::create_directory(ea.res_dir() + "/archives");
-        if (Params::pop::dump_all_robots)
+        if (output_all_robots_)
             std::filesystem::create_directory(ea.res_dir() + "/all_robots");
     }
 
     template <typename E> void init(const E& ea) {
-        if (Params::pop::dump_all_robots)
+        if (output_all_robots_)
             _write_parents(ea);
         refresh(ea);
     }
 
     template <typename E> void refresh(const E& ea) {
         // dump population
-        if (ea.gen() % Params::pop::text_archive_dump_period == 0) {
-            if (Params::pop::dump_all_robots)
+        if (ea.gen() % output_write_period_ == 0) {
+            if (output_all_robots_)
                 _write_offspring(ea);
             _write_archive(ea);
             _write_progress(ea);
         }
-
-        // if (ea.gen() == Params::pop::nb_gen - 1) {
-        // }
     }
 
     template <typename EA>
@@ -98,6 +97,16 @@ SFERES_STAT(EvoGenStat, Stat){
         ofs << ea.gen() + 1 << ", " << ea.pop().size() << ", " << ea.last_epoch_time() << std::endl;
         ofs.close();
     }
+
+    void set_params(const EvoParams& evo_params) {
+        output_all_robots_ = evo_params.output_all_robots();
+        output_write_period_ = evo_params.output_write_period();
+    }
+
+  private:
+    bool output_all_robots_ = false;
+    size_t output_write_period_ = 1;
+
 }; // EvoGenStat
 
 } // namespace stat

@@ -5,6 +5,8 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
+#include "EvoParams.h"
+
 namespace sferes {
 namespace qd {
 namespace container {
@@ -25,16 +27,17 @@ class Grid {
     typedef boost::array<typename array_t::index, dim> behav_index_t;
     typedef boost::array<float, dim> point_t;
 
-    behav_index_t grid_shape;
+    behav_index_t grid_shape = {20, 20};
 
     Grid()
     {
-        assert(dim == Params::qd::grid_shape_size());
-
-        for (size_t i = 0; i < Params::qd::grid_shape_size(); ++i)
-            grid_shape[i] = Params::qd::grid_shape(i);
-
         // allocate space for _array and _array_parents
+        _array.resize(grid_shape);
+    }
+
+    void set_params(const EvoParams& evo_params) {
+        for (int i = 0; i < evo_params.grid_shape().size(); ++i)
+            grid_shape[i] = evo_params.grid_shape()[i];
         _array.resize(grid_shape);
     }
 
@@ -42,7 +45,7 @@ class Grid {
     {
         point_t p = get_point(indiv);
         behav_index_t behav_pos;
-        for (size_t i = 0; i < Params::qd::grid_shape_size(); ++i) {
+        for (size_t i = 0; i < grid_shape.size(); ++i) {
             behav_pos[i] = round(p[i] * (grid_shape[i] - 1));
             // behav_pos[i] = std::min(behav_pos[i], grid_shape[i] - 1);
             assert(behav_pos[i] < grid_shape[i]);
@@ -97,7 +100,7 @@ class Grid {
     template <typename I> point_t get_point(const I& indiv) const
     {
         point_t p;
-        for (size_t i = 0; i < Params::qd::grid_shape_size(); ++i)
+        for (size_t i = 0; i < grid_shape.size(); ++i)
             p[i] = std::min(1.0, indiv->fit().desc()[i]);
 
         return p;
@@ -108,7 +111,7 @@ class Grid {
         /* Returns distance to center of behavior descriptor cell */
         float dist = 0.0;
         point_t p = get_point(indiv);
-        for (size_t i = 0; i < Params::qd::grid_shape_size(); ++i)
+        for (size_t i = 0; i < grid_shape.size(); ++i)
             dist += pow(p[i]
                     - (float)round(p[i] * (float)(grid_shape[i] - 1))
                         / (float)(grid_shape[i] - 1),
