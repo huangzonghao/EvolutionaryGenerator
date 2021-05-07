@@ -25,16 +25,8 @@ struct Params {
         SFERES_CONST float eta_c = 10.0f;
     };
 
-    struct nov {
-        SFERES_CONST size_t deep = 2;
-        SFERES_CONST double l = 1;
-        SFERES_CONST double k = 8;
-        SFERES_CONST double eps = 0.01;
-    };
-
     struct qd {
         SFERES_CONST size_t behav_dim = 2;
-        SFERES_ARRAY(size_t, grid_shape, 20, 20);
     };
 
     static void Save(const std::string& filename) {

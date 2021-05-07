@@ -11,15 +11,23 @@ namespace sferes {
 namespace qd {
 namespace container {
 
-template <typename Phen, typename Params>
+template <typename Phen>
 class Grid {
   public:
+    struct nov {
+        SFERES_CONST size_t deep = 2;
+        SFERES_CONST double l = 1;
+        SFERES_CONST double k = 8;
+        SFERES_CONST double eps = 0.01;
+    };
+
+    static const size_t dim = 2;
+
     typedef boost::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
     typedef typename pop_t::iterator it_t;
     typedef typename std::vector<std::vector<indiv_t>> front_t;
 
-    static const size_t dim = Params::qd::behav_dim;
     typedef boost::multi_array<indiv_t, dim> array_t;
     typedef typename array_t::multi_array_base::index_range index_range_t;
     typedef boost::detail::multi_array::index_gen<dim, dim> index_gen_t;
@@ -57,8 +65,7 @@ class Grid {
     {
         content.clear();
         for (const indiv_t* i = _array.data(); i < (_array.data() + _array.num_elements()); ++i)
-            if (*i)
-                content.push_back(*i);
+            if (*i) content.push_back(*i);
     }
 
     bool add(indiv_t i1)
@@ -112,10 +119,7 @@ class Grid {
         float dist = 0.0;
         point_t p = get_point(indiv);
         for (size_t i = 0; i < grid_shape.size(); ++i)
-            dist += pow(p[i]
-                    - (float)round(p[i] * (float)(grid_shape[i] - 1))
-                        / (float)(grid_shape[i] - 1),
-                2);
+            dist += pow(p[i] - (float)round(p[i] * (float)(grid_shape[i] - 1)) / (float)(grid_shape[i] - 1), 2);
 
         dist = sqrt(dist);
         return dist;
@@ -147,8 +151,7 @@ class Grid {
         void operator()(T& array, V& vect) const
         {
             for (auto& element : array)
-                if (element)
-                    vect.push_back(element);
+                if (element) vect.push_back(element);
         }
     };
 
@@ -177,6 +180,7 @@ class Grid {
         for (auto& n : neigh)
             if (n->fit().value() < indiv->fit().value())
                 count++;
+
         indiv->fit().set_local_quality(count);
     }
 
@@ -186,9 +190,8 @@ class Grid {
         index_gen_t indix;
         int i = 0;
         for (auto it = indix.ranges_.begin(); it != indix.ranges_.end(); it++) {
-            *it = index_range_t(std::max((int)ind[i] - (int)Params::nov::deep, 0),
-                std::min(ind[i] + Params::nov::deep + 1,
-                    (size_t)grid_shape[i])); // bound! so stop at id[i]+2-1
+            *it = index_range_t(std::max((int)ind[i] - (int)nov::deep, 0),
+                                std::min(ind[i] + nov::deep + 1, (size_t)grid_shape[i])); // bound! so stop at id[i]+2-1
 
             i++;
         }

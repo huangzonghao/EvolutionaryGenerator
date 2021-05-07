@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     typedef eval::EvoGenEval<Params> eval_t;
     typedef boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> > stat_t;
     typedef modif::Dummy<> modifier_t;
-    typedef qd::EvoGenMapElites<phen_t, eval_t, stat_t, modifier_t, Params> qd_t;
+    typedef qd::EvoGenMapElites<phen_t, eval_t, stat_t, modifier_t> qd_t;
 
     if (argc == 2) {
         std::filesystem::path res_path(argv[1]);
