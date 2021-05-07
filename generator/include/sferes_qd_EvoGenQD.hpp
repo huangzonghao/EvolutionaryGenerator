@@ -6,10 +6,10 @@
 
 #include <sferes/fit/fitness.hpp>
 #include <sferes/stc.hpp>
-#include <sferes/qd/selector/uniform.hpp>
 
 #include "sferes_ea_EvoGenEA.hpp"
 #include "sferes_qd_container_grid.hpp"
+#include "sferes_qd_selector_uniform.hpp"
 #include "EvoParams.h"
 
 namespace sferes {
@@ -17,15 +17,15 @@ namespace qd {
 
 // Main class
 template <typename Phen, typename Eval, typename Stat, typename FitModifier,
-          typename Selector, typename Container, typename Params, typename Exact = stc::Itself>
+          typename Selector, typename Container, typename Exact = stc::Itself>
 class EvoGenQualityDiversity
-    : public ea::EvoGenEA<Phen, Eval, Stat, FitModifier, Params,
+    : public ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
             typename stc::FindExact<EvoGenQualityDiversity<Phen, Eval, Stat, FitModifier, Selector,
-                                        Container, Params, Exact>, Exact>::ret> {
+                                        Container, Exact>, Exact>::ret> {
   public:
-    friend class ea::EvoGenEA<Phen, Eval, Stat, FitModifier, Params,
+    friend class ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
                               typename stc::FindExact<EvoGenQualityDiversity<Phen, Eval, Stat,
-                              FitModifier, Selector, Container, Params, Exact>, Exact>::ret>;
+                              FitModifier, Selector, Container, Exact>, Exact>::ret>;
     typedef Phen phen_t;
     typedef boost::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
@@ -175,9 +175,8 @@ class EvoGenQualityDiversity
     std::vector<bool> _added;
 };
 
-template <typename Phen, typename Eval, typename Stat, typename Modifier, typename Params>
-using EvoGenMapElites = qd::EvoGenQualityDiversity<Phen, Eval, Stat, Modifier,
-    selector::Uniform<Phen, Params>, container::Grid<Phen, Params>, Params>;
+template <typename Phen, typename Eval, typename Stat, typename Modifier>
+using EvoGenMapElites = qd::EvoGenQualityDiversity<Phen, Eval, Stat, Modifier, selector::Uniform<Phen>, container::Grid<Phen> >;
 
 } // namespace qd
 } // namespace sferes

@@ -82,32 +82,12 @@ struct ApplyModifier_f {
     template<typename T> void operator() (T & x) const { x.apply(_ea); }
 };
 
-// we need this to resume only if there is a state
-// (and we need to be able to compile without a State)
-template<typename T, typename S>
-struct Resume {
-    template<typename EA>
-    void resume(EA& ea) {
-        typedef stat::State<typename EA::phen_t, typename EA::params_t>  state_t;
-        const state_t& s = *boost::fusion::find<state_t>(ea.stat());
-        ea.set_gen(s.gen() + 1);
-        ea.set_pop(s.pop());
-    }
-};
-
-// do nothing if there is no state
-template<typename T>
-struct Resume<T, typename boost::fusion::result_of::end<T>::type> {
-    template<typename EA> void resume(EA& ea) {}
-};
-
 template<typename Phen, typename Eval, typename Stat, typename FitModifier,
-         typename Params, typename Exact = stc::Itself>
+         typename Exact = stc::Itself>
 class EvoGenEA : public stc::Any<Exact> {
   public:
     typedef Phen phen_t;
     typedef Eval eval_t;
-    typedef Params params_t;
     typedef Stat stat_t;
     typedef typename
     boost::mpl::if_<boost::fusion::traits::is_sequence<FitModifier>,
@@ -380,14 +360,14 @@ class EvoGenEA : public stc::Any<Exact> {
 } // namespace sferes
 
 #define SFERES_EVOGENEA(Class, Parent)                                                         \
-  template<typename Phen, typename Eval, typename Stat, typename FitModifier, typename Params, \
+  template<typename Phen, typename Eval, typename Stat, typename FitModifier,                  \
            typename Exact = stc::Itself>                                                       \
-  class Class : public Parent < Phen, Eval, Stat, FitModifier, Params,                         \
-  typename stc::FindExact<Class<Phen, Eval, Stat, FitModifier, Params, Exact>, Exact>::ret >
+  class Class : public Parent < Phen, Eval, Stat, FitModifier,                                 \
+  typename stc::FindExact<Class<Phen, Eval, Stat, FitModifier, Exact>, Exact>::ret >
 
 // useful to call protected functions of derived classes from the Ea
 #define SFERES_EVOGENEA_FRIEND(Class) \
-      friend class EvoGenEA< Phen, Eval, Stat, FitModifier, Params,                         \
-      typename stc::FindExact<Class<Phen, Eval, Stat, FitModifier, Params, Exact>, Exact>::ret >
+      friend class EvoGenEA< Phen, Eval, Stat, FitModifier,                              \
+      typename stc::FindExact<Class<Phen, Eval, Stat, FitModifier, Exact>, Exact>::ret >
 
 #endif /* end of include guard: SFERES_EA_EVOGENEA_HPP_IKZHM4BW */
