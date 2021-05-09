@@ -51,6 +51,8 @@ class  SimulationManager {
                   double pos_x=0, double pos_y=0, double pos_z=0);
     void AddWaypoint(double x, double y, double z);
     void AddWaypoints(const std::shared_ptr<const Eigen::MatrixXd>& waypoints_ptr);
+    void RemoveLastMotor();
+    void RemoveAllMotors();
 
     const std::shared_ptr<SimMotor> GetMotor(int motor_idx) const { return motors_[motor_idx];}
 

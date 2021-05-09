@@ -94,10 +94,12 @@ set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
     include/UrdfExporter.h
+    include/GenerateDemoRobot.h
 )
 
 set(Sources
     src/UrdfExporter.cpp
+    src/GenerateDemoRobot.cpp
     src/robogami_test.cpp
 )
 

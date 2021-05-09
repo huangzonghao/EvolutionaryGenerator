@@ -88,6 +88,17 @@ void SimulationManager::AddMotor(const std::string& type_name, const std::string
     auxrefs_->insert(body_name);
 }
 
+void SimulationManager::RemoveLastMotor(){
+    if (!motors_.empty())
+        motors_.pop_back();
+    // TODO: also need to check & remove useless entries in auxrefs_
+}
+
+void SimulationManager::RemoveAllMotors(){
+    motors_.clear();
+    // TODO: also need to check & remove useless entries in auxrefs_
+}
+
 void SimulationManager::AddWaypoint(double x, double y, double z){
     ch_waypoints_.push_back(chrono::ChVector<>(x,y,z));
 }

@@ -32,8 +32,8 @@ class WheelController : public RobotController {
 
     WheelController(std::vector<std::shared_ptr<SimMotor> > *motors,
                     std::vector<chrono::ChVector<> > *waypoints,
-                    const std::shared_ptr<chrono::ChBody>& ch_body):
-        RobotController(motors, waypoints, WHEEL), robot_body(ch_body.get()){}
+                    const std::shared_ptr<chrono::ChBody>& ch_body)
+        : RobotController(motors, waypoints, WHEEL), robot_body(ch_body.get()){}
 
     ~WheelController(){};
 

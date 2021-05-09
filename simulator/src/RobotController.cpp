@@ -52,23 +52,19 @@ bool WheelController::Update(){
 }
 
 void WheelController::exe_gait(){
-    if (motors_->size() < 4){
-        std::cerr << "Error from RobotController: Motor insufficient" << std::endl;
-    }
+    // if (motors_->size() < 4){
+        // std::cerr << "Error from RobotController: Motor insufficient" << std::endl;
+    // }
     // motor 0 1 left, 2 3 right
     // negative vel moves the robot forward
     switch(gait){
         case FORWARD:
-            motors_->at(0)->SetVel(-6);
-            motors_->at(1)->SetVel(-6);
-            motors_->at(2)->SetVel(-6);
-            motors_->at(3)->SetVel(-6);
+            for (auto& motor : *motors_)
+                motor->SetVel(-6);
             break;
         case BACKWARD:
-            motors_->at(0)->SetVel(6);
-            motors_->at(1)->SetVel(6);
-            motors_->at(2)->SetVel(6);
-            motors_->at(3)->SetVel(6);
+            for (auto& motor : *motors_)
+                motor->SetVel(6);
             break;
         case RIGHT1:
             motors_->at(0)->SetVel(-6);

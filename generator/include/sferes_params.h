@@ -8,7 +8,7 @@
 struct Params {
     struct evo_float {
         // dimension of the genotype
-        SFERES_CONST size_t dimension = 7;
+        SFERES_CONST size_t dimension = 16;
 
         // Mutation
         // polynomial, gaussian, uniform
@@ -28,20 +28,6 @@ struct Params {
     struct qd {
         SFERES_CONST size_t behav_dim = 2;
     };
-
-    static void Save(const std::string& filename) {
-        // // output sferes params
-        // std::ofstream ofs(filename);
-        // ofs << pop::nb_gen << "," // 0
-            // << pop::init_size << "," // 1
-            // << pop::size << "," // 2
-            // << pop::text_archive_dump_period << "," // 3
-            // << qd::behav_dim << "," // 4
-            // << qd::grid_shape(0) << "," // 5
-            // << qd::grid_shape(1); // 6
-        // ofs.close();
-    }
-
 };
 
 
