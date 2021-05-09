@@ -6,15 +6,20 @@
 #include "GenerateDemoRobot.h"
 
 int main(int argc, char **argv) {
-    if (argc < 2 || argc > 9) {
+    if (argc < 2) {
         std::cout << "Input format: <path/to/sim_params.xml> <Design Vector>" << std::endl;
         return 0;
     }
 
     std::string sim_filename(argv[1]);
-    std::vector<float> design_vector;
-    for (int i = 2; i < 9; ++i)
+    std::vector<double> design_vector;
+    for (int i = 2; i < 18; ++i)
         design_vector.push_back(std::atof(argv[i]));
+
+    if (design_vector[0] > 1)
+        design_vector[0] = 6;
+    else
+        design_vector[0] = 4;
 
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
@@ -39,10 +44,8 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[2],
                  sim_params.env_rot[3]);
 
-    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fl", 1,0.1,0.1,0.1);
-    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rl", 1,0.1,0.1,0.1);
-    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fr", 1,0.1,0.1,0.1);
-    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rr", 1,0.1,0.1,0.1);
+    for (int i = 0; i < design_vector[0]; ++i)
+        sm.AddMotor("MOTOR", "chassis", "chassis_leg_" + std::to_string(i), 1,0.1,0.1,0.1);
 
     sm.SetVisualization(true);
     // sm.SetRealTime(true);

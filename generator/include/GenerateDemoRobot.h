@@ -4,7 +4,12 @@
 #include <string>
 #include <vector>
 
-void generate_demo_robot(std::string mode, const std::vector<float>& scales);
-std::string generate_demo_robot_string(std::string mode, const std::vector<float>& scales);
+// TODO: why not double?
+void generate_demo_robot_file(const std::string& mode,
+                              const std::vector<double>& design_vector,
+                              const std::string& robot_name="temp_robot");
+std::string generate_demo_robot_string(const std::string& mode,
+                                       const std::vector<double>& design_vector,
+                                       const std::string& robot_name="temp_robot");
 
 #endif /* end of include guard: GENERATEDEMOROBOT_H_HEJ0DKGV */
