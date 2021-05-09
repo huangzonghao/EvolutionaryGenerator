@@ -95,10 +95,10 @@ SFERES_CLASS(EvoGenEval) {
         _nb_evals += end - begin;
     }
 
-    unsigned nb_evals() const { return _nb_evals; }
+    size_t nb_evals() const { return _nb_evals; }
 
   protected:
-    unsigned _nb_evals; // for stat to book the total number of phen that has been evaluated
+    size_t _nb_evals; // for stat to book the total number of phen that has been evaluated
     std::vector<std::shared_ptr<SimulationManager> > sms;
     size_t num_threads;
     std::vector<std::shared_ptr<std::thread> > threads;

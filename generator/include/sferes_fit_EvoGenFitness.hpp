@@ -7,14 +7,7 @@
 #include "SimulationManager.h"
 
 FIT_QD(EvoGenFitness) {
-public:
-    // this method is used in the stat::State::show()
-    // currently setting up a place holder here
-    template <typename Indiv> void eval(Indiv& ind) {
-        SimulationManager sm;
-        eval(ind, sm);
-    }
-
+  public:
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
 

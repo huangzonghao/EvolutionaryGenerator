@@ -37,44 +37,6 @@ struct RefreshStat_f {
     template<typename T> void operator() (T & x) const { x.refresh(_ea); }
 };
 
-template<typename A>
-struct WriteStat_f {
-    WriteStat_f(A & a) : _archive(a) {}
-    A& _archive;
-    template<typename T> void operator() (const T &x) const {
-        std::string version(VERSION);
-        _archive << boost::serialization::make_nvp("version", version);
-        _archive << BOOST_SERIALIZATION_NVP(x);
-    }
-};
-
-template<typename A>
-struct ReadStat_f {
-    ReadStat_f(A & a) : _archive(a) {}
-    A& _archive;
-    template<typename T> void operator() (T & x) const {
-        std::string version;
-        _archive >> boost::serialization::make_nvp("version", version);
-        if (version != std::string(VERSION))
-            std::cerr << "WARNING: your are loading a file made with sferes version "
-                      << version << " while the current version is:" << VERSION << std::endl;
-        _archive >> BOOST_SERIALIZATION_NVP(x);
-    }
-};
-
-struct ShowStat_f {
-    ShowStat_f(unsigned n, std::ostream & os, size_t k) : _n(n), _i(0), _os(os), _k(k) {}
-    template<typename T> void operator() (T & x) const {
-        if (_i == _n)
-            x.show(_os, _k);
-        ++_i;
-    }
-    int _n;
-    mutable int _i;
-    std::ostream& _os;
-    size_t _k;
-};
-
 template<typename E>
 struct ApplyModifier_f {
     ApplyModifier_f(E &ea) : _ea(ea) {}
@@ -201,10 +163,6 @@ class EvoGenEA : public stc::Any<Exact> {
         return boost::fusion::at_c<I>(_stat);
     }
     void load(const std::string& fname) { _load_state(fname); }
-
-    void show_stat(unsigned i, std::ostream& os, size_t k = 0) {
-        boost::fusion::for_each(_stat, ShowStat_f(i, os, k));
-    }
 
     void update_stats_init() {
         boost::fusion::at_c<0>(_stat).init(stc::exact(*this));
