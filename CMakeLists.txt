@@ -131,49 +131,19 @@ add_subdirectory(generator)
 #######################################################################
 
 set(Headers
-    # ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/UrdfExporter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/GenerateDemoRobot.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
-    ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_params.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoGenerator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_eval_EvoGenEval.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_fit_EvoGenFitness.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_stat_EvoGenStat.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/sferes_qd_EvoGenQD.hpp
 )
 
-set(Sources
-    # ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/UrdfExporter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/GenerateDemoRobot.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp
-)
+set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp)
 
 add_executable(${PROJECT_NAME} ${Headers} ${Sources})
 
-target_link_libraries(${PROJECT_NAME}
-                      FBE_Manipulations
-                      FBE_Printable
-                      FBE_Conversions
-                      TBB::tbb
-                      Boost::serialization
-                      Boost::program_options
-                      Boost::thread
-                      Boost::date_time
-                      Boost::chrono
-                      Boost::timer
-                      Boost::filesystem
-                      Simulator
-)
+target_link_libraries(${PROJECT_NAME} Generator Simulator)
 
-target_include_directories(${PROJECT_NAME}
-                           PUBLIC ${EIGEN3_INCLUDE_DIR}
-                                  ${SFERES2_INCLUDE_DIR}
-                                  ${PROJECT_IN_FILE_OUTPUT_DIR}
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE NO_PARALLEL)
+target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")

@@ -6,6 +6,9 @@
 #include "GenerateDemoRobot.h"
 #include "SimulationManager.h"
 
+namespace sferes {
+namespace fit {
+
 FIT_QD(EvoGenFitness) {
   public:
     template <typename Indiv>
@@ -39,6 +42,9 @@ FIT_QD(EvoGenFitness) {
         this->set_desc(feature);
     }
 };
+
+} // namespace fit
+} // namespace sferes
 
 #endif /* end of include guard: SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA */
 

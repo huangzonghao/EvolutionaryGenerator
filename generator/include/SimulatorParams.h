@@ -19,7 +19,7 @@ class SimulatorParams {
 
     void SetEnv(const std::string& new_env) {env_name = new_env;}
     void AddWaypoint(double x, double y, double z);
-    const std::vector<std::vector<double> >& GetWaypoints() {return waypoints_;}
+    const std::vector<std::vector<double> >& GetWaypoints() const {return waypoints_;}
     void SetCamera(double from_x, double from_y, double from_z,
                    double to_x, double to_y, double to_z);
     friend std::ostream& operator<< (std::ostream &out, const SimulatorParams& sim_params);

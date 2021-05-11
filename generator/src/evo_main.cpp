@@ -3,45 +3,23 @@
 #include <filesystem>
 #include <chrono>
 
-#include <sferes/gen/evo_float.hpp>
-#include <sferes/modif/dummy.hpp>
-
-#include "sferes_fit_EvoGenFitness.hpp"
-#include "sferes_phen_EvoGenPhen.hpp"
-#include "sferes_eval_EvoGenEval.hpp"
-#include "sferes_stat_EvoGenStat.hpp"
-#include "sferes_qd_EvoGenQD.hpp"
-#include "sferes_params.h"
-
 #include "SimulatorParams.h"
+#include "EvoGenerator.h"
 #include "EvoParams.h"
 
 #include "evo_paths.h"
 
-
-// Setting SimulatorParams as global variable instead of SimulationManager is due to
-//      later parallelizing concerns - a SimulationManager instance would be created
-//      for each thread.
-SimulatorParams sim_params;
-
 int main(int argc, char **argv)
 {
     EvoParams evo_params;
-    using namespace sferes;
-
-    typedef EvoGenFitness<Params> fit_t;
-    typedef gen::EvoFloat<Params::evo_float::dimension, Params> gen_t;
-    typedef phen::EvoGenPhen<gen_t, fit_t, Params> phen_t;
-    typedef eval::EvoGenEval<Params> eval_t;
-    typedef boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> > stat_t;
-    typedef modif::Dummy<> modifier_t;
-    typedef qd::EvoGenMapElites<phen_t, eval_t, stat_t, modifier_t> qd_t;
+    SimulatorParams sim_params;
+    evo_params.set_nb_gen(200);
 
     if (argc == 2) {
         std::filesystem::path res_path(argv[1]);
         sim_params.Load(res_path.parent_path().parent_path().string() + "/sim_params.xml");
-        qd_t qd;
-        qd.resume(res_path.string());
+        EvoGenerator evo_gen;
+        evo_gen.resume(res_path.string());
         std::cout << "Done" << std::endl;
         return 0;
     }
@@ -65,13 +43,14 @@ int main(int argc, char **argv)
     sim_params.AddWaypoint(0.5, 1.5, 0.3);
     sim_params.SetCamera(2.5, -1, 3, 2.5, 1.5, 0);
 
-    qd_t qd(evo_params);
-    qd.set_res_dir(log_dir);
+    EvoGenerator evo_gen(evo_params);
+    evo_gen.eval().set_sim_params(sim_params);
+    evo_gen.set_res_dir(log_dir);
     sim_params.Save(log_dir + "/sim_params.xml");
 
     std::chrono::duration<double> time_span; // in seconds
     std::chrono::steady_clock::time_point tik = std::chrono::steady_clock::now();
-    qd.run(argv[0]);
+    evo_gen.run(argv[0]);
     time_span = std::chrono::steady_clock::now() - tik;
 
     std::ofstream ofs;
