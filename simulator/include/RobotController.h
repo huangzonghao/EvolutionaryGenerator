@@ -42,7 +42,7 @@ class WheelController : public RobotController {
     bool Update() override;
 
   private:
-    enum GAITS {FORWARD, BACKWARD, LEFT1, RIGHT1, LEFT2, RIGHT2} gait;
+    enum GAITS {FORWARD, BACKWARD, LEFT1, RIGHT1, LEFT2, RIGHT2} gait = GAITS::FORWARD;
     void exe_gait();
 
 };

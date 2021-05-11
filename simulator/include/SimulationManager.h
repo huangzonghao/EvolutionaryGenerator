@@ -69,8 +69,8 @@ class  SimulationManager {
     /** Interface functions **/
     void GetActuatorVels(std::vector<std::pair<double, double> > &vels_vec) const;
     void GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const;
-    int GetMotorNumber() const { return motors_.size(); }
-    int GetComponentNumber() const { return motors_.size() + payloads_.size(); }
+    size_t GetMotorNumber() const { return motors_.size(); }
+    size_t GetComponentNumber() const { return motors_.size() + payloads_.size(); }
     double GetRootBodyDisplacement() const;
     double GetRootBodyDisplacementX() const;
   private:
