@@ -59,6 +59,59 @@ add_subdirectory(Robogami/Backend)
 #######################################################################
 #                               Targets                               #
 #######################################################################
+set(CURRENT_TARGET_NAME Generator)
+set(Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoGenerator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoParams.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/GenerateDemoRobot.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SimulatorParams.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_params.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_eval_EvoGenEval.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_fit_EvoGenFitness.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_phen_EvoGenPhen.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_stat_EvoGenStat.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_ea_EvoGenEA.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_qd_EvoGenQD.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_qd_container_grid.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_qd_selector_uniform.hpp
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
+)
+
+set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/GenerateDemoRobot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/SimulatorParams.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/EvoGenerator.cpp
+)
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+endif()
+
+add_library(${CURRENT_TARGET_NAME} STATIC ${Headers} ${Sources})
+
+target_link_libraries(${CURRENT_TARGET_NAME}
+                      # FBE_Manipulations
+                      # FBE_Printable
+                      # FBE_Conversions
+                      TBB::tbb
+                      Boost::serialization
+                      Boost::program_options
+                      Boost::thread
+                      Boost::date_time
+                      Boost::chrono
+                      Boost::timer
+                      Boost::filesystem
+                      Simulator
+)
+
+target_include_directories(${CURRENT_TARGET_NAME}
+                           PUBLIC ${EIGEN3_INCLUDE_DIR}
+                                  ${SFERES2_INCLUDE_DIR}
+                                  ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE NO_PARALLEL)
 
 set(CURRENT_TARGET_NAME sferes_test)
 

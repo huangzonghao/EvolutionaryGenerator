@@ -20,6 +20,10 @@ SFERES_CLASS(EvoGenEval) {
     EvoGenEval() : _nb_evals(0) {
         num_threads = std::thread::hardware_concurrency();
         threads.resize(num_threads);
+    }
+
+    void set_sim_params(const SimulatorParams& sim_params) {
+        sms.clear();
         for (int i = 0; i < num_threads; ++i) {
             auto& sm = std::make_shared<SimulationManager>();
 

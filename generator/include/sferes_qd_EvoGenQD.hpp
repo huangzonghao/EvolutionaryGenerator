@@ -8,8 +8,6 @@
 #include <sferes/stc.hpp>
 
 #include "sferes_ea_EvoGenEA.hpp"
-#include "sferes_qd_container_grid.hpp"
-#include "sferes_qd_selector_uniform.hpp"
 #include "EvoParams.h"
 
 namespace sferes {
@@ -18,21 +16,21 @@ namespace qd {
 // Main class
 template <typename Phen, typename Eval, typename Stat, typename FitModifier,
           typename Selector, typename Container, typename Exact = stc::Itself>
-class EvoGenQualityDiversity
+class EvoGenQD
     : public ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
-            typename stc::FindExact<EvoGenQualityDiversity<Phen, Eval, Stat, FitModifier, Selector,
-                                        Container, Exact>, Exact>::ret> {
+            typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, FitModifier, Selector,
+                                             Container, Exact>, Exact>::ret> {
   public:
     friend class ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
-                              typename stc::FindExact<EvoGenQualityDiversity<Phen, Eval, Stat,
+                              typename stc::FindExact<EvoGenQD<Phen, Eval, Stat,
                               FitModifier, Selector, Container, Exact>, Exact>::ret>;
     typedef Phen phen_t;
     typedef boost::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
     typedef typename pop_t::iterator it_t;
 
-    EvoGenQualityDiversity() {}
-    EvoGenQualityDiversity(const EvoParams& evo_params)
+    EvoGenQD() {}
+    EvoGenQD(const EvoParams& evo_params)
         : EvoGenEA(evo_params)
     {
         populate_params_();
@@ -174,9 +172,6 @@ class EvoGenQualityDiversity
     pop_t _offspring, _parents;
     std::vector<bool> _added;
 };
-
-template <typename Phen, typename Eval, typename Stat, typename Modifier>
-using EvoGenMapElites = qd::EvoGenQualityDiversity<Phen, Eval, Stat, Modifier, selector::Uniform<Phen>, container::Grid<Phen> >;
 
 } // namespace qd
 } // namespace sferes
