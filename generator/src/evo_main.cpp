@@ -1,5 +1,3 @@
-#include <filesystem>
-
 #include "SimulatorParams.h"
 #include "EvoParams.h"
 #include "EvoGenerator.h"
@@ -9,18 +7,15 @@
 int main(int argc, char **argv)
 {
     EvoGenerator evo_gen;
+
+    if (argc == 2) {
+        evo_gen.resume(std::string(argv[1]));
+        return 0;
+    }
+
     EvoParams evo_params;
     SimulatorParams sim_params;
     evo_params.set_nb_gen(200);
-
-    // if (argc == 2) {
-        // std::filesystem::path res_path(argv[1]);
-        // sim_params.Load(res_path.parent_path().parent_path().string() + "/sim_params.xml");
-        // EvoGenerator evo_gen;
-        // evo_gen.resume(res_path.string());
-        // std::cout << "Done" << std::endl;
-        // return 0;
-    // }
 
     // set up output dir
     time_t t = time(0);
