@@ -3,6 +3,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 #include <sferes/gen/evo_float.hpp>
 #include <sferes/modif/dummy.hpp>
@@ -15,16 +16,17 @@
 #include "sferes_qd_EvoGenQD.hpp"
 #include "sferes_params.h"
 
+typedef sferes::phen::EvoGenPhen<sferes::gen::EvoFloat<Params::evo_float::dimension, Params>,
+                                 sferes::fit::EvoGenFitness<Params>,
+                                 Params> phen_t;
+typedef sferes::qd::EvoGenQD<phen_t,
+                             sferes::eval::EvoGenEval<Params>,
+                             boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> >,
+                             sferes::modif::Dummy<>,
+                             sferes::qd::selector::Uniform<phen_t>,
+                             sferes::qd::container::Grid<phen_t> > qd_t;
+
 void EvoGenerator::run() {
-    typedef sferes::phen::EvoGenPhen<sferes::gen::EvoFloat<Params::evo_float::dimension, Params>,
-                                     sferes::fit::EvoGenFitness<Params>,
-                                     Params> phen_t;
-    typedef sferes::qd::EvoGenQD<phen_t,
-                                 sferes::eval::EvoGenEval<Params>,
-                                 boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> >,
-                                 sferes::modif::Dummy<>,
-                                 sferes::qd::selector::Uniform<phen_t>,
-                                 sferes::qd::container::Grid<phen_t> > qd_t;
     // TODO: test if evo_params_/sim_params_ set and res_dir_ exists
 
     qd_t qd(evo_params_);
@@ -47,3 +49,12 @@ void EvoGenerator::run() {
 
 }
 
+// filename should be the path to a valid archive dump file
+void EvoGenerator::resume(const std::string& filename) {
+    qd_t qd;
+    SimulatorParams sim_params;
+    std::filesystem::path res_path(filename);
+    sim_params.Load(res_path.parent_path().parent_path().string() + "/sim_params.xml");
+    qd.eval().set_sim_params(sim_params);
+    qd.resume(filename);
+}

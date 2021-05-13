@@ -58,16 +58,13 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef typename phen_t::fit_t fit_t;
 
     EvoGenEA() : _gen(-1), _stop(false) {}
-    EvoGenEA(const EvoParams& evo_params)
-        : _evo_params(evo_params),  _gen(-1), _stop(false)
-    {
-        populate_params_();
-    }
+    EvoGenEA(const EvoParams& evo_params) : _evo_params(evo_params),  _gen(-1), _stop(false) {}
 
     void set_fit_proto(const fit_t& fit) { _fit_proto = fit; }
 
     void run(const std::string& exp_name = "") {
         dbg::trace trace("ea", DBG_HERE);
+        _populate_params();
         _exp_name = exp_name;
         _make_res_dir();
         _set_status("running");
@@ -94,10 +91,11 @@ class EvoGenEA : public stc::Any<Exact> {
         _set_status("resumed");
         std::filesystem::path fpath(fname);
         _load_config(fpath.parent_path().string() + "/config.dat");
+        _populate_params();
         srand(_rand_seed);
         _load_state(fname);
         _gen = _gen + 1;
-        std::cout<<"resuming at:"<< _gen + 1 << std::endl;
+        std::cout<<"Resuming at gen: "<< _gen + 1 << std::endl;
         for (; _gen < _nb_gen && !_stop; ++_gen)
             _iter();
         if (!_stop)
@@ -191,19 +189,9 @@ class EvoGenEA : public stc::Any<Exact> {
     bool is_stopped() const { return _stop; }
 
     EvoParams& evo_params() { return _evo_params; }
-    // derived class should override this function to populate its own params
-    // TODO: for some reason I can not set this function to virtual, otherwise
-    // stc::exact(this) would return a shifted this pointer
-    void set_params(const EvoParams& evo_params) {
-        _evo_params = evo_params;
-        populate_params_();
-    }
+    void set_params(const EvoParams& evo_params) { _evo_params = evo_params; }
 
   protected:
-    void populate_params_() {
-        _nb_gen = _evo_params.nb_gen();
-        _progress_dump_period = _evo_params.progress_dump_period();
-    }
     EvoParams _evo_params;
     size_t _nb_gen = 1;
     size_t _progress_dump_period = -1;
@@ -312,6 +300,12 @@ class EvoGenEA : public stc::Any<Exact> {
         stc::exact(this)->_load_state_extra(ia);
     }
     void _load_state_extra(boost::archive::binary_iarchive& ia) {}
+    void _populate_params() {
+        _nb_gen = _evo_params.nb_gen();
+        _progress_dump_period = _evo_params.progress_dump_period();
+        stc::exact(this)->_populate_params_extra();
+    }
+    void _populate_params_extra() {}
 };
 
 } // namespace ea

@@ -30,11 +30,7 @@ class EvoGenQD
     typedef typename pop_t::iterator it_t;
 
     EvoGenQD() {}
-    EvoGenQD(const EvoParams& evo_params)
-        : EvoGenEA(evo_params)
-    {
-        populate_params_();
-    }
+    EvoGenQD(const EvoParams& evo_params) : EvoGenEA(evo_params) {}
 
     // Random initialization of _parents and _offspring
     void random_pop() {
@@ -111,10 +107,6 @@ class EvoGenQD
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
     const double last_epoch_time() const { return  _last_epoch_time; }
-    void set_params(const EvoParams& evo_params) {
-        EvoGenEA::set_params(evo_params);
-        populate_params_();
-    }
 
   protected:
     // Add the offspring into the container and update the score of the individuals from the
@@ -153,13 +145,14 @@ class EvoGenQD
 
     void _load_state_extra(boost::archive::binary_iarchive& ia) {
         for (size_t i = 0; i < this->_pop.size(); ++i) {
+            this->_pop[i]->set_params(_evo_params);
             this->_pop[i]->develop();
             this->_pop[i]->fit().update_desc(*(this->_pop[i]));
         }
         _add(this->_pop, _added);
     }
 
-    void populate_params_() {
+    void _populate_params_extra() {
         _pop_size = _evo_params.pop_size();
         _container.set_params(_evo_params);
     }

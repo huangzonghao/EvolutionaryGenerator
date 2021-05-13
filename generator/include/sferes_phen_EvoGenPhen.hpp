@@ -16,7 +16,7 @@ SFERES_INDIV(EvoGenPhen, Indiv) {
 #ifdef EIGEN_CORE_H
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 #endif
-    EvoGenPhen() {}
+    EvoGenPhen() : _params((*this)._gen.size()) {}
     EvoGenPhen(double max_p, double min_p) : _max_p(max_p), _min_p(min_p), _params((*this)._gen.size()) {}
     EvoGenPhen(const EvoParams& evo_params) : _params((*this)._gen.size()) { set_params(evo_params); }
 
