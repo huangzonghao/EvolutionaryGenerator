@@ -68,13 +68,14 @@ class EvoGenEA : public stc::Any<Exact> {
         _exp_name = exp_name;
         _make_res_dir();
         _set_status("running");
-        if (_rand_seed == 1)
-            _rand_seed = time(0) + ::getpid();
-        std::cout<<"Seed: " << _rand_seed << std::endl;
-        srand(_rand_seed);
+        size_t rand_seed = _evo_params.rand_seed();
+        if (rand_seed == 1) {
+            rand_seed = time(0) + ::getpid();
+            _evo_params.rand_seed() = rand_seed;
+        }
+        std::cout<<"Seed: " << rand_seed << std::endl;
+        srand(rand_seed);
         std::ofstream ofs;
-        ofs.open(_res_dir + "/progress.txt");
-        ofs << "Seed: " << _rand_seed << std::endl;
         ofs.close();
         _dump_config();
         random_pop();
@@ -90,9 +91,10 @@ class EvoGenEA : public stc::Any<Exact> {
         dbg::trace trace("ea", DBG_HERE);
         _set_status("resumed");
         std::filesystem::path fpath(fname);
-        _load_config(fpath.parent_path().string() + "/config.dat");
+        _res_dir = fpath.parent_path().parent_path().string();
+        _load_config(_res_dir + "/evo_params.xml");
         _populate_params();
-        srand(_rand_seed);
+        srand(_evo_params.rand_seed());
         _load_state(fname);
         _gen = _gen + 1;
         std::cout<<"Resuming at gen: "<< _gen + 1 << std::endl;
@@ -179,8 +181,6 @@ class EvoGenEA : public stc::Any<Exact> {
     void set_gen(unsigned g) { _gen = g; }
     size_t nb_evals() const { return _eval.nb_evals(); }
     bool dump_enabled() const { return _progress_dump_period != -1; }
-    size_t rand_seed() const { return _rand_seed; }
-    void set_rand_seed(size_t randseed) { _rand_seed = randseed; }
 
     void stop() {
         _stop = true;
@@ -204,7 +204,6 @@ class EvoGenEA : public stc::Any<Exact> {
     size_t _gen;
     bool _stop;
     std::string _exp_name;
-    size_t _rand_seed = 1;
 
     std::chrono::steady_clock::time_point tik;
     std::chrono::duration<double> time_span; // in seconds
@@ -248,28 +247,8 @@ class EvoGenEA : public stc::Any<Exact> {
         std::filesystem::create_directory(_res_dir + "/dumps");
         boost::fusion::at_c<0>(_stat).make_stat_dir(*this);
     }
-    void _dump_config() const {
-        dbg::trace trace("ea", DBG_HERE);
-        std::ofstream ofs(_res_dir + "/dumps/config.dat", std::ios::binary);
-
-        boost::archive::binary_oarchive oa(ofs);
-        oa << BOOST_SERIALIZATION_NVP(_rand_seed)
-           << BOOST_SERIALIZATION_NVP(_res_dir)
-           << BOOST_SERIALIZATION_NVP(_evo_params);
-    }
-    void _load_config(const std::string& fname) {
-        dbg::trace trace("ea", DBG_HERE);
-        std::ifstream ifs(fname, std::ios::binary);
-        if (ifs.fail()) {
-            std::cerr << "Cannot open :" << fname
-                      << "(does file exist ?)" << std::endl;
-            exit(1);
-        }
-        boost::archive::binary_iarchive ia(ifs);
-        ia >> BOOST_SERIALIZATION_NVP(_rand_seed)
-           >> BOOST_SERIALIZATION_NVP(_res_dir)
-           >> BOOST_SERIALIZATION_NVP(_evo_params);
-    }
+    void _dump_config() const { _evo_params.Save(_res_dir + "/evo_params.xml"); }
+    void _load_config(const std::string& fname) { _evo_params.Load(fname); }
     void _dump_state() const {
         dbg::trace trace("ea", DBG_HERE);
         if (_progress_dump_period == -1)

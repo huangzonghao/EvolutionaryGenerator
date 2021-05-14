@@ -15,4 +15,7 @@ const std::string Resource_Map_Dir(RESOURCE_MAP_PATH);
 #define RESULT_OUTPUT_PATH "@RESULT_OUTPUT_DIR@"
 const std::string Result_Output_Dir(RESULT_OUTPUT_PATH);
 
+#define EVOGEN_PARAMS_PATH "@EVOGEN_PARAMS_DIR@"
+const std::string EvoGen_Params_Dir(EVOGEN_PARAMS_PATH);
+
 #endif /* end of include guard: EVO_PATHS_H_SQCM3M8J */

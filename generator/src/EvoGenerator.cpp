@@ -27,8 +27,6 @@ typedef sferes::qd::EvoGenQD<phen_t,
                              sferes::qd::container::Grid<phen_t> > qd_t;
 
 void EvoGenerator::run() {
-    // TODO: test if evo_params_/sim_params_ set and res_dir_ exists
-
     qd_t qd(evo_params_);
     qd.set_res_dir(res_dir_);
     qd.eval().set_sim_params(sim_params_);

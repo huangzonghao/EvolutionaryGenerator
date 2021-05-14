@@ -80,6 +80,7 @@ set(Headers
 
 set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/src/GenerateDemoRobot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/EvoParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/SimulatorParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/EvoGenerator.cpp
 )

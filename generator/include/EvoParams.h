@@ -1,11 +1,14 @@
 #ifndef EVOPARAMS_H_XHAR4NLN
 #define EVOPARAMS_H_XHAR4NLN
 
+#include <string>
 #include <vector>
 #include <boost/serialization/nvp.hpp>
 
 class EvoParams {
   public:
+    size_t& rand_seed() { return rand_seed_; }
+    const size_t rand_seed() const { return rand_seed_; }
     const size_t nb_gen() const { return nb_gen_; }
     const size_t init_size() const { return init_size_; }
     const size_t pop_size() const { return pop_size_; }
@@ -18,8 +21,12 @@ class EvoParams {
 
     void set_nb_gen(size_t nb_gen) { nb_gen_ = nb_gen; }
 
+    bool Save(const std::string& filename) const;
+    bool Load(const std::string& filename);
+
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
+        ar & BOOST_SERIALIZATION_NVP(rand_seed_);
         ar & BOOST_SERIALIZATION_NVP(nb_gen_);
         ar & BOOST_SERIALIZATION_NVP(init_size_);
         ar & BOOST_SERIALIZATION_NVP(pop_size_);
@@ -31,6 +38,7 @@ class EvoParams {
         ar & BOOST_SERIALIZATION_NVP(grid_shape_);
     }
   private:
+    size_t rand_seed_ = 1;
     size_t nb_gen_ = 30;
     size_t init_size_ = 30;
     size_t pop_size_ = 30;
