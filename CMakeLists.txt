@@ -38,6 +38,11 @@ if (NOT DEFINED RESULT_OUTPUT_DIR)
     set(RESULT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Results CACHE PATH "Directory containing the generated results")
 endif()
 
+if (NOT DEFINED EVOGEN_PARAMS_DIR)
+    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Params)
+    set(EVOGEN_PARAMS_DIR ${PROJECT_OUTPUT_DIR}/Params CACHE PATH "Directory containing the param files for EvoGen")
+endif()
+
 # copy DLLs for Windows
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(DLL_Copy_Command)
