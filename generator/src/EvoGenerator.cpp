@@ -5,7 +5,6 @@
 #include <iostream>
 #include <filesystem>
 
-#include <sferes/modif/dummy.hpp>
 #include "sferes_fit_EvoGenFitness.hpp"
 #include "sferes_gen_EvoGenFloat.hpp"
 #include "sferes_phen_EvoGenPhen.hpp"
@@ -20,7 +19,6 @@ typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat<>,
 typedef sferes::qd::EvoGenQD<phen_t,
                              sferes::eval::EvoGenEval,
                              boost::fusion::vector<sferes::stat::EvoGenStat>,
-                             sferes::modif::Dummy<>,
                              sferes::qd::selector::Uniform<phen_t>,
                              sferes::qd::container::Grid<phen_t> > qd_t;
 
