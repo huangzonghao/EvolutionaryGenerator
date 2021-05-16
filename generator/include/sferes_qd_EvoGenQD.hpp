@@ -5,6 +5,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 
 #include <sferes/fit/fitness.hpp>
+#include <sferes/modif/dummy.hpp>
 #include <sferes/stc.hpp>
 
 #include "sferes_ea_EvoGenEA.hpp"
@@ -14,16 +15,17 @@ namespace sferes {
 namespace qd {
 
 // Main class
-template <typename Phen, typename Eval, typename Stat, typename FitModifier,
-          typename Selector, typename Container, typename Exact = stc::Itself>
+template <typename Phen, typename Eval, typename Stat, typename Selector,
+          typename Container, typename FitModifier = sferes::modif::Dummy<>,
+          typename Exact = stc::Itself>
 class EvoGenQD
     : public ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
-            typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, FitModifier, Selector,
-                                             Container, Exact>, Exact>::ret> {
+            typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, Selector,
+                                             Container, FitModifier, Exact>, Exact>::ret> {
   public:
     friend class ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
                               typename stc::FindExact<EvoGenQD<Phen, Eval, Stat,
-                              FitModifier, Selector, Container, Exact>, Exact>::ret>;
+                              Selector, Container, FitModifier, Exact>, Exact>::ret>;
     typedef Phen phen_t;
     typedef boost::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
