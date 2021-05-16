@@ -1,7 +1,7 @@
 #ifndef SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA
 #define SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA
 
-#include <sferes/fit/fit_qd.hpp>
+#include <sferes/fit/fitness.hpp>
 
 #include "GenerateDemoRobot.h"
 #include "SimulationManager.h"
@@ -9,8 +9,22 @@
 namespace sferes {
 namespace fit {
 
-FIT_QD(EvoGenFitness) {
+SFERES_FITNESS(EvoGenFitness, sferes::fit::Fitness) {
   public:
+    EvoGenFitness()
+        : _dead(false), _desc(2), _novelty(-std::numeric_limits<double>::infinity()),
+        _curiosity(0), _lq(0) {}
+
+    const std::vector<double>& desc() const { return _desc; }
+    double novelty() const { return _novelty; }
+    void set_novelty(double nov) { _novelty = nov; }
+    double curiosity() const { return _curiosity; }
+    void set_curiosity(double cur) { _curiosity = cur; }
+    double local_quality() const { return _lq; }
+    void set_local_quality(double lq) { _lq = lq; }
+    bool dead() const { return _dead; }
+    void set_value(float val) { this->_value = val; }
+
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
 
@@ -31,15 +45,21 @@ FIT_QD(EvoGenFitness) {
 
         this->_value = sm.GetRootBodyDisplacementX();
 
-        std::vector<double> feature = {ind.gen().data(0), ind.gen().data(3)};
-        this->set_desc(feature);
+        update_desc(ind);
     }
 
     template <typename Indiv>
     void update_desc(Indiv& ind) {
-        std::vector<double> feature = {ind.gen().data(0), ind.gen().data(3)};
-        this->set_desc(feature);
+        _desc[0] = ind.gen().data(0);
+        _desc[1] = ind.gen().data(3);
     }
+
+    protected:
+        bool _dead;
+        std::vector<double> _desc;
+        double _novelty;
+        double _curiosity;
+        double _lq;
 };
 
 } // namespace fit

@@ -65,7 +65,6 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/GenerateDemoRobot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/SimulatorParams.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_params.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_eval_EvoGenEval.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_fit_EvoGenFitness.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_phen_EvoGenPhen.hpp

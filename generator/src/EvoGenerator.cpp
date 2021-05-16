@@ -14,13 +14,12 @@
 #include "sferes_qd_container_grid.hpp"
 #include "sferes_qd_selector_uniform.hpp"
 #include "sferes_qd_EvoGenQD.hpp"
-#include "sferes_params.h"
 
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat<>,
-                                 sferes::fit::EvoGenFitness<Params> > phen_t;
+                                 sferes::fit::EvoGenFitness<> > phen_t;
 typedef sferes::qd::EvoGenQD<phen_t,
-                             sferes::eval::EvoGenEval<Params>,
-                             boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> >,
+                             sferes::eval::EvoGenEval,
+                             boost::fusion::vector<sferes::stat::EvoGenStat>,
                              sferes::modif::Dummy<>,
                              sferes::qd::selector::Uniform<phen_t>,
                              sferes::qd::container::Grid<phen_t> > qd_t;
