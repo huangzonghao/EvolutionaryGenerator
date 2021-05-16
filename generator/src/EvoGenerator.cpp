@@ -5,9 +5,9 @@
 #include <iostream>
 #include <filesystem>
 
-#include <sferes/gen/evo_float.hpp>
 #include <sferes/modif/dummy.hpp>
 #include "sferes_fit_EvoGenFitness.hpp"
+#include "sferes_gen_EvoGenFloat.hpp"
 #include "sferes_phen_EvoGenPhen.hpp"
 #include "sferes_eval_EvoGenEval.hpp"
 #include "sferes_stat_EvoGenStat.hpp"
@@ -16,7 +16,7 @@
 #include "sferes_qd_EvoGenQD.hpp"
 #include "sferes_params.h"
 
-typedef sferes::phen::EvoGenPhen<sferes::gen::EvoFloat<Params::evo_float::dimension, Params>,
+typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat<>,
                                  sferes::fit::EvoGenFitness<Params>,
                                  Params> phen_t;
 typedef sferes::qd::EvoGenQD<phen_t,
