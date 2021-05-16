@@ -17,8 +17,7 @@
 #include "sferes_params.h"
 
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat<>,
-                                 sferes::fit::EvoGenFitness<Params>,
-                                 Params> phen_t;
+                                 sferes::fit::EvoGenFitness<Params> > phen_t;
 typedef sferes::qd::EvoGenQD<phen_t,
                              sferes::eval::EvoGenEval<Params>,
                              boost::fusion::vector<sferes::stat::EvoGenStat<phen_t, Params> >,

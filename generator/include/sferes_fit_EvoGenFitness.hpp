@@ -14,8 +14,7 @@ FIT_QD(EvoGenFitness) {
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
 
-        // for some reason Phen uses float as data type
-        auto design_vector = std::vector<double>(ind.data().begin(), ind.data().end());
+        auto design_vector = ind.data();
 
         // TODO: dirty hack here
         if (design_vector[0] > 1)
