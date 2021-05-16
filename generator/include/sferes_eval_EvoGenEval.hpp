@@ -13,7 +13,7 @@
 namespace sferes {
 namespace eval {
 
-SFERES_CLASS(EvoGenEval) {
+class EvoGenEval {
   public:
     // this constructor is directly called in ea.hpp when initiating the
     // instance, and would not take any input

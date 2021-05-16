@@ -2,17 +2,14 @@
 #define SFERES_STAT_EVOGENSTAT_HPP_HQ1F0APZ
 
 #include <filesystem>
-#include <sferes/stat/stat.hpp>
 
 #include "EvoParams.h"
 
 namespace sferes {
 namespace stat {
 
-SFERES_STAT(EvoGenStat, Stat){
+class EvoGenStat {
   public:
-    typedef std::vector<boost::shared_ptr<Phen> > archive_t;
-
     template <typename E> void make_stat_dir(const E& ea) {
         std::filesystem::create_directory(ea.res_dir() + "/archives");
         if (output_all_robots_)
