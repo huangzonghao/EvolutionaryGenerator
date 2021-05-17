@@ -12,8 +12,6 @@
 #include <iostream>
 #include <cmath>
 
-#include "sferes_gen_Float.hpp"
-
 SFERES_CONST double mutation_rate = 0.1f;
 SFERES_CONST double eta_m = 10.0f;
 SFERES_CONST double cross_rate = 0.75f;
@@ -101,12 +99,9 @@ struct CrossOver_f {
 } // namespace evo_float
 
 /// in range [0;1]
-template<typename Exact = stc::Itself>
-class EvoGenFloat : public Float<typename stc::FindExact<Float<Exact>, Exact>::ret> {
+class EvoGenFloat {
   public:
-    typedef EvoGenFloat<Exact> this_t;
-
-    EvoGenFloat() {}
+    EvoGenFloat() : _data(16) {}
 
     void mutate() {
         for (size_t i = 0; i < _data.size(); i++)
@@ -130,10 +125,32 @@ class EvoGenFloat : public Float<typename stc::FindExact<Float<Exact>, Exact>::r
         BOOST_FOREACH(double &v, this->_data) v = misc::rand<double>();
         _check_invariant();
     }
+    const std::vector<double>& data() const { return this->_data; }
+    double data(size_t i) const {
+        assert(this->_data.size());
+        assert(i < this->_data.size());
+        assert(!std::isinf(this->_data[i]));
+        assert(!std::isnan(this->_data[i]));
+        return this->_data[i];
+    }
+    void data(size_t i, double v) {
+        assert(this->_data.size());
+        assert(i < this->_data.size());
+        assert(!std::isinf(v));
+        assert(!std::isnan(v));
+        this->_data[i] = v;
+    }
+    size_t size() const { return _data.size(); }
+    template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+        ar & BOOST_SERIALIZATION_NVP(_data);
+    }
 
   protected:
-    evo_float::Mutation_f<this_t> _mutation_op;
-    evo_float::CrossOver_f<this_t> _cross_over_op;
+    evo_float::Mutation_f<EvoGenFloat> _mutation_op;
+    evo_float::CrossOver_f<EvoGenFloat> _cross_over_op;
+    std::vector<double> _data;
+
     void _check_invariant() const {
 #ifdef DBG_ENABLED
     BOOST_FOREACH(double p, this->_data) {
