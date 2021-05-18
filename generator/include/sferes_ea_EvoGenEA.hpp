@@ -53,12 +53,9 @@ class EvoGenEA : public stc::Any<Exact> {
     boost::mpl::if_<boost::fusion::traits::is_sequence<FitModifier>,
                     FitModifier, boost::fusion::vector<FitModifier> >::type modifier_t;
     typedef std::vector<boost::shared_ptr<Phen> > pop_t;
-    typedef typename phen_t::fit_t fit_t;
 
     EvoGenEA() : _gen(-1), _stop(false) {}
     EvoGenEA(const EvoParams& evo_params) : _evo_params(evo_params),  _gen(-1), _stop(false) {}
-
-    void set_fit_proto(const fit_t& fit) { _fit_proto = fit; }
 
     void run(const std::string& exp_name = "") {
         _populate_params();
@@ -191,7 +188,6 @@ class EvoGenEA : public stc::Any<Exact> {
     pop_t _pop;
     eval_t _eval;
     stat_t _stat;
-    fit_t _fit_proto;
     modifier_t _fit_modifier;
     std::string _res_dir;
     size_t _gen;
@@ -222,7 +218,7 @@ class EvoGenEA : public stc::Any<Exact> {
 
     template<typename P>
     void _eval_pop(P& p, size_t start, size_t end) {
-        this->_eval.eval(p, start, end, this->_fit_proto);
+        this->_eval.eval(p, start, end);
     }
     // override _set_pop if you want to customize / add treatments
     // (in that case, DO NOT FORGET to add SFERES_EA_FRIEND(YouAlgo);)
