@@ -11,15 +11,16 @@ namespace sferes {
 namespace qd {
 namespace container {
 
+namespace nov {
+    static const size_t deep = 2;
+    static const double l = 1;
+    static const double k = 8;
+    static const double eps = 0.01;
+}
+
 template <typename Phen>
 class Grid {
   public:
-    struct nov {
-        SFERES_CONST size_t deep = 2;
-        SFERES_CONST double l = 1;
-        SFERES_CONST double k = 8;
-        SFERES_CONST double eps = 0.01;
-    };
 
     static const size_t dim = 2;
 

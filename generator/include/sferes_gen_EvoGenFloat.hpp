@@ -1,34 +1,37 @@
 #ifndef SFERES_GEN_EVOGENFLOAT_HPP_TDPDVGME
 #define SFERES_GEN_EVOGENFLOAT_HPP_TDPDVGME
 
+#include <cmath>
 #include <vector>
 #include <limits>
 #include <boost/foreach.hpp>
+#include <iostream>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <sferes/misc.hpp>
-#include <iostream>
-#include <cmath>
-
-SFERES_CONST double mutation_rate = 0.1f;
-SFERES_CONST double eta_m = 10.0f;
-SFERES_CONST double cross_rate = 0.75f;
-SFERES_CONST double eta_c = 10.0f;
 
 namespace sferes {
 namespace gen {
+
+static const double gen_mutation_rate = 0.1f;
+static const double gen_eta_m = 10.0f;
+static const double gen_cross_rate = 0.75f;
+static const double gen_eta_c = 10.0f;
+static const double gen_yl = 0.0;
+static const double gen_yu = 1.0;
+
 namespace evo_float {
 
-// polynomial mutation. Cf Deb 2001, p 124 ; param: eta_m
+// polynomial mutation. Cf Deb 2001, p 124 ; param: gen_eta_m
 // perturbation of the order O(1/eta_m)
 template<typename Ev>
 struct Mutation_f {
     void operator()(Ev& ev, size_t i) {
-        assert(eta_m != -1.0f);
+        assert(gen_eta_m != -1.0f);
         double ri = misc::rand<double>();
         double delta_i = ri < 0.5 ?
-                         pow(2.0 * ri, 1.0 / (eta_m + 1.0)) - 1.0 :
-                         1 - pow(2.0 * (1.0 - ri), 1.0 / (eta_m + 1.0));
+                         pow(2.0 * ri, 1.0 / (gen_eta_m + 1.0)) - 1.0 :
+                         1 - pow(2.0 * (1.0 - ri), 1.0 / (gen_eta_m + 1.0));
         assert(!std::isnan(delta_i));
         assert(!std::isinf(delta_i));
         double f = ev.data(i) + delta_i;
@@ -46,32 +49,30 @@ struct Mutation_f {
 template<typename Ev>
 struct CrossOver_f {
     void operator()(const Ev& f1, const Ev& f2, Ev &child1, Ev &child2) {
-        assert(eta_c != -1);
+        assert(gen_eta_c != -1);
         for (unsigned int i = 0; i < f1.size(); i++) {
             double y1 = std::min(f1.data(i), f2.data(i));
             double y2 = std::max(f1.data(i), f2.data(i));
-            SFERES_CONST double yl = 0.0;
-            SFERES_CONST double yu = 1.0;
             if (fabs(y1 - y2) > std::numeric_limits<double>::epsilon()) {
                 double rand = misc::rand<double>();
-                double beta = 1.0 + (2.0 * (y1 - yl) / (y2 - y1));
-                double alpha = 2.0 - pow(beta, -(eta_c + 1.0));
+                double beta = 1.0 + (2.0 * (y1 - gen_yl) / (y2 - y1));
+                double alpha = 2.0 - pow(beta, -(gen_eta_c + 1.0));
                 double betaq = 0;
                 if (rand <= (1.0 / alpha))
-                    betaq = pow((rand * alpha), (1.0 / (eta_c + 1.0)));
+                    betaq = pow((rand * alpha), (1.0 / (gen_eta_c + 1.0)));
                 else
-                    betaq = pow ((1.0 / (2.0 - rand * alpha)) , (1.0 / (eta_c + 1.0)));
+                    betaq = pow ((1.0 / (2.0 - rand * alpha)) , (1.0 / (gen_eta_c + 1.0)));
                 double c1 = 0.5 * ((y1 + y2) - betaq * (y2 - y1));
-                beta = 1.0 + (2.0 * (yu - y2) / (y2 - y1));
-                alpha = 2.0 - pow(beta, -(eta_c + 1.0));
+                beta = 1.0 + (2.0 * (gen_yu - y2) / (y2 - y1));
+                alpha = 2.0 - pow(beta, -(gen_eta_c + 1.0));
                 if (rand <= (1.0 / alpha))
-                    betaq = pow ((rand * alpha), (1.0 / (eta_c + 1.0)));
+                    betaq = pow ((rand * alpha), (1.0 / (gen_eta_c + 1.0)));
                 else
-                    betaq = pow ((1.0/(2.0 - rand * alpha)), (1.0 / (eta_c + 1.0)));
+                    betaq = pow ((1.0/(2.0 - rand * alpha)), (1.0 / (gen_eta_c + 1.0)));
                 double c2 = 0.5 * ((y1 + y2) + betaq * (y2 - y1));
 
-                c1 = misc::put_in_range(c1, yl, yu);
-                c2 = misc::put_in_range(c2, yl, yu);
+                c1 = misc::put_in_range(c1, gen_yl, gen_yu);
+                c2 = misc::put_in_range(c2, gen_yl, gen_yu);
 
                 assert(!std::isnan(c1));
                 assert(!std::isnan(c2));
@@ -103,12 +104,12 @@ class EvoGenFloat {
 
     void mutate() {
         for (size_t i = 0; i < _data.size(); i++)
-            if (misc::rand<double>() < mutation_rate)
+            if (misc::rand<double>() < gen_mutation_rate)
             _mutation_op(*this, i);
         _check_invariant();
     }
     void cross(const EvoGenFloat& o, EvoGenFloat& c1, EvoGenFloat& c2) {
-        if ( misc::rand<double>() < cross_rate)
+        if ( misc::rand<double>() < gen_cross_rate)
             _cross_over_op(*this, o, c1, c2);
         else if (misc::flip_coin()) {
             c1 = *this;

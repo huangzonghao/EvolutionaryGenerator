@@ -4,7 +4,6 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
-#include <sferes/fit/fitness.hpp>
 #include <sferes/modif/dummy.hpp>
 #include <sferes/stc.hpp>
 
