@@ -4,7 +4,6 @@
 #include <thread>
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include <sferes/stc.hpp>
 
 #include "SimulationManager.h"
 #include "SimulatorParams.h"
