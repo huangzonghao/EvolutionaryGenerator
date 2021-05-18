@@ -1,7 +1,7 @@
 #ifndef SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA
 #define SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA
 
-#include <sferes/fit/fitness.hpp>
+#include <boost/serialization/nvp.hpp>
 
 #include "GenerateDemoRobot.h"
 #include "SimulationManager.h"
@@ -9,11 +9,11 @@
 namespace sferes {
 namespace fit {
 
-SFERES_FITNESS(EvoGenFitness, sferes::fit::Fitness) {
+class EvoGenFitness {
   public:
     EvoGenFitness()
-        : _dead(false), _desc(2), _novelty(-std::numeric_limits<double>::infinity()),
-        _curiosity(0), _lq(0) {}
+        : _value(0),  _dead(false), _desc(2), _curiosity(0), _lq(0),
+          _novelty(-std::numeric_limits<double>::infinity()) {}
 
     const std::vector<double>& desc() const { return _desc; }
     double novelty() const { return _novelty; }
@@ -23,7 +23,8 @@ SFERES_FITNESS(EvoGenFitness, sferes::fit::Fitness) {
     double local_quality() const { return _lq; }
     void set_local_quality(double lq) { _lq = lq; }
     bool dead() const { return _dead; }
-    void set_value(float val) { this->_value = val; }
+    double value() const { return _value; }
+    void set_value(double val) { this->_value = val; }
 
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
@@ -54,12 +55,18 @@ SFERES_FITNESS(EvoGenFitness, sferes::fit::Fitness) {
         _desc[1] = ind.gen().data(3);
     }
 
-    protected:
-        bool _dead;
-        std::vector<double> _desc;
-        double _novelty;
-        double _curiosity;
-        double _lq;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+        ar & BOOST_SERIALIZATION_NVP(_value);
+    }
+
+  protected:
+    bool _dead;
+    std::vector<double> _desc;
+    double _novelty;
+    double _curiosity;
+    double _lq;
+    double _value = 0;
 };
 
 } // namespace fit
