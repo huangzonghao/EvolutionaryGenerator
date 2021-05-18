@@ -64,15 +64,11 @@ class EvoGenEval {
     }
 
     template<typename Phen>
-    void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end,
-              const typename Phen::fit_t& fit_proto)
+    void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end)
     {
         assert(pop.size());
         assert(begin < pop.size());
         assert(end <= pop.size());
-
-        for (size_t i = begin; i < end; ++i)
-            pop[i]->fit() = fit_proto;
 
         size_t batch_size = pop.size() / num_threads;
         size_t num_leftovers = pop.size() % num_threads;
