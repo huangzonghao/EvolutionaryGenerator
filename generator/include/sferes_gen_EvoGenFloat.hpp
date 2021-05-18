@@ -6,7 +6,6 @@
 #include <boost/foreach.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <sferes/stc.hpp>
 #include <sferes/misc.hpp>
 #include <iostream>
 #include <cmath>

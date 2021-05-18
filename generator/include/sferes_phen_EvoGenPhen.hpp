@@ -5,20 +5,20 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <sferes/stc.hpp>
 
 #include "EvoParams.h"
 
 namespace sferes {
 namespace phen {
 
-template <typename Gen, typename Fit, typename Exact = stc::Itself>
+template <typename Gen, typename Fit>
 class EvoGenPhen {
-    template<typename G, typename F, typename E>
-    friend std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F, E>& e);
   public:
     typedef Fit fit_t;
     typedef Gen gen_t;
+
+    template<typename G, typename F>
+    friend std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e);
 
     EvoGenPhen() : _params((*this)._gen.size()) {}
     EvoGenPhen(double max_p, double min_p) : _max_p(max_p), _min_p(min_p), _params((*this)._gen.size()) {}
@@ -74,11 +74,13 @@ class EvoGenPhen {
         _max_p = evo_params.phen_data_max();
         _min_p = evo_params.phen_data_min();
     }
+
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
         ar & BOOST_SERIALIZATION_NVP(_gen);
         ar & BOOST_SERIALIZATION_NVP(_fit);
     }
+
   protected:
     Gen _gen;
     Fit _fit;
@@ -87,8 +89,8 @@ class EvoGenPhen {
     double _min_p;
 };
 
-template<typename G, typename F, typename E>
-std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F, E>& e) {
+template<typename G, typename F>
+std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e) {
     for (size_t i = 0; i < e.size(); ++i)
         output << " " << e.data(i) ;
     return output;
