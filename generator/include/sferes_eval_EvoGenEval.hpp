@@ -4,7 +4,6 @@
 #include <thread>
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include <sferes/dbg/dbg.hpp>
 #include <sferes/stc.hpp>
 
 #include "SimulationManager.h"
@@ -69,7 +68,6 @@ class EvoGenEval {
     void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end,
               const typename Phen::fit_t& fit_proto)
     {
-        dbg::trace trace("eval", DBG_HERE);
         assert(pop.size());
         assert(begin < pop.size());
         assert(end <= pop.size());

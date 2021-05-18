@@ -6,7 +6,6 @@
 #include <boost/foreach.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <sferes/stc.hpp>
-#include <sferes/dbg/dbg.hpp>
 
 #include "EvoParams.h"
 
@@ -30,19 +29,12 @@ class EvoGenPhen {
 
     Gen& gen()  { return _gen; }
     const Gen& gen() const { return _gen; }
-    void mutate() {
-        dbg::trace trace("phen", DBG_HERE);
-        this->_gen.mutate();
-    }
-    void random() {
-        dbg::trace trace("phen", DBG_HERE);
-        this->_gen.random();
-    }
+    void mutate() { this->_gen.mutate(); }
+    void random() { this->_gen.random(); }
 
     void cross(const boost::shared_ptr<EvoGenPhen> i2,
                boost::shared_ptr<EvoGenPhen>& o1,
                boost::shared_ptr<EvoGenPhen>& o2) {
-        dbg::trace trace("phen", DBG_HERE);
         if (!o1)
             o1 = boost::shared_ptr<EvoGenPhen>(new EvoGenPhen(_max_p, _min_p));
         if (!o2)
@@ -84,7 +76,6 @@ class EvoGenPhen {
     }
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
-        dbg::trace trace("phen", DBG_HERE);
         ar & BOOST_SERIALIZATION_NVP(_gen);
         ar & BOOST_SERIALIZATION_NVP(_fit);
     }

@@ -17,7 +17,6 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 
-#include <sferes/dbg/dbg.hpp>
 #include <sferes/misc.hpp>
 #include <sferes/stc.hpp>
 
@@ -63,7 +62,6 @@ class EvoGenEA : public stc::Any<Exact> {
     void set_fit_proto(const fit_t& fit) { _fit_proto = fit; }
 
     void run(const std::string& exp_name = "") {
-        dbg::trace trace("ea", DBG_HERE);
         _populate_params();
         _exp_name = exp_name;
         _make_res_dir();
@@ -88,7 +86,6 @@ class EvoGenEA : public stc::Any<Exact> {
     }
 
     void resume(const std::string& fname) {
-        dbg::trace trace("ea", DBG_HERE);
         _set_status("resumed");
         std::filesystem::path fpath(fname);
         _res_dir = fpath.parent_path().parent_path().string();
@@ -107,7 +104,6 @@ class EvoGenEA : public stc::Any<Exact> {
     void random_pop() {
         std::cout << "Gen: 0/" << _nb_gen << " ... ";
         tik = std::chrono::steady_clock::now();
-        dbg::trace trace("ea", DBG_HERE);
         stc::exact(this)->random_pop();
         time_span = std::chrono::steady_clock::now() - tik;
         _last_epoch_time = time_span.count(); // these two would be booked in stat
@@ -118,7 +114,6 @@ class EvoGenEA : public stc::Any<Exact> {
     void epoch() {
         std::cout << "Gen: " << _gen + 1 << "/" << _nb_gen << " ... ";
         tik = std::chrono::steady_clock::now();
-        dbg::trace trace("ea", DBG_HERE);
         stc::exact(this)->epoch();
         time_span = std::chrono::steady_clock::now() - tik;
         _last_epoch_time = time_span.count(); // these two would be booked in stat
@@ -129,7 +124,6 @@ class EvoGenEA : public stc::Any<Exact> {
     // override _set_pop if you want to customize / add treatments
     // (in that case, DO NOT FORGET to add SFERES_EA_FRIEND(YouAlgo);)
     void set_pop(const pop_t& p) {
-        dbg::trace trace("ea", DBG_HERE);
         this->_pop = p;
         for (size_t i = 0; i < this->_pop.size(); ++i)
             this->_pop[i]->develop();
@@ -229,14 +223,12 @@ class EvoGenEA : public stc::Any<Exact> {
 
     template<typename P>
     void _eval_pop(P& p, size_t start, size_t end) {
-        dbg::trace trace("ea", DBG_HERE);
         this->_eval.eval(p, start, end, this->_fit_proto);
     }
     // override _set_pop if you want to customize / add treatments
     // (in that case, DO NOT FORGET to add SFERES_EA_FRIEND(YouAlgo);)
-    void _set_pop(const pop_t& p) { dbg::trace trace("ea", DBG_HERE); }
+    void _set_pop(const pop_t& p) {}
     void _make_res_dir() {
-        dbg::trace trace("ea", DBG_HERE);
         if (_res_dir.empty()) {
             if (_exp_name.empty())
             _res_dir = misc::date() + "_" + misc::getpid();
@@ -250,7 +242,6 @@ class EvoGenEA : public stc::Any<Exact> {
     void _dump_config() const { _evo_params.Save(_res_dir + "/evo_params.xml"); }
     void _load_config(const std::string& fname) { _evo_params.Load(fname); }
     void _dump_state() const {
-        dbg::trace trace("ea", DBG_HERE);
         if (_progress_dump_period == -1)
             return;
         std::ofstream ofs(_res_dir + "/dumps/gen_" + std::to_string(_gen + 1) + ".dat", std::ios::binary);
@@ -264,7 +255,6 @@ class EvoGenEA : public stc::Any<Exact> {
     }
     void _dump_state_extra(boost::archive::binary_oarchive& oa) const {}
     void _load_state(const std::string& fname) {
-        dbg::trace trace("ea", DBG_HERE);
         std::ifstream ifs(fname, std::ios::binary);
         if (ifs.fail()) {
             std::cerr << "Cannot open :" << fname

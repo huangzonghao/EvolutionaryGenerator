@@ -8,7 +8,6 @@
 #include <boost/serialization/nvp.hpp>
 #include <sferes/stc.hpp>
 #include <sferes/misc.hpp>
-#include <sferes/dbg/dbg.hpp>
 #include <iostream>
 #include <cmath>
 
@@ -152,7 +151,7 @@ class EvoGenFloat {
     std::vector<double> _data;
 
     void _check_invariant() const {
-#ifdef DBG_ENABLED
+#ifndef NDEBUG
     BOOST_FOREACH(double p, this->_data) {
         assert(!std::isnan(p));
         assert(!std::isinf(p));
