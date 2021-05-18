@@ -29,13 +29,13 @@ class EvoGenQD
     typedef Phen phen_t;
     typedef boost::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
-    typedef typename pop_t::iterator it_t;
 
     EvoGenQD() {}
     EvoGenQD(const EvoParams& evo_params) : EvoGenEA(evo_params) {}
 
     // Random initialization of _parents and _offspring
     void random_pop() {
+        assert(_pop_size != 0);
         this->_pop.clear();
         _offspring.resize(_pop_size);
         BOOST_FOREACH (indiv_t& indiv, this->_offspring) {
@@ -63,6 +63,7 @@ class EvoGenQD
 
     // Main Iteration of the QD algorithm
     void epoch() {
+        assert(_pop_size != 0);
         _parents.resize(_pop_size);
 
         // Selection of the parents (will fill the _parents vector)
@@ -76,7 +77,6 @@ class EvoGenQD
         // Generation of the offspring
         std::vector<size_t> a;
         misc::rand_ind(a, _parents.size());
-        assert(_parents.size() == _pop_size);
         for (size_t i = 0; i < _pop_size; i += 2) {
             boost::shared_ptr<Phen> i1, i2;
             _parents[a[i]]->cross(_parents[a[i + 1]], i1, i2);
@@ -94,8 +94,6 @@ class EvoGenQD
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);
-
-        assert(_offspring.size() == _parents.size());
 
         // Copy of the containt of the container into the _pop object.
         _container.get_full_content(this->_pop);
