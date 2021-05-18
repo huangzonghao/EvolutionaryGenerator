@@ -17,7 +17,6 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 
-#include <sferes/misc.hpp>
 #include <sferes/stc.hpp>
 
 #include "EvoParams.h"
@@ -230,10 +229,12 @@ class EvoGenEA : public stc::Any<Exact> {
     void _set_pop(const pop_t& p) {}
     void _make_res_dir() {
         if (_res_dir.empty()) {
-            if (_exp_name.empty())
-            _res_dir = misc::date() + "_" + misc::getpid();
-            else
-            _res_dir = _exp_name + "_" + misc::date() + "_" + misc::getpid();
+            time_t t = time(0);
+            char time_buffer [80];
+            strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
+            _res_dir = std::string(time_buffer) + "_" + std::to_string(::_getpid());
+            if (!_exp_name.empty())
+                _res_dir = _exp_name + "_" + _res_dir;
         }
         std::filesystem::create_directory(_res_dir);
         std::filesystem::create_directory(_res_dir + "/dumps");
