@@ -2,6 +2,7 @@
 #define SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA
 
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include "GenerateDemoRobot.h"
 #include "SimulationManager.h"
@@ -58,6 +59,7 @@ class EvoGenFitness {
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
         ar & BOOST_SERIALIZATION_NVP(_value);
+        ar & BOOST_SERIALIZATION_NVP(_desc);
     }
 
   protected:

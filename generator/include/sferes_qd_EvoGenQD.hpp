@@ -146,7 +146,6 @@ class EvoGenQD
         for (size_t i = 0; i < this->_pop.size(); ++i) {
             this->_pop[i]->set_params(_evo_params);
             this->_pop[i]->develop();
-            this->_pop[i]->fit().update_desc(*(this->_pop[i]));
         }
         _add(this->_pop, _added);
     }
