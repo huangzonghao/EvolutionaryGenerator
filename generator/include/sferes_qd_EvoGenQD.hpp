@@ -37,7 +37,7 @@ class EvoGenQD
         assert(_pop_size != 0);
         this->_pop.clear();
         _offspring.resize(_pop_size);
-        BOOST_FOREACH (indiv_t& indiv, this->_offspring) {
+        for (auto& indiv : this->_offspring) {
             indiv = indiv_t(new Phen(_evo_params));
             indiv->random();
         }
@@ -48,7 +48,7 @@ class EvoGenQD
         this->_parents = this->_offspring;
         _offspring.resize(_pop_size);
 
-        BOOST_FOREACH (indiv_t& indiv, this->_offspring) {
+        for (auto& indiv : this->_offspring) {
             indiv = indiv_t(new Phen(_evo_params));
             indiv->random();
         }
