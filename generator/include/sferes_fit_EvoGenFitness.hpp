@@ -31,9 +31,8 @@ class EvoGenFitness {
     void eval(Indiv& ind, SimulationManager& sm) {
 
         sm.RemoveAllMotors();
-        // TODO: add motors
-        // for (int i = 0; i < design_vector[0]; ++i)
-            // sm.AddMotor("MOTOR", "chassis", "chassis_leg_" + std::to_string(i), 1,0.1,0.1,0.1);
+        for (int i = 0; i < ind.data(3); ++i)
+            sm.AddMotor("MOTOR", "chassis", "chassis_leg_" + std::to_string(i) + "-0", 1,0.1,0.1,0.1);
 
         sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();

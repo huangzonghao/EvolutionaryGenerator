@@ -146,12 +146,12 @@ set(CURRENT_TARGET_NAME robogami_test)
 set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
-    include/UrdfExporter.h
+    # include/UrdfExporter.h
     include/GenerateDemoRobot.h
 )
 
 set(Sources
-    src/UrdfExporter.cpp
+    # src/UrdfExporter.cpp
     src/GenerateDemoRobot.cpp
     src/robogami_test.cpp
 )
@@ -163,11 +163,11 @@ target_include_directories(${CURRENT_TARGET_NAME}
                                    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(${CURRENT_TARGET_NAME}
-                      FBE_Manipulations
-                      FBE_Printable
-                      FBE_Conversions
-)
+# target_link_libraries(${CURRENT_TARGET_NAME}
+                      # FBE_Manipulations
+                      # FBE_Printable
+                      # FBE_Conversions
+# )
 
 if(MSVC)
     source_group("Header Files" FILES ${Headers})

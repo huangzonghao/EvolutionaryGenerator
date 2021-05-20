@@ -14,7 +14,61 @@ constexpr size_t leg_offset = 4;
 constexpr double phen_min = 0.5;
 constexpr double phen_max = 1.5;
 
-// design vector format: [num_legs, body_x, body_y, body_z, leg1_pos, leg1_len, ..., legN_pos, legN_len]
+struct Body {
+    double x;
+    double y;
+    double z;
+};
+
+Body body_selector(size_t body_id) {
+    Body ret;
+    switch (body_id) {
+    case 0:
+        ret.x = 0.015;
+        ret.y = 0.015;
+        ret.z = 0.085;
+        break;
+    case 1:
+        ret.x = 0.015;
+        ret.y = 0.03;
+        ret.z = 0.045;
+        break;
+    case 2:
+        ret.x = 0.03;
+        ret.y = 0.01;
+        ret.z = 0.1;
+        break;
+    case 3:
+        ret.x = 0.005;
+        ret.y = 0.03;
+        ret.z = 0.06;
+        break;
+    default:
+        ret.x = 0.015;
+        ret.y = 0.015;
+        ret.z = 0.085;
+        break;
+    }
+    return ret;
+}
+
+Body body_selector(double body_id_gene) {
+    size_t body_id;
+    if (body_id_gene < 0.25)
+        body_id = 0;
+    else if (body_id_gene < 0.5)
+        body_id = 1;
+    else if (body_id_gene < 0.75)
+        body_id = 2;
+    else
+        body_id = 3;
+
+    return body_selector(body_id);
+}
+
+
+// phen format: [body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+//     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
 std::string generate_demo_robot_string(const std::string& mode,
                                        const std::vector<double>& dv,
                                        const std::string& robot_name) {
@@ -29,13 +83,13 @@ std::string generate_demo_robot_string(const std::string& mode,
     oss << " <visual>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <geometry>" << std::endl;
-    oss << "    <box size=\"" << 0.3 * dv[1] << " " << 0.2 * dv[2] << " " << 0.05 * dv[3] << "\"/>" << std::endl;
+    oss << "    <box size=\"" << 0.3 * dv[0] << " " << 0.2 * dv[1] << " " << 0.05 * dv[2] << "\"/>" << std::endl;
     oss << "  </geometry>" << std::endl;
     oss << " </visual>" << std::endl;
     oss << " <collision>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <geometry>" << std::endl;
-    oss << "    <box size=\"" << 0.3 * dv[1] << " " << 0.2 * dv[2] << " " << 0.05 * dv[3] << "\"/>" << std::endl;
+    oss << "    <box size=\"" << 0.3 * dv[0] << " " << 0.2 * dv[1] << " " << 0.05 * dv[2] << "\"/>" << std::endl;
     oss << "  </geometry>" << std::endl;
     oss << " </collision>" << std::endl;
     oss << " <inertial>" << std::endl;
@@ -47,57 +101,66 @@ std::string generate_demo_robot_string(const std::string& mode,
     oss << std::endl;
 
     // add legs
-    double pos_tmp;
-    double pos_x_tmp;
-    double pos_y_tmp;
-    for (int i = 0; i < dv[0]; ++i) {
-        // link
-        oss << "<link name = \"leg_" << i << "\">" << std::endl;
-        oss << " <visual>" << std::endl;
-        oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-        oss << "  <geometry>" << std::endl;
-        if (mode == "wheel")
-            oss << "    <cylinder length=\"" << 0.03 << "\" radius=\"" << 0.045 * dv[2*i+leg_offset+1] << "\"/>" << std::endl;
-        else if (mode == "leg")
-            oss << "    <box size=\"0.015 " << 0.085 * dv[2*i+leg_offset+1] << " 0.015\"/>" << std::endl;
-        oss << "  </geometry>" << std::endl;
-        oss << " </visual>" << std::endl;
-        oss << " <collision>" << std::endl;
-        oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-        oss << "  <geometry>" << std::endl;
-        if (mode == "wheel")
-            oss << "    <cylinder length=\"" << 0.03 << "\" radius=\"" << 0.045 * dv[2*i+leg_offset+1] << "\"/>" << std::endl;
-        else if (mode == "leg")
-            oss << "    <box size=\"0.015 " << 0.085 * dv[2*i+leg_offset+1] << " 0.015\"/>" << std::endl;
-        oss << "  </geometry>" << std::endl;
-        oss << " </collision>" << std::endl;
-        oss << " <inertial>" << std::endl;
-        oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-        oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
-        oss << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
-        oss << " </inertial>" << std::endl;
-        oss << "</link>" << std::endl;
-        oss << std::endl;
+    double leg_pos_tmp;
+    double leg_pos_x_tmp;
+    double leg_pos_y_tmp;
+    double link_z_offset;
+    std::string link_name_tmp;
+    int num_legs = dv[3];
+    int cursor = 5;
+    for (int i = 0; i < num_legs; ++i) {
+        link_z_offset = 0;
+        int num_links = dv[cursor];
+        for (int j = 0; j < num_links; ++j) {
+            Body link_body = body_selector(dv[cursor+1+j*2]);
+            oss << "<link name = \"leg_" << i << "-" << j << "\">" << std::endl;
+            oss << " <visual>" << std::endl;
+            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_body.z * dv[cursor+1+j*2+1] * -0.5 << "\" />" << std::endl;
+            oss << "  <geometry>" << std::endl;
+            oss << "    <box size=\"" << link_body.x << " " << link_body.y << " " <<  link_body.z * dv[cursor+1+j*2+1] << "\"/>" << std::endl;
+            oss << "  </geometry>" << std::endl;
+            oss << " </visual>" << std::endl;
+            oss << " <collision>" << std::endl;
+            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_body.z * dv[cursor+1+j*2+1] * -0.5 << "\" />" << std::endl;
+            oss << "  <geometry>" << std::endl;
+            oss << "    <box size=\"" << link_body.x << " " << link_body.y << " " <<  link_body.z * dv[cursor+1+j*2+1] << "\"/>" << std::endl;
+            oss << "  </geometry>" << std::endl;
+            oss << " </collision>" << std::endl;
+            oss << " <inertial>" << std::endl;
+            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+            oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
+            oss << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
+            oss << " </inertial>" << std::endl;
+            oss << "</link>" << std::endl;
+            oss << std::endl;
 
-        // joint
-        oss << "<joint name = \"chassis_leg_" << i << "\" type = \"continuous\">" << std::endl;
-        oss << "  <parent link = \"chassis\"/>" << std::endl;
-        oss << "  <child link = \"leg_" << i << "\"/>" << std::endl;
-
-        pos_tmp = (dv[2*i+leg_offset] - phen_min) / (phen_max - phen_min);
-        if (pos_tmp < 0.5) {
-            pos_x_tmp = (0.25 - pos_tmp) * 4 * (0.3 * dv[1] / 2);
-            pos_y_tmp = 0.2 * dv[2] / 2 + 0.05;
-        } else {
-            pos_x_tmp = (pos_tmp - 0.75) * 4 * (0.3 * dv[1] / 2);
-            pos_y_tmp = -(0.2 * dv[2] / 2 + 0.05);
-        }
-
-        oss << "   <origin xyz = \"" << pos_x_tmp << " " << pos_y_tmp << " 0 \" rpy = \"1.57 0 0\" />" << std::endl;
-        oss << "   <axis xyz = \"0 0 1\" />" << std::endl;
-        oss << "</joint>" << std::endl;
-        oss << std::endl;
-    }
+            // joint
+            if (j == 0) {
+                oss << "<joint name = \"chassis_leg_" << i << "-0\" type = \"continuous\">" << std::endl;
+                oss << "  <parent link = \"chassis\"/>" << std::endl;
+                leg_pos_tmp = dv[cursor-1]; // now the pos gene is in [0, 1]
+                if (leg_pos_tmp < 0.5) {
+                    leg_pos_x_tmp = (0.25 - leg_pos_tmp) * 4 * (0.3 * dv[0] / 2);
+                    leg_pos_y_tmp = 0.2 * dv[1] / 2 + 0.05;
+                } else {
+                    leg_pos_x_tmp = (leg_pos_tmp - 0.75) * 4 * (0.3 * dv[0] / 2);
+                    leg_pos_y_tmp = -(0.2 * dv[1] / 2 + 0.05);
+                }
+            } else {
+                oss << "<joint name = \"leg_" << i << "-" << j - 1 << "_leg_" << i << "-" << j << "\" type = \"continuous\">" << std::endl;
+                oss << "  <parent link = \"leg_" << i << "-" << j - 1 << "\"/>" << std::endl;
+                leg_pos_x_tmp = 0;
+                leg_pos_y_tmp = 0;
+            }
+            oss << "  <child link = \"leg_" << i << "-" << j << "\"/>" << std::endl;
+            oss << "   <origin xyz = \"" << leg_pos_x_tmp << " " << leg_pos_y_tmp << " " << link_z_offset << " \" rpy = \"0 0 0\" />" << std::endl;
+            oss << "   <axis xyz = \"0 1 0\" />" << std::endl;
+            oss << "</joint>" << std::endl;
+            oss << std::endl;
+            link_z_offset = -(link_body.z * dv[cursor+1+j*2+1] + 0.01);
+        } // for links
+        cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
+    } // for legs
 
     oss << "</robot>" << std::endl;
 
