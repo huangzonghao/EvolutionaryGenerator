@@ -30,19 +30,12 @@ class EvoGenFitness {
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
 
-        auto design_vector = ind.data();
-
-        // TODO: dirty hack here
-        if (design_vector[0] > 1)
-            design_vector[0] = 6;
-        else
-            design_vector[0] = 4;
-
         sm.RemoveAllMotors();
-        for (int i = 0; i < design_vector[0]; ++i)
-            sm.AddMotor("MOTOR", "chassis", "chassis_leg_" + std::to_string(i), 1,0.1,0.1,0.1);
+        // TODO: add motors
+        // for (int i = 0; i < design_vector[0]; ++i)
+            // sm.AddMotor("MOTOR", "chassis", "chassis_leg_" + std::to_string(i), 1,0.1,0.1,0.1);
 
-        sm.LoadUrdfString(generate_demo_robot_string("leg", design_vector));
+        sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();
 
         this->_value = sm.GetRootBodyDisplacementX();

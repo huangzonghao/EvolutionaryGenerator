@@ -4,7 +4,6 @@
 #include <cmath>
 #include <vector>
 #include <limits>
-#include <boost/foreach.hpp>
 #include <iostream>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -100,46 +99,80 @@ struct CrossOver_f {
 /// in range [0;1]
 class EvoGenFloat {
   public:
-    EvoGenFloat() : _data(16) {}
+    EvoGenFloat() {}
 
     void mutate() {
-        for (size_t i = 0; i < _data.size(); i++)
+        // body_x, body_y, body_z
+        for (int i = 0; i < 3; ++i) {
             if (misc::rand<double>() < gen_mutation_rate)
-            _mutation_op(*this, i);
-        _check_invariant();
+                _mutation_op(*this, i);
+        }
+        // TODO: mutate num_legs/num_links
+        int num_legs = _data[3];
+        int num_links = 0;
+        for (int i = 4; i < _data.size(); i += num_links * 2 + 1) {
+            num_links = _data[i];
+            for (int j = 0; j < num_links * 2; ++j) {
+                if (misc::rand<double>() < gen_mutation_rate)
+                    _mutation_op(*this, i + j); // link id & link scale
+            }
+        }
+        _check_validity();
     }
+
     void cross(const EvoGenFloat& o, EvoGenFloat& c1, EvoGenFloat& c2) {
-        if ( misc::rand<double>() < gen_cross_rate)
-            _cross_over_op(*this, o, c1, c2);
-        else if (misc::flip_coin()) {
+        if ( misc::rand<double>() < gen_cross_rate) {
+            // TODO: define meaningful crossover operator
+            // _cross_over_op(*this, o, c1, c2);
+            c1 = *this;
+            c2 = o;
+        } else if (misc::flip_coin()) {
             c1 = *this;
             c2 = o;
         } else {
             c1 = o;
             c2 = *this;
         }
-        _check_invariant();
+        _check_validity();
     }
+
+    // gen format: [body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+    //     for each leg: [num_links, link_1_id, link_1_scale, ...]
+    // Note: num_legs here corresponds to one side only
     void random() {
-        BOOST_FOREACH(double &v, this->_data) v = misc::rand<double>();
-        _check_invariant();
+        _data.clear();
+        _data.push_back(misc::rand<double>()); // body_x
+        _data.push_back(misc::rand<double>()); // body_y
+        _data.push_back(misc::rand<double>()); // body_z
+        int num_links = 0;
+        int num_legs = misc::rand<int>(2, 4); // 2 or 3 legs
+        _data.push_back(num_legs);
+        for (int i = 0; i < num_legs; ++i) {
+            num_links = misc::rand<int>(1, 4); // 1, 2 or 3 links per leg
+            _data.push_back(num_links);
+            for (int j = 0; j < num_links; ++j) {
+                // id and scale are up to phen to interpret or pass on to generator
+                _data.push_back(misc::rand<double>()); // link id
+                _data.push_back(misc::rand<double>()); // link scale
+            }
+        }
+        _check_validity();
     }
+
     const std::vector<double>& data() const { return this->_data; }
     double data(size_t i) const {
         assert(this->_data.size());
         assert(i < this->_data.size());
-        assert(!std::isinf(this->_data[i]));
-        assert(!std::isnan(this->_data[i]));
         return this->_data[i];
     }
     void data(size_t i, double v) {
         assert(this->_data.size());
         assert(i < this->_data.size());
-        assert(!std::isinf(v));
-        assert(!std::isnan(v));
         this->_data[i] = v;
     }
+
     size_t size() const { return _data.size(); }
+
     template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
         ar & BOOST_SERIALIZATION_NVP(_data);
@@ -150,9 +183,9 @@ class EvoGenFloat {
     evo_float::CrossOver_f<EvoGenFloat> _cross_over_op;
     std::vector<double> _data;
 
-    void _check_invariant() const {
+    void _check_validity() const {
 #ifndef NDEBUG
-    BOOST_FOREACH(double p, this->_data) {
+    for (auto p : _data) {
         assert(!std::isnan(p));
         assert(!std::isinf(p));
         assert(p >= 0 && p <= 1);
