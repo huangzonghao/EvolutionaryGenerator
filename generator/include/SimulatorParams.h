@@ -6,7 +6,6 @@
 #include <vector>
 #include <iostream>
 
-// TODO: load the class externally (through API or file)
 class SimulatorParams {
   public:
     double time_out = 5;

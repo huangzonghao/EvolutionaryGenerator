@@ -14,12 +14,15 @@ class EvoGenEval {
   public:
     // this constructor is directly called in ea.hpp when initiating the
     // instance, and would not take any input
-    EvoGenEval() : _nb_evals(0) {
-        num_threads = std::thread::hardware_concurrency();
-        threads.resize(num_threads);
-    }
+    EvoGenEval() : _nb_evals(0) {}
 
     void set_sim_params(const SimulatorParams& sim_params) {
+        if (sim_params.do_viz)
+            num_threads = 1;
+        else
+            num_threads = std::thread::hardware_concurrency();
+        threads.resize(num_threads);
+
         sms.clear();
         for (int i = 0; i < num_threads; ++i) {
             auto& sm = std::make_shared<SimulationManager>();
@@ -43,9 +46,8 @@ class EvoGenEval {
                           sim_params.env_rot[2],
                           sim_params.env_rot[3]);
 
-            // apparently no visualization and real_time in parallel mode
-            sm->SetVisualization(false);
-            sm->SetRealTime(false);
+            sm->SetVisualization(sim_params.do_viz);
+            sm->SetRealTime(sim_params.do_realtime);
 
             sms.push_back(sm);
         }
