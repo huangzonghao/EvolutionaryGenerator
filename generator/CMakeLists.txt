@@ -94,14 +94,7 @@ target_link_libraries(${CURRENT_TARGET_NAME}
                       # FBE_Manipulations
                       # FBE_Printable
                       # FBE_Conversions
-                      TBB::tbb
                       Boost::serialization
-                      Boost::program_options
-                      Boost::thread
-                      Boost::date_time
-                      Boost::chrono
-                      Boost::timer
-                      Boost::filesystem
                       Simulator
 )
 
@@ -113,33 +106,33 @@ target_include_directories(${CURRENT_TARGET_NAME}
 
 target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE NO_PARALLEL)
 
-set(CURRENT_TARGET_NAME sferes_test)
+# set(CURRENT_TARGET_NAME sferes_test)
 
-add_executable(${CURRENT_TARGET_NAME} src/sferes_test.cpp)
+# add_executable(${CURRENT_TARGET_NAME} src/sferes_test.cpp)
 
-target_include_directories(${CURRENT_TARGET_NAME}
-                           PRIVATE ${SFERES2_INCLUDE_DIR}
-                                   ${EIGEN3_INCLUDE_DIR}
-                                   ${Boost_INCLUDE_DIRS}
-)
+# target_include_directories(${CURRENT_TARGET_NAME}
+                           # PRIVATE ${SFERES2_INCLUDE_DIR}
+                                   # ${EIGEN3_INCLUDE_DIR}
+                                   # ${Boost_INCLUDE_DIRS}
+# )
 
-target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE NO_PARALLEL)
+# target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE NO_PARALLEL)
 
-target_link_libraries(${CURRENT_TARGET_NAME}
-                      PRIVATE TBB::tbb
-                              Boost::serialization
-                              Boost::program_options
-                              Boost::thread
-                              Boost::date_time
-                              Boost::chrono
-                              Boost::timer
-                              Boost::filesystem
-)
+# target_link_libraries(${CURRENT_TARGET_NAME}
+                      # PRIVATE TBB::tbb
+                              # Boost::serialization
+                              # Boost::program_options
+                              # Boost::thread
+                              # Boost::date_time
+                              # Boost::chrono
+                              # Boost::timer
+                              # Boost::filesystem
+# )
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    get_target_property(TBB_DLL TBB::tbb IMPORTED_LOCATION_RELEASE)
-    DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${TBB_DLL}" ${CMAKE_CURRENT_BINARY_DIR})
-endif()
+# if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    # get_target_property(TBB_DLL TBB::tbb IMPORTED_LOCATION_RELEASE)
+    # DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${TBB_DLL}" ${CMAKE_CURRENT_BINARY_DIR})
+# endif()
 
 set(CURRENT_TARGET_NAME robogami_test)
 
