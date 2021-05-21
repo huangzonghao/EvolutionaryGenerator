@@ -7,7 +7,7 @@ namespace selector {
 // MAP-Elites style: select size(pop) elites
 template <typename Phen>
 struct Uniform {
-    typedef boost::shared_ptr<Phen> indiv_t;
+    typedef std::shared_ptr<Phen> indiv_t;
 
     template <typename EA>
     void operator()(std::vector<indiv_t>& pop, const EA& ea) const

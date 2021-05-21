@@ -26,7 +26,7 @@ class EvoGenQD
                               typename stc::FindExact<EvoGenQD<Phen, Eval, Stat,
                               Selector, Container, FitModifier, Exact>, Exact>::ret>;
     typedef Phen phen_t;
-    typedef boost::shared_ptr<Phen> indiv_t;
+    typedef std::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
 
     EvoGenQD() {}
@@ -38,7 +38,7 @@ class EvoGenQD
         this->_pop.clear();
         _offspring.resize(_pop_size);
         for (auto& indiv : this->_offspring) {
-            indiv = indiv_t(new Phen(_evo_params));
+            indiv = std::make_shared<Phen>(_evo_params);
             indiv->random();
         }
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
@@ -49,7 +49,7 @@ class EvoGenQD
         _offspring.resize(_pop_size);
 
         for (auto& indiv : this->_offspring) {
-            indiv = indiv_t(new Phen(_evo_params));
+            indiv = std::make_shared<Phen>(_evo_params);
             indiv->random();
         }
 
@@ -77,7 +77,7 @@ class EvoGenQD
         std::vector<size_t> a;
         misc::rand_ind(a, _parents.size());
         for (size_t i = 0; i < _pop_size; i += 2) {
-            boost::shared_ptr<Phen> i1, i2;
+            std::shared_ptr<Phen> i1, i2;
             _parents[a[i]]->cross(_parents[a[i + 1]], i1, i2);
             i1->mutate();
             i2->mutate();

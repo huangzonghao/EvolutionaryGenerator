@@ -10,7 +10,6 @@
 #include <filesystem>
 #include <chrono>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/fusion/container.hpp>
 #include <boost/fusion/include/for_each.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -52,7 +51,7 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef typename
     boost::mpl::if_<boost::fusion::traits::is_sequence<FitModifier>,
                     FitModifier, boost::fusion::vector<FitModifier> >::type modifier_t;
-    typedef std::vector<boost::shared_ptr<Phen> > pop_t;
+    typedef std::vector<std::shared_ptr<Phen> > pop_t;
 
     EvoGenEA() : _gen(-1), _stop(false) {}
     EvoGenEA(const EvoParams& evo_params) : _evo_params(evo_params),  _gen(-1), _stop(false) {}
