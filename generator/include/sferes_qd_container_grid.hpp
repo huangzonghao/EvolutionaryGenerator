@@ -24,7 +24,7 @@ class Grid {
 
     static const size_t dim = 2;
 
-    typedef boost::shared_ptr<Phen> indiv_t;
+    typedef std::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
     typedef typename pop_t::iterator it_t;
     typedef typename std::vector<std::vector<indiv_t>> front_t;

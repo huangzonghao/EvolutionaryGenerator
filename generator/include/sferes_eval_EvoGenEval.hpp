@@ -3,7 +3,6 @@
 #define SFERES_EVAL_EVOGENEVAL_HPP_LJHETCPM
 #include <thread>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
 #include "SimulationManager.h"
 #include "SimulatorParams.h"
@@ -53,7 +52,7 @@ class EvoGenEval {
     }
 
     template<typename Phen>
-    void eval_kernel(const std::vector<boost::shared_ptr<Phen> >& pop,
+    void eval_kernel(const std::vector<std::shared_ptr<Phen> >& pop,
                      const std::shared_ptr<SimulationManager>& sm,
                      size_t start_idx, size_t end_idx)
     {
@@ -64,7 +63,7 @@ class EvoGenEval {
     }
 
     template<typename Phen>
-    void eval(std::vector<boost::shared_ptr<Phen> >& pop, size_t begin, size_t end)
+    void eval(std::vector<std::shared_ptr<Phen> >& pop, size_t begin, size_t end)
     {
         assert(pop.size());
         assert(begin < pop.size());

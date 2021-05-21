@@ -2,7 +2,6 @@
 #define SFERES_PHEN_EVOGENPHEN_HPP_OZY0FBGR
 #include <vector>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
 
 #include "EvoParams.h"
@@ -31,13 +30,13 @@ class EvoGenPhen {
     void mutate() { this->_gen.mutate(); }
     void random() { this->_gen.random(); }
 
-    void cross(const boost::shared_ptr<EvoGenPhen> i2,
-               boost::shared_ptr<EvoGenPhen>& o1,
-               boost::shared_ptr<EvoGenPhen>& o2) {
+    void cross(const std::shared_ptr<EvoGenPhen> i2,
+               std::shared_ptr<EvoGenPhen>& o1,
+               std::shared_ptr<EvoGenPhen>& o2) {
         if (!o1)
-            o1 = boost::shared_ptr<EvoGenPhen>(new EvoGenPhen(_max_p, _min_p));
+            o1 = std::make_shared<EvoGenPhen>(_max_p, _min_p);
         if (!o2)
-            o2 = boost::shared_ptr<EvoGenPhen>(new EvoGenPhen(_max_p, _min_p));
+            o2 = std::make_shared<EvoGenPhen>(_max_p, _min_p);
         _gen.cross(i2->gen(), o1->gen(), o2->gen());
     }
 
