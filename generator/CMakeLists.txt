@@ -43,17 +43,6 @@ else()
     message(STATUS "Robogami-UI Found")
 endif()
 
-if (NOT DEFINED SFERES2_INCLUDE_DIR)
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/sferes2/.git)
-        execute_process(COMMAND git submodule update --init --depth 1 -- sferes2
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    endif()
-    set(SFERES2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sferes2 CACHE PATH "sferes2 include directory")
-    message(STATUS "sferes2 Configured")
-else()
-    message(STATUS "sferes2 Found")
-endif()
-
 add_subdirectory(Robogami/Backend)
 
 #######################################################################
@@ -100,39 +89,9 @@ target_link_libraries(${CURRENT_TARGET_NAME}
 
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${EIGEN3_INCLUDE_DIR}
-                                  ${SFERES2_INCLUDE_DIR}
                                   ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/sferes_utils
                                   ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE NO_PARALLEL)
-
-# set(CURRENT_TARGET_NAME sferes_test)
-
-# add_executable(${CURRENT_TARGET_NAME} src/sferes_test.cpp)
-
-# target_include_directories(${CURRENT_TARGET_NAME}
-                           # PRIVATE ${SFERES2_INCLUDE_DIR}
-                                   # ${EIGEN3_INCLUDE_DIR}
-                                   # ${Boost_INCLUDE_DIRS}
-# )
-
-# target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE NO_PARALLEL)
-
-# target_link_libraries(${CURRENT_TARGET_NAME}
-                      # PRIVATE TBB::tbb
-                              # Boost::serialization
-                              # Boost::program_options
-                              # Boost::thread
-                              # Boost::date_time
-                              # Boost::chrono
-                              # Boost::timer
-                              # Boost::filesystem
-# )
-
-# if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    # get_target_property(TBB_DLL TBB::tbb IMPORTED_LOCATION_RELEASE)
-    # DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${TBB_DLL}" ${CMAKE_CURRENT_BINARY_DIR})
-# endif()
 
 set(CURRENT_TARGET_NAME robogami_test)
 

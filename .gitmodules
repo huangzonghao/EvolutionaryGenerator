@@ -7,9 +7,6 @@
 [submodule "Robogami/UI"]
 	path = generator/Robogami/UI
 	url = https://git.sung.seas.upenn.edu/robogami/robogami-ui.git
-[submodule "sferes2"]
-	path = generator/sferes2
-	url = https://git.sung.seas.upenn.edu/robogami/sferes2.git
 [submodule "thirdparty/urdfdom"]
 	path = simulator/thirdparty/urdfdom
 	url = https://github.com/ros/urdfdom.git

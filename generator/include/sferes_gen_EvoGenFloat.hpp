@@ -5,9 +5,10 @@
 #include <vector>
 #include <limits>
 #include <iostream>
+#include <algorithm>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <sferes/misc.hpp>
+#include "rand.hpp"
 
 namespace sferes {
 namespace gen {
@@ -34,7 +35,7 @@ struct Mutation_f {
         assert(!std::isnan(delta_i));
         assert(!std::isinf(delta_i));
         double f = ev.data(i) + delta_i;
-        ev.data(i, misc::put_in_range(f, 0.0f, 1.0f));
+        ev.data(i, std::clamp(f, 0.0, 1.0));
     }
 };
 
@@ -70,8 +71,8 @@ struct CrossOver_f {
                     betaq = pow ((1.0/(2.0 - rand * alpha)), (1.0 / (gen_eta_c + 1.0)));
                 double c2 = 0.5 * ((y1 + y2) + betaq * (y2 - y1));
 
-                c1 = misc::put_in_range(c1, gen_yl, gen_yu);
-                c2 = misc::put_in_range(c2, gen_yl, gen_yu);
+                c1 = std::clamp(c1, gen_yl, gen_yu);
+                c2 = std::clamp(c2, gen_yl, gen_yu);
 
                 assert(!std::isnan(c1));
                 assert(!std::isnan(c2));
