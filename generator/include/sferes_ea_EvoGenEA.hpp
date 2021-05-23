@@ -16,8 +16,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 
-#include <sferes/stc.hpp>
-
+#include "stc.hpp"
 #include "EvoParams.h"
 
 #ifndef VERSION
@@ -34,23 +33,12 @@ struct RefreshStat_f {
     template<typename T> void operator() (T & x) const { x.refresh(_ea); }
 };
 
-template<typename E>
-struct ApplyModifier_f {
-    ApplyModifier_f(E &ea) : _ea(ea) {}
-    E& _ea;
-    template<typename T> void operator() (T & x) const { x.apply(_ea); }
-};
-
-template<typename Phen, typename Eval, typename Stat, typename FitModifier,
-         typename Exact = stc::Itself>
+template<typename Phen, typename Eval, typename Stat, typename Exact = stc::Itself>
 class EvoGenEA : public stc::Any<Exact> {
   public:
     typedef Phen phen_t;
     typedef Eval eval_t;
     typedef Stat stat_t;
-    typedef typename
-    boost::mpl::if_<boost::fusion::traits::is_sequence<FitModifier>,
-                    FitModifier, boost::fusion::vector<FitModifier> >::type modifier_t;
     typedef std::vector<std::shared_ptr<Phen> > pop_t;
 
     EvoGenEA() : _gen(-1), _stop(false) {}
@@ -130,18 +118,6 @@ class EvoGenEA : public stc::Any<Exact> {
     const eval_t& eval() const { return _eval; }
     eval_t& eval() { return _eval; }
 
-    //---- modifiers ----
-    const modifier_t& fit_modifier() const { return _fit_modifier; }
-
-    template<int I>
-    const typename boost::fusion::result_of::value_at_c<modifier_t, I>::type& fit_modifier() const {
-        return boost::fusion::at_c<I>(_fit_modifier);
-    }
-
-    void apply_modifier() {
-        boost::fusion::for_each(_fit_modifier, ApplyModifier_f<Exact>(stc::exact(*this)));
-    }
-
     // ---- stats ---
     const stat_t& stat() const { return _stat; }
     // see issue #47
@@ -187,7 +163,6 @@ class EvoGenEA : public stc::Any<Exact> {
     pop_t _pop;
     eval_t _eval;
     stat_t _stat;
-    modifier_t _fit_modifier;
     std::string _res_dir;
     size_t _gen;
     bool _stop;
@@ -277,14 +252,13 @@ class EvoGenEA : public stc::Any<Exact> {
 } // namespace sferes
 
 #define SFERES_EVOGENEA(Class, Parent)                                                         \
-  template<typename Phen, typename Eval, typename Stat, typename FitModifier,                  \
-           typename Exact = stc::Itself>                                                       \
-  class Class : public Parent < Phen, Eval, Stat, FitModifier,                                 \
-  typename stc::FindExact<Class<Phen, Eval, Stat, FitModifier, Exact>, Exact>::ret >
+  template<typename Phen, typename Eval, typename Stat, typename Exact = stc::Itself>          \
+  class Class : public Parent < Phen, Eval, Stat,                                              \
+  typename stc::FindExact<Class<Phen, Eval, Stat, Exact>, Exact>::ret >
 
 // useful to call protected functions of derived classes from the Ea
 #define SFERES_EVOGENEA_FRIEND(Class) \
-      friend class EvoGenEA< Phen, Eval, Stat, FitModifier,                              \
-      typename stc::FindExact<Class<Phen, Eval, Stat, FitModifier, Exact>, Exact>::ret >
+      friend class EvoGenEA< Phen, Eval, Stat,                              \
+      typename stc::FindExact<Class<Phen, Eval, Stat, Exact>, Exact>::ret >
 
 #endif /* end of include guard: SFERES_EA_EVOGENEA_HPP_IKZHM4BW */

@@ -4,9 +4,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
-#include <sferes/modif/dummy.hpp>
-#include <sferes/stc.hpp>
-
+#include "stc.hpp"
 #include "sferes_ea_EvoGenEA.hpp"
 #include "EvoParams.h"
 
@@ -15,16 +13,15 @@ namespace qd {
 
 // Main class
 template <typename Phen, typename Eval, typename Stat, typename Selector,
-          typename Container, typename FitModifier = sferes::modif::Dummy<>,
-          typename Exact = stc::Itself>
+          typename Container, typename Exact = stc::Itself>
 class EvoGenQD
-    : public ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
+    : public ea::EvoGenEA<Phen, Eval, Stat,
             typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, Selector,
-                                             Container, FitModifier, Exact>, Exact>::ret> {
+                                             Container, Exact>, Exact>::ret> {
   public:
-    friend class ea::EvoGenEA<Phen, Eval, Stat, FitModifier,
+    friend class ea::EvoGenEA<Phen, Eval, Stat,
                               typename stc::FindExact<EvoGenQD<Phen, Eval, Stat,
-                              Selector, Container, FitModifier, Exact>, Exact>::ret>;
+                              Selector, Container, Exact>, Exact>::ret>;
     typedef Phen phen_t;
     typedef std::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
@@ -42,7 +39,6 @@ class EvoGenQD
             indiv->random();
         }
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
-        this->apply_modifier();
         _add(_offspring, _added);
 
         this->_parents = this->_offspring;
@@ -54,7 +50,6 @@ class EvoGenQD
         }
 
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
-        this->apply_modifier();
         _add(_offspring, _added);
 
         _container.get_full_content(this->_pop);
@@ -74,7 +69,10 @@ class EvoGenQD
         _offspring.resize(_pop_size);
 
         // Generation of the offspring
-        std::vector<size_t> a;
+        std::vector<size_t> a(_parents.size());
+        for (int i = 0; i < a.size(); ++i)
+            a[i] = i;
+
         misc::rand_ind(a, _parents.size());
         for (size_t i = 0; i < _pop_size; i += 2) {
             std::shared_ptr<Phen> i1, i2;
@@ -89,7 +87,6 @@ class EvoGenQD
 
         // Evaluation of the offspring
         this->_eval_pop(_offspring, 0, _offspring.size());
-        this->apply_modifier();
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);

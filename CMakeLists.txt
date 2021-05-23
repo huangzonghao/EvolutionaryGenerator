@@ -91,8 +91,6 @@ endif()
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS serialization)
-# the rest components are for sferes only
-# find_package(Boost COMPONENTS serialization program_options thread date_time chrono timer filesystem)
 if (NOT Boost_FOUND)
     message(SEND_ERROR "Could not find Boost, set BOOST_ROOT to the Boost base directory containing boost, libs, etc")
     set(BOOST_ROOT "Set Path To Boost Root" CACHE PATH "Boost base directory")
@@ -112,15 +110,6 @@ if (NOT Chrono_FOUND)
     else()
         message(STATUS "Chrono Found")
 endif()
-
-# for sferes only
-# find_package(TBB QUIET)
-# if (NOT TBB_FOUND)
-    # message(SEND_ERROR "Could not find TBB, set TBB_DIR to the directory where TBBConfig.cmake locates")
-    # set(NEED_TO_RETURN True)
-    # else()
-        # message(STATUS "TBB Found")
-# endif()
 
 if (NEED_TO_RETURN)
     message("Some dependencies were not found. Set corresponding variables as mentioned above. If you use cmake-cli, edit entries in the CMakeCache.txt")
