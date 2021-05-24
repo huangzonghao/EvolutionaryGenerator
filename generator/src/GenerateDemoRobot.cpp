@@ -9,10 +9,7 @@
 
 #include "evo_paths.h"
 
-// remember to update these when updating evo side
-constexpr size_t leg_offset = 4;
-constexpr double phen_min = 0.5;
-constexpr double phen_max = 1.5;
+constexpr double leg_length_ref = 0.085 * 1.2;
 
 struct Body {
     double x;
@@ -79,17 +76,21 @@ std::string generate_demo_robot_string(const std::string& mode,
     oss << std::endl;
 
     // chassis
+    Body chassis;
+    chassis.x = 0.6 * dv[0];
+    chassis.y = 0.2 * dv[1];
+    chassis.z = 0.05 * dv[2];
     oss << "<link name = \"chassis\">" << std::endl;
     oss << " <visual>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <geometry>" << std::endl;
-    oss << "    <box size=\"" << 0.3 * dv[0] << " " << 0.2 * dv[1] << " " << 0.05 * dv[2] << "\"/>" << std::endl;
+    oss << "    <box size=\"" << chassis.x << " " << chassis.y << " " << chassis.z << "\"/>" << std::endl;
     oss << "  </geometry>" << std::endl;
     oss << " </visual>" << std::endl;
     oss << " <collision>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <geometry>" << std::endl;
-    oss << "    <box size=\"" << 0.3 * dv[0] << " " << 0.2 * dv[1] << " " << 0.05 * dv[2] << "\"/>" << std::endl;
+    oss << "    <box size=\"" << chassis.x << " " << chassis.y << " " << chassis.z << "\"/>" << std::endl;
     oss << "  </geometry>" << std::endl;
     oss << " </collision>" << std::endl;
     oss << " <inertial>" << std::endl;
@@ -108,22 +109,33 @@ std::string generate_demo_robot_string(const std::string& mode,
     std::string link_name_tmp;
     int num_legs = dv[3];
     int cursor = 5;
+    Body bodies[3];
     for (int i = 0; i < num_legs; ++i) {
         link_z_offset = 0;
         int num_links = dv[cursor];
+        double leg_length = 0;
         for (int j = 0; j < num_links; ++j) {
-            Body link_body = body_selector(dv[cursor+1+j*2]);
+            bodies[j] = body_selector(dv[cursor+1+j*2]);
+            bodies[j].z = bodies[j].z * dv[cursor+1+j*2+1]; // only z is controlled by design vector
+            leg_length += bodies[j].z;
+        }
+        if (leg_length > leg_length_ref) {
+            double rate = leg_length_ref / leg_length;
+            for (int j = 0; j < num_links; ++j)
+                bodies[j].z = bodies[j].z * rate;
+        }
+        for (int j = 0; j < num_links; ++j) {
             oss << "<link name = \"leg_" << i << "-" << j << "\">" << std::endl;
             oss << " <visual>" << std::endl;
-            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_body.z * dv[cursor+1+j*2+1] * -0.5 << "\" />" << std::endl;
+            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << bodies[j].z * -0.5 << "\" />" << std::endl;
             oss << "  <geometry>" << std::endl;
-            oss << "    <box size=\"" << link_body.x << " " << link_body.y << " " <<  link_body.z * dv[cursor+1+j*2+1] << "\"/>" << std::endl;
+            oss << "    <box size=\"" << bodies[j].x << " " << bodies[j].y << " " <<  bodies[j].z << "\"/>" << std::endl;
             oss << "  </geometry>" << std::endl;
             oss << " </visual>" << std::endl;
             oss << " <collision>" << std::endl;
-            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_body.z * dv[cursor+1+j*2+1] * -0.5 << "\" />" << std::endl;
+            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << bodies[j].z * -0.5 << "\" />" << std::endl;
             oss << "  <geometry>" << std::endl;
-            oss << "    <box size=\"" << link_body.x << " " << link_body.y << " " <<  link_body.z * dv[cursor+1+j*2+1] << "\"/>" << std::endl;
+            oss << "    <box size=\"" << bodies[j].x << " " << bodies[j].y << " " <<  bodies[j].z << "\"/>" << std::endl;
             oss << "  </geometry>" << std::endl;
             oss << " </collision>" << std::endl;
             oss << " <inertial>" << std::endl;
@@ -140,11 +152,11 @@ std::string generate_demo_robot_string(const std::string& mode,
                 oss << "  <parent link = \"chassis\"/>" << std::endl;
                 leg_pos_tmp = dv[cursor-1]; // now the pos gene is in [0, 1]
                 if (leg_pos_tmp < 0.5) {
-                    leg_pos_x_tmp = (0.25 - leg_pos_tmp) * 4 * (0.3 * dv[0] / 2);
-                    leg_pos_y_tmp = 0.2 * dv[1] / 2 + 0.05;
+                    leg_pos_x_tmp = (0.25 - leg_pos_tmp) * 4 * (chassis.x / 2);
+                    leg_pos_y_tmp = chassis.y / 2 + 0.05;
                 } else {
-                    leg_pos_x_tmp = (leg_pos_tmp - 0.75) * 4 * (0.3 * dv[0] / 2);
-                    leg_pos_y_tmp = -(0.2 * dv[1] / 2 + 0.05);
+                    leg_pos_x_tmp = (leg_pos_tmp - 0.75) * 4 * (chassis.x / 2);
+                    leg_pos_y_tmp = -(chassis.y / 2 + 0.05);
                 }
             } else {
                 oss << "<joint name = \"leg_" << i << "-" << j - 1 << "_leg_" << i << "-" << j << "\" type = \"continuous\">" << std::endl;
@@ -157,7 +169,7 @@ std::string generate_demo_robot_string(const std::string& mode,
             oss << "   <axis xyz = \"0 1 0\" />" << std::endl;
             oss << "</joint>" << std::endl;
             oss << std::endl;
-            link_z_offset = -(link_body.z * dv[cursor+1+j*2+1] + 0.01);
+            link_z_offset = -(bodies[j].z + 0.01);
         } // for links
         cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
     } // for legs
