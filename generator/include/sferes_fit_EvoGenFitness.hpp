@@ -45,7 +45,9 @@ class EvoGenFitness {
     template <typename Indiv>
     void update_desc(Indiv& ind) {
         _desc[0] = ind.gen().data(0);
-        _desc[1] = ind.gen().data(3);
+        _desc[1] = ind.gen().size() - 10; // lengeth of gen [10, 25]
+        // TODO: better handling the map size
+        _desc[1] = _desc[1] / 20;
     }
 
     template<class Archive>
