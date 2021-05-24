@@ -31,8 +31,20 @@ class EvoGenFitness {
     void eval(Indiv& ind, SimulationManager& sm) {
 
         sm.RemoveAllMotors();
-        for (int i = 0; i < ind.data(3); ++i)
+        int num_legs = ind.data(3);
+        int num_links;
+        int cursor = 5;
+        for (int i = 0; i < num_legs; ++i) {
+            num_links = ind.data(cursor);
             sm.AddMotor("MOTOR", "chassis", "chassis_leg_" + std::to_string(i) + "-0", 1,0.1,0.1,0.1);
+            for (int j = 1; j < num_links; ++j) {
+                sm.AddMotor("MOTOR", "chassis", "leg_" + std::to_string(i) +
+                                                "-" + std::to_string(j - 1) +
+                                                "_leg_" + std::to_string(i) +
+                                                "-" + std::to_string(j), 1,0.1,0.1,0.1);
+            }
+            cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
+        }
 
         sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();
