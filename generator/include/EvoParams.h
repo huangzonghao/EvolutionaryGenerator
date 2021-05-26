@@ -18,6 +18,7 @@ class EvoParams {
     const double phen_data_min() const { return phen_data_min_; }
     const double phen_data_max() const { return phen_data_max_; }
     const std::vector<size_t>& grid_shape() const { return grid_shape_; }
+    bool output_enabled() const { return enable_output_; }
 
     void set_nb_gen(size_t nb_gen) { nb_gen_ = nb_gen; }
 
@@ -26,6 +27,7 @@ class EvoParams {
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
+        ar & BOOST_SERIALIZATION_NVP(enable_output_);
         ar & BOOST_SERIALIZATION_NVP(rand_seed_);
         ar & BOOST_SERIALIZATION_NVP(nb_gen_);
         ar & BOOST_SERIALIZATION_NVP(init_size_);
@@ -38,6 +40,7 @@ class EvoParams {
         ar & BOOST_SERIALIZATION_NVP(grid_shape_);
     }
   private:
+    bool enable_output_ = true;
     size_t rand_seed_ = 1;
     size_t nb_gen_ = 30;
     size_t init_size_ = 30;

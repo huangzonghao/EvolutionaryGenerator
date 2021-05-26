@@ -41,8 +41,8 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef Stat stat_t;
     typedef std::vector<std::shared_ptr<Phen> > pop_t;
 
-    EvoGenEA() : _gen(-1), _stop(false) {}
-    EvoGenEA(const EvoParams& evo_params) : _evo_params(evo_params),  _gen(-1), _stop(false) {}
+    EvoGenEA() {}
+    EvoGenEA(const EvoParams& evo_params) : _evo_params(evo_params) {}
 
     void run(const std::string& exp_name = "") {
         _populate_params();
@@ -140,7 +140,6 @@ class EvoGenEA : public stc::Any<Exact> {
     const std::string& res_dir() const { return _res_dir; }
     void set_res_dir(const std::string& new_dir) {
         _res_dir = new_dir;
-        _make_res_dir();
     }
     size_t gen() const { return _gen; }
     void set_gen(unsigned g) { _gen = g; }
@@ -164,8 +163,8 @@ class EvoGenEA : public stc::Any<Exact> {
     eval_t _eval;
     stat_t _stat;
     std::string _res_dir;
-    size_t _gen;
-    bool _stop;
+    size_t _gen = -1;
+    bool _stop = false;
     std::string _exp_name;
 
     std::chrono::steady_clock::time_point tik;
@@ -185,6 +184,8 @@ class EvoGenEA : public stc::Any<Exact> {
     // been interrupted
     // typical values: "running", "interrupted", "finished"
     void _set_status(const std::string& status) const {
+        if (_progress_dump_period == -1)
+            return;
         std::string s = _res_dir + "/status.txt";
         std::ofstream ofs(s.c_str());
         ofs << status;
@@ -198,6 +199,8 @@ class EvoGenEA : public stc::Any<Exact> {
     // (in that case, DO NOT FORGET to add SFERES_EA_FRIEND(YouAlgo);)
     void _set_pop(const pop_t& p) {}
     void _make_res_dir() {
+        if (_progress_dump_period == -1)
+            return;
         if (_res_dir.empty()) {
             time_t t = time(0);
             char time_buffer [80];
@@ -210,7 +213,11 @@ class EvoGenEA : public stc::Any<Exact> {
         std::filesystem::create_directory(_res_dir + "/dumps");
         boost::fusion::at_c<0>(_stat).make_stat_dir(*this);
     }
-    void _dump_config() const { _evo_params.Save(_res_dir + "/evo_params.xml"); }
+    void _dump_config() const {
+        if (_progress_dump_period == -1)
+            return;
+        _evo_params.Save(_res_dir + "/evo_params.xml");
+    }
     void _load_config(const std::string& fname) { _evo_params.Load(fname); }
     void _dump_state() const {
         if (_progress_dump_period == -1)
@@ -242,7 +249,10 @@ class EvoGenEA : public stc::Any<Exact> {
     void _load_state_extra(boost::archive::binary_iarchive& ia) {}
     void _populate_params() {
         _nb_gen = _evo_params.nb_gen();
-        _progress_dump_period = _evo_params.progress_dump_period();
+        if (_evo_params.output_enabled())
+            _progress_dump_period = _evo_params.progress_dump_period();
+        else
+            _progress_dump_period = -1;
         stc::exact(this)->_populate_params_extra();
     }
     void _populate_params_extra() {}

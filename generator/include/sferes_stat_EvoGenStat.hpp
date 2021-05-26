@@ -24,7 +24,8 @@ class EvoGenStat {
 
     template <typename E> void refresh(const E& ea) {
         // dump population
-        if (ea.gen() % output_write_period_ == 0) {
+        if (output_write_period_ != -1 &&
+            ea.gen() % output_write_period_ == 0) {
             if (output_all_robots_)
                 _write_offspring(ea);
             _write_archive(ea);
@@ -97,12 +98,15 @@ class EvoGenStat {
 
     void set_params(const EvoParams& evo_params) {
         output_all_robots_ = evo_params.output_all_robots();
-        output_write_period_ = evo_params.output_write_period();
+        if (evo_params.output_enabled())
+            output_write_period_ = evo_params.output_write_period();
+        else
+            output_write_period_ = -1;
     }
 
   private:
     bool output_all_robots_ = false;
-    size_t output_write_period_ = 1;
+    size_t output_write_period_ = -1;
 
 }; // EvoGenStat
 
