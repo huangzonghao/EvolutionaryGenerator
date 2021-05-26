@@ -132,12 +132,15 @@ std::string generate_demo_robot_string(const std::string& mode,
             oss << "    <box size=\"" << bodies[j].x << " " << bodies[j].y << " " <<  bodies[j].z << "\"/>" << std::endl;
             oss << "  </geometry>" << std::endl;
             oss << " </visual>" << std::endl;
-            oss << " <collision>" << std::endl;
-            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << bodies[j].z * -0.5 << "\" />" << std::endl;
-            oss << "  <geometry>" << std::endl;
-            oss << "    <box size=\"" << bodies[j].x << " " << bodies[j].y << " " <<  bodies[j].z << "\"/>" << std::endl;
-            oss << "  </geometry>" << std::endl;
-            oss << " </collision>" << std::endl;
+            // only enable collision detection on foot
+            if (j == num_links - 1) {
+                oss << " <collision>" << std::endl;
+                oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << bodies[j].z * -0.5 << "\" />" << std::endl;
+                oss << "  <geometry>" << std::endl;
+                oss << "    <box size=\"" << bodies[j].x << " " << bodies[j].y << " " <<  bodies[j].z << "\"/>" << std::endl;
+                oss << "  </geometry>" << std::endl;
+                oss << " </collision>" << std::endl;
+            }
             oss << " <inertial>" << std::endl;
             oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
             oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
