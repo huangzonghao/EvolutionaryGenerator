@@ -123,7 +123,7 @@ class EvoGenPhen {
     std::vector<double> _phen_vec;
     double _max_p;
     double _min_p;
-    const double pos[3] = {0.125, 0.25, 0.375};
+    const double pos[3] = {0.01, 0.25, 0.49};
 };
 
 template<typename G, typename F>
