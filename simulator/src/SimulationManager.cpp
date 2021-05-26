@@ -90,11 +90,9 @@ void SimulationManager::AddMotor(const std::string& type_name, const std::string
 
 void SimulationManager::AddEvoGenMotor(const std::string& link_name,
                                        size_t leg_id, size_t link_id){
-    // TODO: change motor mass to 0
-    auto motor_tmp = std::make_shared<SimMotor>("MOTOR", "chassis", link_name, 0,0.1,0.1,0.1,0,0,0);
+    // Use light motor in EvoGen
+    auto motor_tmp = std::make_shared<SimMotor>(link_name);
     motors_.push_back(motor_tmp);
-    auxrefs_->insert("chassis");
-
     if (leg_id >= leg_motors_.size())
         leg_motors_.resize(leg_id + 1);
     if (link_id >= leg_motors_[leg_id].size())

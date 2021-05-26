@@ -20,10 +20,10 @@ class SimMotorController {
     static constexpr double pos_I = 0;
     static constexpr double pos_D = 0;
 
-    enum Mode {POSITION, VELOCITY, PHASE};
+    enum Mode {POSITION = 0, VELOCITY, PHASE};
 
     SimMotorController(const std::shared_ptr<chrono::ChLinkMotorRotationTorque>& target_motor);
-    ~SimMotorController(){};
+    ~SimMotorController() {};
 
     void set_vel(double new_vel);
     void set_pos(double new_pos);
@@ -58,10 +58,10 @@ class SimMotorController {
 class SimPayload {
   public:
     // with respect to the parent body frame
-    void SetMass(double new_mass) { mass = new_mass; }
+    void SetMass(double new_mass) { mass_ = new_mass; }
     void SetInertia(double xx, double xy, double xz, double yy, double yz, double zz);
     const std::string& GetTypeName() {return type_name_;}
-    SimPayload();
+    SimPayload() {};
     SimPayload(const std::string& type_name, double mass,
                double size_x, double size_y, double size_z,
                double pos_x, double pos_y, double pos_z);
@@ -69,26 +69,29 @@ class SimPayload {
                double size_x, double size_y, double size_z,
                double pos_x, double pos_y, double pos_z);
     ~SimPayload(){};
-    virtual void AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys) const;
-
-  protected:
+    void AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys) const;
     void AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys,
                      const std::shared_ptr<chrono::ChBody>& parent_body) const;
-    std::string body_name_;
+
+    const std::string& body_name() { return body_name_; }
 
   private:
+    // TODO:: take a look at this body_name, might be useless
+    // Also better handling the light motor!
+    std::string body_name_;
     chrono::ChVector<> ch_pos_;
     chrono::ChMatrix33<> ch_inertia_ {1};
-    double size[3];
-    double mass;
-    bool visible;
-    bool check_collision;
+    double size_[3] = {0, 0, 0};
+    double mass_ = 0;
+    bool visible_ = false;
+    bool check_collision_ = false;;
     std::string type_name_; ///< type name that will be sent to electronic generator
 };
 
-class SimMotor : public SimPayload {
+class SimMotor {
   public:
-
+    // the motor is a light motor if inertial info is not set
+    SimMotor(const std::string& body_name);
     // the motor will actuate the link specified by link_name, and the mass
     // of the motor will be added to the body specified by body_name
     // i.e. the motor actuating the joint between body B and C could be residing
@@ -104,7 +107,8 @@ class SimMotor : public SimPayload {
              double pos_x, double pos_y, double pos_z);
     ~SimMotor(){};
 
-    void AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys) const override;
+    void RemovePayload() { payload_.reset(); }
+    void AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys) const;
     void AddtoSystem(const chrono::ChUrdfDoc& urdf_doc);
     void SetVel(double new_vel);
     void SetPos(double new_pos);
@@ -119,6 +123,9 @@ class SimMotor : public SimPayload {
 
   protected:
     std::string link_name_;
+    std::shared_ptr<SimPayload> payload_; // the motor is a light motor if this pointer is null
+
+    // Following members will be refreshed each time adding to a new system
     std::shared_ptr<SimMotorController> motor_controller_;
     const chrono::ChLinkBodies *chlinkbody_;
     std::shared_ptr<chrono::ChLinkMotorRotationTorque> ch_motor_;
