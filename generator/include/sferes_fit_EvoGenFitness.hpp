@@ -32,13 +32,26 @@ class EvoGenFitness {
 
         sm.RemoveAllMotors();
         int num_links;
+        int num_legs = ind.data(3);
         int cursor = 5;
-        for (int i = 0; i < ind.data(3); ++i) {
+        // the leg order in Phen is: FL FR ML MR BL BR
+        // the leg order in Sim Controller is: FL ML BL BR MR FR
+        // so the conversion happens here
+        for (int i = 0; i < num_legs / 2; ++i) {
             num_links = ind.data(cursor);
-            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(i) + "-0", i, 0);
+            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
             for (int j = 1; j < num_links; ++j) {
-                sm.AddEvoGenMotor("leg_" + std::to_string(i) + "-" + std::to_string(j - 1) +
-                                  "_leg_" + std::to_string(i) + "-" + std::to_string(j), i, j);
+                sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
+                                  "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
+            }
+            cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
+
+            // the mirrored leg
+            num_links = ind.data(cursor);
+            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i + 1) + "-0", num_legs - 1 - i, 0);
+            for (int j = 1; j < num_links; ++j) {
+                sm.AddEvoGenMotor("leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j - 1) +
+                                  "_leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j), num_legs - 1 - i, j);
             }
             cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
         }

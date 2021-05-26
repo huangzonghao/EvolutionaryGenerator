@@ -47,6 +47,7 @@ class EvoGenPhen {
     // the assumptions
     // Here num_legs hold the number of legs on both sides, making it a double of
     // gen::num_legs
+    // Leg order: FL FR ML MR BL BR
     void develop() {
         _phen_vec.clear();
         // body_x, body_y, body_z
