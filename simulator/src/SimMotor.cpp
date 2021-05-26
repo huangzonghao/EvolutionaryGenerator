@@ -91,23 +91,19 @@ double SimMotorController::get_torque() {
     return target_torque_;
 }
 
-SimPayload::SimPayload()
-    :visible(false), check_collision(false), mass(0), size{0,0,0}
-{}
-
 SimPayload::SimPayload(const std::string& type_name, double mass,
                        double size_x, double size_y, double size_z,
                        double pos_x, double pos_y, double pos_z)
-    :type_name_(type_name), visible(false), check_collision(false), mass(mass),
-     size{size_x, size_y, size_z}, ch_pos_(pos_x, pos_y, pos_z)
+    : type_name_(type_name), visible_(false), check_collision_(false), mass_(mass),
+      size_{size_x, size_y, size_z}, ch_pos_(pos_x, pos_y, pos_z)
 {}
 
 SimPayload::SimPayload(const std::string& type_name, const std::string& body_name,
                        double mass, double size_x, double size_y, double size_z,
                        double pos_x, double pos_y, double pos_z)
-    :type_name_(type_name), body_name_(body_name), visible(false),
-     check_collision(false), mass(mass), size{size_x, size_y, size_z},
-     ch_pos_(pos_x, pos_y, pos_z)
+    : type_name_(type_name), body_name_(body_name), visible_(false),
+      check_collision_(false), mass_(mass), size_{size_x, size_y, size_z},
+      ch_pos_(pos_x, pos_y, pos_z)
 {}
 
 void SimPayload::SetInertia(double xx, double xy, double xz,
@@ -129,24 +125,24 @@ void SimPayload::AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys,
                              const std::shared_ptr<chrono::ChBody>& parent_body) const {
     // enabling visualization and collision detection
     // may introduce extra complexity in simulation
-    if (visible){
+    if (visible_){
         auto viasset = chrono_types::make_shared<chrono::ChBoxShape>();
-        viasset->GetBoxGeometry().SetLengths(chrono::ChVector<>(size[0], size[1], size[2]));
+        viasset->GetBoxGeometry().SetLengths(chrono::ChVector<>(size_[0], size_[1], size_[2]));
         viasset->Pos = ch_pos_;
         parent_body->AddAsset(viasset);
     }
-    if (check_collision){
+    if (check_collision_){
         chrono_types::make_shared<chrono::ChMaterialSurfaceNSC>();
         parent_body->GetCollisionModel()->AddBox(chrono_types::make_shared<chrono::ChMaterialSurfaceNSC>(),
-                                                 size[0] / 2, size[1] / 2, size[2] / 2, ch_pos_);
+                                                 size_[0] / 2, size_[1] / 2, size_[2] / 2, ch_pos_);
         parent_body->GetCollisionModel()->BuildModel();
     }
 
     // setup mass and inertia
-    if (mass != 0){
+    if (mass_ != 0){
         chrono::utils::CompositeInertia comp;
         comp.AddComponent(chrono::ChFrame<>(), parent_body->GetMass(), parent_body->GetInertia());
-        comp.AddComponent(chrono::ChFrame<>(ch_pos_), mass, ch_inertia_);
+        comp.AddComponent(chrono::ChFrame<>(ch_pos_), mass_, ch_inertia_);
         parent_body->SetMass(comp.GetMass());
         parent_body->SetInertia(comp.GetInertia());
         // TODO: you need to initialize the object with ref first before you can call this
@@ -155,30 +151,38 @@ void SimPayload::AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys,
     }
 }
 
+SimMotor::SimMotor(const std::string& link_name) : link_name_(link_name) {}
+
 SimMotor::SimMotor(const std::string& type_name, const std::string& link_name,
                    double mass, double size_x, double size_y, double size_z,
                    double pos_x, double pos_y, double pos_z)
-    :SimPayload(type_name, mass, size_x, size_y, size_z, pos_x, pos_y, pos_z),
-     link_name_(link_name)
-{}
+    : link_name_(link_name)
+{
+    payload_ = std::make_shared<SimPayload> (type_name, mass,
+                                             size_x, size_y, size_z,
+                                             pos_x, pos_y, pos_z);
+}
 
 SimMotor::SimMotor(const std::string& type_name, const std::string& body_name,
                    const std::string& link_name, double mass,
                    double size_x, double size_y, double size_z,
                    double pos_x, double pos_y, double pos_z)
-    :SimPayload(type_name, body_name, mass, size_x, size_y, size_z, pos_x, pos_y, pos_z),
-     link_name_(link_name)
-{}
+    : link_name_(link_name)
+{
+    payload_ = std::make_shared<SimPayload> (type_name, body_name, mass,
+                                             size_x, size_y, size_z,
+                                             pos_x, pos_y, pos_z);
+}
 
 void SimMotor::AddtoSystem(const chrono::ChUrdfDoc& urdf_doc) {
     auto& sys = urdf_doc.GetSystem();
     chlinkbody_ = &(urdf_doc.GetLinkBodies(link_name_));
 
-    if (!body_name_.empty()){
-        SimPayload::AddtoSystem(sys);
-    }
-    else {
-        SimPayload::AddtoSystem(sys, chlinkbody_->body2);
+    if (payload_) {
+        if (!payload_->body_name().empty())
+            payload_->AddtoSystem(sys);
+        else
+            payload_->AddtoSystem(sys, chlinkbody_->body2);
     }
 
     ch_motor_ = chrono_types::make_shared<chrono::ChLinkMotorRotationTorque>();
