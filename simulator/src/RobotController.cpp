@@ -10,85 +10,152 @@ RobotController::RobotController(std::vector<std::shared_ptr<SimMotor> > *motors
     motors_(motors), waypoints_(waypoints), type(type){}
 
 bool WheelController::Update(){
-    // if ((robot_body->GetPos() - waypoints_->at(waypoint_idx)).Length() < 2){
-        // if (waypoint_idx < waypoints_->size() - 1){
-            // ++waypoint_idx;
-        // }
-        // else {
-            // return true;
-        // }
-    // }
-
-    // chrono::ChVector<> goal_local =
-        // robot_body->TransformPointParentToLocal(waypoints_->at(waypoint_idx));
-
-    // double yx_ratio = goal_local.y() / (goal_local.x() + 1e-8); // in case x is zero
-
-    // // the head of robot is pointing +x
-    // if (yx_ratio > 0.33){
-        // gait = LEFT2;
-    // }
-    // else if (yx_ratio < -0.33){
-        // gait = RIGHT2;
-    // }
-    // else{
-        // if (goal_local.x() > 0){
-            // gait = FORWARD;
-        // }
-        // else {
-            // gait = BACKWARD;
-        // }
-    // }
-
     gait = FORWARD;
-
     exe_gait();
-
-    for (auto motor : *motors_){
+    for (auto motor : *motors_)
         motor->UpdateTorque();
-    }
 
     return false;
 }
 
 void WheelController::exe_gait(){
-    // if (motors_->size() < 4){
-        // std::cerr << "Error from RobotController: Motor insufficient" << std::endl;
-    // }
-    // motor 0 1 left, 2 3 right
     // negative vel moves the robot forward
     switch(gait){
-        case FORWARD:
-            for (auto& motor : *motors_)
-                motor->SetVel(-6);
-            break;
-        case BACKWARD:
-            for (auto& motor : *motors_)
-                motor->SetVel(6);
-            break;
-        case RIGHT1:
-            motors_->at(0)->SetVel(-6);
-            motors_->at(1)->SetVel(-6);
-            motors_->at(2)->SetVel(6);
-            motors_->at(3)->SetVel(6);
-            break;
-        case LEFT1:
-            motors_->at(0)->SetVel(6);
-            motors_->at(1)->SetVel(6);
-            motors_->at(2)->SetVel(-6);
-            motors_->at(3)->SetVel(-6);
-            break;
-        case RIGHT2:
-            motors_->at(0)->SetVel(-6);
-            motors_->at(1)->SetVel(-6);
-            motors_->at(2)->SetVel(6);
-            motors_->at(3)->SetVel(6);
-            break;
-        case LEFT2:
-            motors_->at(0)->SetVel(6);
-            motors_->at(1)->SetVel(6);
-            motors_->at(2)->SetVel(-6);
-            motors_->at(3)->SetVel(-6);
-            break;
+    case FORWARD:
+        for (auto& motor : *motors_)
+            motor->SetVel(-6);
+        break;
+    case BACKWARD:
+        for (auto& motor : *motors_)
+            motor->SetVel(6);
+        break;
     }
+}
+
+void LegController::SetMotors(const std::vector<std::shared_ptr<SimMotor> >& motors) {
+    motors_ = motors;
+}
+
+void LegController::exe_gait(size_t gait_id) {
+    switch(motors_.size()) {
+    case 1:
+        exe_gait1(gait_id);
+        break;
+    case 2:
+        exe_gait2(gait_id);
+        break;
+    case 3:
+        exe_gait3(gait_id);
+        break;
+    default:
+        std::cout << "Error: Incorrect number of motors in leg" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+void LegController::exe_gait1(size_t gait_id) {
+    motors_[0]->SetVel(-6);
+    // switch (gait_id) {
+    // case 0:
+        // motors_[0]->SetPhase(-0.5);
+        // break;
+    // case 1:
+        // motors_[0]->SetPhase(0.5);
+        // break;
+    // }
+}
+void LegController::exe_gait2(size_t gait_id) {
+    switch (gait_id) {
+    case 0:
+        motors_[0]->SetPhase(-0.3);
+        motors_[1]->SetPhase(0.7);
+        break;
+    case 1:
+        motors_[0]->SetPhase(-0.7);
+        motors_[1]->SetPhase(1);
+        break;
+    }
+}
+
+void LegController::exe_gait3(size_t gait_id) {
+    switch (gait_id) {
+    case 0:
+        motors_[0]->SetPhase(-0.3);
+        motors_[1]->SetPhase(0);
+        motors_[2]->SetPhase(0.7);
+        break;
+    case 1:
+        motors_[0]->SetPhase(-0.7);
+        motors_[1]->SetPhase(0.4);
+        motors_[2]->SetPhase(1);
+        break;
+    }
+}
+
+void EvoGenController::SetLegs(const std::vector<std::vector<std::shared_ptr<SimMotor> > >& leg_motors) {
+    legs_.clear();
+    legs_.resize(leg_motors.size());
+    for (int i = 0; i < leg_motors.size(); ++i) {
+        legs_[i].SetMotors(leg_motors[i]);
+    }
+}
+
+bool EvoGenController::Update() {
+    // make sure all the motors have moved to the right place
+    gait_lock = false;
+    for (auto& motor : *motors_){
+        motor->UpdateTorque();
+        // check whether every motor arrived at target pos
+        gait_lock |= !motor->CheckStatus();
+    }
+    if (gait_lock){
+        // TODO: why do I need this.
+        if (update_counter_++ < 200)
+            return false;
+        update_counter_ = 0;
+    }
+
+    switch (legs_.size()) {
+    case 4:
+        // Four: FL, BL, BR, FR
+        if (gait_ == 0) {
+            legs_[0].exe_gait(0);
+            legs_[1].exe_gait(1);
+            legs_[2].exe_gait(0);
+            legs_[3].exe_gait(1);
+            gait_ = 1;
+        } else {
+            legs_[0].exe_gait(1);
+            legs_[1].exe_gait(0);
+            legs_[2].exe_gait(1);
+            legs_[3].exe_gait(0);
+            gait_ = 0;
+        }
+        break;
+    case 6:
+        // Six:  FL, ML, BL, BR, MR, FR
+        if (gait_ == 0) {
+            legs_[0].exe_gait(0);
+            legs_[1].exe_gait(1);
+            legs_[2].exe_gait(0);
+            legs_[3].exe_gait(1);
+            legs_[4].exe_gait(0);
+            legs_[5].exe_gait(1);
+            gait_ = 1;
+        } else {
+            legs_[0].exe_gait(1);
+            legs_[1].exe_gait(0);
+            legs_[2].exe_gait(1);
+            legs_[3].exe_gait(0);
+            legs_[4].exe_gait(1);
+            legs_[5].exe_gait(0);
+            gait_ = 0;
+        }
+        break;
+    default:
+        std::cout << "Error: Wrong number of legs in controller" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    return false;
 }

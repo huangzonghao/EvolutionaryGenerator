@@ -88,6 +88,20 @@ void SimulationManager::AddMotor(const std::string& type_name, const std::string
     auxrefs_->insert(body_name);
 }
 
+void SimulationManager::AddEvoGenMotor(const std::string& link_name,
+                                       size_t leg_id, size_t link_id){
+    // TODO: change motor mass to 0
+    auto motor_tmp = std::make_shared<SimMotor>("MOTOR", "chassis", link_name, 0,0.1,0.1,0.1,0,0,0);
+    motors_.push_back(motor_tmp);
+    auxrefs_->insert("chassis");
+
+    if (leg_id >= leg_motors_.size())
+        leg_motors_.resize(leg_id + 1);
+    if (link_id >= leg_motors_[leg_id].size())
+        leg_motors_[leg_id].resize(link_id + 1);
+    leg_motors_[leg_id][link_id] = motor_tmp;
+}
+
 void SimulationManager::RemoveLastMotor(){
     if (!motors_.empty())
         motors_.pop_back();
@@ -96,6 +110,7 @@ void SimulationManager::RemoveLastMotor(){
 
 void SimulationManager::RemoveAllMotors(){
     motors_.clear();
+    leg_motors_.clear();
     // TODO: also need to check & remove useless entries in auxrefs_
 }
 
@@ -183,9 +198,9 @@ bool SimulationManager::RunSimulation() {
     for (auto payload : payloads_) payload->AddtoSystem(ch_system_);
     for (auto motor : motors_) motor->AddtoSystem(*urdf_doc_);
 
-    // init controller
-    // deafults to wheel
-    controller_ = std::make_shared<WheelController>(&motors_, &ch_waypoints_, urdf_doc_->GetRootBody());
+    // Set up controller
+    EvoGenController controller(&motors_);
+    controller.SetLegs(leg_motors_);
 
     const std::shared_ptr<ChBody>& camera_body = urdf_doc_->GetCameraBody();
 
@@ -219,7 +234,7 @@ bool SimulationManager::RunSimulation() {
             vis_app.DoStep();
             vis_app.EndScene();
 
-            task_done_ = controller_->Update();
+            task_done_ = controller.Update();
 
             if (do_realtime_) realtime_timer.Spin(step_size_);
         }
@@ -232,7 +247,7 @@ bool SimulationManager::RunSimulation() {
         while(ch_system_->GetChTime() < timeout_ && !task_done_) {
             ch_system_->DoStepDynamics(step_size_);
 
-            task_done_ = controller_->Update();
+            task_done_ = controller.Update();
         }
         tok = std::chrono::steady_clock::now();
     }

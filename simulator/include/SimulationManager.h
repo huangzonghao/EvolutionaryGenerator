@@ -49,6 +49,7 @@ class  SimulationManager {
                   const std::string& link_name, double mass,
                   double size_x, double size_y, double size_z,
                   double pos_x=0, double pos_y=0, double pos_z=0);
+    void AddEvoGenMotor(const std::string& link_name, size_t leg_id, size_t link_id);
     void AddWaypoint(double x, double y, double z);
     void AddWaypoints(const std::shared_ptr<const Eigen::MatrixXd>& waypoints_ptr);
     void RemoveLastMotor();
@@ -86,8 +87,9 @@ class  SimulationManager {
     std::vector<chrono::ChVector<> > ch_waypoints_;
     std::shared_ptr<chrono::ChUrdfDoc> urdf_doc_;
     std::shared_ptr<const Eigen::MatrixXd> eigen_waypoints_;
+    // we need to keep ch_system_ outside of RunSimulation in case we need to get any
+    // post simulation information
     std::shared_ptr<chrono::ChSystem> ch_system_;
-    std::shared_ptr<RobotController> controller_;
     std::shared_ptr<const Eigen::MatrixXd> heightmap_;
 
     bool task_done_ = false;
@@ -95,6 +97,7 @@ class  SimulationManager {
     bool do_realtime_ = false;
     double step_size_;
     double timeout_;
+    double camera_pos_[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)
 
     std::string env_file_;
     // unit: m
@@ -104,8 +107,8 @@ class  SimulationManager {
     chrono::ChQuaternion<> env_rot_ = chrono::QUNIT;
 
     double displacement_ = 0;
-
-    double camera_pos_[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)
+    size_t num_legs_ = 0;
+    std::vector<std::vector<std::shared_ptr<SimMotor> > > leg_motors_;
 
     // names of bodies that would use ChBodyAuxRef
     // this pointer is initialized when a urdf file has been loaded
