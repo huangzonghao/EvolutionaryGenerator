@@ -19,7 +19,7 @@ void SimulatorParams::SetCamera(double from_x, double from_y, double from_z,
     camera_pos[5] = to_z;
 }
 
-bool SimulatorParams::Save(std::string filename) {
+bool SimulatorParams::Save(const std::string& filename) const {
     std::ofstream ofs(filename);
     if (!ofs) {
         std::cerr << "Error: Could not create file " << filename << std::endl;
@@ -30,7 +30,7 @@ bool SimulatorParams::Save(std::string filename) {
     return true;
 }
 
-bool SimulatorParams::Load(std::string filename) {
+bool SimulatorParams::Load(const std::string& filename) {
     std::ifstream ifs(filename);
     if (!ifs) {
         std::cerr << "Error: Could not open file " << filename << std::endl;

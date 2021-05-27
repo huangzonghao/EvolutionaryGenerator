@@ -1,12 +1,14 @@
 // QD algorithm for EvoGen
 #ifndef SFERES_QD_EVOGENQD_HPP_URU8B21T
 #define SFERES_QD_EVOGENQD_HPP_URU8B21T
+#include <filesystem>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
 #include "stc.hpp"
 #include "sferes_ea_EvoGenEA.hpp"
 #include "EvoParams.h"
+#include "SimulatorParams.h"
 
 namespace sferes {
 namespace qd {
@@ -27,7 +29,11 @@ class EvoGenQD
     typedef typename std::vector<indiv_t> pop_t;
 
     EvoGenQD() {}
-    EvoGenQD(const EvoParams& evo_params) : EvoGenEA(evo_params) {}
+    EvoGenQD(const EvoParams& evo_params, const SimulatorParams& sim_params)
+        : EvoGenEA(evo_params), _sim_params(sim_params)
+    {
+        _eval.set_sim_params(_sim_params);
+    }
 
     // Random initialization of _parents and _offspring
     void random_pop() {
@@ -139,6 +145,14 @@ class EvoGenQD
         }
     }
 
+    void _dump_config_extra() const { _sim_params.Save(_res_dir + "/sim_params.xml"); }
+
+    void _load_config_extra(const std::string& evo_params_fname) {
+        std::filesystem::path res_path(evo_params_fname);
+        _sim_params.Load(res_path.parent_path().string() + "/sim_params.xml");
+        _eval.set_sim_params(_sim_params);
+    }
+
     void _load_state_extra(boost::archive::binary_iarchive& ia) {
         for (size_t i = 0; i < this->_pop.size(); ++i) {
             this->_pop[i]->set_params(_evo_params);
@@ -152,6 +166,7 @@ class EvoGenQD
         _container.set_params(_evo_params);
     }
 
+    SimulatorParams _sim_params;
     size_t _pop_size;
 
     Selector _selector;

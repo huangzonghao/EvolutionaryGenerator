@@ -24,11 +24,8 @@ typedef sferes::qd::EvoGenQD<phen_t,
 void EvoGenerator::run() {
     if (!evo_params_.output_enabled())
         std::cout << "Note: Output disabled" << std::endl;
-    qd_t qd(evo_params_);
+    qd_t qd(evo_params_, sim_params_);
     qd.set_res_dir(res_dir_);
-    qd.eval().set_sim_params(sim_params_);
-    if (evo_params_.output_enabled())
-        sim_params_.Save(res_dir_ + "/sim_params.xml");
 
     std::chrono::duration<double> time_span; // in seconds
     std::chrono::steady_clock::time_point tik = std::chrono::steady_clock::now();
@@ -50,9 +47,5 @@ void EvoGenerator::run() {
 // filename should be the path to a valid archive dump file
 void EvoGenerator::resume(const std::string& filename) {
     qd_t qd;
-    SimulatorParams sim_params;
-    std::filesystem::path res_path(filename);
-    sim_params.Load(res_path.parent_path().parent_path().string() + "/sim_params.xml");
-    qd.eval().set_sim_params(sim_params);
     qd.resume(filename);
 }
