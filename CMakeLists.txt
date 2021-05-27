@@ -99,8 +99,10 @@ if (NOT Boost_FOUND)
         message(STATUS "Boost Found")
 endif()
 
+# The postprocess module is not required by this project, but somehow needed
+# to avoid a 'postprocess dll not found' error when using the Chrono 6.0.0 installer.
 find_package(Chrono
-             COMPONENTS Irrlicht Vehicle
+             COMPONENTS Irrlicht Vehicle Postprocess
              CONFIG QUIET)
 
 if (NOT Chrono_FOUND)
