@@ -1,13 +1,13 @@
 #include "RobotController.h"
 
 RobotController::
-RobotController(std::vector<std::shared_ptr<SimMotor> > *motors, ControllerType type):
-    motors_(motors), type(type){}
+RobotController(std::vector<std::shared_ptr<SimMotor> > *motors, ControllerType type)
+    : motors_(motors), type(type) {}
 
 RobotController::RobotController(std::vector<std::shared_ptr<SimMotor> > *motors,
                                  std::vector<chrono::ChVector<> > *waypoints,
-                                 ControllerType type):
-    motors_(motors), waypoints_(waypoints), type(type){}
+                                 ControllerType type)
+    : motors_(motors), waypoints_(waypoints), type(type) {}
 
 bool WheelController::Update(){
     gait = FORWARD;
@@ -54,40 +54,53 @@ void LegController::exe_gait(size_t gait_id) {
 }
 
 void LegController::exe_gait1(size_t gait_id) {
-    motors_[0]->SetVel(-6);
+    motors_[0]->SetVel(3);
     // switch (gait_id) {
     // case 0:
-        // motors_[0]->SetPhase(-0.5);
+        // motors_[0]->SetPhase(0);
         // break;
     // case 1:
-        // motors_[0]->SetPhase(0.5);
+        // motors_[0]->SetPhase(-0.3);
+        // break;
+    // case 2:
+        // motors_[0]->SetPhase(0.3);
         // break;
     // }
 }
+
 void LegController::exe_gait2(size_t gait_id) {
     switch (gait_id) {
-    case 0:
-        motors_[0]->SetPhase(-0.3);
-        motors_[1]->SetPhase(0.7);
+    case 0: // still
+        motors_[0]->SetPhase(-0.4);
+        motors_[1]->SetPhase(0.8);
         break;
-    case 1:
-        motors_[0]->SetPhase(-0.7);
-        motors_[1]->SetPhase(1);
+    case 1: // forward
+        motors_[0]->SetPhase(-0.9);
+        motors_[1]->SetPhase(1.3);
+        break;
+    case 2: // backward
+        motors_[0]->SetPhase(0.4);
+        motors_[1]->SetPhase(0.4);
         break;
     }
 }
 
 void LegController::exe_gait3(size_t gait_id) {
     switch (gait_id) {
-    case 0:
+    case 0: // still
         motors_[0]->SetPhase(-0.3);
-        motors_[1]->SetPhase(0);
-        motors_[2]->SetPhase(0.7);
+        motors_[1]->SetPhase(0.5);
+        motors_[2]->SetPhase(0.4);
         break;
-    case 1:
-        motors_[0]->SetPhase(-0.7);
-        motors_[1]->SetPhase(0.4);
-        motors_[2]->SetPhase(1);
+    case 1: // forward
+        motors_[0]->SetPhase(-0.8);
+        motors_[1]->SetPhase(0.8);
+        motors_[2]->SetPhase(0.8);
+        break;
+    case 2: // backward
+        motors_[0]->SetPhase(0.3);
+        motors_[1]->SetPhase(0.2);
+        motors_[2]->SetPhase(0.2);
         break;
     }
 }
@@ -110,7 +123,7 @@ bool EvoGenController::Update() {
     }
     if (gait_lock){
         // TODO: why do I need this.
-        if (update_counter_++ < 200)
+        if (update_counter_++ < 600)
             return false;
         update_counter_ = 0;
     }
@@ -118,38 +131,60 @@ bool EvoGenController::Update() {
     switch (legs_.size()) {
     case 4:
         // Four: FL, BL, BR, FR
-        if (gait_ == 0) {
+        switch (gait_) {
+        case 0:
             legs_[0].exe_gait(0);
-            legs_[1].exe_gait(1);
-            legs_[2].exe_gait(0);
-            legs_[3].exe_gait(1);
-            gait_ = 1;
-        } else {
-            legs_[0].exe_gait(1);
             legs_[1].exe_gait(0);
-            legs_[2].exe_gait(1);
+            legs_[2].exe_gait(0);
             legs_[3].exe_gait(0);
-            gait_ = 0;
+            gait_ = 1;
+            break;
+        case 1:
+            legs_[0].exe_gait(2);
+            legs_[1].exe_gait(1);
+            legs_[2].exe_gait(2);
+            legs_[3].exe_gait(1);
+            gait_ = 2;
+            break;
+        case 2:
+            legs_[0].exe_gait(1);
+            legs_[1].exe_gait(2);
+            legs_[2].exe_gait(1);
+            legs_[3].exe_gait(2);
+            gait_ = 1;
+            break;
         }
         break;
     case 6:
         // Six:  FL, ML, BL, BR, MR, FR
-        if (gait_ == 0) {
+        switch (gait_) {
+        case 0:
             legs_[0].exe_gait(0);
-            legs_[1].exe_gait(1);
-            legs_[2].exe_gait(0);
-            legs_[3].exe_gait(1);
-            legs_[4].exe_gait(0);
-            legs_[5].exe_gait(1);
-            gait_ = 1;
-        } else {
-            legs_[0].exe_gait(1);
             legs_[1].exe_gait(0);
-            legs_[2].exe_gait(1);
+            legs_[2].exe_gait(0);
             legs_[3].exe_gait(0);
-            legs_[4].exe_gait(1);
+            legs_[4].exe_gait(0);
             legs_[5].exe_gait(0);
-            gait_ = 0;
+            gait_ = 1;
+            break;
+        case 1:
+            legs_[0].exe_gait(2);
+            legs_[1].exe_gait(1);
+            legs_[2].exe_gait(2);
+            legs_[3].exe_gait(1);
+            legs_[4].exe_gait(2);
+            legs_[5].exe_gait(1);
+            gait_ = 2;
+            break;
+        case 2:
+            legs_[0].exe_gait(1);
+            legs_[1].exe_gait(2);
+            legs_[2].exe_gait(1);
+            legs_[3].exe_gait(2);
+            legs_[4].exe_gait(1);
+            legs_[5].exe_gait(2);
+            gait_ = 1;
+            break;
         }
         break;
     default:

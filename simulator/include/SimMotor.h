@@ -13,10 +13,10 @@
 class SimMotorController {
   public:
     static constexpr double pos_thresh = 1e-3;
-    static constexpr double vel_P = 1;
+    static constexpr double vel_P = 10;
     static constexpr double vel_I = 0.3;
     static constexpr double vel_D = 0;
-    static constexpr double pos_P = 1;
+    static constexpr double pos_P = 2;
     static constexpr double pos_I = 0;
     static constexpr double pos_D = 0;
 
@@ -46,7 +46,7 @@ class SimMotorController {
     std::shared_ptr<chrono::ChControllerPID> pos_pid_;
     chrono::ChLinkMotorRotationTorque *ch_motor_;
 
-    double max_pos_control_vel_ = 0.2;
+    double max_pos_control_vel_ = 3;
     double target_pos_ = 0;
     double target_vel_ = 0;
     double target_torque_ = 0;
