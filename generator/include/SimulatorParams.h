@@ -22,8 +22,8 @@ class SimulatorParams {
     void SetCamera(double from_x, double from_y, double from_z,
                    double to_x, double to_y, double to_z);
     friend std::ostream& operator<< (std::ostream &out, const SimulatorParams& sim_params);
-    bool Save(std::string filename);
-    bool Load(std::string filename);
+    bool Save(const std::string& filename) const;
+    bool Load(const std::string& filename);
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version);

@@ -217,8 +217,14 @@ class EvoGenEA : public stc::Any<Exact> {
         if (_progress_dump_period == -1)
             return;
         _evo_params.Save(_res_dir + "/evo_params.xml");
+        stc::exact(this)->_dump_config_extra();
     }
-    void _load_config(const std::string& fname) { _evo_params.Load(fname); }
+    void _dump_config_extra() const {}
+    void _load_config(const std::string& fname) {
+        _evo_params.Load(fname);
+        stc::exact(this)->_load_config_extra(fname);
+    }
+    void _load_config_extra(const std::string& fname) {}
     void _dump_state() const {
         if (_progress_dump_period == -1)
             return;
