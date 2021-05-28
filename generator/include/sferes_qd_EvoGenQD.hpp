@@ -37,9 +37,6 @@ class EvoGenQD
 
     // Random initialization of _parents and _offspring
     void random_pop() {
-        assert(_pop_size != 0);
-        this->_pop.clear();
-        _offspring.resize(_pop_size);
         for (auto& indiv : this->_offspring) {
             indiv = std::make_shared<Phen>(_evo_params);
             indiv->random();
@@ -47,8 +44,7 @@ class EvoGenQD
         this->_eval_pop(this->_offspring, 0, this->_offspring.size());
         _add(_offspring, _added);
 
-        this->_parents = this->_offspring;
-        _offspring.resize(_pop_size);
+        this->_parents.swap(this->_offspring);
 
         for (auto& indiv : this->_offspring) {
             indiv = std::make_shared<Phen>(_evo_params);
@@ -63,16 +59,8 @@ class EvoGenQD
 
     // Main Iteration of the QD algorithm
     void epoch() {
-        assert(_pop_size != 0);
-        _parents.resize(_pop_size);
-
         // Selection of the parents (will fill the _parents vector)
         _selector(_parents, _pop);
-
-        // CLEAR _offspring ONLY after selection, as it can be
-        // used by the selector (via this->_offspring)
-        _offspring.clear();
-        _offspring.resize(_pop_size);
 
         // Generation of the offspring
         std::vector<size_t> a(_parents.size());
@@ -98,7 +86,7 @@ class EvoGenQD
         _add(_offspring, _added, _parents);
 
         // Copy of the containt of the container into the _pop object.
-        _container.get_full_content(this->_pop);
+        _container.get_full_content(_pop);
     }
 
     const Container& container() const { return _container; }
@@ -164,6 +152,14 @@ class EvoGenQD
     void _populate_params_extra() {
         _pop_size = _evo_params.pop_size();
         _container.set_params(_evo_params);
+
+        // reserve space for containers
+        size_t map_capacity = 1;
+        for (auto& dim : _evo_params.grid_shape())
+            map_capacity *= dim;
+        _pop.reserve(map_capacity);
+        _parents.resize(_pop_size);
+        _offspring.resize(_pop_size);
     }
 
     SimulatorParams _sim_params;
