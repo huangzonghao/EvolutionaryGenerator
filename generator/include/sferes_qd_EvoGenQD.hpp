@@ -67,7 +67,7 @@ class EvoGenQD
         _parents.resize(_pop_size);
 
         // Selection of the parents (will fill the _parents vector)
-        _selector(_parents, *this); // not a nice API
+        _selector(_parents, _pop);
 
         // CLEAR _offspring ONLY after selection, as it can be
         // used by the selector (via this->_offspring)
