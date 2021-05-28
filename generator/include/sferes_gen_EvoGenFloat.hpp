@@ -113,7 +113,7 @@ class EvoGenFloat {
         int num_links = 0;
         for (int i = 4; i < _data.size(); i += num_links * 2 + 1) {
             num_links = _data[i];
-            for (int j = 0; j < num_links * 2; ++j) {
+            for (int j = 1; j < num_links * 2 + 1; ++j) {
                 if (misc::rand<double>() < gen_mutation_rate)
                     _mutation_op(*this, i + j); // link id & link scale
             }
