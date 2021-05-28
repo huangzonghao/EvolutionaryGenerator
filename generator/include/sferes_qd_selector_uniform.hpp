@@ -4,18 +4,16 @@ namespace sferes {
 namespace qd {
 namespace selector {
 
-// MAP-Elites style: select size(pop) elites
+// Fill in the shortlist with selected ones from candidates
 template <typename Phen>
 struct Uniform {
     typedef std::shared_ptr<Phen> indiv_t;
 
-    template <typename EA>
-    void operator()(std::vector<indiv_t>& pop, const EA& ea) const
+    void operator()(std::vector<indiv_t>& shortlist,
+                    const std::vector<indiv_t>& candidates) const
     {
-        for (auto& indiv : pop) {
-            int x1 = misc::rand<int>(0, ea.pop().size());
-            indiv = ea.pop()[x1];
-        }
+        for (auto& indiv : shortlist)
+            indiv = candidates[misc::rand<int>(0, candidates.size())];
     }
 };
 
