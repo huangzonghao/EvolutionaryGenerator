@@ -32,7 +32,7 @@ classdef UI < matlab.apps.AppBase
         current_gen_y_idx
         % TODO: should read the following constant values from somewhere
         %     especially the simulator name, which is system dependent
-        params_filename = 'params.csv'
+        params_filename = 'evo_params.xml'
         sim_params_filename = 'sim_params.xml'
         archive_prefix = '/archives/archive_'
         archive_subfix = '.csv'
@@ -47,8 +47,8 @@ classdef UI < matlab.apps.AppBase
         function show_testinfo(app)
             [~, app.ResultNameLabel.Text, ~] = fileparts(app.evo_params.result_path);
             app.ResultInfoTextLabel.Text =...
-                sprintf('Env: %s\n# of Gen: %d\nPop size: %d\nMap size: %dx%d\n',...
-                        app.evo_params.env_name, app.evo_params.nb_gen, app.evo_params.gen_size,...
+                sprintf('# of Gen: %d\nInit size: %d\nPop size: %d\nMap size: %dx%d\n',...
+                        app.evo_params.nb_gen, app.evo_params.init_size, app.evo_params.gen_size,...
                         app.evo_params.griddim_0, app.evo_params.griddim_1);
         end
 
@@ -134,19 +134,14 @@ classdef UI < matlab.apps.AppBase
         % Button pushed function: LoadResultButton
         function LoadResultButtonPushed(app, event)
             result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
-            fid = fopen(fullfile(result_path, app.params_filename));
-            textout = textscan(fid, '%d%d%d%d%d%d%d%d%s%f', 'Delimiter', ',');
+            evo_xml = xml2struct(fullfile(result_path, app.params_filename));
 
             app.evo_params.result_path = result_path;
-            app.evo_params.nb_gen = textout{1};
-            app.evo_params.init_size = textout{2};
-            app.evo_params.gen_size = textout{3};
-            app.evo_params.evogen_dump_period = textout{4};
-            app.evo_params.behav_dim = textout{5};
-            app.evo_params.griddim_0 = textout{6};
-            app.evo_params.griddim_1 = textout{7};
-            % app.evo_params.total_time = textout{10} / 1000;
-            app.evo_params.env_name = '';
+            app.evo_params.nb_gen = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
+            app.evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
+            app.evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
+            app.evo_params.griddim_0 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{1}.Text);
+            app.evo_params.griddim_1 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{2}.Text);
 
             show_testinfo(app);
             load_gen(app, 0);
@@ -201,11 +196,12 @@ classdef UI < matlab.apps.AppBase
             if (idx == -1)
                 app.RobotInfoLabel.Text = "Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty";
             end
-            app.RobotInfoLabel.Text = "Fitness: " + num2str(app.current_gen_archive(idx, 4)) +...
-                                       ", Design vector: " + num2str(app.current_gen_archive(idx, 5:end), '%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f');
+            app.RobotInfoLabel.Text = "Fitness: " + num2str(app.current_gen_archive(idx, 4));
+            dv = app.current_gen_archive(idx, 5:end);
+            dv = dv(~isnan(dv));
             cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " " +...
                       fullfile(app.evo_params.result_path, app.sim_params_filename) + " " +...
-                      num2str(app.current_gen_archive(idx, 5:end));
+                      num2str(dv);
             system(cmd_str);
         end
 
