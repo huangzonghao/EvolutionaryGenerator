@@ -1,6 +1,7 @@
 #ifndef SFERES_QD_CONTAINER_GRID_HPP_UNXK1HEF
 #define SFERES_QD_CONTAINER_GRID_HPP_UNXK1HEF
 // #include <tbb/parallel_for_each.h>
+#include <cmath>
 #include <boost/multi_array.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -34,7 +35,7 @@ class Grid {
     typedef boost::detail::multi_array::index_gen<dim, dim> index_gen_t;
     typedef typename array_t::template const_array_view<dim>::type view_t;
     typedef boost::array<typename array_t::index, dim> behav_index_t;
-    typedef boost::array<float, dim> point_t;
+    typedef boost::array<double, dim> point_t;
 
     behav_index_t grid_shape = {20, 20};
 
@@ -56,17 +57,19 @@ class Grid {
         behav_index_t behav_pos;
         for (size_t i = 0; i < grid_shape.size(); ++i) {
             behav_pos[i] = round(p[i] * (grid_shape[i] - 1));
-            // behav_pos[i] = std::min(behav_pos[i], grid_shape[i] - 1);
             assert(behav_pos[i] < grid_shape[i]);
         }
         return behav_pos;
     }
 
-    void get_full_content(std::vector<indiv_t>& content) const
+    void get_full_content(std::vector<indiv_t>& container) const
     {
-        content.clear();
-        for (const indiv_t* i = _array.data(); i < (_array.data() + _array.num_elements()); ++i)
-            if (*i) content.push_back(*i);
+        container.resize(_num_filled);
+        int counter = 0;
+        for (const indiv_t* ind = _array.data(); ind < (_array.data() + _array.num_elements()); ++ind)
+            if (*ind) container[counter++] = *ind;
+
+        assert(counter + 1 == _num_filled);
     }
 
     bool add(indiv_t i1)
@@ -76,15 +79,24 @@ class Grid {
 
         behav_index_t behav_pos = get_index(i1);
 
-        float epsilon = 0.00;
-        if (!_array(behav_pos) ||
-            i1->fit().value() - _array(behav_pos)->fit().value() > epsilon ||
-            (fabs(i1->fit().value() - _array(behav_pos)->fit().value()) <= epsilon &&
-             _dist_center(i1) < _dist_center(_array(behav_pos)))) {
-            _array(behav_pos) = i1;
-            return true;
+        if (!_array(behav_pos)) {
+            _num_filled++;
+            goto add_to_container;
         }
+        double epsilon = 0.00;
+        if (i1->fit().value() - _array(behav_pos)->fit().value() > epsilon)
+            goto add_to_container;
+        // TODO: why?
+        // same fitness but the features are closer to the center of map
+        if (std::abs(i1->fit().value() - _array(behav_pos)->fit().value()) <= epsilon &&
+            _dist_center(i1) < _dist_center(_array(behav_pos)))
+                goto add_to_container;
+
         return false;
+
+      add_to_container:
+        _array(behav_pos) = i1;
+        return true;
     }
 
     void update(pop_t& offspring, pop_t& parents)
@@ -100,6 +112,7 @@ class Grid {
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
+        ar & BOOST_SERIALIZATION_NVP(_num_filled);
         ar & BOOST_SERIALIZATION_NVP(_array);
     }
 
@@ -108,19 +121,22 @@ class Grid {
     template <typename I> point_t get_point(const I& indiv) const
     {
         point_t p;
-        for (size_t i = 0; i < grid_shape.size(); ++i)
-            p[i] = std::min(1.0, indiv->fit().desc()[i]);
+        for (size_t i = 0; i < grid_shape.size(); ++i) {
+            assert(indiv->fit().desc()[i] >= 0.0);
+            assert(indiv->fit().desc()[i] =< 1.0);
+            p[i] = indiv->fit().desc()[i];
+        }
 
         return p;
     }
 
-    template <typename I> float _dist_center(const I& indiv)
+    template <typename I> double _dist_center(const I& indiv)
     {
         /* Returns distance to center of behavior descriptor cell */
-        float dist = 0.0;
+        double dist = 0.0;
         point_t p = get_point(indiv);
         for (size_t i = 0; i < grid_shape.size(); ++i)
-            dist += pow(p[i] - (float)round(p[i] * (float)(grid_shape[i] - 1)) / (float)(grid_shape[i] - 1), 2);
+            dist += pow(p[i] - (double)round(p[i] * (double)(grid_shape[i] - 1)) / (double)(grid_shape[i] - 1), 2);
 
         dist = sqrt(dist);
         return dist;
@@ -202,6 +218,7 @@ class Grid {
     }
 
     array_t _array;
+    size_t _num_filled = 0;
 };
 
 } // namespace container
