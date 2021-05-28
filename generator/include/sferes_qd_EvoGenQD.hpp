@@ -38,14 +38,14 @@ class EvoGenQD
     // Random initialization of _parents and _offspring
     void random_pop() {
         assert(_init_size != 0);
-        pop_t init_pop(_init_size);
+        _init_pop.resize(_init_size);
 
-        for (auto& indiv : init_pop) {
+        for (auto& indiv : _init_pop) {
             indiv = std::make_shared<Phen>(_evo_params);
             indiv->random();
         }
-        _eval_pop(init_pop, 0, init_pop.size());
-        _add(init_pop, _added);
+        _eval_pop(_init_pop, 0, _init_pop.size());
+        _add(_init_pop, _added);
 
         _container.get_full_content(_pop);
     }
@@ -87,6 +87,7 @@ class EvoGenQD
     pop_t& offspring() { return _offspring; }
     const pop_t& parents() const { return _parents; }
     pop_t& parents() { return _parents; }
+    const pop_t& init_pop() const { return _init_pop; }
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
     const double last_epoch_time() const { return  _last_epoch_time; }
@@ -163,7 +164,9 @@ class EvoGenQD
     Selector _selector;
     Container _container;
 
-    pop_t _offspring, _parents;
+    pop_t _init_pop;
+    pop_t _parents;
+    pop_t _offspring;
     std::vector<bool> _added;
 };
 

@@ -18,8 +18,9 @@ class EvoGenStat {
 
     template <typename E> void init(const E& ea) {
         if (output_all_robots_)
-            _write_parents(ea);
-        refresh(ea);
+            _write_init_pop(ea);
+        _write_archive(ea);
+        _write_progress(ea);
     }
 
     template <typename E> void refresh(const E& ea) {
@@ -34,11 +35,11 @@ class EvoGenStat {
     }
 
     template <typename EA>
-    void _write_parents(const EA& ea) const {
-        std::ofstream ofs(ea.res_dir() + "/all_robots/0_parent.csv");
+    void _write_init_pop(const EA& ea) const {
+        std::ofstream ofs(ea.res_dir() + "/all_robots/0.csv");
         size_t idx = 0;
         ofs.precision(5);
-        for (auto it = ea.parents().begin(); it != ea.parents().end(); ++it) {
+        for (auto it = ea.init_pop().begin(); it != ea.init_pop().end(); ++it) {
             ofs << idx << "," << (*it)->fit().value();
             for (size_t dim = 0; dim < (*it)->size(); ++dim)
                 ofs << "," << (*it)->data(dim);
