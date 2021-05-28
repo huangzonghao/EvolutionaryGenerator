@@ -38,6 +38,7 @@ class EvoParams {
         ar & BOOST_SERIALIZATION_NVP(phen_data_min_);
         ar & BOOST_SERIALIZATION_NVP(phen_data_max_);
         ar & BOOST_SERIALIZATION_NVP(grid_shape_);
+        ar & BOOST_SERIALIZATION_NVP(feature_description_);
     }
   private:
     bool enable_output_ = true;
@@ -51,6 +52,7 @@ class EvoParams {
     double phen_data_min_ = 0.5; // gen data is always in [0, 1]
     double phen_data_max_ = 1.5;
     std::vector<size_t> grid_shape_ = {20, 20};
+    std::vector<std::string> feature_description_;
 };
 
 #endif /* end of include guard: EVOPARAMS_H_XHAR4NLN */

@@ -12,10 +12,6 @@ namespace fit {
 
 class EvoGenFitness {
   public:
-    EvoGenFitness()
-        : _value(0),  _dead(false), _desc(2), _curiosity(0), _lq(0),
-          _novelty(-std::numeric_limits<double>::infinity()) {}
-
     const std::vector<double>& desc() const { return _desc; }
     double novelty() const { return _novelty; }
     void set_novelty(double nov) { _novelty = nov; }
@@ -80,11 +76,11 @@ class EvoGenFitness {
     }
 
   protected:
-    bool _dead;
-    std::vector<double> _desc;
-    double _novelty;
-    double _curiosity;
-    double _lq;
+    bool _dead = false;
+    std::vector<double> _desc(2);
+    double _novelty = -std::numeric_limits<double>::infinity();
+    double _curiosity = 0;
+    double _lq = 0;
     double _value = 0;
 };
 
