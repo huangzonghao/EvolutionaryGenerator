@@ -13,13 +13,8 @@ int main(int argc, char **argv) {
 
     std::string sim_filename(argv[1]);
     std::vector<double> design_vector;
-    for (int i = 2; i < 18; ++i)
+    for (int i = 2; i < argc; ++i)
         design_vector.push_back(std::atof(argv[i]));
-
-    if (design_vector[0] > 1)
-        design_vector[0] = 6;
-    else
-        design_vector[0] = 4;
 
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
@@ -44,8 +39,30 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[2],
                  sim_params.env_rot[3]);
 
-    for (int i = 0; i < design_vector[0]; ++i)
-        sm.AddMotor("MOTOR", "chassis", "chassis_leg_" + std::to_string(i), 1,0.1,0.1,0.1);
+    int num_links;
+    int num_legs = design_vector[3];
+    int cursor = 5;
+    // the leg order in Phen is: FL FR ML MR BL BR
+    // the leg order in Sim Controller is: FL ML BL BR MR FR
+    // so the conversion happens here
+    for (int i = 0; i < num_legs / 2; ++i) {
+        num_links = design_vector[cursor];
+        sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
+        for (int j = 1; j < num_links; ++j) {
+            sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
+                                "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
+        }
+        cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
+
+        // the mirrored leg
+        num_links = design_vector[cursor];
+        sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i + 1) + "-0", num_legs - 1 - i, 0);
+        for (int j = 1; j < num_links; ++j) {
+            sm.AddEvoGenMotor("leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j - 1) +
+                                "_leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j), num_legs - 1 - i, j);
+        }
+        cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
+    }
 
     sm.SetVisualization(true);
     // sm.SetRealTime(true);
