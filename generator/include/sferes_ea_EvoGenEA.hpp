@@ -259,6 +259,7 @@ class EvoGenEA : public stc::Any<Exact> {
             _progress_dump_period = _evo_params.progress_dump_period();
         else
             _progress_dump_period = -1;
+        boost::fusion::at_c<0>(_stat).set_params(_evo_params);
         stc::exact(this)->_populate_params_extra();
     }
     void _populate_params_extra() {}
