@@ -37,24 +37,17 @@ class EvoGenQD
 
     // Random initialization of _parents and _offspring
     void random_pop() {
-        for (auto& indiv : this->_offspring) {
+        assert(_init_size != 0);
+        pop_t init_pop(_init_size);
+
+        for (auto& indiv : init_pop) {
             indiv = std::make_shared<Phen>(_evo_params);
             indiv->random();
         }
-        this->_eval_pop(this->_offspring, 0, this->_offspring.size());
-        _add(_offspring, _added);
+        _eval_pop(init_pop, 0, init_pop.size());
+        _add(init_pop, _added);
 
-        this->_parents.swap(this->_offspring);
-
-        for (auto& indiv : this->_offspring) {
-            indiv = std::make_shared<Phen>(_evo_params);
-            indiv->random();
-        }
-
-        this->_eval_pop(this->_offspring, 0, this->_offspring.size());
-        _add(_offspring, _added);
-
-        _container.get_full_content(this->_pop);
+        _container.get_full_content(_pop);
     }
 
     // Main Iteration of the QD algorithm
@@ -150,6 +143,7 @@ class EvoGenQD
     }
 
     void _populate_params_extra() {
+        _init_size = _evo_params.init_size();
         _pop_size = _evo_params.pop_size();
         _container.set_params(_evo_params);
 
@@ -163,6 +157,7 @@ class EvoGenQD
     }
 
     SimulatorParams _sim_params;
+    size_t _init_size;
     size_t _pop_size;
 
     Selector _selector;
