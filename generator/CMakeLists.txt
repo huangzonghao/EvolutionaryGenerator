@@ -43,7 +43,7 @@ else()
     message(STATUS "Robogami-UI Found")
 endif()
 
-add_subdirectory(Robogami/Backend)
+# add_subdirectory(Robogami/Backend)
 
 #######################################################################
 #                               Targets                               #
@@ -63,7 +63,7 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_qd_container_grid.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_qd_selector_uniform.hpp
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
-    ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
+    # ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
 )
 
 set(Sources
@@ -97,7 +97,7 @@ set(CURRENT_TARGET_NAME robogami_test)
 
 set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
-    ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
+    # ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
     # include/UrdfExporter.h
     include/GenerateDemoRobot.h
 )
@@ -170,6 +170,6 @@ endif()
 
 # copy DLLs for Windows
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
+    # set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()
