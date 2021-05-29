@@ -107,9 +107,9 @@ class EvoGenEA : public stc::Any<Exact> {
     // override _set_pop if you want to customize / add treatments
     // (in that case, DO NOT FORGET to add SFERES_EA_FRIEND(YouAlgo);)
     void set_pop(const pop_t& p) {
-        this->_pop = p;
-        for (size_t i = 0; i < this->_pop.size(); ++i)
-            this->_pop[i]->develop();
+        _pop = p;
+        for (size_t i = 0; i < _pop.size(); ++i)
+            _pop[i]->develop();
         stc::exact(this)->_set_pop(p);
     }
 
@@ -193,7 +193,7 @@ class EvoGenEA : public stc::Any<Exact> {
 
     template<typename P>
     void _eval_pop(P& p, size_t start, size_t end) {
-        this->_eval.eval(p, start, end);
+        _eval.eval(p, start, end);
     }
     // override _set_pop if you want to customize / add treatments
     // (in that case, DO NOT FORGET to add SFERES_EA_FRIEND(YouAlgo);)

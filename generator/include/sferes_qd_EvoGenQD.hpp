@@ -73,7 +73,7 @@ class EvoGenQD
         }
 
         // Evaluation of the offspring
-        this->_eval_pop(_offspring, 0, _offspring.size());
+        _eval_pop(_offspring, 0, _offspring.size());
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);
@@ -136,11 +136,11 @@ class EvoGenQD
     }
 
     void _load_state_extra(boost::archive::binary_iarchive& ia) {
-        for (size_t i = 0; i < this->_pop.size(); ++i) {
-            this->_pop[i]->set_params(_evo_params);
-            this->_pop[i]->develop();
+        for (size_t i = 0; i < _pop.size(); ++i) {
+            _pop[i]->set_params(_evo_params);
+            _pop[i]->develop();
         }
-        _add(this->_pop, _added);
+        _add(_pop, _added);
     }
 
     void _populate_params_extra() {

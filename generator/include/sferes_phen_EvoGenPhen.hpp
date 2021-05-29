@@ -27,8 +27,8 @@ class EvoGenPhen {
 
     Gen& gen()  { return _gen; }
     const Gen& gen() const { return _gen; }
-    void mutate() { this->_gen.mutate(); }
-    void random() { this->_gen.random(); }
+    void mutate() { _gen.mutate(); }
+    void random() { _gen.random(); }
 
     void cross(const std::shared_ptr<EvoGenPhen> i2,
                std::shared_ptr<EvoGenPhen>& o1,

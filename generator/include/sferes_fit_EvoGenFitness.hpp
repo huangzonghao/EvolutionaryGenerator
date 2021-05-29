@@ -25,7 +25,7 @@ class EvoGenFitness {
     void set_local_quality(double lq) { _lq = lq; }
     bool dead() const { return _dead; }
     double value() const { return _value; }
-    void set_value(double val) { this->_value = val; }
+    void set_value(double val) { _value = val; }
 
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
@@ -59,7 +59,7 @@ class EvoGenFitness {
         sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();
 
-        this->_value = sm.GetRootBodyDisplacementX();
+        _value = sm.GetRootBodyDisplacementX();
 
         update_desc(ind);
     }

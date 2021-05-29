@@ -189,7 +189,7 @@ class Grid {
         }
 
         int count = 0;
-        view_t neighborhood = this->get_neighborhood(indiv);
+        view_t neighborhood = get_neighborhood(indiv);
         std::vector<indiv_t> neigh;
         iterate(neighborhood, neigh);
 

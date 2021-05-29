@@ -160,16 +160,16 @@ class EvoGenFloat {
         _check_validity();
     }
 
-    const std::vector<double>& data() const { return this->_data; }
+    const std::vector<double>& data() const { return _data; }
     double data(size_t i) const {
-        assert(this->_data.size());
-        assert(i < this->_data.size());
-        return this->_data[i];
+        assert(_data.size());
+        assert(i < _data.size());
+        return _data[i];
     }
     void data(size_t i, double v) {
-        assert(this->_data.size());
-        assert(i < this->_data.size());
-        this->_data[i] = v;
+        assert(_data.size());
+        assert(i < _data.size());
+        _data[i] = v;
     }
 
     size_t size() const { return _data.size(); }
