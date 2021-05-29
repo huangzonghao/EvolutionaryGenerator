@@ -12,10 +12,6 @@ namespace eval {
 
 class EvoGenEval {
   public:
-    // this constructor is directly called in ea.hpp when initiating the
-    // instance, and would not take any input
-    EvoGenEval() : _nb_evals(0) {}
-
     void set_sim_params(const SimulatorParams& sim_params) {
         if (sim_params.do_viz)
             num_threads = 1;
@@ -96,7 +92,7 @@ class EvoGenEval {
     size_t nb_evals() const { return _nb_evals; }
 
   protected:
-    size_t _nb_evals; // for stat to book the total number of phen that has been evaluated
+    size_t _nb_evals = 0; // for stat to book the total number of phen that has been evaluated
     std::vector<std::shared_ptr<SimulationManager> > sms;
     size_t num_threads;
     std::vector<std::shared_ptr<std::thread> > threads;
