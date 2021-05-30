@@ -24,6 +24,8 @@ typedef sferes::qd::EvoGenQD<phen_t,
 void EvoGenerator::run() {
     if (!evo_params_.output_enabled())
         std::cout << "Note: Output disabled" << std::endl;
+    evo_params_.feature_description().emplace_back(sferes::fit::EvoGenFitness::descriptor_name[0]);
+    evo_params_.feature_description().emplace_back(sferes::fit::EvoGenFitness::descriptor_name[1]);
     qd_t qd(evo_params_, sim_params_);
     qd.set_res_dir(res_dir_);
 

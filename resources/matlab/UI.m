@@ -61,6 +61,8 @@ classdef UI < matlab.apps.AppBase
             y = round(y * double(app.evo_params.griddim_1 - 1)) + 1;
             app.archive_map(sub2ind(size(app.archive_map), x, y)) = fitness;
             surf(app.MapViewerAxes, app.archive_map);
+            xlabel(app.MapViewerAxes, app.evo_params.feature_description2); % x, y flipped in plot
+            ylabel(app.MapViewerAxes, app.evo_params.feature_description1);
             app.GenInfoLabel.Text =...
                 sprintf('Gen: %d/%d, Archive size: %d/%d',...
                 app.current_gen, app.evo_params.nb_gen, size(x, 1),...
@@ -142,6 +144,8 @@ classdef UI < matlab.apps.AppBase
             app.evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
             app.evo_params.griddim_0 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{1}.Text);
             app.evo_params.griddim_1 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{2}.Text);
+            app.evo_params.feature_description1 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{1}.Text;
+            app.evo_params.feature_description2= evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{2}.Text;
 
             show_testinfo(app);
             load_gen(app, 0);
