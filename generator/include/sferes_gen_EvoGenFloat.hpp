@@ -112,6 +112,8 @@ class EvoGenFloat {
   public:
     EvoGenFloat() {}
 
+    // TODO: the mutation code could look much cleaner if all genomes have containers
+    // with same size regardless of genome's actual length
     void mutate() {
         std::vector<double> tmp_data;
         // TODO: how to improve memory management?
@@ -136,24 +138,54 @@ class EvoGenFloat {
         if (num_legs >= tmp_num_legs) {
             for (int i = 0; i < tmp_num_legs; ++i) {
                 num_links = _data[cursor];
-                tmp_data.push_back(num_links);
-                for (int j = 0; j < num_links * 2; ++j) {
-                    if (misc::rand<double>() < gen_mutation_rate)
-                        tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
-                    else
-                        tmp_data.push_back(_data[cursor + j + 1]);
+                tmp_num_links = num_links;
+                if (misc::rand<double>() < gen_mutation_rate)
+                    tmp_num_links = std::clamp(_mutation_op(tmp_num_links), min_num_links, max_num_links);
+                tmp_data.push_back(tmp_num_links);
+                if (num_links >= tmp_num_links) {
+                    for (int j = 0; j < tmp_num_links * 2; ++j) {
+                        if (misc::rand<double>() < gen_mutation_rate)
+                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
+                        else
+                            tmp_data.push_back(_data[cursor + j + 1]);
+                    }
+                } else {
+                    for (int j = 0; j < num_links * 2; ++j) {
+                        if (misc::rand<double>() < gen_mutation_rate)
+                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
+                        else
+                            tmp_data.push_back(_data[cursor + j + 1]);
+                    }
+                    // add new links
+                    for (int j = 0; j < (tmp_num_links - num_links) * 2; ++j)
+                        tmp_data.push_back(misc::rand<double>());
                 }
-                cursor += num_links * 2 + 1;
+                cursor += num_links * 2 + 1; // cursor tracks the original genome
             }
         } else {
             for (int i = 0; i < num_legs; ++i) {
                 num_links = _data[cursor];
-                tmp_data.push_back(num_links);
-                for (int j = 0; j < num_links * 2; ++j) {
-                    if (misc::rand<double>() < gen_mutation_rate)
-                        tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
-                    else
-                        tmp_data.push_back(_data[cursor + j + 1]);
+                tmp_num_links = num_links;
+                if (misc::rand<double>() < gen_mutation_rate)
+                    tmp_num_links = std::clamp(_mutation_op(tmp_num_links), min_num_links, max_num_links);
+                tmp_data.push_back(tmp_num_links);
+                if (num_links >= tmp_num_links) {
+                    for (int j = 0; j < tmp_num_links * 2; ++j) {
+                        if (misc::rand<double>() < gen_mutation_rate)
+                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
+                        else
+                            tmp_data.push_back(_data[cursor + j + 1]);
+                    }
+                } else {
+                    for (int j = 0; j < num_links * 2; ++j) {
+                        if (misc::rand<double>() < gen_mutation_rate)
+                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
+                        else
+                            tmp_data.push_back(_data[cursor + j + 1]);
+                    }
+                    // add new links
+                    for (int j = 0; j < (tmp_num_links - num_links) * 2; ++j)
+                        tmp_data.push_back(misc::rand<double>());
                 }
                 cursor += num_links * 2 + 1;
             }
