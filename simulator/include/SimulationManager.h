@@ -1,15 +1,14 @@
 #ifndef SIMULATIONMANAGER_H_TQPVGDZV
 #define SIMULATIONMANAGER_H_TQPVGDZV
+#include <Eigen/Core>
+#include <chrono/physics/ChSystem.h>
 
-#include "chrono/physics/ChSystem.h"
 #include "SimMotor.h"
 #include "RobotController.h"
-#include "ChUrdfDoc.h"
-#include <Eigen/Core>
+#include "ChRobot.h"
 
 class  SimulationManager {
   public:
-
     enum SystemType {NSC, SMC};
 
     SimulationManager(double step_size=0.005,
@@ -28,6 +27,8 @@ class  SimulationManager {
     void SetSystemType(SystemType new_type) {system_type_ = new_type;}
     void LoadUrdfFile(const std::string& filename);
     void LoadUrdfString(const std::string& urdfstring);
+    void LoadRobogamiProtoFile(const std::string& filename);
+    void LoadRobogamiRobot();
     void DisableEnv() {load_map_ = false;}
     // force user to input xyz dimension of the map, especially for bmp and urdf maps
     // use "ground" for the default flat ground
@@ -42,9 +43,6 @@ class  SimulationManager {
     void AddComponent(const std::string& type_name, const std::string& body_name,
                       double mass, double size_x, double size_y, double size_z,
                       double pos_x=0, double pos_y=0, double pos_z=0);
-    void AddMotor(const std::string& type_name, const std::string& link_name,
-                  double mass, double size_x, double size_y, double size_z,
-                  double pos_x=0, double pos_y=0, double pos_z=0);
     void AddMotor(const std::string& type_name, const std::string& body_name,
                   const std::string& link_name, double mass,
                   double size_x, double size_y, double size_z,
@@ -85,7 +83,7 @@ class  SimulationManager {
     std::vector<std::shared_ptr<SimPayload> > payloads_;
     std::vector<std::shared_ptr<SimMotor> > motors_;
     std::vector<chrono::ChVector<> > ch_waypoints_;
-    std::shared_ptr<chrono::ChUrdfDoc> urdf_doc_;
+    std::shared_ptr<chrono::ChRobot> robot_doc_;
     std::shared_ptr<const Eigen::MatrixXd> eigen_waypoints_;
     // we need to keep ch_system_ outside of RunSimulation in case we need to get any
     // post simulation information

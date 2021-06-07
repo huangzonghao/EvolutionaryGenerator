@@ -174,31 +174,31 @@ SimMotor::SimMotor(const std::string& type_name, const std::string& body_name,
                                              pos_x, pos_y, pos_z);
 }
 
-void SimMotor::AddtoSystem(const chrono::ChUrdfDoc& urdf_doc) {
-    auto& sys = urdf_doc.GetSystem();
-    chlinkbody_ = &(urdf_doc.GetLinkBodies(link_name_));
+void SimMotor::AddtoSystem(const chrono::ChRobot& robot_doc) {
+    add_to_system(robot_doc.GetSystem(), robot_doc.GetLinkBodies(link_name_));
+}
+
+void SimMotor::add_to_system(const std::shared_ptr<chrono::ChSystem>& sys,
+                             const chrono::ChLinkBodies& chlinkbody) {
 
     if (payload_) {
         if (!payload_->body_name().empty())
             payload_->AddtoSystem(sys);
         else
-            payload_->AddtoSystem(sys, chlinkbody_->body2);
+            payload_->AddtoSystem(sys, chlinkbody.body2);
     }
 
     ch_motor_ = chrono_types::make_shared<chrono::ChLinkMotorRotationTorque>();
 
     // flip z axis of motor frame, so that a positive speed would make robot go forward
-    chrono::ChFrame<> motor_frame(chlinkbody_->link->GetLinkAbsoluteCoords());
+    chrono::ChFrame<> motor_frame(chlinkbody.link->GetLinkAbsoluteCoords());
     // motor_frame.ConcatenatePostTransformation(chrono::ChFrame<>(chrono::ChVector<>(), chrono::Q_FLIP_AROUND_X));
-    ch_motor_->Initialize(chlinkbody_->body1, chlinkbody_->body2, motor_frame);
+    ch_motor_->Initialize(chlinkbody.body1, chlinkbody.body2, motor_frame);
     ch_func_ = chrono_types::make_shared<chrono::ChFunction_Setpoint>();
     ch_motor_->SetMotorFunction(ch_func_);
     sys->AddLink(ch_motor_);
 
     motor_controller_ = std::make_shared<SimMotorController>(ch_motor_);
-}
-void SimMotor::AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys) const {
-    std::cerr << "Error: Need to pass on the ChUrdfDoc when adding SimMotor to system" << std::endl;
 }
 
 void SimMotor::SetVel(double new_vel){

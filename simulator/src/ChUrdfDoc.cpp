@@ -10,7 +10,7 @@
 namespace chrono {
 
 std::string ChUrdfDoc::urdf_abs_path(const std::string& relative_path){
-    std::filesystem::path abs_path(urdf_file_);
+    std::filesystem::path abs_path(robot_file_);
     abs_path.remove_filename();
     abs_path /= relative_path;
     return abs_path.string();
@@ -297,7 +297,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
     // TODO: Chrono supports different types of joints, blindly choose ChLinkLock family for now
     if (u_parent_joint){
         std::shared_ptr<ChLinkLock>& ch_parent_link = process_joints(u_parent_joint, ch_parent_body, ch_body);
-        ch_link_bodies_.emplace(u_parent_joint->name, ChLinkBodies{ch_body, ch_parent_body, ch_parent_link});
+        ch_link_bodies_.emplace(u_parent_joint->name, ChLinkBodies{ch_parent_link, ch_body, ch_parent_body});
     }
 
     body_list_->push_back(ch_body);
@@ -414,12 +414,12 @@ std::shared_ptr<ChLinkLock> ChUrdfDoc::process_joints(const urdf::JointConstShar
     return ch_link;
 }
 
-bool ChUrdfDoc::LoadUrdfFile(const std::string& filename) {
-    if (urdf_file_ == filename){
+bool ChUrdfDoc::LoadRobotFile(const std::string& filename) {
+    if (robot_file_ == filename){
         return true;
     }
 
-    urdf_file_ = filename;
+    robot_file_ = filename;
     urdf_robot_ = urdf::parseURDFFile(filename);
     u_root_link_ = urdf_robot_->getRoot();
 
@@ -430,12 +430,12 @@ bool ChUrdfDoc::LoadUrdfFile(const std::string& filename) {
     return true;
 }
 
-bool ChUrdfDoc::LoadUrdfString(const std::string& urdfstring) {
-    if (urdf_string_ == urdfstring){
+bool ChUrdfDoc::LoadRobotString(const std::string& urdfstring) {
+    if (robot_string_ == urdfstring){
         return true;
     }
 
-    urdf_string_ = urdfstring;
+    robot_string_ = urdfstring;
     urdf_robot_ = urdf::parseURDF(urdfstring);
     u_root_link_ = urdf_robot_->getRoot();
 
@@ -446,14 +446,6 @@ bool ChUrdfDoc::LoadUrdfString(const std::string& urdfstring) {
     return true;
 }
 
-bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, double x, double y, double z, double rx, double ry, double rz) {
-    return AddtoSystem(sys, ChCoordsys<>(ChVector<>(x, y, z), Q_from_Euler123(ChVector<>(rx, ry, rz))));
-}
-
-bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChVector<>& init_pos) {
-    return AddtoSystem(sys, ChCoordsys<>(init_pos, QUNIT));
-}
-
 bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoordsys<>& init_coord) {
     auto init_pos_body = chrono_types::make_shared<ChBody>();
     init_pos_body->SetCoord(init_coord);
@@ -462,7 +454,7 @@ bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoords
 
 bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::shared_ptr<ChBody>& init_pos_body) {
     if (!urdf_robot_){
-        std::cerr << "ERROR: No URDF loaded, call LoadUrdfString or LoadUrdfFile first" << std::endl;
+        std::cerr << "ERROR: No URDF loaded, call LoadRobotString or LoadRobotFile first" << std::endl;
         return false;
     }
     // clear chrono object containers in case this urdf file has been added to system before
@@ -479,43 +471,11 @@ bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::sha
         ch_root_body_ = convert_links(u_root_link_, init_pos_body);
     }
     else{
-        std::cerr << "ERROR: Could not find root link in file " << urdf_file_ << std::endl;
+        std::cerr << "ERROR: Could not find root link in file " << robot_file_ << std::endl;
         return false;
     }
 
     return true;
-}
-
-const ChLinkBodies& ChUrdfDoc::GetLinkBodies(const std::string& name) const {
-    if (ch_link_bodies_.find(name) == ch_link_bodies_.end()){
-        std::cerr << "Error: robot " << urdf_robot_->getName() << " doesn't contain link " << name << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    return ch_link_bodies_.find(name)->second;
-}
-
-const std::string& ChUrdfDoc::GetLinkBodyName(const std::string& link_name, int body_idx){
-    if (!urdf_robot_){
-        std::cerr << "ERROR: No URDF loaded, call LoadUrdfString or LoadUrdfFile first" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    const urdf::JointConstSharedPtr& u_joint = urdf_robot_->getJoint(link_name);
-    if (!u_joint){
-        std::cerr << "ERROR: link " << link_name << " not found in " << GetRobotName() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    if (body_idx == 1){
-        return u_joint->child_link_name;
-    }
-    else if (body_idx == 2){
-        return u_joint->parent_link_name;
-    }
-    else {
-        std::cerr << "ERROR: Invalid body_idx, has to be 1 or 2" << std::endl;
-        exit(EXIT_FAILURE);
-    }
 }
 
 bool ChUrdfDoc::check_inertial_pose_set(const urdf::LinkConstSharedPtr& u_link) {

@@ -8,7 +8,7 @@
 #include <chrono/physics/ChLinkMotorRotationTorque.h>
 #include <chrono/physics/ChController.h>
 
-#include "ChUrdfDoc.h"
+#include "ChRobot.h"
 
 class SimMotorController {
   public:
@@ -108,8 +108,7 @@ class SimMotor {
     ~SimMotor(){};
 
     void RemovePayload() { payload_.reset(); }
-    void AddtoSystem(const std::shared_ptr<chrono::ChSystem>& sys) const;
-    void AddtoSystem(const chrono::ChUrdfDoc& urdf_doc);
+    void AddtoSystem(const chrono::ChRobot& robot_doc);
     void SetVel(double new_vel);
     void SetPos(double new_pos);
     void SetPhase(double new_phase);
@@ -122,12 +121,14 @@ class SimMotor {
     void SetMaxVel(double new_vel) { motor_controller_->set_max_pos_control_vel(new_vel); }
 
   protected:
+    void add_to_system(const std::shared_ptr<chrono::ChSystem>& sys,
+                       const chrono::ChLinkBodies& chlinkbody);
+
     std::string link_name_;
     std::shared_ptr<SimPayload> payload_; // the motor is a light motor if this pointer is null
 
     // Following members will be refreshed each time adding to a new system
     std::shared_ptr<SimMotorController> motor_controller_;
-    const chrono::ChLinkBodies *chlinkbody_;
     std::shared_ptr<chrono::ChLinkMotorRotationTorque> ch_motor_;
     std::shared_ptr<chrono::ChFunction_Setpoint> ch_func_;
 };

@@ -5,6 +5,8 @@
 #include <chrono_vehicle/terrain/RigidTerrain.h>
 
 #include "SimulationManager.h"
+#include "ChUrdfDoc.h"
+#include "ChRobogami.h"
 
 using namespace chrono;
 
@@ -12,11 +14,9 @@ SimulationManager::SimulationManager(double step_size,
                                      double timeout,
                                      double system_friction_k,
                                      double system_friction_s,
-                                     SystemType system_type):
-    step_size_(step_size), timeout_(timeout),
-    k_friction_(system_friction_k),
-    s_friction_(system_friction_s),
-    system_type_(system_type)
+                                     SystemType system_type)
+    : step_size_(step_size), timeout_(timeout), k_friction_(system_friction_k),
+    s_friction_(system_friction_s), system_type_(system_type)
 {
     payloads_.clear();
     motors_.clear();
@@ -26,11 +26,19 @@ SimulationManager::SimulationManager(double step_size,
 }
 
 void SimulationManager::LoadUrdfFile(const std::string& filename){
-    urdf_doc_ = std::make_shared<ChUrdfDoc>(filename);
+    robot_doc_ = std::make_shared<ChUrdfDoc>(filename);
 }
 
 void SimulationManager::LoadUrdfString(const std::string& urdfstring){
-    urdf_doc_ = std::make_shared<ChUrdfDoc>(urdfstring, true);
+    robot_doc_ = std::make_shared<ChUrdfDoc>(urdfstring, true);
+}
+
+void SimulationManager::LoadRobogamiProtoFile(const std::string& filename) {
+    robot_doc_ = std::make_shared<ChRobogami>(filename);
+}
+
+void SimulationManager::LoadRobogamiRobot() {
+    robot_doc_ = std::make_shared<ChRobogami>();
 }
 
 void SimulationManager::SetEnv(std::string filename, double env_x, double env_y, double env_z){
@@ -46,11 +54,11 @@ void SimulationManager::SetEigenHeightmap(const std::shared_ptr<const Eigen::Mat
 }
 
 const std::string& SimulationManager::GetUrdfFileName(){
-    if(!urdf_doc_){
+    if(!robot_doc_){
         std::cerr << "Error: URDF file not set yet, call LoadUrdfFile() first" << std::endl;
         exit(EXIT_FAILURE);
     }
-    return urdf_doc_->GetUrdfFileName();
+    return robot_doc_->GetRobotFileName();
 }
 
 void SimulationManager::AddComponent(const std::string& type_name, const std::string& body_name,
@@ -63,24 +71,10 @@ void SimulationManager::AddComponent(const std::string& type_name, const std::st
     auxrefs_->insert(body_name);
 }
 
-void SimulationManager::AddMotor(const std::string& type_name, const std::string& link_name,
-                                 double mass, double size_x, double size_y, double size_z,
-                                 double pos_x, double pos_y, double pos_z){
-    if (!urdf_doc_){
-        std::cerr << "Error: No URDF loaded, cannot derive the body name to add the mass to. Specify the body name." << std::endl;
-        return;
-    }
-    motors_.push_back(std::make_shared<SimMotor>(type_name, link_name, mass,
-                                                 size_x, size_y, size_z,
-                                                 pos_x, pos_y, pos_z));
-    auto& body_name = urdf_doc_->GetLinkBodyName(link_name, 2);
-    auxrefs_->insert(body_name);
-}
-
 void SimulationManager::AddMotor(const std::string& type_name, const std::string& body_name,
                                  const std::string& link_name, double mass,
                                  double size_x, double size_y, double size_z,
-                                 double pos_x, double pos_y, double pos_z){
+                                 double pos_x, double pos_y, double pos_z) {
 
     motors_.push_back(std::make_shared<SimMotor>(type_name, body_name, link_name,
                                                  mass, size_x, size_y, size_z,
@@ -139,8 +133,8 @@ void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
 }
 
 bool SimulationManager::RunSimulation() {
-    if(!urdf_doc_){
-        std::cerr << "Error: No URDF loaded." << std::endl;
+    if(!robot_doc_){
+        std::cerr << "Error: No Robot loaded." << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -163,19 +157,14 @@ bool SimulationManager::RunSimulation() {
 
     if (load_map_) load_map();
 
-    if (!auxrefs_->empty()) urdf_doc_->SetAuxRef(auxrefs_);
+    if (!auxrefs_->empty()) robot_doc_->SetAuxRef(auxrefs_);
 
     bool add_ok;
     if (!ch_waypoints_.empty()){
-        add_ok = urdf_doc_->AddtoSystem(ch_system_, ch_waypoints_[0]);
+        add_ok = robot_doc_->AddtoSystem(ch_system_, ch_waypoints_[0]);
     }
     else{
-        add_ok = urdf_doc_->AddtoSystem(ch_system_, ChVector<>(0,0,0));
-    }
-
-    if (!add_ok) {
-        chrono::GetLog() << "Warning. Could not add urdf robot to ChSystem\n";
-        return false;
+        add_ok = robot_doc_->AddtoSystem(ch_system_, ChVector<>(0,0,0));
     }
 
     // add waypoint markers
@@ -194,13 +183,13 @@ bool SimulationManager::RunSimulation() {
 
     // Add motors and extra weights to system
     for (auto payload : payloads_) payload->AddtoSystem(ch_system_);
-    for (auto motor : motors_) motor->AddtoSystem(*urdf_doc_);
+    for (auto motor : motors_) motor->AddtoSystem(*robot_doc_);
 
     // Set up controller
     EvoGenController controller(&motors_);
     controller.SetLegs(leg_motors_);
 
-    const std::shared_ptr<ChBody>& camera_body = urdf_doc_->GetCameraBody();
+    const std::shared_ptr<ChBody>& camera_body = robot_doc_->GetCameraBody();
 
     std::chrono::steady_clock::time_point tik;
     std::chrono::steady_clock::time_point tok;
@@ -283,11 +272,11 @@ GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const {
 }
 
 double SimulationManager::GetRootBodyDisplacement() const {
-    return (ch_waypoints_[0] - urdf_doc_->GetRootBody()->GetPos()).Length();
+    return (ch_waypoints_[0] - robot_doc_->GetRootBody()->GetPos()).Length();
 }
 
 double SimulationManager::GetRootBodyDisplacementX() const {
-    return  urdf_doc_->GetRootBody()->GetPos().x()- ch_waypoints_[0].x();
+    return  robot_doc_->GetRootBody()->GetPos().x()- ch_waypoints_[0].x();
 }
 /***********************
 *  private functions  *
@@ -314,9 +303,9 @@ void SimulationManager::load_map(){
         ch_system_->AddBody(flat_ground);
     }
     else if (env_file_.find(".urdf") != std::string::npos){
-        chrono::ChUrdfDoc urdf_map_doc(env_file_);
-        urdf_map_doc.SetCollisionMaterial(ground_mat);
-        urdf_map_doc.AddtoSystem(ch_system_, env_x_ / 2, env_y_ / 2, env_z_ / 2);
+        // chrono::ChUrdfDoc urdf_map_doc(env_file_);
+        // urdf_map_doc.SetCollisionMaterial(ground_mat);
+        // urdf_map_doc.AddtoSystem(ch_system_, env_x_ / 2, env_y_ / 2, env_z_ / 2, 0, 0, 0);
     }
     else if (env_file_.find(".bmp") != std::string::npos){
         vehicle::RigidTerrain terrain(ch_system_.get());

@@ -124,13 +124,16 @@ endif()
 set(CURRENT_TARGET_NAME Simulator)
 
 set(Headers
+    include/ChRobot.h
     include/ChUrdfDoc.h
+    include/ChRobogami.h
     include/RobotController.h
     include/SimMotor.h
     include/SimulationManager.h)
 
 set(Sources
     src/ChUrdfDoc.cpp
+    src/ChRobogami.cpp
     src/RobotController.cpp
     src/SimMotor.cpp
     src/SimulationManager.cpp)
@@ -144,7 +147,9 @@ endif()
 
 target_link_libraries(${CURRENT_TARGET_NAME}
                       ${CHRONO_LIBRARIES}
-                      ${urdfdom_LIBRARIES})
+                      ${urdfdom_LIBRARIES}
+                      FBE_Manipulations
+                      FBE_Conversions)
 
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${EIGEN3_INCLUDE_DIR}

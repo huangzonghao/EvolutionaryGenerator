@@ -8,60 +8,30 @@
 #include <chrono/assets/ChColorAsset.h>
 #include <chrono/assets/ChTexture.h>
 
+#include "ChRobot.h"
+
 namespace chrono {
 
-// ChLink stores only the raw pointer of ChBodyFrame
-// causing issues when fetching bodies from links
-struct ChLinkBodies{
-    std::shared_ptr<ChBody> body1;
-    std::shared_ptr<ChBody> body2;
-    std::shared_ptr<ChLink> link;
-};
-
-class ChUrdfDoc {
+class ChUrdfDoc : public ChRobot {
   public:
     ChUrdfDoc(){}
     ChUrdfDoc(const std::string& inputstring, bool inputIsString = false){
-        if(inputIsString) LoadUrdfString(inputstring);
-        else LoadUrdfFile(inputstring);
+        if(inputIsString) LoadRobotString(inputstring);
+        else LoadRobotFile(inputstring);
     }
 
-    virtual ~ChUrdfDoc(){
-        ch_materials_.clear();
-        ch_link_bodies_.clear();
-    };
+    virtual ~ChUrdfDoc(){ ch_materials_.clear(); };
 
-    const std::string& GetUrdfFileName() const { return urdf_file_; }
+    bool LoadRobotFile(const std::string& filename) override;
+    bool LoadRobotString(const std::string& urdfstring) override;
 
-    urdf::ModelInterfaceSharedPtr GetUrdfRobot() const { return urdf_robot_; }
-
-    void SetAuxRef(const std::shared_ptr<std::unordered_set<std::string> >& auxrefs) { auxrefs_ = auxrefs; }
-    const std::shared_ptr<std::unordered_set<std::string> >& GetAuxRef() { return auxrefs_; }
-
-    bool LoadUrdfFile(const std::string& filename);
-    bool LoadUrdfString(const std::string& urdfstring);
-
-    bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, double x=0, double y=0, double z=0, double rx=0, double ry=0, double rz=0);
-    bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChVector<>& init_pos);
-    bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoordsys<>& init_coord);
+    bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoordsys<>& init_coord) override;
     bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::shared_ptr<ChBody>& init_pos_body);
 
-    const std::shared_ptr<chrono::ChSystem> GetSystem() const { return ch_system_; }
-
-    const std::string& GetRobotName() const { return urdf_robot_->getName(); }
-
-    const ChLinkBodies& GetLinkBodies(const std::string& name) const;
-
-    std::shared_ptr<ChBody> GetRootBody() const { return ch_root_body_; }
-    std::shared_ptr<ChBody> GetCameraBody() const { return GetRootBody(); }
-
-    double GetRootMass() const { return ch_root_body_->GetMass(); }
-
-    const std::string& GetLinkBodyName(const std::string& link_name, int body_idx);
+    urdf::ModelInterfaceSharedPtr GetUrdfRobot() const { return urdf_robot_; }
+    const std::string& GetRobotName() const override { return urdf_robot_->getName(); }
 
     void SetCollisionMaterial(const std::shared_ptr<ChMaterialSurfaceNSC>& new_mat){ collision_material_ = new_mat; }
-
-    std::shared_ptr<std::vector<std::shared_ptr<ChBody> > >& GetBodyList() {return body_list_;}
 
   private:
     struct ChMatPair{
@@ -84,18 +54,10 @@ class ChUrdfDoc {
     void convert_materials();
     bool check_inertial_pose_set(const urdf::LinkConstSharedPtr& u_link);
     // concatenates the urdf flie path and the relative path to the urdf file
-    std::string urdf_file_;
-    std::string urdf_string_;
     urdf::ModelInterfaceSharedPtr urdf_robot_;
     urdf::LinkConstSharedPtr u_root_link_;
-    std::shared_ptr<chrono::ChSystem> ch_system_;
     std::map<std::string, ChMatPair> ch_materials_;
-    std::map<std::string, ChLinkBodies> ch_link_bodies_;
-    std::shared_ptr<ChBody> ch_root_body_;
     std::shared_ptr<ChMaterialSurfaceNSC> collision_material_;
-    // names of bodies that would use ChBodyAuxRef
-    std::shared_ptr<std::unordered_set<std::string> > auxrefs_;
-
     std::shared_ptr<std::vector<std::shared_ptr<ChBody> > > body_list_;
 };
 

@@ -1,16 +1,15 @@
-#ifndef SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA
-#define SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA
-
+#ifndef SFERES_FIT_ROBOGAMIFITNESS_HPP_0OYX1QYT
+#define SFERES_FIT_ROBOGAMIFITNESS_HPP_0OYX1QYT
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/vector.hpp>
 
-#include "GenerateDemoRobot.h"
 #include "SimulationManager.h"
+#include "robogami_paths.h"
 
 namespace sferes {
 namespace fit {
 
-class EvoGenFitness {
+class RobogamiFitness {
   public:
     const std::vector<double>& desc() const { return _desc; }
     double novelty() const { return _novelty; }
@@ -33,26 +32,29 @@ class EvoGenFitness {
         // the leg order in Phen is: FL FR ML MR BL BR
         // the leg order in Sim Controller is: FL ML BL BR MR FR
         // so the conversion happens here
-        for (int i = 0; i < num_legs / 2; ++i) {
-            num_links = ind.data(cursor);
-            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
-            for (int j = 1; j < num_links; ++j) {
-                sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
-                                  "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
-            }
-            cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
+        // for (int i = 0; i < num_legs / 2; ++i) {
+            // num_links = ind.data(cursor);
+            // sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
+            // for (int j = 1; j < num_links; ++j) {
+                // sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
+                                  // "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
+            // }
+            // cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
 
-            // the mirrored leg
-            num_links = ind.data(cursor);
-            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i + 1) + "-0", num_legs - 1 - i, 0);
-            for (int j = 1; j < num_links; ++j) {
-                sm.AddEvoGenMotor("leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j - 1) +
-                                  "_leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j), num_legs - 1 - i, j);
-            }
-            cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
-        }
+            // // the mirrored leg
+            // num_links = ind.data(cursor);
+            // sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i + 1) + "-0", num_legs - 1 - i, 0);
+            // for (int j = 1; j < num_links; ++j) {
+                // sm.AddEvoGenMotor("leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j - 1) +
+                                  // "_leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j), num_legs - 1 - i, j);
+            // }
+            // cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
+        // }
 
-        sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
+        std::cout << std::endl << "Before loading robot" << std::endl;
+        // sm.LoadRobogamiProtoFile("E:\\EA\\generator\\Robogami\\Data\\proto\\examples\\killerBasket_good_servospacing.asciiproto");
+        sm.LoadRobogamiProtoFile(Robogami_Data_Dir + "/proto/examples/killerBasket_good_servospacing.asciiproto");
+        std::cout << "In fitness after loading robot" << std::endl;
         sm.RunSimulation();
 
         _value = sm.GetRootBodyDisplacementX();
@@ -88,5 +90,4 @@ class EvoGenFitness {
 } // namespace fit
 } // namespace sferes
 
-#endif /* end of include guard: SFERES_FIT_EVOGENFITNESS_HPP_6UG4LCXA */
-
+#endif /* end of include guard: SFERES_FIT_ROBOGAMIFITNESS_HPP_0OYX1QYT */

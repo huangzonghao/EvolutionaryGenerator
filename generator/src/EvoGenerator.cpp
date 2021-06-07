@@ -5,7 +5,8 @@
 #include <iostream>
 #include <filesystem>
 
-#include "sferes_fit_EvoGenFitness.hpp"
+#include "sferes_fit_UrdfFitness.hpp"
+#include "sferes_fit_RobogamiFitness.hpp"
 #include "sferes_gen_EvoGenFloat.hpp"
 #include "sferes_phen_EvoGenPhen.hpp"
 #include "sferes_eval_EvoGenEval.hpp"
@@ -14,7 +15,9 @@
 #include "sferes_qd_selector_uniform.hpp"
 #include "sferes_qd_EvoGenQD.hpp"
 
-typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, sferes::fit::EvoGenFitness> phen_t;
+// typedef sferes::fit::UrdfFitness fit_t;
+typedef sferes::fit::RobogamiFitness fit_t;
+typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 typedef sferes::qd::EvoGenQD<phen_t,
                              sferes::eval::EvoGenEval,
                              boost::fusion::vector<sferes::stat::EvoGenStat>,
@@ -24,8 +27,8 @@ typedef sferes::qd::EvoGenQD<phen_t,
 void EvoGenerator::run() {
     if (!evo_params_.output_enabled())
         std::cout << "Note: Output disabled" << std::endl;
-    evo_params_.feature_description().emplace_back(sferes::fit::EvoGenFitness::descriptor_name[0]);
-    evo_params_.feature_description().emplace_back(sferes::fit::EvoGenFitness::descriptor_name[1]);
+    evo_params_.feature_description().emplace_back(fit_t::descriptor_name[0]);
+    evo_params_.feature_description().emplace_back(fit_t::descriptor_name[1]);
     qd_t qd(evo_params_, sim_params_);
     qd.set_res_dir(res_dir_);
 
