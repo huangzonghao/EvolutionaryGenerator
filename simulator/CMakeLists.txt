@@ -185,3 +185,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()
+
+set(CURRENT_TARGET_NAME memory_leak_test)
+
+set(Sources src/memory_leak_test.cpp)
+
+add_executable(${CURRENT_TARGET_NAME} ${Sources})
+
+if(MSVC)
+    source_group("Source Files" FILES ${Sources})
+endif()
+
+target_link_libraries(${CURRENT_TARGET_NAME} ${CHRONO_LIBRARIES})
+
+target_include_directories(${CURRENT_TARGET_NAME} PUBLIC ${CHRONO_INCLUDE_DIRS})
+
+set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES
+                      COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
+                      COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
+                      LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
