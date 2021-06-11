@@ -104,7 +104,12 @@ endif()
 find_package(Chrono
              COMPONENTS Irrlicht Vehicle Postprocess
              CONFIG QUIET)
-
+if (NOT Chrono_FOUND)
+    set(Chrono_DIR ${Chrono_DIR}/cmake)
+    find_package(Chrono
+                COMPONENTS Irrlicht Vehicle Postprocess
+                CONFIG QUIET)
+endif()
 if (NOT Chrono_FOUND)
     message(SEND_ERROR "Error: Could not find Chrono or one of its required modules.")
     message("  Set Chrono_DIR to the directory that contains ChronoConfig.cmake")
