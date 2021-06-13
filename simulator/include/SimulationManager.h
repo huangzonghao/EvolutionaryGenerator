@@ -10,6 +10,7 @@
 class  SimulationManager {
   public:
     enum SystemType {NSC, SMC};
+    enum ControllerType {Wheel = 0, EvoGen};
 
     SimulationManager(double step_size=0.005,
                       double timeout=50,
@@ -52,6 +53,7 @@ class  SimulationManager {
     void AddWaypoints(const std::shared_ptr<const Eigen::MatrixXd>& waypoints_ptr);
     void RemoveLastMotor();
     void RemoveAllMotors();
+    void SetController(ControllerType controller_type = EvoGen) { controller_type_ = controller_type; }
 
     const std::shared_ptr<SimMotor> GetMotor(int motor_idx) const { return motors_[motor_idx];}
 
@@ -73,6 +75,7 @@ class  SimulationManager {
     double GetRootBodyDisplacement() const;
     double GetRootBodyDisplacementX() const;
   private:
+    ControllerType controller_type_ = EvoGen;
     // map is enabled as flat ground by default.
     bool load_map_ = true;
     void load_map();

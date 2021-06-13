@@ -12,20 +12,18 @@ void load_robot(std::string robot_name){
 
     SimulationManager sm;
     sm.LoadUrdfFile(urdf_filename);
-    // sm.SetEnv(env_filename, 50, 50, 0.5);
-    // sm.DisableEnv();
     sm.SetFrictionK(k_friction);
     sm.SetFrictionS(s_friction);
-    sm.SetTimeout(5);
+    sm.SetTimeout(15);
 
     sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fl", 1,0.1,0.1,0.1);
     sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rl", 1,0.1,0.1,0.1);
     sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fr", 1,0.1,0.1,0.1);
     sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rr", 1,0.1,0.1,0.1);
-
-    sm.SetEnv("ground", 5, 3, 0.01);
-    sm.AddWaypoint(0.5, 1.5, 0.3);
-    sm.AddWaypoint(0.5, 0.8, 0.3);
+    sm.SetController(SimulationManager::ControllerType::Wheel);
+    sm.SetEnv("ground", 10, 5, 0.01);
+    sm.AddWaypoint(5, 2.5, 0.3);
+    sm.SetCamera(5, 0, 3, 5, 2.5, 0);
 
     sm.RunSimulation();
 

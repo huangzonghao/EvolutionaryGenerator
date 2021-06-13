@@ -26,12 +26,9 @@ class RobotController {
 
 class WheelController : public RobotController {
   public:
-    WheelController(std::vector<std::shared_ptr<SimMotor> > *motors,
-                    std::vector<chrono::ChVector<> > *waypoints,
-                    const std::shared_ptr<chrono::ChBody>& ch_body)
-        : RobotController(motors, waypoints, WHEEL), robot_body(ch_body.get()){}
+    WheelController(std::vector<std::shared_ptr<SimMotor> > *motors)
+        : RobotController(motors, WHEEL){}
     ~WheelController(){};
-    chrono::ChBody *robot_body;
     bool Update() override;
   private:
     enum GAITS {FORWARD = 0, BACKWARD, LEFT1, RIGHT1, LEFT2, RIGHT2} gait;

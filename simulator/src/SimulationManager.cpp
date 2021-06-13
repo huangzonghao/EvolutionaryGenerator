@@ -186,8 +186,13 @@ bool SimulationManager::RunSimulation() {
     for (auto motor : motors_) motor->AddtoSystem(*robot_doc_);
 
     // Set up controller
-    EvoGenController controller(&motors_);
-    controller.SetLegs(leg_motors_);
+    std::shared_ptr<RobotController> controller;
+    if (controller_type_ == EvoGen) {
+        controller = std::make_shared<EvoGenController>(&motors_);
+        std::dynamic_pointer_cast<EvoGenController>(controller)->SetLegs(leg_motors_);
+    } else if (controller_type_ == Wheel) {
+        controller = std::make_shared<WheelController>(&motors_);
+    }
 
     const std::shared_ptr<ChBody>& camera_body = robot_doc_->GetCameraBody();
 
@@ -221,7 +226,7 @@ bool SimulationManager::RunSimulation() {
             vis_app.DoStep();
             vis_app.EndScene();
 
-            task_done_ = controller.Update();
+            task_done_ = controller->Update();
 
             if (do_realtime_) realtime_timer.Spin(step_size_);
         }
@@ -234,7 +239,7 @@ bool SimulationManager::RunSimulation() {
         while(ch_system_->GetChTime() < timeout_ && !task_done_) {
             ch_system_->DoStepDynamics(step_size_);
 
-            task_done_ = controller.Update();
+            task_done_ = controller->Update();
         }
         tok = std::chrono::steady_clock::now();
     }
