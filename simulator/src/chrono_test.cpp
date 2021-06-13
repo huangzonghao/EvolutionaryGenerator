@@ -18,10 +18,10 @@ void load_robot(std::string robot_name){
     sm.SetFrictionS(s_friction);
     sm.SetTimeout(5);
 
-    sm.AddMotor("MOTOR", "chassis_wheel_fl", 1,0.1,0.1,0.1);
-    sm.AddMotor("MOTOR", "chassis_wheel_rl", 1,0.1,0.1,0.1);
-    sm.AddMotor("MOTOR", "chassis_wheel_fr", 1,0.1,0.1,0.1);
-    sm.AddMotor("MOTOR", "chassis_wheel_rr", 1,0.1,0.1,0.1);
+    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fl", 1,0.1,0.1,0.1);
+    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rl", 1,0.1,0.1,0.1);
+    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_fr", 1,0.1,0.1,0.1);
+    sm.AddMotor("MOTOR", "chassis", "chassis_wheel_rr", 1,0.1,0.1,0.1);
 
     sm.SetEnv("ground", 5, 3, 0.01);
     sm.AddWaypoint(0.5, 1.5, 0.3);
