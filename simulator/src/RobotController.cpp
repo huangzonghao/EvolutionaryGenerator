@@ -9,10 +9,19 @@ RobotController::RobotController(std::vector<std::shared_ptr<SimMotor> > *motors
                                  ControllerType type)
     : motors_(motors), waypoints_(waypoints), type(type) {}
 
+WheelController::WheelController(std::vector<std::shared_ptr<SimMotor> > *motors)
+    : RobotController(motors, WHEEL)
+{
+    for (auto& motor : *motors_) {
+        motor->SetPID(1, 0, 0, 1, 0, 0);
+        motor->SetMaxVel(1);
+    }
+}
+
 bool WheelController::Update(){
     gait = FORWARD;
     exe_gait();
-    for (auto motor : *motors_)
+    for (auto& motor : *motors_)
         motor->UpdateTorque();
 
     return false;

@@ -28,6 +28,8 @@ class SimMotorController {
     void set_vel(double new_vel);
     void set_pos(double new_pos);
     void set_phase(double new_phase);
+    void set_pid(double vp = 10, double vi = 0.3, double vd = 0,
+                 double pp = 2,  double pi = 0,   double pd = 0);
     double get_torque();
     bool check_status() const;
     void set_max_pos_control_vel(double pos_ctrl_vel){ max_pos_control_vel_ = pos_ctrl_vel; }
@@ -119,6 +121,10 @@ class SimMotor {
     double GetMaxTorque() const { return motor_controller_->get_max_torque(); }
     double GetMaxVel() const { return motor_controller_->get_max_vel(); }
     void SetMaxVel(double new_vel) { motor_controller_->set_max_pos_control_vel(new_vel); }
+    void SetPID(double vp = 10, double vi = 0.3, double vd = 0,
+                double pp = 2,  double pi = 0,   double pd = 0) {
+        motor_controller_->set_pid(vp, vi, vd, pp, pi, pd);
+    }
 
   protected:
     void add_to_system(const std::shared_ptr<chrono::ChSystem>& sys,

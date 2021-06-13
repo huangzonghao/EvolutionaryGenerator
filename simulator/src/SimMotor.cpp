@@ -43,6 +43,17 @@ void SimMotorController::set_phase(double new_phase){
     pos_pid_->Reset();
 }
 
+void SimMotorController::set_pid(double vp, double vi, double vd,
+                                 double pp, double pi, double pd){
+    vel_pid_->P = vp;
+    vel_pid_->I = vi;
+    vel_pid_->D = vd;
+
+    pos_pid_->P = pp;
+    pos_pid_->I = pi;
+    pos_pid_->D = pd;
+}
+
 bool SimMotorController::check_status() const {
     if (mode_ == POSITION && std::abs(target_pos_ - ch_motor_->GetMotorRot()) > pos_thresh){
         return false;

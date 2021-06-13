@@ -26,8 +26,7 @@ class RobotController {
 
 class WheelController : public RobotController {
   public:
-    WheelController(std::vector<std::shared_ptr<SimMotor> > *motors)
-        : RobotController(motors, WHEEL){}
+    WheelController(std::vector<std::shared_ptr<SimMotor> > *motors);
     ~WheelController(){};
     bool Update() override;
   private:
