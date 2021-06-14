@@ -140,11 +140,6 @@ set(Sources
 
 add_library(${CURRENT_TARGET_NAME} STATIC ${Headers} ${Sources})
 
-if(MSVC)
-    source_group("Header Files" FILES ${Headers})
-    source_group("Source Files" FILES ${Sources})
-endif()
-
 target_link_libraries(${CURRENT_TARGET_NAME}
                       ${CHRONO_LIBRARIES}
                       ${urdfdom_LIBRARIES}
@@ -162,16 +157,21 @@ set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES
                       COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
                       LINK_FLAGS "${CHRONO_LINKER_FLAGS}")
 
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /MD;>
+        $<$<CONFIG:Release>: /MD;>
+    )
+endif()
+
+
 set(CURRENT_TARGET_NAME chrono_test)
 
 set(Headers ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h)
 
 set(Sources src/chrono_test.cpp)
-
-if(MSVC)
-    source_group("Header Files" FILES ${Headers})
-    source_group("Source Files" FILES ${Sources})
-endif()
 
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
 
@@ -184,6 +184,15 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /MD;>
+        $<$<CONFIG:Release>: /MD;>
+    )
 endif()
 
 set(CURRENT_TARGET_NAME memory_leak_test)
