@@ -196,6 +196,7 @@ target_link_libraries(${PROJECT_NAME} Generator Simulator)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    # TODO: need to add cplex dll in debug config
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
     list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
     list(APPEND CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
@@ -206,7 +207,6 @@ endif()
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
-
     target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CONFIG:Debug>:
         # General
@@ -223,7 +223,6 @@ if(MSVC)
             /MD;
             /Gm-;
             /EHsc;
-            /RTC1;
             /GS
         >
         $<$<CONFIG:Release>:
@@ -246,7 +245,8 @@ if(MSVC)
         >
         ${DEFAULT_CXX_EXCEPTION_HANDLING}
     )
-
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
     target_link_options(${PROJECT_NAME} PRIVATE /NOLOGO)
 endif()
 
@@ -265,10 +265,14 @@ set(Sources
 
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
 
-target_link_libraries(${CURRENT_TARGET_NAME} Simulator Boost::serialization)
+target_link_libraries(${CURRENT_TARGET_NAME}
+                      Simulator
+                      Boost::disable_autolinking
+                      ${Boost_SERIALIZATION_LIBRARY_RELEASE})
 
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                  ${Boost_INCLUDE_DIR}
                                   ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -280,7 +284,6 @@ endif()
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
-
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
         $<$<CONFIG:Debug>:
         # General
@@ -297,7 +300,6 @@ if(MSVC)
             /MD;
             /Gm-;
             /EHsc;
-            /RTC1;
             /GS
         >
         $<$<CONFIG:Release>:
@@ -320,6 +322,7 @@ if(MSVC)
         >
         ${DEFAULT_CXX_EXCEPTION_HANDLING}
     )
-
-target_link_options(${CURRENT_TARGET_NAME} PRIVATE /NOLOGO)
+    target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
+    target_link_options(${CURRENT_TARGET_NAME} PRIVATE /NOLOGO)
 endif()

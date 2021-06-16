@@ -26,25 +26,32 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/src/SimulatorParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/EvoGenerator.cpp
 )
-if(MSVC)
-    source_group("Header Files" FILES ${Headers})
-    source_group("Source Files" FILES ${Sources})
-endif()
 
 add_library(${CURRENT_TARGET_NAME} STATIC ${Headers} ${Sources})
 
 target_link_libraries(${CURRENT_TARGET_NAME}
                       FBE_Manipulations
                       FBE_Conversions
-                      Boost::serialization
+                      Boost::disable_autolinking
+                      ${Boost_SERIALIZATION_LIBRARY_RELEASE}
                       Simulator
 )
 
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${EIGEN3_INCLUDE_DIR}
+                                  ${Boost_INCLUDE_DIR}
                                   ${PROJECT_IN_FILE_OUTPUT_DIR}
                                   ${CMAKE_CURRENT_SOURCE_DIR}/sferes_utils
                                   ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /MD;>
+        $<$<CONFIG:Release>: /MD;>
+    )
+endif()
 
 set(CURRENT_TARGET_NAME robogami_test)
 
@@ -77,7 +84,6 @@ target_link_libraries(${CURRENT_TARGET_NAME}
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
-
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
         $<$<CONFIG:Debug>:
         # General
@@ -94,7 +100,6 @@ if(MSVC)
             /MD;
             /Gm-;
             /EHsc;
-            /RTC1;
             /GS
         >
         $<$<CONFIG:Release>:
