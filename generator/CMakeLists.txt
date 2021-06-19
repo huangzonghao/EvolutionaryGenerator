@@ -48,8 +48,8 @@ if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
-        $<$<CONFIG:Debug>: /MD;>
-        $<$<CONFIG:Release>: /MD;>
+        $<$<CONFIG:Debug>: /MD; /MP>
+        $<$<CONFIG:Release>: /MP;>
     )
 endif()
 
@@ -85,45 +85,9 @@ if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
-        $<$<CONFIG:Debug>:
-        # General
-            /ZI;
-            /JMC;
-            /nologo;
-            /W3;
-            /WX-;
-            /sdl;
-            /MP;
-        # Optimization
-            /Od;
-        # Code Generation
-            /MD;
-            /Gm-;
-            /EHsc;
-            /GS
-        >
-        $<$<CONFIG:Release>:
-        # General
-            /Zi;
-            /nologo;
-            /W3;
-            /WX-;
-            /MP;
-        # Optimization
-            /O2;
-            /Oi;
-        # Code Generation
-            /Gm-;
-            /EHsc;
-            /MD;
-            /GS;
-            /Gy;
-            ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT}
-        >
-        ${DEFAULT_CXX_EXCEPTION_HANDLING}
+        $<$<CONFIG:Debug>: /W3; /MP; /MD; /JMC; /sdl;>
+        $<$<CONFIG:Release>: /MP;>
     )
-
-    target_link_options(${CURRENT_TARGET_NAME} PRIVATE /NOLOGO)
 endif()
 
 # copy DLLs for Windows

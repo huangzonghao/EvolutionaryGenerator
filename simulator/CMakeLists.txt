@@ -161,8 +161,8 @@ if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
-        $<$<CONFIG:Debug>: /MD;>
-        $<$<CONFIG:Release>: /MD;>
+        $<$<CONFIG:Debug>: /MD; /MP>
+        $<$<CONFIG:Release>: /MP;>
     )
 endif()
 
@@ -190,8 +190,8 @@ if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
-        $<$<CONFIG:Debug>: /MD;>
-        $<$<CONFIG:Release>: /MD;>
+        $<$<CONFIG:Debug>: /MD; /MP>
+        $<$<CONFIG:Release>: /MP;>
     )
 endif()
 
