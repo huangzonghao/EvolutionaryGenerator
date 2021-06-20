@@ -68,6 +68,7 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
     auto& CoM_robot = kinchain.getCenterOfMass().center;
 
     // Bodies
+    FabByExample::KinNode_Part *rootpart = dynamic_cast<FabByExample::KinNode_Part*>(kinchain.getRoot());
     auto collision_material = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     std::list<FabByExample::KinNode*> nodes = kinchain.getNodes();
     int link_idx = 0;
@@ -88,10 +89,24 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
             ch_body->SetNameString("link_" + std::to_string(link_idx++));
 
             auto& CoM_part = node->getCenter().center;
-            auto& body_in_world =
-                init_coord.TransformLocalToParent(ChCoordsys<>(ChVector<>(CoM_part.x() - CoM_robot.x(),
-                                                                          CoM_part.y() - CoM_robot.y(),
-                                                                          CoM_part.z() - CoM_robot.z())));
+            ChCoordsys<> body_in_world;
+            ChVector<> pos_in_parent(0);
+            if (kpart == rootpart) {
+                ch_root_body_ = ch_body;
+                body_in_world = init_coord;
+            } else {
+                // body in world is given by joint in urdf
+                // the mesh coord is the one in urdf visual
+                FabByExample::KinNode_Joint *parent_joint =
+                    dynamic_cast<FabByExample::KinNode_Joint*>(node->parent);
+                pos_in_parent = parent_joint->getArticulation()->getCenter();
+                pos_in_parent.x() *= robogami_scale_x;
+                pos_in_parent.y() *= robogami_scale_y;
+                pos_in_parent.z() *= robogami_scale_z;
+                body_in_world =
+                    init_coord.TransformLocalToParent(ChCoordsys<>(pos_in_parent));
+            }
+
             if (body_use_aux) {
                 std::dynamic_pointer_cast<ChBodyAuxRef>(ch_body)->SetFrame_REF_to_abs(ChFrame<>(body_in_world));
                 std::dynamic_pointer_cast<ChBodyAuxRef>(ch_body)->SetFrame_COG_to_REF(ChFrame<>(VNULL));
@@ -100,8 +115,6 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
             }
 
             fbe2ch[kpart] = ch_body;
-            if (kinchain.getRoot() == node)
-                ch_root_body_ = ch_body;
 
             // Inertial
             // TODO: hardcoded mass scale
@@ -122,7 +135,9 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
             trimesh_shape->SetName(ch_body->GetNameString() + "_vis_mesh");
             trimesh_shape->SetBackfaceCull(true);
             trimesh_shape->SetStatic(true); // mesh object is considered static if it's non-deformable
-            trimesh_shape->Pos = ChVector<>(0, 0, 0); // the visual position in body frame
+            // TODO: the following position logic is copied form robogami's simpleURDF,
+            // not sure what's going on here. Same in pos of collision shape
+            trimesh_shape->Pos = -pos_in_parent;
             trimesh_shape->Rot = ChMatrix33<>(QUNIT); // the visual orientation in body frame
             ch_body->AddAsset(trimesh_shape);
 
@@ -132,7 +147,7 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
                                                           trimesh,
                                                           false,  // is static
                                                           true,  // use convex hull
-                                                          ChVector<>(0, 0, 0), // the collision position in body frame
+                                                          -pos_in_parent,
                                                           ChMatrix33<>(QUNIT), // the collision orientation in body frame
                                                           -0.01); // sphereswept_thickness
             ch_body->GetCollisionModel()->BuildModel();
