@@ -9,8 +9,9 @@
 
 class RobotController {
   public:
-    enum ControllerType {MANIPULATOR = 0, WHEEL, LEGGED, EVOGEN} type;
+    enum ControllerType {DUMMY = 0, MANIPULATOR, WHEEL, LEGGED, EVOGEN} type;
 
+    RobotController() : type(DUMMY) {}
     RobotController(std::vector<std::shared_ptr<SimMotor> > *motors, ControllerType type);
     RobotController(std::vector<std::shared_ptr<SimMotor> > *motors,
                     std::vector<chrono::ChVector<> > *waypoints,
@@ -22,6 +23,11 @@ class RobotController {
     int waypoint_idx = 0;
     std::vector<std::shared_ptr<SimMotor> > *motors_;
     std::vector<chrono::ChVector<> > *waypoints_;
+};
+
+class DummyController : public RobotController {
+  public:
+    bool Update() override { return false; }
 };
 
 class WheelController : public RobotController {

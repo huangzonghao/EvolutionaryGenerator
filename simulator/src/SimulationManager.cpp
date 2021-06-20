@@ -192,6 +192,8 @@ bool SimulationManager::RunSimulation() {
         std::dynamic_pointer_cast<EvoGenController>(controller)->SetLegs(leg_motors_);
     } else if (controller_type_ == Wheel) {
         controller = std::make_shared<WheelController>(&motors_);
+    } else if (controller_type_ == Dummy) {
+        controller = std::make_shared<DummyController>();
     }
 
     const std::shared_ptr<ChBody>& camera_body = robot_doc_->GetCameraBody();
@@ -214,12 +216,11 @@ bool SimulationManager::RunSimulation() {
 
         vis_app.AssetBindAll();
         vis_app.AssetUpdateAll();
-
         vis_app.SetTimestep(step_size_);
 
         tik = std::chrono::steady_clock::now();
-        // while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
-        while (ch_system_->GetChTime() < timeout_ && !task_done_) {
+        while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
+        // while (ch_system_->GetChTime() < timeout_ && !task_done_) {
             vis_app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             // vis_app.GetSceneManager()->getActiveCamera()->setTarget(vector3dfCH(camera_body->GetPos()));
             vis_app.DrawAll();
@@ -232,7 +233,6 @@ bool SimulationManager::RunSimulation() {
         }
         vis_app.GetDevice()->closeDevice();
         tok = std::chrono::steady_clock::now();
-
     }
     else{
         tik = std::chrono::steady_clock::now();

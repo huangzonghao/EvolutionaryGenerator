@@ -3,6 +3,7 @@
 
 #include "SimulationManager.h"
 #include "evo_paths.h"
+#include "robogami_paths.h"
 
 const double s_friction = 2.0;
 const double k_friction = 1.9;
@@ -30,7 +31,23 @@ void load_robot(std::string robot_name){
     std::cout << "Root displacement: " << sm.GetRootBodyDisplacementX() << std::endl;
 }
 
+void load_robogami_robot(std::string robot_name) {
+    const std::string proto_filename = Robogami_Data_Dir + "/proto/examples/" + robot_name + ".asciiproto";
+
+    SimulationManager sm;
+    sm.SetController(SimulationManager::ControllerType::Dummy);
+    sm.LoadRobogamiProtoFile(proto_filename);
+    sm.DisableEnv();
+    sm.AddWaypoint(0, 0, 0);
+    // sm.SetCamera(0, 200, -50, 0, 0, 0);
+    sm.SetTimeout(500);
+    sm.RunSimulation();
+
+}
+
 int main(int argc, char* argv[]) {
-    load_robot("fourwheels");
+    // load_robot("fourwheels");
+    load_robogami_robot("killerBasket_good_servospacing");
+
     return EXIT_SUCCESS;
 }

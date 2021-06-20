@@ -10,7 +10,7 @@
 class  SimulationManager {
   public:
     enum SystemType {NSC, SMC};
-    enum ControllerType {Wheel = 0, EvoGen};
+    enum ControllerType {Dummy = 0, Wheel, EvoGen};
 
     SimulationManager(double step_size=0.005,
                       double timeout=50,
