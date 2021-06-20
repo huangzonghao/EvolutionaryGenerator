@@ -164,6 +164,8 @@ if(MSVC)
         $<$<CONFIG:Debug>: /MD; /MP>
         $<$<CONFIG:Release>: /MP;>
     )
+    target_compile_definitions(${CURRENT_TARGET_NAME} PUBLIC
+        EIGEN_DONT_VECTORIZE; EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
 endif()
 
 
