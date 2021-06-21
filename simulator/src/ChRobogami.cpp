@@ -88,31 +88,30 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
             }
             ch_body->SetNameString("link_" + std::to_string(link_idx++));
 
-            auto& CoM_part = node->getCenter().center;
-            ChCoordsys<> body_in_world;
             ChVector<> pos_in_parent(0);
+            ChCoordsys<> coord_in_world;
             if (kpart == rootpart) {
                 ch_root_body_ = ch_body;
-                body_in_world = init_coord;
+                coord_in_world = init_coord;
             } else {
-                // body in world is given by joint in urdf
-                // the mesh coord is the one in urdf visual
                 FabByExample::KinNode_Joint *parent_joint =
                     dynamic_cast<FabByExample::KinNode_Joint*>(node->parent);
-                pos_in_parent = parent_joint->getArticulation()->getCenter();
-                pos_in_parent.x() *= robogami_scale_x;
-                pos_in_parent.y() *= robogami_scale_y;
-                pos_in_parent.z() *= robogami_scale_z;
-                body_in_world =
+                auto& pos_tmp = parent_joint->getArticulation()->getCenter();
+                // Robogami is Y-up, apply Y-to-Z transformation here
+                pos_in_parent.x() =  pos_tmp.x() * robogami_scale_x;
+                pos_in_parent.y() = -pos_tmp.z() * robogami_scale_z;
+                pos_in_parent.z() =  pos_tmp.y() * robogami_scale_y;
+                coord_in_world =
                     init_coord.TransformLocalToParent(ChCoordsys<>(pos_in_parent));
             }
 
             if (body_use_aux) {
-                std::dynamic_pointer_cast<ChBodyAuxRef>(ch_body)->SetFrame_REF_to_abs(ChFrame<>(body_in_world));
+                std::dynamic_pointer_cast<ChBodyAuxRef>(ch_body)->SetFrame_REF_to_abs(ChFrame<>(coord_in_world));
                 std::dynamic_pointer_cast<ChBodyAuxRef>(ch_body)->SetFrame_COG_to_REF(ChFrame<>(VNULL));
             } else {
-                ch_body->SetCoord(body_in_world);
+                ch_body->SetCoord(coord_in_world);
             }
+            ch_body->SetRot(Q_ROTATE_Y_TO_Z);
 
             fbe2ch[kpart] = ch_body;
 
@@ -122,6 +121,7 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
             // TODO: figure out inertia matrix
 
             // Visual
+            auto& CoM_part = node->getCenter().center;
             FabByExample::Geometry *geom = kpart->getGeometry();
             geom->applyTrans(point(-CoM_robot.x(), -CoM_robot.y(), -CoM_robot.z()));
             geom->applyTrans(point(-CoM_part.x(), -CoM_part.y(), -CoM_part.z()));
