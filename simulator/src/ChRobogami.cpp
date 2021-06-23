@@ -6,11 +6,10 @@
 #include <chrono/assets/ChSphereShape.h>
 #include <chrono/assets/ChCylinderShape.h>
 #include <chrono/assets/ChTriangleMeshShape.h>
-#include <KinChain.h>
-#include <TemplateProtoConverter.h>
-#include <CenterOfMass.h>
-#include <geometry.h>
-#include <articulation.h>
+#include <FBE_Proto/TemplateProtoConverter.h>
+#include <FBE_Math/CenterOfMass.h>
+#include <FBE_Temp/geometry.h>
+#include <FBE_Temp/articulation.h>
 
 namespace chrono {
 static constexpr double robogami_scale_x = 0.01;

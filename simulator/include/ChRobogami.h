@@ -4,7 +4,9 @@
 #include <map>
 #include <chrono/physics/ChSystemNSC.h>
 #include <chrono/physics/ChSystemSMC.h>
-#include <Template.h>
+#include <FBE_Kinematics/KinChain.h>
+#include <FBE_Temp/Template.h>
+#include <FBE_Temp/geometry.h>
 
 #include "ChRobot.h"
 
