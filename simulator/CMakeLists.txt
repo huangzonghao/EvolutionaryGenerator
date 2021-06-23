@@ -143,8 +143,7 @@ add_library(${CURRENT_TARGET_NAME} STATIC ${Headers} ${Sources})
 target_link_libraries(${CURRENT_TARGET_NAME}
                       ${CHRONO_LIBRARIES}
                       ${urdfdom_LIBRARIES}
-                      FBE_Manipulations
-                      FBE_Conversions)
+                      FBE_Proto)
 
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${EIGEN3_INCLUDE_DIR}
