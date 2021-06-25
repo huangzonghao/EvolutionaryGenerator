@@ -59,7 +59,7 @@ class UrdfFitness {
         update_desc(ind);
     }
 
-    static constexpr char* descriptor_name[2] = {"body length", "genome length"};
+    static constexpr const char* descriptor_name[2] = {"body length", "genome length"};
     template <typename Indiv>
     void update_desc(Indiv& ind) {
         // Note: descriptor needs to be in range [0, 1]

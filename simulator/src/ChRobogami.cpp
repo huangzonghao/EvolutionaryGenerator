@@ -64,7 +64,7 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
     ch_link_bodies_.clear();
     ch_system_ = sys;
     std::map<FabByExample::KinNode_Part*, std::shared_ptr<ChBody>> fbe2ch;
-    auto& CoM_robot = kinchain.getCenterOfMass().center;
+    const auto& CoM_robot = kinchain.getCenterOfMass().center;
 
     // Bodies
     FabByExample::KinNode_Part *rootpart = dynamic_cast<FabByExample::KinNode_Part*>(kinchain.getRoot());
@@ -95,7 +95,7 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
             } else {
                 FabByExample::KinNode_Joint *parent_joint =
                     dynamic_cast<FabByExample::KinNode_Joint*>(node->parent);
-                auto& pos_tmp = parent_joint->getArticulation()->getCenter();
+                const auto& pos_tmp = parent_joint->getArticulation()->getCenter();
                 // Robogami is Y-up, apply Y-to-Z transformation here
                 pos_in_parent.x() =  pos_tmp.x() * robogami_scale_x;
                 pos_in_parent.y() = -pos_tmp.z() * robogami_scale_z;
@@ -120,7 +120,7 @@ bool ChRobogami::AddtoSystem(const std::shared_ptr<ChSystem>& sys,
             // TODO: figure out inertia matrix
 
             // Visual
-            auto& CoM_part = node->getCenter().center;
+            const auto& CoM_part = node->getCenter().center;
             FabByExample::Geometry *geom = kpart->getGeometry();
             geom->applyTrans(point(-CoM_robot.x(), -CoM_robot.y(), -CoM_robot.z()));
             geom->applyTrans(point(-CoM_part.x(), -CoM_part.y(), -CoM_part.z()));

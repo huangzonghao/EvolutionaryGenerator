@@ -21,18 +21,19 @@ class EvoGenQD
             typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, Selector,
                                              Container, Exact>, Exact>::ret> {
   public:
-    friend class ea::EvoGenEA<Phen, Eval, Stat,
-                              typename stc::FindExact<EvoGenQD<Phen, Eval, Stat,
-                              Selector, Container, Exact>, Exact>::ret>;
+    typedef typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, Selector, Container, Exact>,
+                                    Exact>::ret exact_t;
     typedef Phen phen_t;
     typedef std::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
 
+    friend class ea::EvoGenEA<Phen, Eval, Stat, exact_t>;
+
     EvoGenQD() {}
     EvoGenQD(const EvoParams& evo_params, const SimulatorParams& sim_params)
-        : EvoGenEA(evo_params), _sim_params(sim_params)
+        : ea::EvoGenEA<Phen, Eval, Stat, exact_t>(evo_params), _sim_params(sim_params)
     {
-        _eval.set_sim_params(_sim_params);
+        this->_eval.set_sim_params(_sim_params);
     }
 
     // Random initialization of _parents and _offspring
@@ -41,19 +42,19 @@ class EvoGenQD
         _init_pop.resize(_init_size);
 
         for (auto& indiv : _init_pop) {
-            indiv = std::make_shared<Phen>(_evo_params);
+            indiv = std::make_shared<Phen>(this->_evo_params);
             indiv->random();
         }
-        _eval_pop(_init_pop, 0, _init_pop.size());
+        this->_eval_pop(_init_pop, 0, _init_pop.size());
         _add(_init_pop, _added);
 
-        _container.get_full_content(_pop);
+        _container.get_full_content(this->_pop);
     }
 
     // Main Iteration of the QD algorithm
     void epoch() {
         // Selection of the parents (will fill the _parents vector)
-        _selector(_parents, _pop);
+        _selector(_parents, this->_pop);
 
         // Generation of the offspring
         std::vector<size_t> a(_parents.size());
@@ -73,13 +74,13 @@ class EvoGenQD
         }
 
         // Evaluation of the offspring
-        _eval_pop(_offspring, 0, _offspring.size());
+        this->_eval_pop(_offspring, 0, _offspring.size());
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);
 
         // Copy of the containt of the container into the _pop object.
-        _container.get_full_content(_pop);
+        _container.get_full_content(this->_pop);
     }
 
     const Container& container() const { return _container; }
@@ -90,7 +91,7 @@ class EvoGenQD
     const pop_t& init_pop() const { return _init_pop; }
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
-    const double last_epoch_time() const { return  _last_epoch_time; }
+    const double last_epoch_time() const { return  this->_last_epoch_time; }
 
   protected:
     // Add the offspring into the container and update the score of the individuals from the
@@ -127,32 +128,32 @@ class EvoGenQD
         }
     }
 
-    void _dump_config_extra() const { _sim_params.Save(_res_dir + "/sim_params.xml"); }
+    void _dump_config_extra() const { _sim_params.Save(this->_res_dir + "/sim_params.xml"); }
 
     void _load_config_extra(const std::string& evo_params_fname) {
         std::filesystem::path res_path(evo_params_fname);
         _sim_params.Load(res_path.parent_path().string() + "/sim_params.xml");
-        _eval.set_sim_params(_sim_params);
+        this->_eval.set_sim_params(_sim_params);
     }
 
     void _load_state_extra(boost::archive::binary_iarchive& ia) {
-        for (size_t i = 0; i < _pop.size(); ++i) {
-            _pop[i]->set_params(_evo_params);
-            _pop[i]->develop();
+        for (size_t i = 0; i < this->_pop.size(); ++i) {
+            this->_pop[i]->set_params(this->_evo_params);
+            this->_pop[i]->develop();
         }
-        _add(_pop, _added);
+        _add(this->_pop, _added);
     }
 
     void _populate_params_extra() {
-        _init_size = _evo_params.init_size();
-        _pop_size = _evo_params.pop_size();
-        _container.set_params(_evo_params);
+        _init_size = this->_evo_params.init_size();
+        _pop_size = this->_evo_params.pop_size();
+        _container.set_params(this->_evo_params);
 
         // reserve space for containers
         size_t map_capacity = 1;
-        for (auto& dim : _evo_params.grid_shape())
+        for (auto& dim : this->_evo_params.grid_shape())
             map_capacity *= dim;
-        _pop.reserve(map_capacity);
+        this->_pop.reserve(map_capacity);
         _parents.resize(_pop_size);
         _offspring.resize(_pop_size);
     }

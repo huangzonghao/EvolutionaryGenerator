@@ -296,7 +296,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
     // then process the joint with parent link
     // TODO: Chrono supports different types of joints, blindly choose ChLinkLock family for now
     if (u_parent_joint){
-        std::shared_ptr<ChLinkLock>& ch_parent_link = process_joints(u_parent_joint, ch_parent_body, ch_body);
+        const std::shared_ptr<ChLinkLock>& ch_parent_link = process_joints(u_parent_joint, ch_parent_body, ch_body);
         ch_link_bodies_.emplace(u_parent_joint->name, ChLinkBodies{ch_parent_link, ch_body, ch_parent_body});
     }
 

@@ -205,7 +205,7 @@ class EvoGenEA : public stc::Any<Exact> {
             time_t t = time(0);
             char time_buffer [80];
             strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
-            _res_dir = std::string(time_buffer) + "_" + std::to_string(::_getpid());
+            _res_dir = std::string(time_buffer) + "_" + std::to_string(::getpid());
             if (!_exp_name.empty())
                 _res_dir = _exp_name + "_" + _res_dir;
         }

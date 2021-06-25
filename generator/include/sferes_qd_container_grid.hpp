@@ -79,11 +79,11 @@ class Grid {
 
         behav_index_t behav_pos = get_index(i1);
 
+        const double epsilon = 0.00;
         if (!_array(behav_pos)) {
             _num_filled++;
             goto add_to_container;
         }
-        double epsilon = 0.00;
         if (i1->fit().value() - _array(behav_pos)->fit().value() > epsilon)
             goto add_to_container;
         // TODO: why?
@@ -123,7 +123,7 @@ class Grid {
         point_t p;
         for (size_t i = 0; i < grid_shape.size(); ++i) {
             assert(indiv->fit().desc()[i] >= 0.0);
-            assert(indiv->fit().desc()[i] =< 1.0);
+            assert(indiv->fit().desc()[i] <= 1.0);
             p[i] = indiv->fit().desc()[i];
         }
 

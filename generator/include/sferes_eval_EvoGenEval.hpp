@@ -21,7 +21,7 @@ class EvoGenEval {
 
         sms.clear();
         for (int i = 0; i < num_threads; ++i) {
-            auto& sm = std::make_shared<SimulationManager>();
+            const auto& sm = std::make_shared<SimulationManager>();
 
             sm->SetTimeout(sim_params.time_out);
             sm->SetCamera(sim_params.camera_pos[0],
