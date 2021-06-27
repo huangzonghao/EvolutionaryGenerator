@@ -316,7 +316,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
 std::shared_ptr<ChLinkLock> ChUrdfDoc::process_joints(const urdf::JointConstSharedPtr& u_joint,
                                                       const std::shared_ptr<ChBody>& ch_parent_body,
                                                       const std::shared_ptr<ChBody>& ch_child_body) {
-    assert(!u_joint);
+    assert(u_joint);
 
     std::shared_ptr<ChLinkLock> ch_link;
     switch (u_joint->type){
