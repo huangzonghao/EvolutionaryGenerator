@@ -172,14 +172,11 @@ endif()
 #                           Subdirectories                            #
 #######################################################################
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(RobogamiBackend_GROUP_FOLDER Robogami)
 add_subdirectory(generator/Robogami/Backend)
 add_subdirectory(simulator)
 add_subdirectory(generator)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(Robogami_Targets FBE_Conversions FBE_Design FBE_Manipulations FBE_Math
-                     FBE_Printable FBE_Simulation FBE_Temp FBE_Utils
-                     FBE_Proto Template_Proto trimesh2)
-set_target_properties(${Robogami_Targets} PROPERTIES FOLDER Robogami)
 set_target_properties(Generator Simulator PROPERTIES FOLDER Lib)
 
 #######################################################################
