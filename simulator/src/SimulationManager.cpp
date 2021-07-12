@@ -219,8 +219,13 @@ bool SimulationManager::RunSimulation() {
         vis_app.SetTimestep(step_size_);
 
         tik = std::chrono::steady_clock::now();
-        while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
-        // while (ch_system_->GetChTime() < timeout_ && !task_done_) {
+        // while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
+        while (ch_system_->GetChTime() < timeout_ && !task_done_ ) {
+            vis_app.GetDevice()->run(); // this should have been checked as one of the
+                                        // while loop conditions, but it starts to return
+                                        // false since the second vis_app instance.
+                                        // So I have to call it inside the loop and ignore
+                                        // the return value in order to keep the UI interaction
             vis_app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             // vis_app.GetSceneManager()->getActiveCamera()->setTarget(vector3dfCH(camera_body->GetPos()));
             vis_app.DrawAll();
