@@ -5,11 +5,11 @@
 #include <fstream>
 #include <filesystem>
 
-#include "articulation.h"
-#include "geometry.h"
-#include "template.h"
-#include "TemplateProtoConverter.h"
-#include "KinChain.h"
+#include "FBE_Temp/articulation.h"
+#include "FBE_Temp/geometry.h"
+#include "FBE_Temp/template.h"
+#include "FBE_Proto/TemplateProtoConverter.h"
+#include "FBE_Kinematics/KinChain.h"
 
 #include "evo_paths.h"
 
