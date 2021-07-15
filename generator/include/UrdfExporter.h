@@ -3,6 +3,6 @@
 
 #include <string>
 
-void protoToUrdf(std::string protfilename, std::string robotname);
+void protoToUrdf(const std::string& protfilename, const std::string& robotname);
 
 #endif /* end of include guard: URDFEXPORTER_H_6NVDQ9OT */

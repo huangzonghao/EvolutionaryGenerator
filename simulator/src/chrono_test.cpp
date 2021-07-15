@@ -8,7 +8,7 @@
 const double s_friction = 2.0;
 const double k_friction = 1.9;
 
-void load_robot(std::string robot_name){
+void load_robot(const std::string& robot_name){
     const std::string urdf_filename = Robot_Output_Dir + "/" + robot_name + "/" + robot_name + ".urdf";
 
     SimulationManager sm;
@@ -31,7 +31,7 @@ void load_robot(std::string robot_name){
     std::cout << "Root displacement: " << sm.GetRootBodyDisplacementX() << std::endl;
 }
 
-void load_robogami_robot(std::string robot_name) {
+void load_robogami_robot(const std::string& robot_name) {
     const std::string proto_filename = Robogami_Data_Dir + "/proto/examples/" + robot_name + ".asciiproto";
 
     SimulationManager sm;

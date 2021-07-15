@@ -41,7 +41,7 @@ void SimulationManager::LoadRobogamiRobot() {
     robot_doc_ = std::make_shared<ChRobogami>();
 }
 
-void SimulationManager::SetEnv(std::string filename, double env_x, double env_y, double env_z){
+void SimulationManager::SetEnv(const std::string& filename, double env_x, double env_y, double env_z){
     env_file_ = filename;
     env_x_ = env_x;
     env_y_ = env_y;

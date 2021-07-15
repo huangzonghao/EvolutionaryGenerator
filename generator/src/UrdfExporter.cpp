@@ -15,7 +15,7 @@
 
 using namespace FabByExample;
 
-void protoToUrdf(std::string protfilename, std::string robotname) {
+void protoToUrdf(const std::string& protfilename, const std::string& robotname) {
     const std::string mesh_ext = ".obj";
     constexpr double scale_x = 0.001;
     constexpr double scale_y = 0.001;
