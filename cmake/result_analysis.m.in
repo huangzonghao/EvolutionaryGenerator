@@ -4,7 +4,7 @@
 
 function result_analysis()
 
-addpath('@EVOGEN_MATLAB_SCRIPTS_PATH@');
+addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'result_analysis'));
 UI('@EVOGEN_EXE_PATH@', '@RESULT_OUTPUT_DIR@')
 
 end % function
