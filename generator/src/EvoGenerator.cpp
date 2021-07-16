@@ -22,7 +22,7 @@ typedef sferes::qd::EvoGenQD<phen_t,
                              sferes::eval::EvoGenEval,
                              boost::fusion::vector<sferes::stat::EvoGenStat>,
                              sferes::qd::selector::Uniform<phen_t>,
-                             sferes::qd::container::Grid<phen_t> > qd_t;
+                             sferes::qd::container::Grid<phen_t>> qd_t;
 
 void EvoGenerator::run() {
     if (!evo_params_.output_enabled())

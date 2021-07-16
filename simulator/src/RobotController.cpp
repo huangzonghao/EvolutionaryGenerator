@@ -1,15 +1,15 @@
 #include "RobotController.h"
 
 RobotController::
-RobotController(std::vector<std::shared_ptr<SimMotor> > *motors, ControllerType type)
+RobotController(std::vector<std::shared_ptr<SimMotor>> *motors, ControllerType type)
     : motors_(motors), type(type) {}
 
-RobotController::RobotController(std::vector<std::shared_ptr<SimMotor> > *motors,
-                                 std::vector<chrono::ChVector<> > *waypoints,
+RobotController::RobotController(std::vector<std::shared_ptr<SimMotor>> *motors,
+                                 std::vector<chrono::ChVector<>> *waypoints,
                                  ControllerType type)
     : motors_(motors), waypoints_(waypoints), type(type) {}
 
-WheelController::WheelController(std::vector<std::shared_ptr<SimMotor> > *motors)
+WheelController::WheelController(std::vector<std::shared_ptr<SimMotor>> *motors)
     : RobotController(motors, WHEEL)
 {
     for (auto& motor : *motors_) {
@@ -41,7 +41,7 @@ void WheelController::exe_gait(){
     }
 }
 
-void LegController::SetMotors(const std::vector<std::shared_ptr<SimMotor> >& motors) {
+void LegController::SetMotors(const std::vector<std::shared_ptr<SimMotor>>& motors) {
     motors_ = motors;
 }
 
@@ -114,7 +114,7 @@ void LegController::exe_gait3(size_t gait_id) {
     }
 }
 
-void EvoGenController::SetLegs(const std::vector<std::vector<std::shared_ptr<SimMotor> > >& leg_motors) {
+void EvoGenController::SetLegs(const std::vector<std::vector<std::shared_ptr<SimMotor>>>& leg_motors) {
     legs_.clear();
     legs_.resize(leg_motors.size());
     for (int i = 0; i < leg_motors.size(); ++i) {

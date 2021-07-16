@@ -463,7 +463,7 @@ bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::sha
 
     ch_system_ = sys;
 
-    body_list_ = std::make_shared<std::vector<std::shared_ptr<ChBody> > >();
+    body_list_ = std::make_shared<std::vector<std::shared_ptr<ChBody>>>();
 
     convert_materials();
 

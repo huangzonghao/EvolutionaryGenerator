@@ -58,7 +58,7 @@ class ChUrdfDoc : public ChRobot {
     urdf::LinkConstSharedPtr u_root_link_;
     std::map<std::string, ChMatPair> ch_materials_;
     std::shared_ptr<ChMaterialSurfaceNSC> collision_material_;
-    std::shared_ptr<std::vector<std::shared_ptr<ChBody> > > body_list_;
+    std::shared_ptr<std::vector<std::shared_ptr<ChBody>>> body_list_;
 };
 
 // torque functor for a rot spring with constant spring coefficient and constant damping coefficient

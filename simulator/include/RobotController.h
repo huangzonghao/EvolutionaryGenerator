@@ -12,17 +12,17 @@ class RobotController {
     enum ControllerType {DUMMY = 0, MANIPULATOR, WHEEL, LEGGED, EVOGEN} type;
 
     RobotController() : type(DUMMY) {}
-    RobotController(std::vector<std::shared_ptr<SimMotor> > *motors, ControllerType type);
-    RobotController(std::vector<std::shared_ptr<SimMotor> > *motors,
-                    std::vector<chrono::ChVector<> > *waypoints,
+    RobotController(std::vector<std::shared_ptr<SimMotor>> *motors, ControllerType type);
+    RobotController(std::vector<std::shared_ptr<SimMotor>> *motors,
+                    std::vector<chrono::ChVector<>> *waypoints,
                     ControllerType type);
     virtual ~RobotController() = default;
     virtual bool Update() = 0;
   protected:
     bool gait_lock = false;
     int waypoint_idx = 0;
-    std::vector<std::shared_ptr<SimMotor> > *motors_;
-    std::vector<chrono::ChVector<> > *waypoints_;
+    std::vector<std::shared_ptr<SimMotor>> *motors_;
+    std::vector<chrono::ChVector<>> *waypoints_;
 };
 
 class DummyController : public RobotController {
@@ -32,7 +32,7 @@ class DummyController : public RobotController {
 
 class WheelController : public RobotController {
   public:
-    WheelController(std::vector<std::shared_ptr<SimMotor> > *motors);
+    WheelController(std::vector<std::shared_ptr<SimMotor>> *motors);
     ~WheelController(){};
     bool Update() override;
   private:
@@ -42,10 +42,10 @@ class WheelController : public RobotController {
 
 class LegController {
   public:
-    void SetMotors(const std::vector<std::shared_ptr<SimMotor> >& motors);
+    void SetMotors(const std::vector<std::shared_ptr<SimMotor>>& motors);
     void exe_gait(size_t gait_id);
   private:
-    std::vector<std::shared_ptr<SimMotor> > motors_;
+    std::vector<std::shared_ptr<SimMotor>> motors_;
     void exe_gait1(size_t gait_id);
     void exe_gait2(size_t gait_id);
     void exe_gait3(size_t gait_id);
@@ -53,10 +53,10 @@ class LegController {
 
 class EvoGenController : public RobotController {
   public:
-    EvoGenController(std::vector<std::shared_ptr<SimMotor> > *motors)
+    EvoGenController(std::vector<std::shared_ptr<SimMotor>> *motors)
         : RobotController(motors, EVOGEN) {}
     virtual bool Update() override;
-    void SetLegs(const std::vector<std::vector<std::shared_ptr<SimMotor> > >& leg_motors);
+    void SetLegs(const std::vector<std::vector<std::shared_ptr<SimMotor>>>& leg_motors);
   private:
     size_t update_counter_ = 0; // TODO: remove this
     size_t gait_ = 0;

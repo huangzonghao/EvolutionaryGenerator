@@ -39,7 +39,7 @@ class EvoGenEA : public stc::Any<Exact> {
     typedef Phen phen_t;
     typedef Eval eval_t;
     typedef Stat stat_t;
-    typedef std::vector<std::shared_ptr<Phen> > pop_t;
+    typedef std::vector<std::shared_ptr<Phen>> pop_t;
 
     EvoGenEA() {}
     EvoGenEA(const EvoParams& evo_params) : _evo_params(evo_params) {}

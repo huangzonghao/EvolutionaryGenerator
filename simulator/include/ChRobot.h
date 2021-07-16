@@ -26,8 +26,8 @@ class ChRobot {
 
     virtual const std::string& GetRobotName() const = 0;
     virtual const std::string& GetRobotFileName() const { return robot_file_; }
-    void SetAuxRef(const std::shared_ptr<std::unordered_set<std::string> >& auxrefs) { auxrefs_ = auxrefs; }
-    const std::shared_ptr<std::unordered_set<std::string> >& GetAuxRef() { return auxrefs_; }
+    void SetAuxRef(const std::shared_ptr<std::unordered_set<std::string>>& auxrefs) { auxrefs_ = auxrefs; }
+    const std::shared_ptr<std::unordered_set<std::string>>& GetAuxRef() { return auxrefs_; }
     const std::shared_ptr<chrono::ChSystem> GetSystem() const { return ch_system_; }
     const ChLinkBodies& GetLinkBodies(const std::string& link_name) const {
         if (ch_link_bodies_.find(link_name) == ch_link_bodies_.end()){
@@ -48,7 +48,7 @@ class ChRobot {
     std::map<std::string, ChLinkBodies> ch_link_bodies_;
     std::shared_ptr<ChBody> ch_root_body_;
     // names of bodies that would use ChBodyAuxRef
-    std::shared_ptr<std::unordered_set<std::string> > auxrefs_;
+    std::shared_ptr<std::unordered_set<std::string>> auxrefs_;
 };
 
 } // namespace chrono

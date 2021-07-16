@@ -22,7 +22,7 @@ SimulationManager::SimulationManager(double step_size,
     motors_.clear();
     ch_waypoints_.clear();
     SetChronoDataPath(CHRONO_DATA_DIR);
-    auxrefs_ = std::make_shared<std::unordered_set<std::string> >();
+    auxrefs_ = std::make_shared<std::unordered_set<std::string>>();
 }
 
 void SimulationManager::LoadUrdfFile(const std::string& filename){
@@ -254,7 +254,7 @@ bool SimulationManager::RunSimulation() {
 }
 
 void SimulationManager::
-GetActuatorVels(std::vector<std::pair<double, double> > &vels_vec) const {
+GetActuatorVels(std::vector<std::pair<double, double>> &vels_vec) const {
     if (vels_vec.empty()){
         vels_vec.resize(motors_.size());
     }
@@ -268,7 +268,7 @@ GetActuatorVels(std::vector<std::pair<double, double> > &vels_vec) const {
 }
 
 void SimulationManager::
-GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const {
+GetActuatorTorques(std::vector<std::pair<double, double>> &torqs_vec) const {
     if (torqs_vec.empty()){
         torqs_vec.resize(motors_.size());
     }

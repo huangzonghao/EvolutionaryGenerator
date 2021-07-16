@@ -68,8 +68,8 @@ class  SimulationManager {
     double GetLastSimTime() { return last_sim_time_; }
 
     /** Interface functions **/
-    void GetActuatorVels(std::vector<std::pair<double, double> > &vels_vec) const;
-    void GetActuatorTorques(std::vector<std::pair<double, double> > &torqs_vec) const;
+    void GetActuatorVels(std::vector<std::pair<double, double>> &vels_vec) const;
+    void GetActuatorTorques(std::vector<std::pair<double, double>> &torqs_vec) const;
     size_t GetMotorNumber() const { return motors_.size(); }
     size_t GetComponentNumber() const { return motors_.size() + payloads_.size(); }
     double GetRootBodyDisplacement() const;
@@ -83,9 +83,9 @@ class  SimulationManager {
     double k_friction_;
     double s_friction_;
 
-    std::vector<std::shared_ptr<SimPayload> > payloads_;
-    std::vector<std::shared_ptr<SimMotor> > motors_;
-    std::vector<chrono::ChVector<> > ch_waypoints_;
+    std::vector<std::shared_ptr<SimPayload>> payloads_;
+    std::vector<std::shared_ptr<SimMotor>> motors_;
+    std::vector<chrono::ChVector<>> ch_waypoints_;
     std::shared_ptr<chrono::ChRobot> robot_doc_;
     std::shared_ptr<const Eigen::MatrixXd> eigen_waypoints_;
     // we need to keep ch_system_ outside of RunSimulation in case we need to get any
@@ -109,11 +109,11 @@ class  SimulationManager {
 
     double displacement_ = 0;
     size_t num_legs_ = 0;
-    std::vector<std::vector<std::shared_ptr<SimMotor> > > leg_motors_;
+    std::vector<std::vector<std::shared_ptr<SimMotor>>> leg_motors_;
 
     // names of bodies that would use ChBodyAuxRef
     // this pointer is initialized when a urdf file has been loaded
-    std::shared_ptr<std::unordered_set<std::string> > auxrefs_;
+    std::shared_ptr<std::unordered_set<std::string>> auxrefs_;
 
     double last_sim_time_ = 0;
 };

@@ -50,7 +50,7 @@ class EvoGenEval {
     }
 
     template<typename Phen>
-    void eval_kernel(const std::vector<std::shared_ptr<Phen> >& pop,
+    void eval_kernel(const std::vector<std::shared_ptr<Phen>>& pop,
                      const std::shared_ptr<SimulationManager>& sm,
                      size_t start_idx, size_t end_idx)
     {
@@ -61,7 +61,7 @@ class EvoGenEval {
     }
 
     template<typename Phen>
-    void eval(std::vector<std::shared_ptr<Phen> >& pop, size_t begin, size_t end)
+    void eval(std::vector<std::shared_ptr<Phen>>& pop, size_t begin, size_t end)
     {
         assert(pop.size());
         assert(begin < pop.size());
@@ -93,9 +93,9 @@ class EvoGenEval {
 
   protected:
     size_t _nb_evals = 0; // for stat to book the total number of phen that has been evaluated
-    std::vector<std::shared_ptr<SimulationManager> > sms;
+    std::vector<std::shared_ptr<SimulationManager>> sms;
     size_t num_threads;
-    std::vector<std::shared_ptr<std::thread> > threads;
+    std::vector<std::shared_ptr<std::thread>> threads;
 };
 
 } // namespace eval
