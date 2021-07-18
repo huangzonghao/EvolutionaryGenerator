@@ -15,8 +15,8 @@
 #include "sferes_qd_selector_uniform.hpp"
 #include "sferes_qd_EvoGenQD.hpp"
 
-// typedef sferes::fit::UrdfFitness fit_t;
-typedef sferes::fit::RobogamiFitness fit_t;
+typedef sferes::fit::UrdfFitness fit_t;
+// typedef sferes::fit::RobogamiFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 typedef sferes::qd::EvoGenQD<phen_t,
                              sferes::eval::EvoGenEval,

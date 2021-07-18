@@ -5,7 +5,9 @@ set(CURRENT_TARGET_NAME Generator)
 set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoParams.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/RobogamiLibrary.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/GenerateDemoRobot.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/GenerateDemoRobogamiRobot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/SimulatorParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_eval_EvoGenEval.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sferes_fit_UrdfFitness.hpp
@@ -21,7 +23,9 @@ set(Headers
 )
 
 set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/RobogamiLibrary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/GenerateDemoRobot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/GenerateDemoRobogamiRobot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/EvoParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/SimulatorParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/EvoGenerator.cpp
@@ -59,12 +63,16 @@ set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/robogami_paths.h
     # include/UrdfExporter.h
+    include/RobogamiLibrary.h
     include/GenerateDemoRobot.h
+    include/GenerateDemoRobogamiRobot.h
 )
 
 set(Sources
     # src/UrdfExporter.cpp
+    src/RobogamiLibrary.cpp
     src/GenerateDemoRobot.cpp
+    src/GenerateDemoRobogamiRobot.cpp
     src/robogami_test.cpp
 )
 
@@ -93,5 +101,6 @@ endif()
 # copy DLLs for Windows
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
+    list(APPEND CURRENT_TARGET_DEP_DLLS ${CPLEX_CPLEX_DLL})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()

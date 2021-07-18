@@ -4,6 +4,7 @@
 #include <boost/serialization/vector.hpp>
 
 #include "GenerateDemoRobot.h"
+#include "GenerateDemoRobogamiRobot.h"
 #include "SimulationManager.h"
 
 namespace sferes {
@@ -51,7 +52,8 @@ class UrdfFitness {
             cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
         }
 
-        sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
+        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", ind.data()));
+        // sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();
 
         _value = sm.GetRootBodyDisplacementX();

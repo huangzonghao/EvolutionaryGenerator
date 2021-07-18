@@ -6,7 +6,7 @@
 
 #include "SimulationManager.h"
 #include "ChUrdfDoc.h"
-#include "ChRobogami.h"
+// #include "ChRobogami.h"
 
 using namespace chrono;
 
@@ -33,13 +33,13 @@ void SimulationManager::LoadUrdfString(const std::string& urdfstring){
     robot_doc_ = std::make_shared<ChUrdfDoc>(urdfstring, true);
 }
 
-void SimulationManager::LoadRobogamiProtoFile(const std::string& filename) {
-    robot_doc_ = std::make_shared<ChRobogami>(filename);
-}
+// void SimulationManager::LoadRobogamiProtoFile(const std::string& filename) {
+    // robot_doc_ = std::make_shared<ChRobogami>(filename);
+// }
 
-void SimulationManager::LoadRobogamiRobot() {
-    robot_doc_ = std::make_shared<ChRobogami>();
-}
+// void SimulationManager::LoadRobogamiRobot() {
+    // robot_doc_ = std::make_shared<ChRobogami>();
+// }
 
 void SimulationManager::SetEnv(const std::string& filename, double env_x, double env_y, double env_z){
     env_file_ = filename;
@@ -182,8 +182,8 @@ bool SimulationManager::RunSimulation() {
     }
 
     // Add motors and extra weights to system
-    for (auto payload : payloads_) payload->AddtoSystem(ch_system_);
-    for (auto motor : motors_) motor->AddtoSystem(*robot_doc_);
+    for (const auto& payload : payloads_) payload->AddtoSystem(ch_system_);
+    for (const auto& motor : motors_) motor->AddtoSystem(*robot_doc_);
 
     // Set up controller
     std::shared_ptr<RobotController> controller;

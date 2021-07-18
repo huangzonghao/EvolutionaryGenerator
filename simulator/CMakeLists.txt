@@ -126,14 +126,14 @@ set(CURRENT_TARGET_NAME Simulator)
 set(Headers
     include/ChRobot.h
     include/ChUrdfDoc.h
-    include/ChRobogami.h
+    # include/ChRobogami.h
     include/RobotController.h
     include/SimMotor.h
     include/SimulationManager.h)
 
 set(Sources
     src/ChUrdfDoc.cpp
-    src/ChRobogami.cpp
+    # src/ChRobogami.cpp
     src/RobotController.cpp
     src/SimMotor.cpp
     src/SimulationManager.cpp)
@@ -142,8 +142,8 @@ add_library(${CURRENT_TARGET_NAME} STATIC ${Headers} ${Sources})
 
 target_link_libraries(${CURRENT_TARGET_NAME}
                       ${CHRONO_LIBRARIES}
-                      ${urdfdom_LIBRARIES}
-                      FBE_Proto)
+                      ${urdfdom_LIBRARIES})
+                      # FBE_Proto)
 
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${EIGEN3_INCLUDE_DIR}
@@ -163,8 +163,8 @@ if(MSVC)
         $<$<CONFIG:Debug>: /MD; /MP>
         $<$<CONFIG:Release>: /MP;>
     )
-    target_compile_definitions(${CURRENT_TARGET_NAME} PUBLIC
-        EIGEN_DONT_VECTORIZE; EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
+    # target_compile_definitions(${CURRENT_TARGET_NAME} PUBLIC
+        # EIGEN_DONT_VECTORIZE; EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
 endif()
 
 
