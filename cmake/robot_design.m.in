@@ -1,0 +1,10 @@
+% This is an auto-generated file, do not edit
+% If at any time the paths in this file become invalid,
+% try to rebuild the project.
+
+function robot_design()
+
+addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'robot_design'));
+UI('@EVOGEN_EXE_PATH@', '@EVOGEN_TMP_PARTS_PATH@', '@RESULT_OUTPUT_DIR@')
+
+end % function

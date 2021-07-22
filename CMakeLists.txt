@@ -55,8 +55,9 @@ if (MSVC)
 else()
     set(EVOGEN_EXE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-
+set(EVOGEN_TMP_PARTS_PATH ${ROBOT_OUTPUT_DIR}/tmp_robot_parts)
 configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
+configure_file(${PROJECT_IN_FILE_DIR}/robot_design.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/robot_design.m @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/result_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/result_analysis.m @ONLY)
 
 # Need to use the filesystem of C++17
@@ -256,6 +257,48 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/GenerateDemoRobot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/visualizer_main.cpp
+)
+
+add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
+
+target_link_libraries(${CURRENT_TARGET_NAME}
+                      Simulator
+                      Boost::disable_autolinking
+                      ${Boost_SERIALIZATION_LIBRARY_RELEASE})
+
+target_include_directories(${CURRENT_TARGET_NAME}
+                           PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                  ${Boost_INCLUDE_DIR}
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
+    list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
+    DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
+        $<$<CONFIG:Release>: /MP;>
+    )
+    target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
+endif()
+
+set(CURRENT_TARGET_NAME Robogami_Visualizer)
+set(Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/GenerateDemoRobogamiRobot.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
+)
+
+set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/GenerateDemoRobogamiRobot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/robogami_visualizer_main.cpp
 )
 
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
