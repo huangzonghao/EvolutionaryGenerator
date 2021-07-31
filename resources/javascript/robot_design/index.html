@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>EvoGen - Design a Robot</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- JS Libraries -->
+    <script src="js/lib/three.min.js"></script>
+    <script src="js/lib/TrackballControls.js"></script>
+    <script src="js/lib/OBJLoader.js"></script>
+</head>
+
+<body>
+    <div id="RobotConfigPanel">
+        <p align="center">Robot Config</p>
+        <p>
+            Num Legs:
+            <select class="SelectList" id="NumLegsSelect"></select>
+        </p>
+        <p>
+            Body ID:
+            <select class="SelectList" id="BodyIdSelect"></select>
+        </p>
+        <p>
+            Leg ID:
+            <select class="SelectList" id="LegIdSelect"></select>
+            # Links:
+            <select class="SelectList" id="NumLinksSelect"></select>
+        </p>
+        <p>
+            Leg Position:
+            <input class="TextBox" id="LegPositionText">
+            <input type="range" id="LegPositionRange">
+        </p>
+        <p>
+            Link ID:
+            <select class="SelectList" id="LinkIdSelect"></select>
+            Part ID:
+            <select class="SelectList" id="PartIdSelect"></select>
+        </p>
+        <p>
+            Link Scale:
+            <input class="TextBox" id="LinkLengthText">
+            <input type="range" id="LinkLengthRange">
+        </p>
+        <p>
+            <button type="input" id="submitButton">Submit</button>
+        </p>
+    </div>
+
+    <div id="RobotVisualPanel"></div>
+
+    <!-- TODO: currently need to wait till the html loaded - might be done with js command? -->
+    <!-- JS Source Code -->
+    <script src="js/main.js"></script>
+
+    <!-- <script src="js/globalVariables.js"></script> -->
+    <!-- <script src="js/keyboardstate.js"></script> -->
+    <!-- <script src="js/stats.js"></script> -->
+    <!-- <script src="js/supportingClass.js"></script> -->
+    <!-- <script src="js/maps.js"></script> -->
+    <!-- <script src="js/EventHandlers.js"></script> -->
+    <!-- <script src="js/Stage.js"></script> -->
+    <!-- <script src="js/gameControl.js"></script> -->
+    <!-- <script> -->
+        <!-- makeSplash(0); -->
+    <!-- </script> -->
+</body>
+
+</html>

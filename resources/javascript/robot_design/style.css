@@ -1,0 +1,51 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+#RobotConfigPanel {
+    float: left;
+    width: 20%;
+    height: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow-y:scroll;
+}
+
+#RobotVisualPanel {
+    float:   right;
+    width:   80%;
+    height:  100%;
+    padding: 5px;
+    overflow-y:scroll;
+    box-sizing: border-box;
+}
+
+.SelectList {
+    text-align: center;
+    margin:   0px;
+    padding:  0px;
+    height:   30px;
+    width:    40px;
+}
+
+.TextBox {
+    width: 40px;
+}
+
+.Slider {
+}
+
+/* just try to center the submit button */
+#submitButton {
+    margin: 0;
+    position: absolute;
+    left: 5%;
+}
