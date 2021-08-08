@@ -304,6 +304,7 @@ set(Sources
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
 
 target_link_libraries(${CURRENT_TARGET_NAME}
+                      trimesh2
                       Simulator
                       Boost::disable_autolinking
                       ${Boost_SERIALIZATION_LIBRARY_RELEASE})

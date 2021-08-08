@@ -155,9 +155,12 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                     urdf::MeshSharedPtr tmp_urdf_mesh_ptr = std::dynamic_pointer_cast<urdf::Mesh>(u_visual->geometry);
                     trimesh = chrono_types::make_shared<geometry::ChTriangleMeshConnected>();
                     trimesh->LoadWavefrontMesh(urdf_abs_path(tmp_urdf_mesh_ptr->filename));
+                    // Apply the scales to mesh
                     trimesh->Transform(VNULL, ChMatrix33<>(ChVector<>(tmp_urdf_mesh_ptr->scale.x,
                                                                       tmp_urdf_mesh_ptr->scale.y,
                                                                       tmp_urdf_mesh_ptr->scale.z)));
+                    // Apply translation to mesh -- the vis_asset::pos doesn't seem to be applied to mesh objects
+                    trimesh->Transform(vis_in_child, ChMatrix33<>(1));
                     trimesh->RepairDuplicateVertexes(1e-9); // if meshes are not watertight
 
                     auto trimesh_shape = chrono_types::make_shared<ChTriangleMeshShape>();
