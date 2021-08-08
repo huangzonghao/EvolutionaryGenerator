@@ -28,8 +28,8 @@ class UrdfFitness {
 
         sm.RemoveAllMotors();
         int num_links;
-        int num_legs = ind.data(3);
-        int cursor = 5;
+        int num_legs = ind.data(4);
+        int cursor = 6;
         // the leg order in Phen is: FL FR ML MR BL BR
         // the leg order in Sim Controller is: FL ML BL BR MR FR
         // so the conversion happens here
@@ -65,10 +65,10 @@ class UrdfFitness {
     template <typename Indiv>
     void update_desc(Indiv& ind) {
         // Note: descriptor needs to be in range [0, 1]
-        _desc[0] = ind.gen().data(0);
-        _desc[1] = ind.gen().size() - 10; // lengeth of gen [10, 25]
+        _desc[0] = ind.gen().data(1);
+        _desc[1] = ind.gen().size() - 11; // lengeth of gen [11, 26]
         // TODO: better handling the map size
-        _desc[1] = _desc[1] / 20;
+        _desc[1] = _desc[1] / 20; // we have 20 bins
     }
 
     template<class Archive>

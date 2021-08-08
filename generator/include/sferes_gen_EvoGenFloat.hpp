@@ -107,7 +107,7 @@ struct CrossOver_f {
 };
 } // namespace evo_float
 
-/// in range [0;1]
+/// in range [0, 1]
 class EvoGenFloat {
   public:
     EvoGenFloat() {}
@@ -118,15 +118,21 @@ class EvoGenFloat {
         std::vector<double> tmp_data;
         // TODO: how to improve memory management?
         tmp_data.reserve(_data.size());
+        // body_id
+        if (misc::rand<double>() < gen_mutation_rate)
+            tmp_data.push_back(_mutation_op(_data[0]));
+        else
+            tmp_data.push_back(_data[0]);
+
         // body_x, body_y, body_z
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 1; i < 4; ++i) {
             if (misc::rand<double>() < gen_mutation_rate)
                 tmp_data.push_back(_mutation_op(_data[i]));
             else
                 tmp_data.push_back(_data[i]);
         }
         // TODO: mutate num_links
-        int num_legs = _data[3];
+        int num_legs = _data[4];
         int tmp_num_legs = num_legs;
         int num_links = 0;
         int tmp_num_links = 0;
@@ -134,7 +140,7 @@ class EvoGenFloat {
         if (misc::rand<double>() < gen_mutation_rate)
             tmp_num_legs = std::clamp(_mutation_op(tmp_num_legs), min_num_legs, max_num_legs);
         tmp_data.push_back(tmp_num_legs);
-        int cursor = 4;
+        int cursor = 5;
         if (num_legs >= tmp_num_legs) {
             for (int i = 0; i < tmp_num_legs; ++i) {
                 num_links = _data[cursor];
@@ -227,11 +233,12 @@ class EvoGenFloat {
         _check_validity();
     }
 
-    // gen format: [body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+    // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [num_links, link_1_id, link_1_scale, ...]
     // Note: num_legs here corresponds to one side only
     void random() {
         _data.clear();
+        _data.push_back(misc::rand<double>()); // body_id
         _data.push_back(misc::rand<double>()); // body_x
         _data.push_back(misc::rand<double>()); // body_y
         _data.push_back(misc::rand<double>()); // body_z

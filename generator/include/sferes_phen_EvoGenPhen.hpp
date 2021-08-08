@@ -40,7 +40,7 @@ class EvoGenPhen {
         _gen.cross(i2->gen(), o1->gen(), o2->gen());
     }
 
-    // phen format: [body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+    // phen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     // Note: phen holds the design vector that should be directly send to robot
     // generator, and therefore would contain digits not included in gen to record
@@ -50,14 +50,16 @@ class EvoGenPhen {
     // Leg order: FL FR ML MR BL BR
     void develop() {
         _phen_vec.clear();
+        // body_id
+        _phen_vec.push_back(_gen.data(0));
         // body_x, body_y, body_z
-        for (int i = 0; i < 3; ++i) {
-                _phen_vec.push_back(_gen.data(i) * (_max_p - _min_p) + _min_p);
+        for (int i = 1; i < 4; ++i) {
+            _phen_vec.push_back(_gen.data(i) * (_max_p - _min_p) + _min_p);
         }
         // legs
         double pos_tmp;
-        int num_legs_gen = _gen.data(3);
-        int gen_cursor = 4;
+        int num_legs_gen = _gen.data(4);
+        int gen_cursor = 5;
         _phen_vec.push_back(num_legs_gen * 2);
         for (int i = 0; i < num_legs_gen; ++i) {
             if (i == 1 && num_legs_gen == 2)

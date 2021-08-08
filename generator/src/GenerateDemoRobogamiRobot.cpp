@@ -28,7 +28,7 @@ void init_robogami_library() {
     // robogami_lib.OutputMeshFiles(Robot_Output_Dir + "/tmp_robot_parts");
 }
 
-// phen format: [body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+// phen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
 //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
 std::string generate_demo_robogami_robot_string(const std::string& mode,
                                                 const std::vector<double>& dv,
@@ -45,20 +45,19 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     oss << "<robot name =\"" << robot_name << "\">" << std::endl;
     oss << std::endl;
 
-    // TODO: Temporarily use fixed body mesh
     // chassis
     rbiBody chassis;
-    chassis.x = 0.4 * dv[0];
-    chassis.y = 0.2 * dv[1];
-    chassis.z = 0.05 * dv[2];
-    double chassis_extra_scales[3] {dv[0] * 0.2 * 6 / 4, dv[1] * 0.25, 0.1};
+    chassis.x = 0.4 * dv[1];
+    chassis.y = 0.2 * dv[2];
+    chassis.z = 0.05 * dv[3];
+    double chassis_extra_scales[3] {dv[1] * 0.2 * 6 / 4, dv[2] * 0.25, 0.1};
     oss << "<link name = \"chassis\">" << std::endl;
     oss << " <visual>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <geometry>" << std::endl;
-    oss << "    <mesh filename = \"" << body_tmp_dir << "/0" << mesh_ext << "\"" << " scale = \"" << scale_x * chassis_extra_scales[0] << " "
-                                                                                                  << scale_y * chassis_extra_scales[1] << " "
-                                                                                                  << scale_z * chassis_extra_scales[2] << "\" />" << std::endl;
+    oss << "    <mesh filename = \"" << body_tmp_dir << "/" << body_id << mesh_ext << "\"" << " scale = \"" << scale_x * chassis_extra_scales[0] << " "
+                                                                                           << scale_y * chassis_extra_scales[1] << " "
+                                                                                           << scale_z * chassis_extra_scales[2] << "\" />" << std::endl;
     // oss << "    <box size=\"" << chassis.x << " " << chassis.y << " " << chassis.z << "\"/>" << std::endl;
     oss << "  </geometry>" << std::endl;
     oss << " </visual>" << std::endl;
@@ -84,8 +83,8 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     double link_z_offset;
     double leg_extra_scales[3];
     std::string link_name_tmp;
-    int num_legs = dv[3];
-    int cursor = 5;
+    int num_legs = dv[4];
+    int cursor = 6;
     int part_ids[3];
     for (int i = 0; i < num_legs; ++i) {
         link_z_offset = 0;
