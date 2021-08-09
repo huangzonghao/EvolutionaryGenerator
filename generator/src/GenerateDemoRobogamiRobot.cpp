@@ -110,13 +110,13 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     // oss << "    <box size=\"" << chassis_x << " " << chassis_y << " " << chassis_z << "\"/>" << std::endl;
     oss << "  </geometry>" << std::endl;
     oss << " </visual>" << std::endl;
-    // oss << " <collision>" << std::endl;
-    // oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-    // oss << "  <geometry>" << std::endl;
-    // // oss << "    <mesh filename = \"" << mesh_info.body_tmp_dir << "/" << 0 << mesh_ext << "\"" << " scale = \"" << mesh_info.scale_x << " " << mesh_info.scale_y << " " << mesh_info.scale_z << "\" />" << std::endl;
-    // oss << "    <box size=\"" << chassis_x << " " << chassis_y << " " << chassis_z << "\"/>" << std::endl;
-    // oss << "  </geometry>" << std::endl;
-    // oss << " </collision>" << std::endl;
+    // Add a box for chassis collision
+    oss << " <collision>" << std::endl;
+    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+    oss << "  <geometry>" << std::endl;
+    oss << "    <box size=\"" << chassis_x * 0.95 << " " << chassis_y * 0.95 << " " << chassis_z * 0.95 << "\"/>" << std::endl;
+    oss << "  </geometry>" << std::endl;
+    oss << " </collision>" << std::endl;
     oss << " <inertial>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
@@ -169,6 +169,19 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
             // need to figure out the length of each leg from robogami
                 oss << " <collision>" << std::endl;
                 oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 << "\" />" << std::endl;
+                oss << "  <geometry>" << std::endl;
+                oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                oss << "  </geometry>" << std::endl;
+                oss << " </collision>" << std::endl;
+                oss << " <collision>" << std::endl;
+                oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+                oss << "  <geometry>" << std::endl;
+                oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                oss << "  </geometry>" << std::endl;
+                oss << " </collision>" << std::endl;
+            } else if (j == num_links - 2) {
+                oss << " <collision>" << std::endl;
+                oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 + 0.02 << "\" />" << std::endl;
                 oss << "  <geometry>" << std::endl;
                 oss << "    <sphere radius = \"0.01\"/>" << std::endl;
                 oss << "  </geometry>" << std::endl;
