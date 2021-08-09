@@ -41,6 +41,12 @@ class ChRobot {
     std::shared_ptr<ChBody> GetCameraBody() const { return GetRootBody(); }
     double GetRootMass() const { return ch_root_body_->GetMass(); }
 
+    // TODO: only min_pos_z and footprint of feet are captured correctly for now
+    const chrono::ChVector<>& GetMaxPos() const {return max_pos_;}
+    const chrono::ChVector<>& GetMinPos() const {return min_pos_;}
+    const chrono::ChVector<>& GetBBoxSize() const {return max_pos_ - min_pos_;}
+
+
   protected:
     std::string robot_file_;
     std::string robot_string_;
@@ -49,6 +55,8 @@ class ChRobot {
     std::shared_ptr<ChBody> ch_root_body_;
     // names of bodies that would use ChBodyAuxRef
     std::shared_ptr<std::unordered_set<std::string>> auxrefs_;
+    chrono::ChVector<> max_pos_ = {std::numeric_limits<double>::lowest()};
+    chrono::ChVector<> min_pos_ = {std::numeric_limits<double>::max()};
 };
 
 } // namespace chrono

@@ -155,8 +155,6 @@ bool SimulationManager::RunSimulation() {
     ch_system_->Set_G_acc(ChVector<>(0, 0, -9.81));
     ch_system_->SetSolverMaxIterations(20);  // the higher, the easier to keep the constraints satisifed.
 
-    if (load_map_) load_map();
-
     if (!auxrefs_->empty()) robot_doc_->SetAuxRef(auxrefs_);
 
     bool add_ok;
@@ -166,6 +164,9 @@ bool SimulationManager::RunSimulation() {
     else{
         add_ok = robot_doc_->AddtoSystem(ch_system_, ChVector<>(0,0,0));
     }
+
+    // Make sure env shows up under the robot
+    if (load_map_) load_map();
 
     // add waypoint markers
     auto wp_color = chrono_types::make_shared<ChColorAsset>();
@@ -292,6 +293,9 @@ double SimulationManager::GetRootBodyDisplacementX() const {
 *  private functions  *
 ***********************/
 
+// TODO: right now using greedy method to place the env under the robot, that the
+// lowest point of the robot is higher than the highest point of the env, which may
+// not be necessary. need to make it more accurate
 void SimulationManager::load_map(){
     auto ground_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     ground_mat->SetSfriction(s_friction_);
@@ -300,12 +304,11 @@ void SimulationManager::load_map(){
 
     // the environment is placed in the way that (x,y) = (0,0) is placed at the
     // corner of the map - corresponds to the (0,0) index of a heightmap matrix
-    // z = 0 is the bottom of the environment
     if (env_file_.empty() || env_file_ == "ground"){
         // ground body
         auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
         flat_ground->SetRot(env_rot_);
-        flat_ground->SetPos(ChVector<>(env_x_ / 2, env_y_ / 2, 0.005));
+        flat_ground->SetPos(ChVector<>(env_x_ / 2, env_y_ / 2, robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01));
         flat_ground->SetBodyFixed(true);
         auto ground_texture = chrono_types::make_shared<ChColorAsset>();
         ground_texture->SetColor(ChColor(0.2f, 0.2f, 0.2f));
@@ -319,14 +322,23 @@ void SimulationManager::load_map(){
     }
     else if (env_file_.find(".bmp") != std::string::npos){
         vehicle::RigidTerrain terrain(ch_system_.get());
-        auto patch = terrain.AddPatch(ground_mat, ChCoordsys<>(ChVector<>(env_x_ / 2, env_y_ / 2, 0.005), QUNIT),
+        auto patch = terrain.AddPatch(ground_mat,
+                                      ChCoordsys<>(ChVector<>(env_x_ / 2,
+                                                              env_y_ / 2,
+                                                              robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01),
+                                                    QUNIT),
                                       env_file_, "ground_mesh", env_x_, env_y_, 0, env_z_);
         patch->SetColor(ChColor(0.2, 0.2, 0.2));
         terrain.Initialize();
     }
     else if (env_file_.find(".obj") != std::string::npos){
         vehicle::RigidTerrain terrain(ch_system_.get());
-        auto patch = terrain.AddPatch(ground_mat, ChCoordsys<>(ChVector<>(env_x_ / 2, env_y_ / 2, env_z_ / 2), Q_ROTATE_X_TO_Y),
+        // TODO: how to get the highest point in obj env
+        auto patch = terrain.AddPatch(ground_mat,
+                                      ChCoordsys<>(ChVector<>(env_x_ / 2,
+                                                              env_y_ / 2,
+                                                              robot_doc_->GetMinPos().z() - 1),
+                                                   Q_ROTATE_X_TO_Y),
                                       env_file_, "ground_mesh");
         patch->SetColor(ChColor(0.2, 0.2, 0.2));
         terrain.Initialize();

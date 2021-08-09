@@ -59,6 +59,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
 
     // the same trimesh instance will be used in both visualization and collision
     std::shared_ptr<geometry::ChTriangleMeshConnected> trimesh;
+    std::string visual_mesh_name;
     // Use auxref when seperate CoG is set in inertia tag or required by user
     bool body_use_aux;
     if (check_inertial_pose_set(u_link) || (auxrefs_ && auxrefs_->find(u_link->name) != auxrefs_->end())){
@@ -123,6 +124,10 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
     if (u_link->visual){
         for (auto u_visual : u_link->visual_array){
             std::shared_ptr<ChVisualization> tmp_viasset;
+            ChVector<> vis_in_child (u_visual->origin.position.x,
+                                     u_visual->origin.position.y,
+                                     u_visual->origin.position.z);
+            update_pos_extrema(vis_in_child >> child_in_world);
             switch (u_visual->geometry->type){
                 case urdf::Geometry::BOX:
                 {
@@ -153,6 +158,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                 case urdf::Geometry::MESH:
                 {
                     urdf::MeshSharedPtr tmp_urdf_mesh_ptr = std::dynamic_pointer_cast<urdf::Mesh>(u_visual->geometry);
+                    visual_mesh_name = tmp_urdf_mesh_ptr->filename;
                     trimesh = chrono_types::make_shared<geometry::ChTriangleMeshConnected>();
                     trimesh->LoadWavefrontMesh(urdf_abs_path(tmp_urdf_mesh_ptr->filename));
                     // Apply the scales to mesh
@@ -176,9 +182,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                     break;
                 }
             }
-            tmp_viasset->Pos = ChVector<>(u_visual->origin.position.x,
-                                          u_visual->origin.position.y,
-                                          u_visual->origin.position.z);
+            tmp_viasset->Pos = vis_in_child;
             tmp_viasset->Rot = ChMatrix33<>(ChQuaternion<>(u_visual->origin.rotation.w,
                                                            u_visual->origin.rotation.x,
                                                            u_visual->origin.rotation.y,
@@ -211,6 +215,10 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
         }
         ch_body->GetCollisionModel()->ClearModel();
         for (auto u_collision : u_link->collision_array){
+            ChVector<> collision_in_child (u_collision->origin.position.x,
+                                           u_collision->origin.position.y,
+                                           u_collision->origin.position.z);
+            update_pos_extrema(collision_in_child >> child_in_world);
             switch (u_collision->geometry->type){
                 case urdf::Geometry::BOX:
                 {
@@ -219,9 +227,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                          tmp_urdf_box_ptr->dim.x / 2,
                                                          tmp_urdf_box_ptr->dim.y / 2,
                                                          tmp_urdf_box_ptr->dim.z / 2,
-                                                         ChVector<>(u_collision->origin.position.x,
-                                                                    u_collision->origin.position.y,
-                                                                    u_collision->origin.position.z),
+                                                         collision_in_child,
                                                          ChMatrix33<>(ChQuaternion<>(u_collision->origin.rotation.w,
                                                                                      u_collision->origin.rotation.x,
                                                                                      u_collision->origin.rotation.y,
@@ -232,9 +238,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                 {
                     ch_body->GetCollisionModel()->AddSphere(collision_material_,
                                                             std::dynamic_pointer_cast<urdf::Sphere>(u_collision->geometry)->radius,
-                                                            ChVector<>(u_collision->origin.position.x,
-                                                                       u_collision->origin.position.y,
-                                                                       u_collision->origin.position.z));
+                                                            collision_in_child);
                     break;
                 }
                 case urdf::Geometry::CYLINDER:
@@ -245,9 +249,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                               tmp_urdf_cylinder_ptr->radius,
                                                               tmp_urdf_cylinder_ptr->radius,
                                                               tmp_urdf_cylinder_ptr->length / 2,
-                                                              ChVector<>(u_collision->origin.position.x,
-                                                                         u_collision->origin.position.y,
-                                                                         u_collision->origin.position.z),
+                                                              collision_in_child,
                                                               ChMatrix33<>(Q_ROTATE_Y_TO_Z >>
                                                                            ChQuaternion<>(u_collision->origin.rotation.w,
                                                                                           u_collision->origin.rotation.x,
@@ -258,14 +260,24 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                 case urdf::Geometry::MESH:
                 {
                     break;
+                    urdf::MeshSharedPtr tmp_urdf_mesh_ptr = std::dynamic_pointer_cast<urdf::Mesh>(u_collision->geometry);
+                    // if collision mesh is different from visual, load mesh again
+                    if (tmp_urdf_mesh_ptr->filename != visual_mesh_name) {
+                        trimesh = chrono_types::make_shared<geometry::ChTriangleMeshConnected>();
+                        trimesh->LoadWavefrontMesh(urdf_abs_path(tmp_urdf_mesh_ptr->filename));
+                        trimesh->Transform(VNULL, ChMatrix33<>(ChVector<>(tmp_urdf_mesh_ptr->scale.x,
+                                                                          tmp_urdf_mesh_ptr->scale.y,
+                                                                          tmp_urdf_mesh_ptr->scale.z)));
+                        trimesh->RepairDuplicateVertexes(1e-9); // if meshes are not watertight
+
+                    }
+
                     if (body_fixed){
                         ch_body->GetCollisionModel()->AddTriangleMesh(collision_material_,
                                                                       trimesh,
                                                                       true,   // is static
                                                                       true,  // use convex hull
-                                                                      ChVector<>(u_collision->origin.position.x,
-                                                                                 u_collision->origin.position.y,
-                                                                                 u_collision->origin.position.z),
+                                                                      collision_in_child,
                                                                       ChMatrix33<>(ChQuaternion<>(u_collision->origin.rotation.w,
                                                                                                   u_collision->origin.rotation.x,
                                                                                                   u_collision->origin.rotation.y,
@@ -277,9 +289,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                                       trimesh,
                                                                       false,  // is static
                                                                       true,  // use convex hull
-                                                                      ChVector<>(u_collision->origin.position.x,
-                                                                                 u_collision->origin.position.y,
-                                                                                 u_collision->origin.position.z),
+                                                                      collision_in_child,
                                                                       ChMatrix33<>(ChQuaternion<>(u_collision->origin.rotation.w,
                                                                                                   u_collision->origin.rotation.x,
                                                                                                   u_collision->origin.rotation.y,
@@ -479,6 +489,21 @@ bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::sha
     }
 
     return true;
+}
+
+// TODO: right now this function is only designed to take into account the pos of ChBody,
+//          disregarding the actual size of the visual shape. Only works tiny ChBody where
+//          the ChBody pos is roughly the same as the boundry pos. And only works for
+//          min_pos_z capturing.
+void ChUrdfDoc::update_pos_extrema(const ChVector<>& new_pos) {
+    for (int i = 0; i < 3; ++i) {
+        if (new_pos[i] > max_pos_[i])
+            max_pos_[i] = new_pos[i];
+    }
+    for (int i = 0; i < 3; ++i) {
+        if (new_pos[i] < min_pos_[i])
+            min_pos_[i] = new_pos[i];
+    }
 }
 
 bool ChUrdfDoc::check_inertial_pose_set(const urdf::LinkConstSharedPtr& u_link) {
