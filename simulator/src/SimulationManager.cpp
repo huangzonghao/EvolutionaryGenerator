@@ -332,16 +332,86 @@ void SimulationManager::load_map(){
         terrain.Initialize();
     }
     else if (env_file_.find(".obj") != std::string::npos){
-        vehicle::RigidTerrain terrain(ch_system_.get());
+        // TODO: the position and dimension set up doesn't seem to be right
+        // Need to use trimesh or other method the get the height and width of
+        // the mesh
+        // set obj terrain as a mesh object
+        ChCoordsys<> mesh_pos (ChVector<>(0, 0, robot_doc_->GetMinPos().z() - 1), QUNIT);
+        auto ch_body = chrono_types::make_shared<ChBody>();
+        ch_body->SetBodyFixed(true);
+        ch_body->SetCoord(mesh_pos);
+
+        // first load mesh
+        std::shared_ptr<geometry::ChTriangleMeshConnected> trimesh;
+        trimesh = chrono_types::make_shared<geometry::ChTriangleMeshConnected>();
+        // TODO: maybe use relative path in env_file_?
+        trimesh->LoadWavefrontMesh(env_file_);
+        // TODO: this doesnt' seem to be working, might need to use trimesh
+        // Get the bounding box of mesh
+        // double bbox_x_min = 0;
+        // double bbox_x_max = 0;
+        // double bbox_y_min = 0;
+        // double bbox_y_max = 0;
+        // double bbox_z_min = 0;
+        // double bbox_z_max = 0;
+        // trimesh->GetBoundingBox(bbox_x_min, bbox_x_max, bbox_y_min, bbox_y_max, bbox_z_min, bbox_z_max);
+        // std::cout << std::endl << "Size of bounding box of the env:" << std::endl <<
+                               // << "x min: " << bbox_x_min << ", x max: " << bbox_x_max << std::endl
+                               // << "y min: " << bbox_y_min << ", y max: " << bbox_y_max << std::endl
+                               // << "z min: " << bbox_z_min << ", z max: " << bbox_z_max << std::endl;
+
+        // TODO: The mesh scale here and the mesh scale in ChUrdfDoc should be controlled
+        //          by the same variable
+        // Apply the scales to mesh
+        trimesh->Transform(VNULL, ChMatrix33<>(ChVector<>(0.01, 0.01, 0.01)));
+        // // Apply translation to mesh -- the vis_asset::pos doesn't seem to be applied to mesh objects
+        // trimesh->Transform(vis_in_child, ChMatrix33<>(1));
+        trimesh->RepairDuplicateVertexes(1e-9); // if meshes are not watertight
+
+        // visual
+        auto trimesh_shape = chrono_types::make_shared<ChTriangleMeshShape>();
+        // trimesh_shape->Pos = vis_in_child;
+        // trimesh_shape->Rot = ChMatrix33<>(ChQuaternion<>(u_visual->origin.rotation.w,
+                                                       // u_visual->origin.rotation.x,
+                                                       // u_visual->origin.rotation.y,
+                                                       // u_visual->origin.rotation.z));
+
+        trimesh_shape->SetMesh(trimesh);
+        // trimesh_shape->SetName(trimesh_shape->GetNameString() + "_vis_mesh");
+        trimesh_shape->SetBackfaceCull(true);
+        trimesh_shape->SetStatic(true); // mesh object is considered static if it's non-deformable
+        // for some reason this SetScale method doesn't work
+        // trimesh_shape->SetScale(ChVector<>(tmp_urdf_mesh_ptr->scale.x,
+                                           // tmp_urdf_mesh_ptr->scale.y,
+                                           // tmp_urdf_mesh_ptr->scale.z));
+        ch_body->AddAsset(trimesh_shape);
+
+        // colision
+        auto collision_material_ = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+        ch_body->GetCollisionModel()->ClearModel();
+        // TODO: enable translation and rotation of collision model
+        ch_body->GetCollisionModel()->AddTriangleMesh(collision_material_,
+                                                      trimesh,
+                                                      true,   // is static
+                                                      true,  // use convex hull
+                                                      ChVector<>(),
+                                                      ChMatrix33<>(),
+                                                      0.1); // sphereswept_thickness
+
+        ch_body->GetCollisionModel()->BuildModel();
+        ch_body->SetCollide(true);
+        ch_system_->AddBody(ch_body);
+
+        // vehicle::RigidTerrain terrain(ch_system_.get());
         // TODO: how to get the highest point in obj env
-        auto patch = terrain.AddPatch(ground_mat,
-                                      ChCoordsys<>(ChVector<>(env_x_ / 2,
-                                                              env_y_ / 2,
-                                                              robot_doc_->GetMinPos().z() - 1),
-                                                   Q_ROTATE_X_TO_Y),
-                                      env_file_, "ground_mesh");
-        patch->SetColor(ChColor(0.2, 0.2, 0.2));
-        terrain.Initialize();
+        // auto patch = terrain.AddPatch(ground_mat,
+                                      // ChCoordsys<>(ChVector<>(env_x_ / 2,
+                                                              // env_y_ / 2,
+                                                              // robot_doc_->GetMinPos().z() - 1),
+                                                   // QUNIT),
+                                      // env_file_, "ground_mesh");
+        // patch->SetColor(ChColor(0.2, 0.2, 0.2));
+        // terrain.Initialize();
 
         // // For debug purposes
         // auto x_box = chrono_types::make_shared<ChBodyEasyBox>(20, 1, 1, 1.0, true, true, ground_mat);
