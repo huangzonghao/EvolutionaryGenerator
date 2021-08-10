@@ -259,7 +259,6 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                 }
                 case urdf::Geometry::MESH:
                 {
-                    break;
                     urdf::MeshSharedPtr tmp_urdf_mesh_ptr = std::dynamic_pointer_cast<urdf::Mesh>(u_collision->geometry);
                     // if collision mesh is different from visual, load mesh again
                     if (tmp_urdf_mesh_ptr->filename != visual_mesh_name) {
@@ -282,7 +281,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                                                                   u_collision->origin.rotation.x,
                                                                                                   u_collision->origin.rotation.y,
                                                                                                   u_collision->origin.rotation.z)),
-                                                                      -0.01); // sphereswept_thickness
+                                                                      0.1); // sphereswept_thickness
                     }
                     else {
                         ch_body->GetCollisionModel()->AddTriangleMesh(collision_material_,
@@ -294,7 +293,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                                                                   u_collision->origin.rotation.x,
                                                                                                   u_collision->origin.rotation.y,
                                                                                                   u_collision->origin.rotation.z)),
-                                                                      -0.01); // sphereswept_thickness
+                                                                      0.1); // sphereswept_thickness
                     }
                     break;
                 }
