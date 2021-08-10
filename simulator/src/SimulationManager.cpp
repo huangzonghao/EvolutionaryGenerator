@@ -385,6 +385,7 @@ void SimulationManager::load_map(){
                                            // tmp_urdf_mesh_ptr->scale.y,
                                            // tmp_urdf_mesh_ptr->scale.z));
         ch_body->AddAsset(trimesh_shape);
+        ch_body->AddAsset(chrono_types::make_shared<ChColorAsset>(0.2f, 0.2f, 0.2f));
 
         // colision
         auto collision_material_ = chrono_types::make_shared<ChMaterialSurfaceNSC>();
