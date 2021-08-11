@@ -4,17 +4,21 @@
 #include "SimulatorParams.h"
 #include "SimulationManager.h"
 #include "GenerateDemoRobot.h"
+#include "GenerateDemoRobogamiRobot.h"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        std::cout << "Input format: <path/to/sim_params.xml> <Design Vector>" << std::endl;
+        std::cout << "Input format: <RobotType: primitive/mesh> <path/to/sim_params.xml> <Design Vector>" << std::endl;
         return 0;
     }
 
-    std::string sim_filename(argv[1]);
+    // arg_cursor = 0 is the exe name
+    int arg_cursor = 1;
+    std::string robot_type(argv[arg_cursor++]);
+    std::string sim_filename(argv[arg_cursor++]);
     std::vector<double> design_vector;
-    for (int i = 2; i < argc; ++i)
-        design_vector.push_back(std::atof(argv[i]));
+    for (int i = arg_cursor; i < argc; ++i)
+        design_vector.push_back(std::atof(argv[arg_cursor++]));
 
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
@@ -39,9 +43,11 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[2],
                  sim_params.env_rot[3]);
 
+    // phen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+    //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     int num_links;
-    int num_legs = design_vector[3];
-    int cursor = 5;
+    int num_legs = design_vector[4];
+    int cursor = 6;
     // the leg order in Phen is: FL FR ML MR BL BR
     // the leg order in Sim Controller is: FL ML BL BR MR FR
     // so the conversion happens here
@@ -67,7 +73,13 @@ int main(int argc, char **argv) {
     sm.SetVisualization(true);
     // sm.SetRealTime(true);
 
-    sm.LoadUrdfString(generate_demo_robot_string("leg", design_vector));
+    if (robot_type == "primitive") {
+        sm.LoadUrdfString(generate_demo_robot_string("leg", design_vector));
+    } else if (robot_type == "mesh") {
+        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", design_vector));
+    } else {
+        std::cout << "Error: This visualizer doesn't support robot type " << robot_type << std::endl;
+    }
     sm.RunSimulation();
     return 0;
 }

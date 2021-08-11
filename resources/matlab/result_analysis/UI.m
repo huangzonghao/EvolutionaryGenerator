@@ -3,23 +3,23 @@ classdef UI < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
-        MapViewerAxes        matlab.ui.control.UIAxes
-        LoadResultButton     matlab.ui.control.Button
-        GenIDField           matlab.ui.control.EditField
-        LoadNextButton       matlab.ui.control.Button
-        LoadPrevButton       matlab.ui.control.Button
-        LoadNext10Button     matlab.ui.control.Button
-        LoadPrev10Button     matlab.ui.control.Button
-        SimulateRobotButton  matlab.ui.control.Button
-        GenLabel             matlab.ui.control.Label
-        ResultInfoLabel      matlab.ui.control.Label
-        ResultNameLabel      matlab.ui.control.Label
-        ResultInfoTextLabel  matlab.ui.control.Label
-        GenInfoLabel         matlab.ui.control.Label
-        ExtPlotButton        matlab.ui.control.Button
-        RobotIDXField        matlab.ui.control.EditField
-        RobotIDYField        matlab.ui.control.EditField
         RobotInfoLabel       matlab.ui.control.Label
+        RobotIDYField        matlab.ui.control.EditField
+        RobotIDXField        matlab.ui.control.EditField
+        ExtPlotButton        matlab.ui.control.Button
+        GenInfoLabel         matlab.ui.control.Label
+        ResultInfoTextLabel  matlab.ui.control.Label
+        ResultNameLabel      matlab.ui.control.Label
+        ResultInfoLabel      matlab.ui.control.Label
+        GenLabel             matlab.ui.control.Label
+        SimulateRobotButton  matlab.ui.control.Button
+        LoadPrev10Button     matlab.ui.control.Button
+        LoadNext10Button     matlab.ui.control.Button
+        LoadPrevButton       matlab.ui.control.Button
+        LoadNextButton       matlab.ui.control.Button
+        GenIDField           matlab.ui.control.EditField
+        LoadResultButton     matlab.ui.control.Button
+        MapViewerAxes        matlab.ui.control.UIAxes
     end
 
     properties (Access = private)
@@ -203,7 +203,7 @@ classdef UI < matlab.apps.AppBase
             app.RobotInfoLabel.Text = "Fitness: " + num2str(app.current_gen_archive(idx, 4));
             dv = app.current_gen_archive(idx, 5:end);
             dv = dv(~isnan(dv));
-            cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " " +...
+            cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " +...
                       fullfile(app.evo_params.result_path, app.sim_params_filename) + " " +...
                       num2str(dv);
             system(cmd_str);
@@ -237,9 +237,6 @@ classdef UI < matlab.apps.AppBase
 
             % Create MapViewerAxes
             app.MapViewerAxes = uiaxes(app.EvolutionaryRobogamiResultViewerUIFigure);
-            title(app.MapViewerAxes, '')
-            xlabel(app.MapViewerAxes, '')
-            ylabel(app.MapViewerAxes, '')
             app.MapViewerAxes.XTick = [];
             app.MapViewerAxes.YTick = [];
             app.MapViewerAxes.Tag = 'MapViewer';

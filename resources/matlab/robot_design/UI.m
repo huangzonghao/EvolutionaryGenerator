@@ -1,4 +1,4 @@
-function UI(evogen_exe_path, evogen_tmp_parts_dir, result_output_dir)
+function UI(evogen_params_path, evogen_exe_path, evogen_tmp_parts_dir, result_output_dir)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                             UI Layout                             %%
@@ -144,12 +144,14 @@ test_btn.label = 'Test Run';
 test_btn.push_callback = @test_btn_callback;
 test_btn.btn = ui_make_button(test_btn);
 
-simulator_basename = 'Robogami_Visualizer';
+simulator_basename = 'Genotype_Visualizer';
 if (ispc)
     simulator_name = strcat(simulator_basename, '.exe');
 else
     simulator_name = simulator_basename;
 end
+simulator_exe = fullfile(evogen_exe_path, simulator_name);
+simulator_param = fullfile(evogen_params_path, "sim_params.xml");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                          Data Containers                          %%
@@ -267,7 +269,7 @@ end
 
 function test_btn_callback(~,~)
     convert_phen;
-    cmd_str = fullfile(evogen_exe_path, simulator_name) + " " + num2str(robot_phen);
+    cmd_str = fullfile(evogen_exe_path, simulator_name) + " mesh " + simulator_param + " " + num2str(robot_phen);
     system(cmd_str);
 end
 
