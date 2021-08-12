@@ -7,6 +7,7 @@
 #include <sstream>
 #include <filesystem>
 
+#include "RobotRepresentation.h"
 #include "evo_paths.h"
 
 constexpr double leg_length_ref = 0.085 * 1.2;
@@ -64,11 +65,10 @@ Body body_selector(double body_id_gene) {
 }
 
 
-// phen format: [body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
-//     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
 std::string generate_demo_robot_string(const std::string& mode,
                                        const std::vector<double>& dv,
                                        const std::string& robot_name) {
+    RobotRepresentation robot(dv);
     std::ostringstream oss;
 
     oss << "<?xml verison=\"1.0\"?>" << std::endl;
@@ -77,9 +77,9 @@ std::string generate_demo_robot_string(const std::string& mode,
 
     // chassis
     Body chassis;
-    chassis.x = 0.6 * dv[0];
-    chassis.y = 0.2 * dv[1];
-    chassis.z = 0.05 * dv[2];
+    chassis.x = 0.6 * robot.body_scales[0];
+    chassis.y = 0.2 * robot.body_scales[1];
+    chassis.z = 0.05 * robot.body_scales[2];
     oss << "<link name = \"chassis\">" << std::endl;
     oss << " <visual>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
@@ -107,16 +107,17 @@ std::string generate_demo_robot_string(const std::string& mode,
     double leg_pos_y_tmp;
     double link_z_offset;
     std::string link_name_tmp;
-    int num_legs = dv[3];
-    int cursor = 5;
+    int num_legs = robot.num_legs;
     Body bodies[3];
     for (int i = 0; i < num_legs; ++i) {
+        const auto& robot_leg = robot.legs[i];
         link_z_offset = 0;
-        int num_links = dv[cursor];
+        int num_links = robot_leg.num_links;
         double leg_length = 0;
         for (int j = 0; j < num_links; ++j) {
-            bodies[j] = body_selector(dv[cursor+1+j*2]);
-            bodies[j].z = bodies[j].z * dv[cursor+1+j*2+1]; // only z is controlled by design vector
+            const auto& leg_link = robot_leg.links[j];
+            bodies[j] = body_selector(leg_link.part_id);
+            bodies[j].z = bodies[j].z * leg_link.scale; // only z is controlled by design vector
             leg_length += bodies[j].z;
         }
         if (leg_length > leg_length_ref) {
@@ -153,7 +154,7 @@ std::string generate_demo_robot_string(const std::string& mode,
             if (j == 0) {
                 oss << "<joint name = \"chassis_leg_" << i << "-0\" type = \"continuous\">" << std::endl;
                 oss << "  <parent link = \"chassis\"/>" << std::endl;
-                leg_pos_tmp = dv[cursor-1]; // now the pos gene is in [0, 1]
+                leg_pos_tmp = robot_leg.position; // now the pos gene is in [0, 1]
                 if (leg_pos_tmp < 0.5) {
                     leg_pos_x_tmp = (0.25 - leg_pos_tmp) * 4 * (chassis.x / 2);
                     leg_pos_y_tmp = chassis.y / 2 + 0.05;
@@ -174,7 +175,6 @@ std::string generate_demo_robot_string(const std::string& mode,
             oss << std::endl;
             link_z_offset = -(bodies[j].z + 0.01);
         } // for links
-        cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
     } // for legs
 
     oss << "</robot>" << std::endl;

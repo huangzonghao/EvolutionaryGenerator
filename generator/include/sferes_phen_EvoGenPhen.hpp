@@ -4,6 +4,7 @@
 #include <iostream>
 #include <boost/serialization/nvp.hpp>
 
+#include "RobotRepresentation.h"
 #include "EvoParams.h"
 
 namespace sferes {
@@ -40,6 +41,7 @@ class EvoGenPhen {
         _gen.cross(i2->gen(), o1->gen(), o2->gen());
     }
 
+    // Genome to Robot Conversion
     // phen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     // Note: phen holds the design vector that should be directly send to robot
@@ -49,6 +51,11 @@ class EvoGenPhen {
     // gen::num_legs
     // Leg order: FL FR ML MR BL BR
     void develop() {
+        // TODO: temporarily keeping the design vector in phen since this is legacy
+        // code and the logic has not been changed. But this should be removed
+        // during next update of genotype.
+        // Also it seems we need to implement a distance function in RobotRepresentation
+        // for the qd container
         _phen_vec.clear();
         // body_id
         _phen_vec.push_back(_gen.data(0));
@@ -84,6 +91,7 @@ class EvoGenPhen {
 
             gen_cursor += num_links * 2 + 1;
         }
+        _robot.decode_design_vector(_phen_vec);
     }
 
     double data(size_t i) const {
@@ -114,6 +122,8 @@ class EvoGenPhen {
         _min_p = evo_params.phen_data_min();
     }
 
+    const RobotRepresentation& get_robot() { return _robot; }
+
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
         ar & BOOST_SERIALIZATION_NVP(_gen);
@@ -127,12 +137,12 @@ class EvoGenPhen {
     double _max_p;
     double _min_p;
     const double pos[3] = {0.01, 0.25, 0.49};
+    RobotRepresentation _robot;
 };
 
 template<typename G, typename F>
 std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e) {
-    for (size_t i = 0; i < e.size(); ++i)
-        output << " " << e.data(i) ;
+    output << _robot;
     return output;
 }
 

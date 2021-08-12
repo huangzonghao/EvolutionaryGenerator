@@ -6,6 +6,7 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/RobogamiLibrary.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/RobotRepresentation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/GenerateDemoRobot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/GenerateDemoRobogamiRobot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/SimulatorParams.h
@@ -24,6 +25,7 @@ set(Headers
 
 set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/src/RobogamiLibrary.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/RobotRepresentation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/GenerateDemoRobot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/GenerateDemoRobogamiRobot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/EvoParams.cpp

@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <TriMesh.h>
 // #include "RobogamiLibrary.h"
+#include "RobotRepresentation.h"
 #include "robogami_paths.h"
 #include "evo_paths.h"
 
@@ -82,11 +83,10 @@ int gene_to_part_id(double id_gene, int num_parts) {
     return part_id;
 }
 
-// phen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
-//     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
 std::string generate_demo_robogami_robot_string(const std::string& mode,
-                                                const std::vector<double>& dv,
+                                                const RobotRepresentation& robot,
                                                 const std::string& robot_name) {
+
     const std::string mesh_ext = ".obj";
     std::ostringstream oss;
 
@@ -95,18 +95,18 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     oss << std::endl;
 
     // chassis
-    int body_id = gene_to_part_id(dv[0], mesh_info.num_bodies);
-    double chassis_x = mesh_info.get_body_size(body_id, 0) * dv[1];
-    double chassis_y = mesh_info.get_body_size(body_id, 1) * dv[2];
-    double chassis_z = mesh_info.get_body_size(body_id, 2) * dv[3];
+    int body_id = gene_to_part_id(robot.body_part_id, mesh_info.num_bodies);
+    double chassis_x = mesh_info.get_body_size(body_id, 0) * robot.body_scales[0];
+    double chassis_y = mesh_info.get_body_size(body_id, 1) * robot.body_scales[1];
+    double chassis_z = mesh_info.get_body_size(body_id, 2) * robot.body_scales[2];
     oss << "<link name = \"chassis\">" << std::endl;
     oss << " <visual>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <geometry>" << std::endl;
     oss << "    <mesh filename = \"" << mesh_info.body_tmp_dir << "/" << body_id << mesh_ext << "\""
-                                     << " scale = \"" << mesh_info.scale_x * dv[1] << " "
-                                                      << mesh_info.scale_y * dv[2] << " "
-                                                      << mesh_info.scale_z * dv[3] << "\" />" << std::endl;
+                                     << " scale = \"" << mesh_info.scale_x * robot.body_scales[0] << " "
+                                                      << mesh_info.scale_y * robot.body_scales[1] << " "
+                                                      << mesh_info.scale_z * robot.body_scales[2] << "\" />" << std::endl;
     // oss << "    <box size=\"" << chassis_x << " " << chassis_y << " " << chassis_z << "\"/>" << std::endl;
     oss << "  </geometry>" << std::endl;
     oss << " </visual>" << std::endl;
@@ -131,19 +131,20 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     double leg_pos_y_tmp;
     double link_z_offset;
     std::string link_name_tmp;
-    int num_legs = dv[4];
-    int cursor = 6;
+    int num_legs = robot.num_legs;
     int part_ids[3];
     double part_lengths[3];
     double link_length_scale[3];
     for (int i = 0; i < num_legs; ++i) {
+        const auto& robot_leg = robot.legs[i];
         link_z_offset = 0;
-        int num_links = dv[cursor];
+        int num_links = robot_leg.num_links;
         double leg_length = 0;
         for (int j = 0; j < num_links; ++j) {
-            part_ids[j] = gene_to_part_id(dv[cursor+1+j*2], mesh_info.num_legs);
+            const auto& leg_link = robot_leg.links[j];
+            part_ids[j] = gene_to_part_id(leg_link.part_id, mesh_info.num_legs);
             part_lengths[j] = mesh_info.get_leg_size(part_ids[j], 2);
-            link_length_scale[j] = dv[cursor+1+j*2+1];
+            link_length_scale[j] = leg_link.scale;
             leg_length += part_lengths[j] * link_length_scale[j];
         }
         // Disbale the leg length adjustment -- let user figure this out!
@@ -205,7 +206,7 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
             if (j == 0) {
                 oss << "<joint name = \"chassis_leg_" << i << "-0\" type = \"continuous\">" << std::endl;
                 oss << "  <parent link = \"chassis\"/>" << std::endl;
-                leg_pos_tmp = dv[cursor-1]; // now the pos gene is in [0, 1]
+                leg_pos_tmp = robot_leg.position; // now the pos gene is in [0, 1]
                 leg_pos_y_tmp = chassis_y * 0.5 + mesh_info.get_leg_size(part_ids[j], 1) * 0.5 + 0.05;
                 if (leg_pos_tmp < 0.5) {
                     leg_pos_x_tmp = (0.25 - leg_pos_tmp) * 2 * chassis_x;
@@ -226,7 +227,6 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
             oss << std::endl;
             link_z_offset = -(part_lengths[j] * link_length_scale[j] + 0.01);
         } // for links
-        cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
     } // for legs
 
     oss << "</robot>" << std::endl;
@@ -234,8 +234,14 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     return oss.str();
 }
 
+std::string generate_demo_robogami_robot_string(const std::string& mode,
+                                                const std::vector<double>& dv,
+                                                const std::string& robot_name) {
+    return generate_demo_robogami_robot_string(mode, RobotRepresentation(dv), robot_name);
+}
+
 void generate_demo_robogami_robot_file(const std::string& mode,
-                                       const std::vector<double>& dv,
+                                       const RobotRepresentation& robot,
                                        const std::string& robot_name) {
     std::string output_file(Robot_Output_Dir + "/" + robot_name + "/" + robot_name + ".urdf");
 
@@ -245,7 +251,12 @@ void generate_demo_robogami_robot_file(const std::string& mode,
         std::filesystem::create_directory(output_path);
 
     std::ofstream ofs(output_file.c_str(), std::ostream::out);
-    ofs << generate_demo_robogami_robot_string(mode, dv, robot_name);
+    ofs << generate_demo_robogami_robot_string(mode, robot, robot_name);
     ofs.close();
 }
 
+void generate_demo_robogami_robot_file(const std::string& mode,
+                                       const std::vector<double>& dv,
+                                       const std::string& robot_name) {
+    generate_demo_robogami_robot_file(mode, RobotRepresentation(dv), robot_name);
+}

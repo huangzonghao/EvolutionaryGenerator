@@ -3,6 +3,7 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/vector.hpp>
 
+#include "RobotRepresentation.h"
 #include "GenerateDemoRobot.h"
 #include "GenerateDemoRobogamiRobot.h"
 #include "SimulationManager.h"
@@ -26,50 +27,43 @@ class UrdfFitness {
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
 
+        const auto& robot = ind.get_robot();
         sm.RemoveAllMotors();
-        int num_links;
-        int num_legs = ind.data(4);
-        int cursor = 6;
+        int num_legs = robot.num_legs;
         // the leg order in Phen is: FL FR ML MR BL BR
         // the leg order in Sim Controller is: FL ML BL BR MR FR
         // so the conversion happens here
         for (int i = 0; i < num_legs / 2; ++i) {
-            num_links = ind.data(cursor);
             sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
-            for (int j = 1; j < num_links; ++j) {
+            for (int j = 1; j < robot.legs[2 * i].num_links; ++j) {
                 sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
                                   "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
             }
-            cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
 
             // the mirrored leg
-            num_links = ind.data(cursor);
             sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i + 1) + "-0", num_legs - 1 - i, 0);
-            for (int j = 1; j < num_links; ++j) {
+            for (int j = 1; j < robot.legs[2 * i + 1].num_links; ++j) {
                 sm.AddEvoGenMotor("leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j - 1) +
                                   "_leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j), num_legs - 1 - i, j);
             }
-            cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
         }
 
-        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", ind.data()));
+        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", robot));
+        // generate_demo_robogami_robot_file("leg", ind.data());
         // sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();
 
         _value = sm.GetRootBodyDisplacementX();
 
-        update_desc(ind);
-    }
-
-    static constexpr const char* descriptor_name[2] = {"body length", "genome length"};
-    template <typename Indiv>
-    void update_desc(Indiv& ind) {
+        // TODO: this part needs to be updated
+        // Update Descriptors
         // Note: descriptor needs to be in range [0, 1]
         _desc[0] = ind.gen().data(1);
         _desc[1] = ind.gen().size() - 11; // lengeth of gen [11, 26]
         // TODO: better handling the map size
         _desc[1] = _desc[1] / 20; // we have 20 bins
     }
+    static constexpr const char* descriptor_name[2] = {"body length", "genome length"};
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
