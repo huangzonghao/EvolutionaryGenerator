@@ -248,6 +248,7 @@ endif()
 
 set(CURRENT_TARGET_NAME Genotype_Visualizer)
 set(Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/MeshInfo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/RobotRepresentation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/GenerateDemoRobot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/GenerateDemoRobogamiRobot.h
@@ -256,6 +257,7 @@ set(Headers
 )
 
 set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/MeshInfo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobotRepresentation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/GenerateDemoRobot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/GenerateDemoRobogamiRobot.cpp

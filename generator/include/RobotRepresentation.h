@@ -7,7 +7,8 @@
 class RobotRepresentation {
   public:
     struct Link {
-        double part_id = 0;
+        int part_id = 0;
+        double part_gene = 0;
         double scale = 1;
         // double pos_z = 0;
     };
@@ -42,19 +43,23 @@ class RobotRepresentation {
     int num_legs = 4;
     // the leg order: FL FR ML MR BL BR
     std::vector<Leg> legs = std::vector<Leg>(4);
-    double body_part_id = 0;
+    int body_part_id = 0;
+    double body_part_gene = 0;
     double body_scales[3] = {1, 1, 1};
 
     std::vector<double> design_vector;
 
     RobotRepresentation();
-    RobotRepresentation(std::vector<double> new_dv) { decode_design_vector(new_dv); }
+    RobotRepresentation(std::vector<double> new_dv);
 
     // dv format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     void encode_design_vector();
     void decode_design_vector();
     void decode_design_vector(const std::vector<double>& new_dv);
+    int get_body_part_id() const;
+    int get_link_part_id(int leg_id, int link_id) const;
+    double get_body_length();
 };
 
 std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot);

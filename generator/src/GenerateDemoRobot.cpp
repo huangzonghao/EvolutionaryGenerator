@@ -116,7 +116,7 @@ std::string generate_demo_robot_string(const std::string& mode,
         double leg_length = 0;
         for (int j = 0; j < num_links; ++j) {
             const auto& leg_link = robot_leg.links[j];
-            bodies[j] = body_selector(leg_link.part_id);
+            bodies[j] = body_selector(leg_link.part_gene);
             bodies[j].z = bodies[j].z * leg_link.scale; // only z is controlled by design vector
             leg_length += bodies[j].z;
         }

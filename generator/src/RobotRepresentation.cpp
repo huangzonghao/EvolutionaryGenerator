@@ -1,5 +1,8 @@
 #include "RobotRepresentation.h"
 #include <iostream>
+#include "MeshInfo.h"
+
+extern MeshInfo mesh_info; // defined in MeshInfo.cpp
 
 RobotRepresentation::Leg::Leg(int myid, int total_legs) { update_pos(myid, total_legs); }
 
@@ -13,11 +16,13 @@ RobotRepresentation::RobotRepresentation() {
     encode_design_vector();
 }
 
+RobotRepresentation::RobotRepresentation(std::vector<double> new_dv) { decode_design_vector(new_dv); }
+
 // dv format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
 //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
 void RobotRepresentation::encode_design_vector() {
     design_vector.clear();
-    design_vector.push_back(body_part_id);
+    design_vector.push_back(body_part_gene);
     for (int i = 0; i < 3; ++i)
         design_vector.push_back(body_scales[i]);
     design_vector.push_back(num_legs);
@@ -27,7 +32,7 @@ void RobotRepresentation::encode_design_vector() {
         design_vector.push_back(tmp_leg.num_links);
         for (int j = 0; j < tmp_leg.num_links; ++j) {
             const auto& tmp_link = tmp_leg.links[j];
-            design_vector.push_back(tmp_link.part_id);
+            design_vector.push_back(tmp_link.part_gene);
             design_vector.push_back(tmp_link.scale);
         }
     }
@@ -35,7 +40,10 @@ void RobotRepresentation::encode_design_vector() {
 
 void RobotRepresentation::decode_design_vector() {
     int cursor = 0;
-    body_part_id = design_vector[cursor++];
+    body_part_gene = design_vector[cursor++];
+    body_part_id = std::floor(body_part_gene * mesh_info.num_bodies);
+    if (body_part_id == mesh_info.num_bodies)
+        body_part_id -= 1;
     for (int i = 0; i < 3; ++i)
         body_scales[i] = design_vector[cursor++];
     num_legs = design_vector[cursor++];
@@ -47,8 +55,11 @@ void RobotRepresentation::decode_design_vector() {
         tmp_leg.links.resize(tmp_leg.num_links);
         for(int j = 0; j < tmp_leg.num_links; ++j) {
             auto& tmp_link = tmp_leg.links[j];
-            tmp_link.part_id = design_vector[cursor++];
+            tmp_link.part_gene = design_vector[cursor++];
             tmp_link.scale = design_vector[cursor++];
+            tmp_link.part_id = std::floor(tmp_link.part_gene * mesh_info.num_legs);
+            if (tmp_link.part_id == mesh_info.num_legs)
+                tmp_link.part_id -= 1;
         }
     }
 }
@@ -56,6 +67,19 @@ void RobotRepresentation::decode_design_vector() {
 void RobotRepresentation::decode_design_vector(const std::vector<double>& new_dv) {
     design_vector = new_dv;
     decode_design_vector();
+}
+
+int RobotRepresentation::get_body_part_id() const {
+    return body_part_id;
+}
+
+int RobotRepresentation::get_link_part_id(int leg_id, int link_id) const {
+    return legs[leg_id].links[link_id].part_id;
+}
+
+// return length of body along x direction
+double RobotRepresentation::get_body_length() {
+    return mesh_info.get_body_size(body_part_id, 0) * body_scales[0];
 }
 
 std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot) {
