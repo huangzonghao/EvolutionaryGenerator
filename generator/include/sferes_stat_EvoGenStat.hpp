@@ -40,7 +40,10 @@ class EvoGenStat {
         size_t idx = 0;
         ofs.precision(5);
         for (auto it = ea.init_pop().begin(); it != ea.init_pop().end(); ++it) {
-            ofs << idx << "," << (*it)->fit().value() << ", " << (*it) << std::endl;
+            ofs << idx << "," << (*it)->fit().value();
+            for (size_t dim = 0; dim < (*it)->size(); ++dim)
+                ofs << "," << (*it)->data(dim);
+            ofs << std::endl;
             ++idx;
         }
         ofs.close();
@@ -53,7 +56,10 @@ class EvoGenStat {
         size_t idx = 0;
         ofs.precision(5);
         for (auto it = ea.offspring().begin(); it != ea.offspring().end(); ++it) {
-            ofs << idx << "," << (*it)->fit().value() << ", " << *it << std::endl;
+            ofs << idx << "," << (*it)->fit().value();
+            for (size_t dim = 0; dim < (*it)->size(); ++dim)
+                ofs << "," << (*it)->data(dim);
+            ofs << std::endl;
             ++idx;
         }
         ofs.close();
@@ -72,7 +78,11 @@ class EvoGenStat {
             ofs << idx << ",";
             for (size_t dim = 0; dim < (*it)->fit().desc().size(); ++dim)
                 ofs << (*it)->fit().desc()[dim] << ",";
-            ofs << (*it)->fit().value() << (*it) << std::endl;
+            ofs << (*it)->fit().value();
+
+            for (size_t dim = 0; dim < (*it)->size(); ++dim)
+                ofs << "," << (*it)->data(dim);
+            ofs << std::endl;
             ++idx;
         }
         ofs.close();
