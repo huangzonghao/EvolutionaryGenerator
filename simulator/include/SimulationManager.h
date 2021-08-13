@@ -74,6 +74,7 @@ class  SimulationManager {
     size_t GetComponentNumber() const { return motors_.size() + payloads_.size(); }
     double GetRootBodyDisplacement() const;
     double GetRootBodyDisplacementX() const;
+    double GetRootBodyDisplacementY() const;
   private:
     ControllerType controller_type_ = EvoGen;
     // map is enabled as flat ground by default.

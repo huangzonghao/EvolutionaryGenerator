@@ -298,6 +298,10 @@ double SimulationManager::GetRootBodyDisplacement() const {
 double SimulationManager::GetRootBodyDisplacementX() const {
     return  robot_doc_->GetRootBody()->GetPos().x() - ch_waypoints_[0].x();
 }
+
+double SimulationManager::GetRootBodyDisplacementY() const {
+    return  robot_doc_->GetRootBody()->GetPos().y() - ch_waypoints_[0].y();
+}
 /***********************
 *  private functions  *
 ***********************/

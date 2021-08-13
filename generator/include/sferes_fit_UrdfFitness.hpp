@@ -53,7 +53,8 @@ class UrdfFitness {
         // sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
         sm.RunSimulation();
 
-        _value = sm.GetRootBodyDisplacementX();
+        // reward x movement and penalize y movement
+        _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY());
 
         // TODO: this part needs to be updated
         // Update Descriptors
