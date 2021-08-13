@@ -16,7 +16,7 @@ extern MeshInfo mesh_info; // defined in MeshInfo.cpp
 
 void init_robogami_library() {
     // RobogamiLibrary robogami_lib(Robogami_Data_Dir + "/proto");
-    // robogami_lib.OutputMeshFiles(Robot_Output_Dir + "/tmp_robot_parts");
+    // robogami_lib.OutputMeshFiles(Robot_Parts_Dir);
 }
 
 std::string generate_demo_robogami_robot_string(const std::string& mode,

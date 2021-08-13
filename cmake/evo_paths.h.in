@@ -6,6 +6,9 @@
 
 #include <string>
 
+#define ROBOT_PARTS_PATH "@ROBOT_PARTS_DIR@"
+const std::string Robot_Parts_Dir(ROBOT_PARTS_PATH);
+
 #define ROBOT_OUTPUT_PATH "@ROBOT_OUTPUT_DIR@"
 const std::string Robot_Output_Dir(ROBOT_OUTPUT_PATH);
 

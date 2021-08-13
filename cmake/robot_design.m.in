@@ -5,6 +5,6 @@
 function robot_design()
 
 addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'robot_design'));
-UI('@EVOGEN_PARAMS_DIR@', '@EVOGEN_EXE_PATH@', '@EVOGEN_TMP_PARTS_PATH@', '@RESULT_OUTPUT_DIR@')
+UI('@EVOGEN_PARAMS_DIR@', '@EVOGEN_EXE_PATH@', '@ROBOT_PARTS_DIR@', '@RESULT_OUTPUT_DIR@')
 
 end % function

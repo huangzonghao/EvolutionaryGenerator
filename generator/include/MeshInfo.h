@@ -9,8 +9,8 @@
 
 class MeshInfo {
   public:
-    const std::string body_tmp_dir = Robot_Output_Dir + "/tmp_robot_parts/bodies";
-    const std::string leg_tmp_dir = Robot_Output_Dir + "/tmp_robot_parts/legs";
+    const std::string body_tmp_dir = Robot_Parts_Dir + "/bodies";
+    const std::string leg_tmp_dir = Robot_Parts_Dir + "/legs";
     const int num_bodies = 5;
     const int num_legs = 11;
     const double scale_x = 0.01;

@@ -7,5 +7,6 @@
 
 int main(int argc, char *argv[]) {
     RobogamiLibrary robogami_lib(Robogami_Data_Dir + "/proto");
-    robogami_lib.OutputMeshFiles(Robot_Output_Dir + "/tmp_robot_parts");
+    // robogami_lib.OutputMeshFiles(Robot_Output_Dir + "/tmp_robot_parts_obj", "obj");
+    robogami_lib.OutputMeshFiles(Robot_Output_Dir + "/tmp_robot_parts_stl", "stl");
 }
