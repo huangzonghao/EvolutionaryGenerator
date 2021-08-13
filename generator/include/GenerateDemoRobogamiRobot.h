@@ -6,6 +6,7 @@
 #include "RobotRepresentation.h"
 
 void init_robogami_library();
+void set_mesh_dir(const std::string& new_root);
 void generate_demo_robogami_robot_file(const std::string& mode,
                                        const RobotRepresentation& robot,
                                        const std::string& robot_name="temp_robot");

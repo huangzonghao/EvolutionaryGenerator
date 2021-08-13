@@ -3,21 +3,31 @@
 #include <iostream>
 #include <TriMesh.h>
 
-MeshInfo::MeshInfo() {
+void MeshInfo::load_info() {
+    body_size.clear();
     for (int i = 0; i < num_bodies; ++i) {
-        TriMesh *mesh_tmp = TriMesh::read(std::string(body_tmp_dir + "/" + std::to_string(i) + ".obj").c_str());
+        TriMesh *mesh_tmp = TriMesh::read(std::string(body_mesh_dir + "/" + std::to_string(i) + ".obj").c_str());
         mesh_tmp->need_bbox();
         const auto& bbox_size = mesh_tmp->bbox.size();
         body_size.push_back({bbox_size[0] * scale_x, bbox_size[1] * scale_y, bbox_size[2] * scale_z});
         delete mesh_tmp;
     }
+    leg_size.clear();
     for (int i = 0; i < num_legs; ++i) {
-        TriMesh *mesh_tmp = TriMesh::read(std::string(leg_tmp_dir + "/" + std::to_string(i) + ".obj").c_str());
+        TriMesh *mesh_tmp = TriMesh::read(std::string(leg_mesh_dir + "/" + std::to_string(i) + ".obj").c_str());
         mesh_tmp->need_bbox();
         const auto& bbox_size = mesh_tmp->bbox.size();
         leg_size.push_back({bbox_size[0] * scale_x, bbox_size[1] * scale_y, bbox_size[2] * scale_z});
         delete mesh_tmp;
     }
+}
+
+MeshInfo::MeshInfo() { load_info(); }
+
+void MeshInfo::set_mesh_dir(const std::string& new_root) {
+    body_mesh_dir = new_root + "/bodies";
+    leg_mesh_dir = new_root + "/legs";
+    load_info();
 }
 
 void MeshInfo::print_all_size() {

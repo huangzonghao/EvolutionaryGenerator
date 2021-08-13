@@ -9,8 +9,8 @@
 
 class MeshInfo {
   public:
-    const std::string body_tmp_dir = Robot_Parts_Dir + "/bodies";
-    const std::string leg_tmp_dir = Robot_Parts_Dir + "/legs";
+    std::string body_mesh_dir = Robot_Parts_Dir + "/bodies";
+    std::string leg_mesh_dir = Robot_Parts_Dir + "/legs";
     const int num_bodies = 5;
     const int num_legs = 11;
     const double scale_x = 0.01;
@@ -21,7 +21,9 @@ class MeshInfo {
     void print_all_size();
     double get_body_size(int body_id, int dim) const;
     double get_leg_size(int leg_id, int dim) const;
+    void set_mesh_dir(const std::string& new_root);
   private:
+    void load_info();
     std::vector<std::array<double, 3>> body_size;
     std::vector<std::array<double, 3>> leg_size;
 };

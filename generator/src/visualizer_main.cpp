@@ -73,6 +73,11 @@ int main(int argc, char **argv) {
     sm.SetVisualization(true);
     // sm.SetRealTime(true);
 
+    // If the result dir contains parts lib, use it
+    std::filesystem::path result_dir(sim_filename);
+    if (std::filesystem::exists(result_dir.parent_path().string() + "/robot_parts"))
+        set_mesh_dir(result_dir.parent_path().string() + "/robot_parts");
+
     if (robot_type == "primitive") {
         sm.LoadUrdfString(generate_demo_robot_string("leg", design_vector));
     } else if (robot_type == "mesh") {

@@ -39,7 +39,7 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     oss << " <visual>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
     oss << "  <geometry>" << std::endl;
-    oss << "    <mesh filename = \"" << mesh_info.body_tmp_dir << "/" << body_id << mesh_ext << "\""
+    oss << "    <mesh filename = \"" << mesh_info.body_mesh_dir << "/" << body_id << mesh_ext << "\""
                                      << " scale = \"" << mesh_info.scale_x * robot.body_scales[0] << " "
                                                       << mesh_info.scale_y * robot.body_scales[1] << " "
                                                       << mesh_info.scale_z * robot.body_scales[2] << "\" />" << std::endl;
@@ -94,7 +94,7 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
             oss << " <visual>" << std::endl;
             oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -0.5 << "\" />" << std::endl;
             oss << "  <geometry>" << std::endl;
-            oss << "    <mesh filename = \"" << mesh_info.leg_tmp_dir << "/" << part_ids[j] << mesh_ext << "\""
+            oss << "    <mesh filename = \"" << mesh_info.leg_mesh_dir << "/" << part_ids[j] << mesh_ext << "\""
                                              << " scale = \"" << mesh_info.scale_x << " "
                                                               << mesh_info.scale_y << " "
                                                               << mesh_info.scale_z * link_length_scale[j] << "\" />" << std::endl;
@@ -195,4 +195,8 @@ void generate_demo_robogami_robot_file(const std::string& mode,
                                        const std::vector<double>& dv,
                                        const std::string& robot_name) {
     generate_demo_robogami_robot_file(mode, RobotRepresentation(dv), robot_name);
+}
+
+void set_mesh_dir(const std::string& new_root) {
+    mesh_info.set_mesh_dir(new_root);
 }
