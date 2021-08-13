@@ -294,3 +294,23 @@ if(MSVC)
     target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
         $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
+
+set(CURRENT_TARGET_NAME Convert_Mesh_Models)
+
+set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/mesh_converter_main.cpp
+)
+
+add_executable(${CURRENT_TARGET_NAME} ${Sources})
+
+target_link_libraries(${CURRENT_TARGET_NAME} trimesh2)
+
+target_include_directories(${CURRENT_TARGET_NAME} PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR})
+
+if(MSVC)
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
+        $<$<CONFIG:Release>: /MP;>
+    )
+endif()
