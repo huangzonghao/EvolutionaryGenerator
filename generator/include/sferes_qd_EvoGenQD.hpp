@@ -128,7 +128,18 @@ class EvoGenQD
         }
     }
 
-    void _dump_config_extra() const { _sim_params.Save(this->_res_dir + "/sim_params.xml"); }
+    void _dump_config_extra() const {
+        if (std::filesystem::exists(_sim_params.env_name)) {
+            std::filesystem::path env_path(_sim_params.env_name);
+            std::string new_path (_res_dir + "/" + env_path.filename().string());
+            std::filesystem::copy(env_path, new_path);
+            SimulatorParams new_sim_param = _sim_params;
+            new_sim_param.SetEnv(new_path);
+            new_sim_param.Save(this->_res_dir + "/sim_params.xml");
+        } else {
+            _sim_params.Save(this->_res_dir + "/sim_params.xml");
+        }
+    }
 
     void _load_config_extra(const std::string& evo_params_fname) {
         std::filesystem::path res_path(evo_params_fname);
