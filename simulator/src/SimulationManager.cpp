@@ -201,6 +201,10 @@ bool SimulationManager::RunSimulation() {
 
     std::chrono::steady_clock::time_point tik;
     std::chrono::steady_clock::time_point tok;
+
+    // update fall down threshold
+    fall_down_thresh = robot_doc_->GetMinPos().z() * 1.5 - 2;
+
     if(do_viz_){
         ChRealtimeStepTimer realtime_timer;
         using namespace chrono::irrlicht;
@@ -236,13 +240,18 @@ bool SimulationManager::RunSimulation() {
             task_done_ = controller->Update();
 
             if (do_realtime_) realtime_timer.Spin(step_size_);
+
+            if (check_termination()) {
+                std::cout << "Simulation Cut: Early termination condition met"  << std::endl;
+                break;
+            }
         }
         vis_app.GetDevice()->closeDevice();
         tok = std::chrono::steady_clock::now();
     }
     else{
         tik = std::chrono::steady_clock::now();
-        while(ch_system_->GetChTime() < timeout_ && !task_done_) {
+        while(ch_system_->GetChTime() < timeout_ && !task_done_ && !check_termination()) {
             ch_system_->DoStepDynamics(step_size_);
 
             task_done_ = controller->Update();
@@ -287,11 +296,15 @@ double SimulationManager::GetRootBodyDisplacement() const {
 }
 
 double SimulationManager::GetRootBodyDisplacementX() const {
-    return  robot_doc_->GetRootBody()->GetPos().x()- ch_waypoints_[0].x();
+    return  robot_doc_->GetRootBody()->GetPos().x() - ch_waypoints_[0].x();
 }
 /***********************
 *  private functions  *
 ***********************/
+
+bool SimulationManager::check_termination() {
+    return  robot_doc_->GetRootBody()->GetPos().z() < fall_down_thresh ? true : false;
+}
 
 // TODO: right now using greedy method to place the env under the robot, that the
 // lowest point of the robot is higher than the highest point of the env, which may

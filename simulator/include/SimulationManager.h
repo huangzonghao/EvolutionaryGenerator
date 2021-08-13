@@ -79,6 +79,8 @@ class  SimulationManager {
     // map is enabled as flat ground by default.
     bool load_map_ = true;
     void load_map();
+    bool check_termination();
+    double fall_down_thresh = 0;
     SystemType  system_type_;
     double k_friction_;
     double s_friction_;
