@@ -3,10 +3,17 @@ classdef UI < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
+        ToLabel              matlab.ui.control.Label
+        FromLabel            matlab.ui.control.Label
+        StatEndGenField      matlab.ui.control.EditField
+        StatStartGenField    matlab.ui.control.EditField
+        StatPlotButton       matlab.ui.control.Button
+        RobotIDYLabel        matlab.ui.control.Label
+        RobotIDXLabel        matlab.ui.control.Label
         RobotInfoLabel       matlab.ui.control.Label
         RobotIDYField        matlab.ui.control.EditField
         RobotIDXField        matlab.ui.control.EditField
-        ExtPlotButton        matlab.ui.control.Button
+        BuildStatButton      matlab.ui.control.Button
         GenInfoLabel         matlab.ui.control.Label
         ResultInfoTextLabel  matlab.ui.control.Label
         ResultNameLabel      matlab.ui.control.Label
@@ -24,6 +31,8 @@ classdef UI < matlab.apps.AppBase
 
     properties (Access = private)
         evo_params % parameters of an evolutionary generation process
+        stat % variables containing the stats of the result
+        stat_loaded = false
         evogen_results_path
         evogen_exe_path
         current_gen = -1
@@ -46,6 +55,7 @@ classdef UI < matlab.apps.AppBase
 
         function show_testinfo(app)
             [~, app.ResultNameLabel.Text, ~] = fileparts(app.evo_params.result_path);
+            app.evo_params.result_basename = app.ResultNameLabel.Text;
             app.ResultInfoTextLabel.Text =...
                 sprintf('# of Gen: %d\nInit size: %d\nPop size: %d\nMap size: %dx%d\n',...
                         app.evo_params.nb_gen, app.evo_params.init_size, app.evo_params.gen_size,...
@@ -73,6 +83,8 @@ classdef UI < matlab.apps.AppBase
             % Note the swapping of x, y here
             app.RobotIDXField.Value = num2str(y(1));
             app.RobotIDYField.Value = num2str(x(1));
+            idx = robot_idx_in_archive(app, x(1), y(1));
+            app.RobotInfoLabel.Text = "Fitness: " + num2str(app.current_gen_archive(idx, 4));
         end
 
         function load_gen(app, gen_to_load)
@@ -84,6 +96,34 @@ classdef UI < matlab.apps.AppBase
             app.current_gen_archive = readmatrix(fullfile(app.evo_params.result_path, strcat(app.archive_prefix, num2str(app.current_gen), app.archive_subfix)));
             app.GenIDField.Value = num2str(app.current_gen);
             plot_heatmap(app);
+        end
+
+        function load_result(app)
+            result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
+            evo_xml = xml2struct(fullfile(result_path, app.params_filename));
+
+            app.evo_params.result_path = result_path;
+            app.evo_params.nb_gen = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
+            app.evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
+            app.evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
+            app.evo_params.griddim_0 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{1}.Text);
+            app.evo_params.griddim_1 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{2}.Text);
+            app.evo_params.feature_description1 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{1}.Text;
+            app.evo_params.feature_description2 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{2}.Text;
+            app.RobotIDXLabel.Text = app.evo_params.feature_description2(1:5);
+            app.RobotIDYLabel.Text = app.evo_params.feature_description1(1:5);
+
+            [app.stat, app.stat_loaded] = load_stat(result_path);
+            if app.stat_loaded
+                app.BuildStatButton.Text = 'RebuildStat';
+            else
+                app.BuildStatButton.Text = 'BuildStat';
+            end
+            app.StatStartGenField.Value = num2str(0);
+            app.StatEndGenField.Value = num2str(app.evo_params.nb_gen);
+            app.current_gen = -1;
+            show_testinfo(app);
+            load_gen(app, 0);
         end
 
         function idx = robot_idx_in_archive(app, x ,y)
@@ -103,26 +143,6 @@ classdef UI < matlab.apps.AppBase
 
         % Code that executes after component creation
         function startupFcn(app, evogen_exe_path, evogen_results_path)
-            % Force single instance
-            figures = findall(groot, '-depth', 1, 'Type', 'Figure');
-            % Shutdown all other instances of this app.
-            for k = 1:numel(figures)
-                fig = figures(k);
-                % Only consider valid figures with a 'RunningAppInstance'
-                % property, because this is the sign that the figure is
-                % from an AppDesigner app.
-                if isvalid(fig) && isprop(fig, 'RunningAppInstance')
-                    other = fig.RunningAppInstance;
-                    % Make sure the figure's app as the same class as us,
-                    % and also make sure we don't delete ourself.
-                    if isa(other, class(app)) && ~isequal(app, other)
-                        % Delete the other instance. This automatically
-                        % closes the associated figure as well.
-                        delete(fig.RunningAppInstance);
-                    end
-                end
-            end
-
             if (ispc)
                 app.simulator_name = strcat(app.simulator_basename, '.exe');
             else
@@ -131,24 +151,13 @@ classdef UI < matlab.apps.AppBase
 
             app.evogen_results_path = evogen_results_path;
             app.evogen_exe_path = evogen_exe_path;
+
+            load_result(app);
         end
 
         % Button pushed function: LoadResultButton
         function LoadResultButtonPushed(app, event)
-            result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
-            evo_xml = xml2struct(fullfile(result_path, app.params_filename));
-
-            app.evo_params.result_path = result_path;
-            app.evo_params.nb_gen = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
-            app.evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
-            app.evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
-            app.evo_params.griddim_0 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{1}.Text);
-            app.evo_params.griddim_1 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{2}.Text);
-            app.evo_params.feature_description1 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{1}.Text;
-            app.evo_params.feature_description2= evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{2}.Text;
-
-            show_testinfo(app);
-            load_gen(app, 0);
+            load_result(app);
         end
 
         % Button pushed function: LoadNextButton
@@ -171,15 +180,11 @@ classdef UI < matlab.apps.AppBase
             load_gen(app, app.current_gen - 10);
         end
 
-        % Button pushed function: ExtPlotButton
-        function ExtPlotButtonPushed(app, event)
-            % make sure there is something loaded
-            if (app.current_gen == -1)
-                msgbox('Load a result first');
-                return;
-            end
-            figure();
-            surf(app.archive_map);
+        % Button pushed function: BuildStatButton
+        function BuildStatButtonPushed(app, event)
+            app.BuildStatButton.Text = 'Building ...';
+            [app.stat, app.stat_loaded] = build_stat(app.evo_params);
+            app.BuildStatButton.Text = 'RebuildStat';
         end
 
         % Value changed function: GenIDField
@@ -189,11 +194,6 @@ classdef UI < matlab.apps.AppBase
 
         % Button pushed function: SimulateRobotButton
         function SimulateRobotButtonPushed(app, event)
-            % make sure there is something loaded
-            if (app.current_gen == -1)
-                msgbox('Load a result first');
-                return;
-            end
             % Note here in CG, x goes from left to right and y goes from
             % top to bottom -- x is column index, y is row index
             idx = robot_idx_in_archive(app, str2double(app.RobotIDYField.Value), str2double(app.RobotIDXField.Value));
@@ -221,6 +221,15 @@ classdef UI < matlab.apps.AppBase
             value = str2double(app.RobotIDYField.Value);
             value = min(max(value, 1), app.evo_params.griddim_0); % note y corresponds to row index of matrix here
             app.RobotIDYField.Value = num2str(value);
+        end
+
+        % Button pushed function: StatPlotButton
+        function StatPlotButtonPushed(app, event)
+            if (~app.stat_loaded)
+                msgbox('Build Stat first');
+                return;
+            end
+            stat_plot(app.stat, app.evo_params, str2double(app.StatStartGenField.Value), str2double(app.StatEndGenField.Value));
         end
     end
 
@@ -297,7 +306,7 @@ classdef UI < matlab.apps.AppBase
             app.ResultInfoLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
             app.ResultInfoLabel.FontSize = 13;
             app.ResultInfoLabel.FontWeight = 'bold';
-            app.ResultInfoLabel.Position = [6 377 77 22];
+            app.ResultInfoLabel.Position = [4 333 77 22];
             app.ResultInfoLabel.Text = 'Result Info:';
 
             % Create ResultNameLabel
@@ -311,7 +320,7 @@ classdef UI < matlab.apps.AppBase
             % Create ResultInfoTextLabel
             app.ResultInfoTextLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
             app.ResultInfoTextLabel.VerticalAlignment = 'top';
-            app.ResultInfoTextLabel.Position = [23 122 185 256];
+            app.ResultInfoTextLabel.Position = [23 106 185 228];
             app.ResultInfoTextLabel.Text = '';
 
             % Create GenInfoLabel
@@ -322,11 +331,11 @@ classdef UI < matlab.apps.AppBase
             app.GenInfoLabel.Position = [207 507 434 22];
             app.GenInfoLabel.Text = '';
 
-            % Create ExtPlotButton
-            app.ExtPlotButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
-            app.ExtPlotButton.ButtonPushedFcn = createCallbackFcn(app, @ExtPlotButtonPushed, true);
-            app.ExtPlotButton.Position = [38 419 100 22];
-            app.ExtPlotButton.Text = 'ExtPlot';
+            % Create BuildStatButton
+            app.BuildStatButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.BuildStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildStatButtonPushed, true);
+            app.BuildStatButton.Position = [38 419 100 22];
+            app.BuildStatButton.Text = 'BuildStat';
 
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
@@ -345,6 +354,46 @@ classdef UI < matlab.apps.AppBase
             app.RobotInfoLabel.Position = [28 16 604 22];
             app.RobotInfoLabel.Text = '';
 
+            % Create RobotIDXLabel
+            app.RobotIDXLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.RobotIDXLabel.Position = [24 71 37 20];
+            app.RobotIDXLabel.Text = '';
+
+            % Create RobotIDYLabel
+            app.RobotIDYLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.RobotIDYLabel.Position = [69 70 38 22];
+            app.RobotIDYLabel.Text = '';
+
+            % Create StatPlotButton
+            app.StatPlotButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.StatPlotButton.ButtonPushedFcn = createCallbackFcn(app, @StatPlotButtonPushed, true);
+            app.StatPlotButton.Position = [39 366 100 22];
+            app.StatPlotButton.Text = 'StatPlot';
+
+            % Create StatStartGenField
+            app.StatStartGenField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.StatStartGenField.HorizontalAlignment = 'center';
+            app.StatStartGenField.Position = [55 391 41 22];
+
+            % Create StatEndGenField
+            app.StatEndGenField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.StatEndGenField.HorizontalAlignment = 'center';
+            app.StatEndGenField.Position = [122 391 40 22];
+
+            % Create FromLabel
+            app.FromLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.FromLabel.FontSize = 13;
+            app.FromLabel.FontWeight = 'bold';
+            app.FromLabel.Position = [15 391 41 22];
+            app.FromLabel.Text = 'From:';
+
+            % Create ToLabel
+            app.ToLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.ToLabel.FontSize = 13;
+            app.ToLabel.FontWeight = 'bold';
+            app.ToLabel.Position = [101 391 25 22];
+            app.ToLabel.Text = 'To:';
+
             % Show the figure after all components are created
             app.EvolutionaryRobogamiResultViewerUIFigure.Visible = 'on';
         end
@@ -356,14 +405,26 @@ classdef UI < matlab.apps.AppBase
         % Construct app
         function app = UI(varargin)
 
-            % Create UIFigure and components
-            createComponents(app)
+            runningApp = getRunningApp(app);
 
-            % Register the app with App Designer
-            registerApp(app, app.EvolutionaryRobogamiResultViewerUIFigure)
+            % Check for running singleton app
+            if isempty(runningApp)
 
-            % Execute the startup function
-            runStartupFcn(app, @(app)startupFcn(app, varargin{:}))
+                % Create UIFigure and components
+                createComponents(app)
+
+                % Register the app with App Designer
+                registerApp(app, app.EvolutionaryRobogamiResultViewerUIFigure)
+
+                % Execute the startup function
+                runStartupFcn(app, @(app)startupFcn(app, varargin{:}))
+            else
+
+                % Focus the running singleton app
+                figure(runningApp.EvolutionaryRobogamiResultViewerUIFigure)
+
+                app = runningApp;
+            end
 
             if nargout == 0
                 clear app
