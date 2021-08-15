@@ -163,7 +163,7 @@ class EvoGenEA : public stc::Any<Exact> {
     eval_t _eval;
     stat_t _stat;
     std::string _res_dir;
-    size_t _gen = -1;
+    int _gen = -1;
     bool _stop = false;
     std::string _exp_name;
 
@@ -177,6 +177,7 @@ class EvoGenEA : public stc::Any<Exact> {
         update_stats();
         if (_gen % _progress_dump_period == 0)
             _dump_state();
+        _set_status("running");
     }
 
     // the status is a file that tells the state of the experiment
@@ -188,7 +189,7 @@ class EvoGenEA : public stc::Any<Exact> {
             return;
         std::string s = _res_dir + "/status.txt";
         std::ofstream ofs(s.c_str());
-        ofs << status;
+        ofs << _gen << "/" << _nb_gen << " - " << status;
     }
 
     template<typename P>

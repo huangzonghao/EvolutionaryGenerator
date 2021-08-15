@@ -57,9 +57,9 @@ classdef UI < matlab.apps.AppBase
             [~, app.ResultNameLabel.Text, ~] = fileparts(app.evo_params.result_path);
             app.evo_params.result_basename = app.ResultNameLabel.Text;
             app.ResultInfoTextLabel.Text =...
-                sprintf('# of Gen: %d\nInit size: %d\nPop size: %d\nMap size: %dx%d\n',...
-                        app.evo_params.nb_gen, app.evo_params.init_size, app.evo_params.gen_size,...
-                        app.evo_params.griddim_0, app.evo_params.griddim_1);
+                sprintf('# of Gen Planned: %d\n# of Gen Finished%d\nInit size: %d\nPop size: %d\nMap size: %dx%d\n',...
+                        app.evo_params.nb_gen_planned, app.evo_params.nb_gen, app.evo_params.init_size, ...
+                        app.evo_params.gen_size, app.evo_params.griddim_0, app.evo_params.griddim_1);
         end
 
         function plot_heatmap(app)
@@ -103,7 +103,7 @@ classdef UI < matlab.apps.AppBase
             evo_xml = xml2struct(fullfile(result_path, app.params_filename));
 
             app.evo_params.result_path = result_path;
-            app.evo_params.nb_gen = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
+            app.evo_params.nb_gen_planned = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
             app.evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
             app.evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
             app.evo_params.griddim_0 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{1}.Text);
@@ -113,6 +113,9 @@ classdef UI < matlab.apps.AppBase
             app.RobotIDXLabel.Text = app.evo_params.feature_description2(1:5);
             app.RobotIDYLabel.Text = app.evo_params.feature_description1(1:5);
 
+            statusfile_id = fopen(fullfile(result_path, 'status.txt'));
+            status_info = cell2mat(textscan(statusfile_id, '%d/%d%*[^\n]'));
+            app.evo_params.nb_gen = status_info(1);
             [app.stat, app.stat_loaded] = load_stat(result_path);
             if app.stat_loaded
                 app.BuildStatButton.Text = 'RebuildStat';
