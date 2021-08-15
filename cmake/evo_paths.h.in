@@ -6,8 +6,14 @@
 
 #include <string>
 
+#define EVOGEN_MAPS_PATH "@EVOGEN_MAPS_DIR@"
+const std::string EvoGen_Maps_Dir(EVOGEN_MAPS_PATH);
+
 #define ROBOT_PARTS_PATH "@ROBOT_PARTS_DIR@"
 const std::string Robot_Parts_Dir(ROBOT_PARTS_PATH);
+
+#define MESH_WORKSPACE_PATH "@MESH_WORKSPACE_DIR@"
+const std::string Mesh_Workspace_Dir(MESH_WORKSPACE_PATH);
 
 #define ROBOT_OUTPUT_PATH "@ROBOT_OUTPUT_DIR@"
 const std::string Robot_Output_Dir(ROBOT_OUTPUT_PATH);

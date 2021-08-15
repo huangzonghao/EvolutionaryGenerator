@@ -11,36 +11,44 @@ endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 if (NOT DEFINED PROJECT_IN_FILE_OUTPUT_DIR)
-    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/include)
     set(PROJECT_IN_FILE_OUTPUT_DIR ${PROJECT_BINARY_DIR}/include CACHE PATH "Partial file output dir")
+    file(MAKE_DIRECTORY ${PROJECT_IN_FILE_OUTPUT_DIR})
 endif()
 
 if (NOT DEFINED PROJECT_MATLAB_OUTPUT_DIR)
-    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/Matlab)
     set(PROJECT_MATLAB_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Matlab CACHE PATH "Matlab scripts output dir")
+    file(MAKE_DIRECTORY ${PROJECT_MATLAB_OUTPUT_DIR})
 endif()
 
 set(PROJECT_DEP_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/Install)
 list(APPEND CMAKE_PREFIX_PATH ${PROJECT_DEP_INSTALL_DIR})
 
 if (NOT DEFINED PROJECT_OUTPUT_DIR)
-    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/Output)
     set(PROJECT_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Output CACHE PATH "Directory containing the program generated files")
+    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR})
 endif()
 
 if (NOT DEFINED ROBOT_OUTPUT_DIR)
-    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Robots)
     set(ROBOT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Robots CACHE PATH "Directory containing the generated robots")
+    file(MAKE_DIRECTORY ${ROBOT_OUTPUT_DIR})
 endif()
 
 if (NOT DEFINED RESULT_OUTPUT_DIR)
-    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Results)
     set(RESULT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Results CACHE PATH "Directory containing the generated results")
+    file(MAKE_DIRECTORY ${RESULT_OUTPUT_DIR})
+endif()
+
+if (NOT DEFINED MESH_WORKSPACE_DIR)
+    set(MESH_WORKSPACE_DIR ${PROJECT_OUTPUT_DIR}/Meshes CACHE PATH "Directory containing the Meshes to be converted")
+    file(MAKE_DIRECTORY ${MESH_WORKSPACE_DIR})
+    file(MAKE_DIRECTORY ${MESH_WORKSPACE_DIR}/legs)
+    file(MAKE_DIRECTORY ${MESH_WORKSPACE_DIR}/bodies)
+    file(MAKE_DIRECTORY ${MESH_WORKSPACE_DIR}/maps)
 endif()
 
 if (NOT DEFINED EVOGEN_PARAMS_DIR)
-    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR}/Params)
     set(EVOGEN_PARAMS_DIR ${PROJECT_OUTPUT_DIR}/Params CACHE PATH "Directory containing the param files for EvoGen")
+    file(MAKE_DIRECTORY ${EVOGEN_PARAMS_DIR})
 endif()
 
 # copy DLLs for Windows
@@ -48,6 +56,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(DLL_Copy_Command)
 
 set(ROBOT_PARTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/robot_parts)
+set(EVOGEN_MAPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
 set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(RESOURCE_MAP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
 set(EVOGEN_MATLAB_SCRIPTS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/matlab)
