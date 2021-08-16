@@ -47,4 +47,8 @@ double MeshInfo::get_leg_size(int leg_id, int dim) const {
     return leg_size[leg_id][dim];
 }
 
+double MeshInfo::get_leg_length(int leg_id) const {
+    return leg_size[leg_id][2];
+}
+
 MeshInfo mesh_info;

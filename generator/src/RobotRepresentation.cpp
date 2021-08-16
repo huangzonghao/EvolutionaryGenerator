@@ -10,6 +10,14 @@ void RobotRepresentation::Leg::update_pos(int myid, int total_legs) {
     position = get_pos(myid, total_legs);
 }
 
+double RobotRepresentation::Leg::length() const {
+    double length = 0;
+    for (int i = 0; i < num_links; ++i) {
+        length += mesh_info.get_leg_length(links[i].part_id) * links[i].scale;
+    }
+    return length;
+}
+
 RobotRepresentation::RobotRepresentation() {
     for (int i = 0; i < num_legs; ++i)
         legs[i].update_pos(i, num_legs);
@@ -77,9 +85,13 @@ int RobotRepresentation::get_link_part_id(int leg_id, int link_id) const {
     return legs[leg_id].links[link_id].part_id;
 }
 
+double RobotRepresentation::get_body_size(int dir) const {
+    return mesh_info.get_body_size(body_part_id, dir) * body_scales[dir];
+}
+
 // return length of body along x direction
-double RobotRepresentation::get_body_length() {
-    return mesh_info.get_body_size(body_part_id, 0) * body_scales[0];
+double RobotRepresentation::get_body_length() const {
+    return get_body_size(0);
 }
 
 std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot) {

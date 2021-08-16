@@ -21,6 +21,7 @@ class MeshInfo {
     void print_all_size();
     double get_body_size(int body_id, int dim) const;
     double get_leg_size(int leg_id, int dim) const;
+    double get_leg_length(int leg_id) const;
     void set_mesh_dir(const std::string& new_root);
   private:
     void load_info();

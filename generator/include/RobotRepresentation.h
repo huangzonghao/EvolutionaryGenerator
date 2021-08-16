@@ -25,6 +25,7 @@ class RobotRepresentation {
         Leg(int myid, int total_legs);
 
         void update_pos(int myid, int total_legs);
+        double length() const;
         static double RobotRepresentation::Leg::get_pos(int myid, int total_legs) {
             const double preset_legpos4[4] = {0.01, 0.99, 0.49, 0.51};
             const double preset_legpos6[6] = {0.01, 0.99, 0.49, 0.51, 0.25, 0.75};
@@ -59,9 +60,10 @@ class RobotRepresentation {
     void decode_design_vector(const std::vector<double>& new_dv);
     int get_body_part_id() const;
     int get_link_part_id(int leg_id, int link_id) const;
-    double get_body_length();
+    double get_body_size(int dir) const;
+    double get_body_length() const;
+    friend std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot);
 };
 
-std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot);
 
 #endif /* end of include guard: EVOGEN_GENERATOR_INCLUDE_ROBOTREPRESENTATION_H_ */

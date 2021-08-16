@@ -59,12 +59,18 @@ class UrdfFitness {
         // TODO: this part needs to be updated
         // Update Descriptors
         // Note: descriptor needs to be in range [0, 1]
-        _desc[0] = ind.gen().data(1);
-        _desc[1] = ind.gen().size() - 11; // lengeth of gen [11, 26]
-        // TODO: better handling the map size
-        _desc[1] = _desc[1] / 20; // we have 20 bins
+        double body_length = robot.get_body_length();
+        _desc[0] = robot.get_body_size(1) / body_length;
+        _desc[0] /=  2; // assuming the range of the origin ratio is [0, 2], ignoring the rest
+        double total_leg_length = 0;
+        for (int i = 0; i < robot.num_legs; ++i) {
+            total_leg_length += robot.legs[i].length();
+        }
+        total_leg_length /= robot.num_legs;
+        _desc[1] = total_leg_length / body_length;
+        _desc[1] /= 8; // assuming range [0, 8];
     }
-    static constexpr const char* descriptor_name[2] = {"body length", "genome length"};
+    static constexpr const char* descriptor_name[2] = {"body width/length", "avg leg length/body_length"};
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
