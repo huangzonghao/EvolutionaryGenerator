@@ -1,5 +1,5 @@
-#ifndef EVOGEN_GENERATOR_INCLUDE_ROBOTREPRESENTATION_H_
-#define EVOGEN_GENERATOR_INCLUDE_ROBOTREPRESENTATION_H_
+#ifndef EVOGEN_GENERATOR_ROBOTREPRESENTATION_H_
+#define EVOGEN_GENERATOR_ROBOTREPRESENTATION_H_
 
 #include <iostream>
 #include <vector>
@@ -65,5 +65,4 @@ class RobotRepresentation {
     friend std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot);
 };
 
-
-#endif /* end of include guard: EVOGEN_GENERATOR_INCLUDE_ROBOTREPRESENTATION_H_ */
+#endif /* end of include guard: EVOGEN_GENERATOR_ROBOTREPRESENTATION_H_ */

@@ -1,5 +1,5 @@
-#ifndef GENERATEDEMOROBOGAMIROBOT_H_EWW0DAZS
-#define GENERATEDEMOROBOGAMIROBOT_H_EWW0DAZS
+#ifndef EVOGEN_GENERATOR_GENERATEDEMOROBOGAMIROBOT_H_
+#define EVOGEN_GENERATOR_GENERATEDEMOROBOGAMIROBOT_H_
 
 #include <string>
 #include <vector>
@@ -20,4 +20,4 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
                                                 const std::vector<double>& design_vector,
                                                 const std::string& robot_name="temp_robot");
 
-#endif /* end of include guard: GENERATEDEMOROBOGAMIROBOT_H_EWW0DAZS */
+#endif /* end of include guard: EVOGEN_GENERATOR_GENERATEDEMOROBOGAMIROBOT_H_ */

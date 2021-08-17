@@ -1,5 +1,5 @@
-#ifndef CHURDFDOC_H_XVMVTRQF
-#define CHURDFDOC_H_XVMVTRQF
+#ifndef EVOGEN_SIMULATOR_CHURDFDOC_H_
+#define EVOGEN_SIMULATOR_CHURDFDOC_H_
 
 #include <map>
 #include <urdf_parser/urdf_parser.h>
@@ -75,4 +75,4 @@ class RotSpringConstDampingTorque : public ChLinkRotSpringCB::TorqueFunctor {
 
 }  // END_OF_NAMESPACE_
 
-#endif /* end of include guard: CHURDFDOC_H_XVMVTRQF */
+#endif /* end of include guard: EVOGEN_SIMULATOR_CHURDFDOC_H_ */

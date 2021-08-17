@@ -1,5 +1,5 @@
-#ifndef SFERES_STAT_EVOGENSTAT_HPP_HQ1F0APZ
-#define SFERES_STAT_EVOGENSTAT_HPP_HQ1F0APZ
+#ifndef EVOGEN_GENERATOR_SFERES_STAT_EVOGENSTAT_HPP_
+#define EVOGEN_GENERATOR_SFERES_STAT_EVOGENSTAT_HPP_
 
 #include <filesystem>
 
@@ -114,4 +114,4 @@ class EvoGenStat {
 } // namespace stat
 } // namespace sferes
 
-#endif /* end of include guard: SFERES_STAT_EVOGENSTAT_HPP_HQ1F0APZ */
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_STAT_EVOGENSTAT_HPP_ */

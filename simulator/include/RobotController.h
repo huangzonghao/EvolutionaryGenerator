@@ -1,5 +1,5 @@
-#ifndef ROBOTCONTROLLER_H_WU5YVSBW
-#define ROBOTCONTROLLER_H_WU5YVSBW
+#ifndef EVOGEN_SIMULATOR_ROBOTCONTROLLER_H_
+#define EVOGEN_SIMULATOR_ROBOTCONTROLLER_H_
 
 #include <vector>
 #include <chrono/core/ChMathematics.h>
@@ -67,4 +67,4 @@ class EvoGenController : public RobotController {
     std::vector<LegController> legs_;
 };
 
-#endif /* end of include guard: ROBOTCONTROLLER_H_WU5YVSBW */
+#endif /* end of include guard: EVOGEN_SIMULATOR_ROBOTCONTROLLER_H_ */

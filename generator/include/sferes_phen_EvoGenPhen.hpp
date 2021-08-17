@@ -1,5 +1,6 @@
-#ifndef SFERES_PHEN_EVOGENPHEN_HPP_OZY0FBGR
-#define SFERES_PHEN_EVOGENPHEN_HPP_OZY0FBGR
+#ifndef EVOGEN_GENERATOR_SFERES_PHEN_EVOGENPHEN_HPP_
+#define EVOGEN_GENERATOR_SFERES_PHEN_EVOGENPHEN_HPP_
+
 #include <vector>
 #include <iostream>
 #include <boost/serialization/nvp.hpp>
@@ -148,4 +149,5 @@ std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e) {
 
 } // namespace phen
 } // namespace sferes
-#endif /* end of include guard: SFERES_PHEN_EVOGENPHEN_HPP_OZY0FBGR */
+
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_PHEN_EVOGENPHEN_HPP_ */

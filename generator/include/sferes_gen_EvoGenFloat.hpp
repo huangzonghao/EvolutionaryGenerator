@@ -1,5 +1,5 @@
-#ifndef SFERES_GEN_EVOGENFLOAT_HPP_TDPDVGME
-#define SFERES_GEN_EVOGENFLOAT_HPP_TDPDVGME
+#ifndef EVOGEN_GENERATOR_SFERES_GEN_EVOGENFLOAT_HPP_
+#define EVOGEN_GENERATOR_SFERES_GEN_EVOGENFLOAT_HPP_
 
 #include <cmath>
 #include <vector>
@@ -289,4 +289,5 @@ class EvoGenFloat {
 };
 } // namespace gen
 } // namespace sferes
-#endif /* end of include guard: SFERES_GEN_EVOGENFLOAT_HPP_TDPDVGME */
+
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_GEN_EVOGENFLOAT_HPP_ */

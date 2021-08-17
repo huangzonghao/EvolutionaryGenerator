@@ -2,8 +2,9 @@
 // This file mainly focuse on setting up the EA structure and do book keeping,
 // while the derievd class would focus on and contain only the details of specific
 // EA algorithms
-#ifndef SFERES_EA_EVOGENEA_HPP_IKZHM4BW
-#define SFERES_EA_EVOGENEA_HPP_IKZHM4BW
+#ifndef EVOGEN_GENERATOR_SFERES_EA_EVOGENEA_HPP_
+#define EVOGEN_GENERATOR_SFERES_EA_EVOGENEA_HPP_
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -279,4 +280,4 @@ class EvoGenEA : public stc::Any<Exact> {
       friend class EvoGenEA< Phen, Eval, Stat,                              \
       typename stc::FindExact<Class<Phen, Eval, Stat, Exact>, Exact>::ret >
 
-#endif /* end of include guard: SFERES_EA_EVOGENEA_HPP_IKZHM4BW */
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_EA_EVOGENEA_HPP_ */

@@ -1,5 +1,6 @@
-#ifndef SFERES_QD_CONTAINER_GRID_HPP_UNXK1HEF
-#define SFERES_QD_CONTAINER_GRID_HPP_UNXK1HEF
+#ifndef EVOGEN_GENERATOR_SFERES_QD_CONTAINER_GRID_HPP_
+#define EVOGEN_GENERATOR_SFERES_QD_CONTAINER_GRID_HPP_
+
 // #include <tbb/parallel_for_each.h>
 #include <cmath>
 #include <boost/multi_array.hpp>
@@ -225,4 +226,4 @@ class Grid {
 } // namespace qd
 } // namespace sferes
 
-#endif /* end of include guard: SFERES_QD_CONTAINER_GRID_HPP_UNXK1HEF */
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_QD_CONTAINER_GRID_HPP_ */

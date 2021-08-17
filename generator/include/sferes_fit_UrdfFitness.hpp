@@ -1,5 +1,6 @@
-#ifndef SFERES_FIT_URDFFITNESS_HPP_6SDCQBMG
-#define SFERES_FIT_URDFFITNESS_HPP_6SDCQBMG
+#ifndef EVOGEN_GENERATOR_SFERES_FIT_URDFFITNESS_HPP_
+#define EVOGEN_GENERATOR_SFERES_FIT_URDFFITNESS_HPP_
+
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/vector.hpp>
 
@@ -90,4 +91,4 @@ class UrdfFitness {
 } // namespace fit
 } // namespace sferes
 
-#endif /* end of include guard: SFERES_FIT_URDFFITNESS_HPP_6SDCQBMG */
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_FIT_URDFFITNESS_HPP_ */

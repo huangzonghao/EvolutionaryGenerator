@@ -1,5 +1,6 @@
-#ifndef CHROBOT_H_HJ2ALXR4
-#define CHROBOT_H_HJ2ALXR4
+#ifndef EVOGEN_SIMULATOR_CHROBOT_H_
+#define EVOGEN_SIMULATOR_CHROBOT_H_
+
 #include <chrono/core/ChCoordsys.h>
 #include <chrono/physics/ChSystem.h>
 
@@ -61,4 +62,4 @@ class ChRobot {
 
 } // namespace chrono
 
-#endif /* end of include guard: CHROBOT_H_HJ2ALXR4 */
+#endif /* end of include guard: EVOGEN_SIMULATOR_CHROBOT_H_ */

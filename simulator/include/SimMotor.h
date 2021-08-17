@@ -1,5 +1,5 @@
-#ifndef SIMMOTOR_H_07I4VJGL
-#define SIMMOTOR_H_07I4VJGL
+#ifndef EVOGEN_SIMULATOR_SIMMOTOR_H_
+#define EVOGEN_SIMULATOR_SIMMOTOR_H_
 
 #include <chrono/core/ChCoordsys.h>
 #include <chrono/core/ChMathematics.h>
@@ -139,4 +139,4 @@ class SimMotor {
     std::shared_ptr<chrono::ChFunction_Setpoint> ch_func_;
 };
 
-#endif /* end of include guard: SIMMOTOR_H_07I4VJGL */
+#endif /* end of include guard: EVOGEN_SIMULATOR_SIMMOTOR_H_ */

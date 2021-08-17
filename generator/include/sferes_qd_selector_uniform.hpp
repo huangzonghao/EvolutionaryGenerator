@@ -1,5 +1,6 @@
-#ifndef SFERES_QD_SELECTOR_UNIFORM_HPP_PXRAWHQI
-#define SFERES_QD_SELECTOR_UNIFORM_HPP_PXRAWHQI
+#ifndef EVOGEN_GENERATOR_SFERES_QD_SELECTOR_UNIFORM_HPP_
+#define EVOGEN_GENERATOR_SFERES_QD_SELECTOR_UNIFORM_HPP_
+
 namespace sferes {
 namespace qd {
 namespace selector {
@@ -20,4 +21,5 @@ struct Uniform {
 } // namespace selector
 } // namespace qd
 } // namespace sferes
-#endif /* end of include guard: SFERES_QD_SELECTOR_UNIFORM_HPP_PXRAWHQI */
+
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_QD_SELECTOR_UNIFORM_HPP_ */

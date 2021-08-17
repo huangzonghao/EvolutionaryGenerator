@@ -1,6 +1,6 @@
 // SimulatorParams - Manage the params used in the simulator when generating robots
-#ifndef SIMULATOR_PARAMS_H_N4TC1GM9
-#define SIMULATOR_PARAMS_H_N4TC1GM9
+#ifndef EVOGEN_GENERATOR_SIMULATORPARAMS_H_
+#define EVOGEN_GENERATOR_SIMULATORPARAMS_H_
 
 #include <string>
 #include <vector>
@@ -32,4 +32,4 @@ class SimulatorParams {
     std::vector<std::vector<double>> waypoints_;
 };
 
-#endif /* end of include guard: SIMULATOR_PARAMS_H_N4TC1GM9 */
+#endif /* end of include guard: EVOGEN_GENERATOR_SIMULATORPARAMS_H_ */

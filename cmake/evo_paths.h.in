@@ -1,8 +1,8 @@
 // This is an auto-generated file, do not edit
 // If at any time the paths in this file become invalid,
 // try to rebuild the project.
-#ifndef EVO_PATHS_H_SQCM3M8J
-#define EVO_PATHS_H_SQCM3M8J
+#ifndef EVOGEN_EVO_PATHS_H_
+#define EVOGEN_EVO_PATHS_H_
 
 #include <string>
 

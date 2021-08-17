@@ -1,6 +1,7 @@
 // QD algorithm for EvoGen
-#ifndef SFERES_QD_EVOGENQD_HPP_URU8B21T
-#define SFERES_QD_EVOGENQD_HPP_URU8B21T
+#ifndef EVOGEN_GENERATOR_SFERES_QD_EVOGENQD_HPP_
+#define EVOGEN_GENERATOR_SFERES_QD_EVOGENQD_HPP_
+
 #include <filesystem>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -185,4 +186,4 @@ class EvoGenQD
 } // namespace qd
 } // namespace sferes
 
-#endif /* end of include guard: SFERES_QD_EVOGENQD_HPP_URU8B21T */
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_QD_EVOGENQD_HPP_ */

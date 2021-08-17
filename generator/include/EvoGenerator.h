@@ -1,5 +1,5 @@
-#ifndef EVOGENERATOR_H_MSPHUOQV
-#define EVOGENERATOR_H_MSPHUOQV
+#ifndef EVOGEN_GENERATOR_EVOGENERATOR_H_
+#define EVOGEN_GENERATOR_EVOGENERATOR_H_
 
 #include <string>
 #include "SimulatorParams.h"
@@ -18,6 +18,4 @@ class EvoGenerator {
     std::string res_dir_;
 };
 
-
-
-#endif /* end of include guard: EVOGENERATOR_H_MSPHUOQV */
+#endif /* end of include guard: EVOGEN_GENERATOR_EVOGENERATOR_H_ */

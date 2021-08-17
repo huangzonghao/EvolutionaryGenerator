@@ -1,5 +1,6 @@
-#ifndef CHLINKBODIES_H_DHMRUNXO
-#define CHLINKBODIES_H_DHMRUNXO
+#ifndef EVOGEN_SIMULATOR_CHLINKBODIES_H_
+#define EVOGEN_SIMULATOR_CHLINKBODIES_H_
+
 #include <chrono/physics/ChLink.h>
 #include <chrono/physics/ChBody.h>
 
@@ -15,4 +16,4 @@ struct ChLinkBodies{
 
 } // namespace chrono
 
-#endif /* end of include guard: CHLINKBODIES_H_DHMRUNXO */
+#endif /* end of include guard: EVOGEN_SIMULATOR_CHLINKBODIES_H_ */

@@ -1,5 +1,6 @@
-#ifndef SIMULATIONMANAGER_H_TQPVGDZV
-#define SIMULATIONMANAGER_H_TQPVGDZV
+#ifndef EVOGEN_SIMULATOR_SIMULATIONMANAGER_H_
+#define EVOGEN_SIMULATOR_SIMULATIONMANAGER_H_
+
 #include <Eigen/Core>
 #include <chrono/physics/ChSystem.h>
 
@@ -121,4 +122,4 @@ class  SimulationManager {
     double last_sim_time_ = 0;
 };
 
-#endif /* end of include guard: SIMULATIONMANAGER_H_TQPVGDZV */
+#endif /* end of include guard: EVOGEN_SIMULATOR_SIMULATIONMANAGER_H_ */

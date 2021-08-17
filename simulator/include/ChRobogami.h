@@ -1,5 +1,5 @@
-#ifndef CHROBOGAMI_H_CEIYORBT
-#define CHROBOGAMI_H_CEIYORBT
+#ifndef EVOGEN_SIMULATOR_CHROBOGAMI_H_
+#define EVOGEN_SIMULATOR_CHROBOGAMI_H_
 
 #include <map>
 #include <chrono/physics/ChSystemNSC.h>
@@ -30,4 +30,4 @@ class ChRobogami : public ChRobot {
 
 }  // namespace chrono
 
-#endif /* end of include guard: CHROBOGAMI_H_CEIYORBT */
+#endif /* end of include guard: EVOGEN_SIMULATOR_CHROBOGAMI_H_ */

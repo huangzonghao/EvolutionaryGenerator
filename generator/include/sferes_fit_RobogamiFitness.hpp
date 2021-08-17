@@ -1,5 +1,6 @@
-#ifndef SFERES_FIT_ROBOGAMIFITNESS_HPP_0OYX1QYT
-#define SFERES_FIT_ROBOGAMIFITNESS_HPP_0OYX1QYT
+#ifndef EVOGEN_GENERATOR_SFERES_FIT_ROBOGAMIFITNESS_HPP_
+#define EVOGEN_GENERATOR_SFERES_FIT_ROBOGAMIFITNESS_HPP_
+
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/vector.hpp>
 
@@ -90,4 +91,4 @@ class RobogamiFitness {
 } // namespace fit
 } // namespace sferes
 
-#endif /* end of include guard: SFERES_FIT_ROBOGAMIFITNESS_HPP_0OYX1QYT */
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_FIT_ROBOGAMIFITNESS_HPP_ */

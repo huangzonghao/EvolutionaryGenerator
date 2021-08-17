@@ -1,5 +1,5 @@
-#ifndef EVOGEN_GENERATOR_INCLUDE_MESHINFO_H_
-#define EVOGEN_GENERATOR_INCLUDE_MESHINFO_H_
+#ifndef EVOGEN_GENERATOR_MESHINFO_H_
+#define EVOGEN_GENERATOR_MESHINFO_H_
 
 #include <array>
 #include <vector>
@@ -29,4 +29,4 @@ class MeshInfo {
     std::vector<std::array<double, 3>> leg_size;
 };
 
-#endif /* end of include guard: EVOGEN_GENERATOR_INCLUDE_MESHINFO_H_ */
+#endif /* end of include guard: EVOGEN_GENERATOR_MESHINFO_H_ */

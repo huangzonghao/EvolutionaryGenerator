@@ -1,5 +1,5 @@
-#ifndef EVOPARAMS_H_XHAR4NLN
-#define EVOPARAMS_H_XHAR4NLN
+#ifndef EVOGEN_GENERATOR_EVOPARAMS_H_
+#define EVOGEN_GENERATOR_EVOPARAMS_H_
 
 #include <string>
 #include <vector>
@@ -56,4 +56,4 @@ class EvoParams {
     std::vector<std::string> feature_description_;
 };
 
-#endif /* end of include guard: EVOPARAMS_H_XHAR4NLN */
+#endif /* end of include guard: EVOGEN_GENERATOR_EVOPARAMS_H_ */

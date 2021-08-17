@@ -1,5 +1,6 @@
-#ifndef ROBOGAMILIBRARY_H_GAZIVPKB
-#define ROBOGAMILIBRARY_H_GAZIVPKB
+#ifndef EVOGEN_GENERATOR_ROBOGAMILIBRARY_H_
+#define EVOGEN_GENERATOR_ROBOGAMILIBRARY_H_
+
 #include <array>
 #include <FBE_Temp/template.h>
 
@@ -47,4 +48,5 @@ class RobogamiLibrary {
     std::array<std::shared_ptr<FabByExample::Template>, robogami_lib_num_legs> leg_templates_;
 
 };
-#endif /* end of include guard: ROBOGAMILIBRARY_H_GAZIVPKB */
+
+#endif /* end of include guard: EVOGEN_GENERATOR_ROBOGAMILIBRARY_H_ */

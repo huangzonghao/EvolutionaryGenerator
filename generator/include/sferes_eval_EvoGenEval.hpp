@@ -1,6 +1,7 @@
 // Evaluator for sferes2
-#ifndef SFERES_EVAL_EVOGENEVAL_HPP_LJHETCPM
-#define SFERES_EVAL_EVOGENEVAL_HPP_LJHETCPM
+#ifndef EVOGEN_GENERATOR_SFERES_EVAL_EVOGENEVAL_HPP_
+#define EVOGEN_GENERATOR_SFERES_EVAL_EVOGENEVAL_HPP_
+
 #include <thread>
 #include <vector>
 
@@ -101,4 +102,4 @@ class EvoGenEval {
 } // namespace eval
 } // namespace sferes
 
-#endif /* end of include guard: SFERES_EVAL_EVOGENEVAL_HPP_LJHETCPM */
+#endif /* end of include guard: EVOGEN_GENERATOR_SFERES_EVAL_EVOGENEVAL_HPP_ */
