@@ -158,12 +158,10 @@ bool SimulationManager::RunSimulation() {
     if (!auxrefs_->empty()) robot_doc_->SetAuxRef(auxrefs_);
 
     bool add_ok;
-    if (!ch_waypoints_.empty()){
+    if (!ch_waypoints_.empty())
         add_ok = robot_doc_->AddtoSystem(ch_system_, ch_waypoints_[0]);
-    }
-    else{
+    else
         add_ok = robot_doc_->AddtoSystem(ch_system_, ChVector<>(0,0,0));
-    }
 
     // Make sure env shows up under the robot
     if (load_map_) load_map();
@@ -267,12 +265,11 @@ void SimulationManager::
 GetActuatorVels(std::vector<std::pair<double, double>> &vels_vec) const {
     if (vels_vec.empty()){
         vels_vec.resize(motors_.size());
-    }
-    else if (vels_vec.size() != motors_.size()){
+    } else if (vels_vec.size() != motors_.size()) {
         std::cerr << "Error, simulation motor number is not equal to generation motor number" << std::endl;
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < motors_.size(); ++i){
+    for (int i = 0; i < motors_.size(); ++i) {
         vels_vec[i].second = motors_[i]->GetMaxVel();
     }
 }
@@ -325,19 +322,17 @@ void SimulationManager::load_map(){
         // ground body
         auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
         flat_ground->SetRot(env_rot_);
-        flat_ground->SetPos(ChVector<>(env_x_ / 2, env_y_ / 2, robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01));
+        flat_ground->SetPos(ChVector<>(0, 0, robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01));
         flat_ground->SetBodyFixed(true);
         auto ground_texture = chrono_types::make_shared<ChColorAsset>();
         ground_texture->SetColor(ChColor(0.2f, 0.2f, 0.2f));
         flat_ground->AddAsset(ground_texture);
         ch_system_->AddBody(flat_ground);
-    }
-    else if (env_file_.find(".urdf") != std::string::npos){
+    } else if (env_file_.find(".urdf") != std::string::npos){
         // chrono::ChUrdfDoc urdf_map_doc(env_file_);
         // urdf_map_doc.SetCollisionMaterial(ground_mat);
-        // urdf_map_doc.AddtoSystem(ch_system_, env_x_ / 2, env_y_ / 2, env_z_ / 2, 0, 0, 0);
-    }
-    else if (env_file_.find(".bmp") != std::string::npos){
+        // urdf_map_doc.AddtoSystem(ch_system_, 0, 0, env_z_ / 2, 0, 0, 0);
+    } else if (env_file_.find(".bmp") != std::string::npos){
         vehicle::RigidTerrain terrain(ch_system_.get());
         auto patch = terrain.AddPatch(ground_mat,
                                       ChCoordsys<>(ChVector<>(env_x_ / 2,
@@ -347,8 +342,7 @@ void SimulationManager::load_map(){
                                       env_file_, "ground_mesh", env_x_, env_y_, 0, env_z_);
         patch->SetColor(ChColor(0.2, 0.2, 0.2));
         terrain.Initialize();
-    }
-    else if (env_file_.find(".obj") != std::string::npos){
+    } else if (env_file_.find(".obj") != std::string::npos){
         // TODO: the position and dimension set up doesn't seem to be right
         // Need to use trimesh or other method the get the height and width of
         // the mesh
