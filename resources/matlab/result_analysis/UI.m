@@ -3,6 +3,7 @@ classdef UI < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
+        OpenFolderButton     matlab.ui.control.Button
         ToLabel              matlab.ui.control.Label
         FromLabel            matlab.ui.control.Label
         StatEndGenField      matlab.ui.control.EditField
@@ -235,6 +236,11 @@ classdef UI < matlab.apps.AppBase
             end
             stat_plot(app.stat, app.evo_params, str2double(app.StatStartGenField.Value), str2double(app.StatEndGenField.Value));
         end
+
+        % Button pushed function: OpenFolderButton
+        function OpenFolderButtonPushed(app, event)
+            winopen(app.evo_params.result_path);
+        end
     end
 
     % Component initialization
@@ -324,7 +330,7 @@ classdef UI < matlab.apps.AppBase
             % Create ResultInfoTextLabel
             app.ResultInfoTextLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
             app.ResultInfoTextLabel.VerticalAlignment = 'top';
-            app.ResultInfoTextLabel.Position = [23 106 185 228];
+            app.ResultInfoTextLabel.Position = [23 214 185 120];
             app.ResultInfoTextLabel.Text = '';
 
             % Create GenInfoLabel
@@ -338,7 +344,7 @@ classdef UI < matlab.apps.AppBase
             % Create BuildStatButton
             app.BuildStatButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.BuildStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildStatButtonPushed, true);
-            app.BuildStatButton.Position = [38 419 100 22];
+            app.BuildStatButton.Position = [12 180 73 22];
             app.BuildStatButton.Text = 'BuildStat';
 
             % Create RobotIDXField
@@ -397,6 +403,13 @@ classdef UI < matlab.apps.AppBase
             app.ToLabel.FontWeight = 'bold';
             app.ToLabel.Position = [101 391 25 22];
             app.ToLabel.Text = 'To:';
+
+            % Create OpenFolderButton
+            app.OpenFolderButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
+            app.OpenFolderButton.Tag = 'loadresult';
+            app.OpenFolderButton.Position = [90 180 82 22];
+            app.OpenFolderButton.Text = 'Open Folder';
 
             % Show the figure after all components are created
             app.EvolutionaryRobogamiResultViewerUIFigure.Visible = 'on';
