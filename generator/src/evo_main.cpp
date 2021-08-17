@@ -51,6 +51,8 @@ int main(int argc, char **argv)
                           std::to_string(evo_params.grid_shape()[1]) +
                           "_" + time_buffer;
 
+    sim_params.env_dir = EvoGen_Maps_Dir;
+
     evo_gen.set_evo_params(evo_params);
     evo_gen.set_sim_params(sim_params);
     evo_gen.set_result_dir(log_dir);

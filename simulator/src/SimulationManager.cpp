@@ -1,4 +1,5 @@
 #include <chrono>
+#include <filesystem>
 #include <chrono/core/ChRealtimeStep.h>
 #include <chrono/physics/ChBodyEasy.h>
 #include <chrono_irrlicht/ChIrrApp.h>
@@ -318,16 +319,21 @@ void SimulationManager::load_map(){
 
     // the environment is placed in the way that (x,y) = (0,0) is placed at the
     // corner of the map - corresponds to the (0,0) index of a heightmap matrix
-    if (env_file_.empty() || env_file_ == "ground"){
-        // ground body
-        auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
-        flat_ground->SetRot(env_rot_);
-        flat_ground->SetPos(ChVector<>(0, 0, robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01));
-        flat_ground->SetBodyFixed(true);
-        auto ground_texture = chrono_types::make_shared<ChColorAsset>();
-        ground_texture->SetColor(ChColor(0.2f, 0.2f, 0.2f));
-        flat_ground->AddAsset(ground_texture);
-        ch_system_->AddBody(flat_ground);
+    if (env_file_.empty() || env_file_.find(".default") != std::string::npos){
+        std::string env_type = std::filesystem::path(env_file_).stem().string();
+        if (env_type == "ground") {
+            // ground body
+            auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
+            flat_ground->SetRot(env_rot_);
+            flat_ground->SetPos(ChVector<>(0, 0, robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01));
+            flat_ground->SetBodyFixed(true);
+            auto ground_texture = chrono_types::make_shared<ChColorAsset>();
+            ground_texture->SetColor(ChColor(0.2f, 0.2f, 0.2f));
+            flat_ground->AddAsset(ground_texture);
+            ch_system_->AddBody(flat_ground);
+        } else {
+            std::cout << "Error: default environment of type " << env_type << " is not supported yet" << std::endl;
+        }
     } else if (env_file_.find(".urdf") != std::string::npos){
         // chrono::ChUrdfDoc urdf_map_doc(env_file_);
         // urdf_map_doc.SetCollisionMaterial(ground_mat);

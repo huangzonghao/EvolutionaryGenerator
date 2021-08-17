@@ -22,6 +22,7 @@ int main(int argc, char **argv) {
 
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
+    sim_params.env_dir = std::filesystem::path(sim_filename).parent_path().string();
 
     SimulationManager sm;
     sm.SetTimeout(sim_params.time_out);
@@ -34,7 +35,7 @@ int main(int argc, char **argv) {
     for (auto& wp : sim_params.GetWaypoints())
         sm.AddWaypoint(wp[0], wp[1], wp[2]);
 
-    sm.SetEnv(sim_params.env_name,
+    sm.SetEnv(sim_params.GetEnv(),
               sim_params.env_dim[0],
               sim_params.env_dim[1],
               sim_params.env_dim[2]);
@@ -56,7 +57,7 @@ int main(int argc, char **argv) {
         sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
         for (int j = 1; j < num_links; ++j) {
             sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
-                                "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
+                              "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
         }
         cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
 

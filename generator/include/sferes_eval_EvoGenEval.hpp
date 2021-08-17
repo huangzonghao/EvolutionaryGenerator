@@ -34,7 +34,7 @@ class EvoGenEval {
             for (auto& wp : sim_params.GetWaypoints())
                 sm->AddWaypoint(wp[0], wp[1], wp[2]);
 
-            sm->SetEnv(sim_params.env_name,
+            sm->SetEnv(sim_params.GetEnv(),
                        sim_params.env_dim[0],
                        sim_params.env_dim[1],
                        sim_params.env_dim[2]);

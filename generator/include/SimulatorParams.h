@@ -9,7 +9,8 @@
 class SimulatorParams {
   public:
     double time_out = 5;
-    std::string env_name = "ground";
+    std::string env_name = "ground.default";
+    std::string env_dir = ".";
     double env_dim[3] = {5, 3, 0.01};
     double env_rot[4] = {1, 0, 0, 0}; // w, x, y, z
     bool do_viz = false;
@@ -17,6 +18,7 @@ class SimulatorParams {
     double camera_pos[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)
 
     void SetEnv(const std::string& new_env) {env_name = new_env;}
+    std::string GetEnv() const { return env_dir + "/" + env_name; }
     void AddWaypoint(double x, double y, double z);
     const std::vector<std::vector<double>>& GetWaypoints() const {return waypoints_;}
     void SetCamera(double from_x, double from_y, double from_z,
