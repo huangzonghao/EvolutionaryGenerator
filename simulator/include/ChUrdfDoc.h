@@ -19,18 +19,13 @@ class ChUrdfDoc : public ChRobot {
         if(inputIsString) LoadRobotString(inputstring);
         else LoadRobotFile(inputstring);
     }
-
     virtual ~ChUrdfDoc(){ ch_materials_.clear(); };
 
     bool LoadRobotFile(const std::string& filename) override;
     bool LoadRobotString(const std::string& urdfstring) override;
-
     bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoordsys<>& init_coord) override;
-    bool AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::shared_ptr<ChBody>& init_pos_body);
-
     urdf::ModelInterfaceSharedPtr GetUrdfRobot() const { return urdf_robot_; }
     const std::string& GetRobotName() const override { return urdf_robot_->getName(); }
-
     void SetCollisionMaterial(const std::shared_ptr<ChMaterialSurfaceNSC>& new_mat){ collision_material_ = new_mat; }
 
   private:
@@ -47,7 +42,6 @@ class ChUrdfDoc : public ChRobot {
     std::string urdf_abs_path(const std::string& relative_path);
     std::shared_ptr<ChBody> convert_links(const urdf::LinkConstSharedPtr& u_link,
                                           const std::shared_ptr<ChBody>& ch_parent_body);
-
     std::shared_ptr<ChLinkLock> process_joints(const urdf::JointConstSharedPtr& u_joint,
                                                const std::shared_ptr<ChBody>& ch_parent_body,
                                                const std::shared_ptr<ChBody>& ch_child_body);
@@ -71,7 +65,7 @@ class RotSpringConstDampingTorque : public ChLinkRotSpringCB::TorqueFunctor {
                               double angle,            // relative angle of rotation
                               double vel,              // relative angular speed
                               ChLinkRotSpringCB* link  // back-pointer to associated link
-                              ) override {
+                             ) override {
         return -spring_coef * angle - damping_coef * vel;
     }
   private:

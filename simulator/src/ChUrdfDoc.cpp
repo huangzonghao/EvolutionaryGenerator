@@ -65,8 +65,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
     if (check_inertial_pose_set(u_link) || (auxrefs_ && auxrefs_->find(u_link->name) != auxrefs_->end())){
         ch_body = chrono_types::make_shared<ChBodyAuxRef>();
         body_use_aux = true;
-    }
-    else {
+    } else {
         ch_body = chrono_types::make_shared<ChBody>();
         body_use_aux = false;
     }
@@ -104,8 +103,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                   u_parent_joint->parent_to_joint_origin_transform.rotation.z));
 
         child_in_world = child_in_parent >> ch_parent_body->GetFrame_REF_to_abs();
-    }
-    else{
+    } else {
        child_in_world = ChFrame<>(ch_parent_body->GetCoord());
     }
 
@@ -115,8 +113,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
         std::dynamic_pointer_cast<ChBodyAuxRef>(ch_body)->SetFrame_COG_to_REF(ChFrame<>(ChVector<>(u_link->inertial->origin.position.x,
                                                                                                    u_link->inertial->origin.position.y,
                                                                                                    u_link->inertial->origin.position.z)));
-    }
-    else {
+    } else {
         ch_body->SetCoord(child_in_world.GetCoord());
     }
 
@@ -459,16 +456,14 @@ bool ChUrdfDoc::LoadRobotString(const std::string& urdfstring) {
 }
 
 bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoordsys<>& init_coord) {
-    auto init_pos_body = chrono_types::make_shared<ChBody>();
-    init_pos_body->SetCoord(init_coord);
-    return AddtoSystem(sys, init_pos_body);
-}
-
-bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::shared_ptr<ChBody>& init_pos_body) {
     if (!urdf_robot_){
         std::cerr << "ERROR: No URDF loaded, call LoadRobotString or LoadRobotFile first" << std::endl;
         return false;
     }
+
+    auto init_pos_body = chrono_types::make_shared<ChBody>();
+    init_pos_body->SetCoord(init_coord);
+
     // clear chrono object containers in case this urdf file has been added to system before
     ch_materials_.clear();
     ch_link_bodies_.clear();
@@ -481,8 +476,7 @@ bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const std::sha
 
     if (u_root_link_){
         ch_root_body_ = convert_links(u_root_link_, init_pos_body);
-    }
-    else{
+    } else {
         std::cerr << "ERROR: Could not find root link in file " << robot_file_ << std::endl;
         return false;
     }
