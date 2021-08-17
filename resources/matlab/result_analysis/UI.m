@@ -100,6 +100,7 @@ classdef UI < matlab.apps.AppBase
 
         function load_result(app)
             result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
+            figure(app.EvolutionaryRobogamiResultViewerUIFigure);
             evo_xml = xml2struct(fullfile(result_path, app.params_filename));
 
             app.evo_params.result_path = result_path;
