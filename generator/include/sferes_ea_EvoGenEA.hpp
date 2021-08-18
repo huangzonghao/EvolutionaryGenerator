@@ -190,7 +190,7 @@ class EvoGenEA : public stc::Any<Exact> {
             return;
         std::string s = _res_dir + "/status.txt";
         std::ofstream ofs(s.c_str());
-        ofs << _gen << "/" << _nb_gen << " - " << status;
+        ofs << _gen + 1 << "/" << _nb_gen << " - " << status;
     }
 
     template<typename P>
