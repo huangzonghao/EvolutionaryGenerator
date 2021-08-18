@@ -3,6 +3,7 @@ classdef UI < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
+        ResumeButton         matlab.ui.control.Button
         OpenFolderButton     matlab.ui.control.Button
         ToLabel              matlab.ui.control.Label
         FromLabel            matlab.ui.control.Label
@@ -48,6 +49,8 @@ classdef UI < matlab.apps.AppBase
         archive_subfix = '.csv'
         simulator_basename = 'Genotype_Visualizer'
         simulator_name
+        generator_basename = 'Evolutionary_Generator'
+        generator_name
         archive_map
     end
 
@@ -58,9 +61,16 @@ classdef UI < matlab.apps.AppBase
             [~, app.ResultNameLabel.Text, ~] = fileparts(app.evo_params.result_path);
             app.evo_params.result_basename = app.ResultNameLabel.Text;
             app.ResultInfoTextLabel.Text =...
-                sprintf('# of Gen Planned: %d\n# of Gen Finished%d\nInit size: %d\nPop size: %d\nMap size: %dx%d\n',...
-                        app.evo_params.nb_gen_planned, app.evo_params.nb_gen, app.evo_params.init_size, ...
-                        app.evo_params.gen_size, app.evo_params.griddim_0, app.evo_params.griddim_1);
+                sprintf(['# of Gen Finished: %d/%d\n', ...
+                         'Progress: %.2f%%\n', ...
+                         'Init size: %d\n', ...
+                         'Pop size: %d\n', ...
+                         'Map size: %dx%d\n'],...
+                        app.evo_params.nb_gen, app.evo_params.nb_gen_planned, ...
+                        double(app.evo_params.nb_gen) / app.evo_params.nb_gen_planned * 100, ...
+                        app.evo_params.init_size, ...
+                        app.evo_params.gen_size, ...
+                        app.evo_params.griddim_0, app.evo_params.griddim_1);
         end
 
         function plot_heatmap(app)
@@ -150,8 +160,10 @@ classdef UI < matlab.apps.AppBase
         function startupFcn(app, evogen_exe_path, evogen_results_path)
             if (ispc)
                 app.simulator_name = strcat(app.simulator_basename, '.exe');
+                app.generator_name = strcat(app.generator_basename, '.exe');
             else
                 app.simulator_name = app.simulator_basename;
+                app.generator_name = app.generator_basename;
             end
 
             app.evogen_results_path = evogen_results_path;
@@ -208,8 +220,8 @@ classdef UI < matlab.apps.AppBase
             app.RobotInfoLabel.Text = "Fitness: " + num2str(app.current_gen_archive(idx, 4));
             dv = app.current_gen_archive(idx, 5:end);
             dv = dv(~isnan(dv));
-            cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " +...
-                      fullfile(app.evo_params.result_path, app.sim_params_filename) + " " +...
+            cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " + ...
+                      fullfile(app.evo_params.result_path, app.sim_params_filename) + " " + ...
                       num2str(dv);
             system(cmd_str);
         end
@@ -240,6 +252,13 @@ classdef UI < matlab.apps.AppBase
         % Button pushed function: OpenFolderButton
         function OpenFolderButtonPushed(app, event)
             winopen(app.evo_params.result_path);
+        end
+
+        % Button pushed function: ResumeButton
+        function ResumeButtonPushed(app, event)
+            cmd_str = fullfile(app.evogen_exe_path, app.generator_name) + ...
+                      " resume " + app.evo_params.result_basename;
+            system(cmd_str);
         end
     end
 
@@ -410,6 +429,12 @@ classdef UI < matlab.apps.AppBase
             app.OpenFolderButton.Tag = 'loadresult';
             app.OpenFolderButton.Position = [90 180 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
+
+            % Create ResumeButton
+            app.ResumeButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.ResumeButton.ButtonPushedFcn = createCallbackFcn(app, @ResumeButtonPushed, true);
+            app.ResumeButton.Position = [12 156 73 22];
+            app.ResumeButton.Text = 'Resume';
 
             % Show the figure after all components are created
             app.EvolutionaryRobogamiResultViewerUIFigure.Visible = 'on';

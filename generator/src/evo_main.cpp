@@ -1,3 +1,4 @@
+#include <regex>
 #include <filesystem>
 
 #include "SimulatorParams.h"
@@ -6,15 +7,8 @@
 
 #include "evo_paths.h"
 
-int main(int argc, char **argv)
-{
+void new_training() {
     EvoGenerator evo_gen;
-
-    if (argc == 2) {
-        evo_gen.resume(std::string(argv[1]));
-        return 0;
-    }
-
     EvoParams evo_params;
     SimulatorParams sim_params;
     bool need_to_return = false;
@@ -36,7 +30,7 @@ int main(int argc, char **argv)
     if (need_to_return) {
         std::cout << "Params files write to " << EvoGen_Params_Dir << std::endl;
         std::cout << "Edit those files and relaurch" << std::endl;
-        return 0;
+        return;
     }
 
     // set up output dir
@@ -58,6 +52,41 @@ int main(int argc, char **argv)
     evo_gen.set_result_dir(log_dir);
 
     evo_gen.run();
+}
 
+void resume_training(const std::string& result_dir_basename) {
+    std::string result_dir(Result_Output_Dir + "/" + result_dir_basename);
+    std::regex rx(".*gen_([0-9]+).*");
+    std::smatch match;
+    int last_gen = -1;
+    for (const auto& entry : std::filesystem::directory_iterator(result_dir + "/dumps")) {
+        std::string tmp_path(entry.path().string());
+        if (std::regex_match(tmp_path, match, rx)) {
+            int curr_gen = std::stoi(match[1].str());
+            if (curr_gen > last_gen)
+                last_gen = curr_gen;
+        }
+    }
+
+    EvoGenerator evo_gen;
+    evo_gen.resume(result_dir, last_gen);
+}
+
+int main(int argc, char **argv) {
+    if (argc < 2) {
+        const auto& exe_name = std::filesystem::path(std::string(argv[0])).filename().string();
+        std::cout << "Usage:"  << std::endl;
+        std::cout << "    " << exe_name << " new"  << std::endl;
+        std::cout << "    " << exe_name << " resume <result_dir_basename>"  << std::endl;
+        return 0;
+    }
+    std::string mode(argv[1]);
+    if (mode == "new") {
+        new_training();
+    } else if (mode == "resume") {
+        resume_training(std::string(argv[2]));
+    } else {
+        std::cout << "Error: wrong mode " << mode << std::endl;
+    }
     return 0;
 }

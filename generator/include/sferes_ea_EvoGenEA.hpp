@@ -69,14 +69,13 @@ class EvoGenEA : public stc::Any<Exact> {
             _set_status("finished");
     }
 
-    void resume(const std::string& fname) {
+    void resume(const std::string& res_dir, int dump_gen_id) {
         _set_status("resumed");
-        std::filesystem::path fpath(fname);
-        _res_dir = fpath.parent_path().parent_path().string();
+        _res_dir = res_dir;
         _load_config(_res_dir + "/evo_params.xml");
         _populate_params();
         srand(_evo_params.rand_seed());
-        _load_state(fname);
+        _load_state(_res_dir + "/dumps/gen_" + std::to_string(dump_gen_id) + ".dat");
         _gen = _gen + 1;
         std::cout<<"Resuming at gen: "<< _gen + 1 << std::endl;
         for (; _gen < _nb_gen && !_stop; ++_gen)

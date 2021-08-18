@@ -50,7 +50,7 @@ void EvoGenerator::run() {
 }
 
 // filename should be the path to a valid archive dump file
-void EvoGenerator::resume(const std::string& filename) {
+void EvoGenerator::resume(const std::string& res_dir, int dump_gen_id) {
     qd_t qd;
-    qd.resume(filename);
+    qd.resume(res_dir, dump_gen_id);
 }
