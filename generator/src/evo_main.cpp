@@ -38,7 +38,7 @@ void new_training() {
     char time_buffer [80];
     strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
 
-    std::string log_dir = Result_Output_Dir + "/EvoGen_" +
+    std::string log_dir = Result_Output_Dir + "/" + sim_params.env_name + "_" +
                           "P" + std::to_string(evo_params.pop_size()) +
                           "G" + std::to_string(evo_params.nb_gen()) + "_" +
                           std::to_string(evo_params.grid_shape()[0]) + "x" +
