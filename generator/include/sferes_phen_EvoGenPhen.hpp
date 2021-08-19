@@ -47,7 +47,9 @@ class EvoGenPhen {
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     // Leg order: FL FR ML MR BL BR
     void develop() {
-        _robot.decode_design_vector(_gen.data());
+        // Right now the only difference between genotype and phenotype is the scale
+        // params. genotype: [0, 1]; phenotype: [_min_p, _max_p];
+        _robot.decode_design_vector(_gen.data(), _min_p, _max_p);
     }
 
     double data(size_t i) const {

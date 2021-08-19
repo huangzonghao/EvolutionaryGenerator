@@ -61,11 +61,16 @@ class RobotRepresentation {
     void encode_design_vector();
     void decode_design_vector();
     void decode_design_vector(const std::vector<double>& new_dv);
+    void decode_design_vector(const std::vector<double>& new_dv,
+                              double scale_min, double scale_max);
     int get_body_part_id() const;
     int get_link_part_id(int leg_id, int link_id) const;
     double get_body_size(int dir) const;
     double get_body_length() const;
     friend std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot);
+  private:
+    double scale_min_ = 0;
+    double scale_max_ = 1;
 };
 
 #endif /* end of include guard: EVOGEN_GENERATOR_ROBOTREPRESENTATION_H_ */

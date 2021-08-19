@@ -34,6 +34,7 @@ RobotRepresentation::RobotRepresentation(std::vector<double> new_dv) { decode_de
 // dv format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
 //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
 void RobotRepresentation::encode_design_vector() {
+    // TODO: the phen gen difference in scales is NOT taken care of here
     design_vector.clear();
     design_vector.push_back(body_part_gene);
     for (int i = 0; i < 3; ++i)
@@ -58,7 +59,7 @@ void RobotRepresentation::decode_design_vector() {
     if (body_part_id == mesh_info.num_bodies)
         body_part_id -= 1;
     for (int i = 0; i < 3; ++i)
-        body_scales[i] = design_vector[cursor++];
+        body_scales[i] = design_vector[cursor++] * (scale_max_ - scale_min_) + scale_min_;
     num_legs = design_vector[cursor++];
     legs.resize(num_legs);
     for (int i = 0; i < num_legs; ++i) {
@@ -69,7 +70,7 @@ void RobotRepresentation::decode_design_vector() {
         for(int j = 0; j < tmp_leg.num_links; ++j) {
             auto& tmp_link = tmp_leg.links[j];
             tmp_link.part_gene = design_vector[cursor++];
-            tmp_link.scale = design_vector[cursor++];
+            tmp_link.scale = design_vector[cursor++] * (scale_max_ - scale_min_) + scale_min_;
             tmp_link.part_id = std::floor(tmp_link.part_gene * mesh_info.num_legs);
             if (tmp_link.part_id == mesh_info.num_legs)
                 tmp_link.part_id -= 1;
@@ -83,6 +84,13 @@ void RobotRepresentation::decode_design_vector() {
 void RobotRepresentation::decode_design_vector(const std::vector<double>& new_dv) {
     design_vector = new_dv;
     decode_design_vector();
+}
+
+void RobotRepresentation::decode_design_vector(const std::vector<double>& new_dv,
+                                               double scale_min, double scale_max) {
+    scale_min_ = scale_min;
+    scale_max_ = scale_max;
+    decode_design_vector(new_dv);
 }
 
 int RobotRepresentation::get_body_part_id() const {
