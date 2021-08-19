@@ -22,7 +22,7 @@ static const double gen_yu = 1.0;
 static const int max_num_legs = 3;
 static const int min_num_legs = 2;
 static const int max_num_links = 3;
-static const int min_num_links = 1;
+static const int min_num_links = 2;
 
 namespace evo_float {
 
