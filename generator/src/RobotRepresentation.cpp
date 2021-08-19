@@ -30,6 +30,8 @@ RobotRepresentation::RobotRepresentation() {
 }
 
 RobotRepresentation::RobotRepresentation(std::vector<double> new_dv) { decode_design_vector(new_dv); }
+RobotRepresentation::RobotRepresentation(std::vector<double> new_dv, double scale_min, double scale_max)
+    : scale_min_(scale_min), scale_max_(scale_max) { decode_design_vector(new_dv); }
 
 // dv format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
 //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]

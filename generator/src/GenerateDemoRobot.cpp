@@ -66,9 +66,8 @@ Body body_selector(double body_id_gene) {
 
 
 std::string generate_demo_robot_string(const std::string& mode,
-                                       const std::vector<double>& dv,
+                                       const RobotRepresentation& robot,
                                        const std::string& robot_name) {
-    RobotRepresentation robot(dv);
     std::ostringstream oss;
 
     oss << "<?xml verison=\"1.0\"?>" << std::endl;
@@ -183,8 +182,14 @@ std::string generate_demo_robot_string(const std::string& mode,
     return oss.str();
 }
 
+std::string generate_demo_robot_string(const std::string& mode,
+                                       const std::vector<double>& dv,
+                                       const std::string& robot_name) {
+    return generate_demo_robot_string(mode, RobotRepresentation(dv), robot_name);
+}
+
 void generate_demo_robot_file(const std::string& mode,
-                              const std::vector<double>& dv,
+                              const RobotRepresentation& robot,
                               const std::string& robot_name) {
     std::string output_file(Robot_Output_Dir + "/" + robot_name + "/" + robot_name + ".urdf");
 
@@ -194,7 +199,12 @@ void generate_demo_robot_file(const std::string& mode,
         std::filesystem::create_directory(output_path);
 
     std::ofstream ofs(output_file.c_str(), std::ostream::out);
-    ofs << generate_demo_robot_string(mode, dv, robot_name);
+    ofs << generate_demo_robot_string(mode, robot, robot_name);
     ofs.close();
 }
 
+void generate_demo_robot_file(const std::string& mode,
+                              const std::vector<double>& dv,
+                              const std::string& robot_name) {
+    generate_demo_robot_file(mode, RobotRepresentation(dv), robot_name);
+}

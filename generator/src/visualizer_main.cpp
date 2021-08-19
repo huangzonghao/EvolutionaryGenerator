@@ -5,6 +5,7 @@
 #include "SimulationManager.h"
 #include "GenerateDemoRobot.h"
 #include "GenerateDemoRobogamiRobot.h"
+#include "RobotRepresentation.h"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -19,6 +20,8 @@ int main(int argc, char **argv) {
     std::vector<double> design_vector;
     for (int i = arg_cursor; i < argc; ++i)
         design_vector.push_back(std::atof(argv[arg_cursor++]));
+
+    RobotRepresentation robot(design_vector, 0.5, 1.5);
 
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
@@ -44,31 +47,12 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[2],
                  sim_params.env_rot[3]);
 
-    // phen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
-    //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
-    int num_links;
-    int num_legs = design_vector[4];
-    int cursor = 6;
-    // the leg order in Phen is: FL FR ML MR BL BR
-    // the leg order in Sim Controller is: FL ML BL BR MR FR
-    // so the conversion happens here
-    for (int i = 0; i < num_legs / 2; ++i) {
-        num_links = design_vector[cursor];
-        sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
-        for (int j = 1; j < num_links; ++j) {
-            sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
-                              "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
+    for (int i = 0; i < robot.num_legs; ++i) {
+        sm.AddEvoGenMotor("chassis_leg_" + std::to_string(i) + "-0", i, 0);
+        for (int j = 1; j < robot.legs[i].num_links; ++j) {
+            sm.AddEvoGenMotor("leg_" + std::to_string(i) + "-" + std::to_string(j - 1) +
+                              "_leg_" + std::to_string(i) + "-" + std::to_string(j), i, j);
         }
-        cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
-
-        // the mirrored leg
-        num_links = design_vector[cursor];
-        sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i + 1) + "-0", num_legs - 1 - i, 0);
-        for (int j = 1; j < num_links; ++j) {
-            sm.AddEvoGenMotor("leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j - 1) +
-                                "_leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j), num_legs - 1 - i, j);
-        }
-        cursor += num_links * 2 + 2; // offsets include leg_pos and num_links
     }
 
     sm.SetVisualization(true);
@@ -80,9 +64,9 @@ int main(int argc, char **argv) {
         set_mesh_dir(result_dir.parent_path().string() + "/robot_parts");
 
     if (robot_type == "primitive") {
-        sm.LoadUrdfString(generate_demo_robot_string("leg", design_vector));
+        sm.LoadUrdfString(generate_demo_robot_string("leg", robot));
     } else if (robot_type == "mesh") {
-        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", design_vector));
+        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", robot));
     } else {
         std::cout << "Error: This visualizer doesn't support robot type " << robot_type << std::endl;
     }

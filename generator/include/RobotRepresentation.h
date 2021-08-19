@@ -55,6 +55,7 @@ class RobotRepresentation {
 
     RobotRepresentation();
     RobotRepresentation(std::vector<double> new_dv);
+    RobotRepresentation(std::vector<double> new_dv, double scale_min, double scale_max);
 
     // dv format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
