@@ -142,6 +142,7 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
             if (j == 0) {
                 oss << "<joint name = \"chassis_leg_" << i << "-0\" type = \"continuous\">" << std::endl;
                 oss << "  <parent link = \"chassis\"/>" << std::endl;
+                // position: [0, 0.5] - FL->BL, [0.5, 1] - BR->FR
                 leg_pos_tmp = robot_leg.position; // now the pos gene is in [0, 1]
                 leg_pos_y_tmp = chassis_y * 0.5 + mesh_info.get_leg_size(part_ids[j], 1) * 0.5 + 0.05;
                 if (leg_pos_tmp < 0.5) {

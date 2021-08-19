@@ -1,4 +1,5 @@
 #include "RobotRepresentation.h"
+#include <algorithm>
 #include <iostream>
 #include "MeshInfo.h"
 
@@ -16,6 +17,10 @@ double RobotRepresentation::Leg::length() const {
         length += mesh_info.get_leg_length(links[i].part_id) * links[i].scale;
     }
     return length;
+}
+
+bool RobotRepresentation::Leg::operator<(const RobotRepresentation::Leg& other) const {
+    return position < other.position;
 }
 
 RobotRepresentation::RobotRepresentation() {
@@ -70,6 +75,9 @@ void RobotRepresentation::decode_design_vector() {
                 tmp_link.part_id -= 1;
         }
     }
+
+    // sort legs based on their position
+    std::sort(legs.begin(), legs.end());
 }
 
 void RobotRepresentation::decode_design_vector(const std::vector<double>& new_dv) {

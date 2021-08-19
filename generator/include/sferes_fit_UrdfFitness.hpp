@@ -31,21 +31,13 @@ class UrdfFitness {
         const auto& robot = ind.get_robot();
         sm.RemoveAllMotors();
         int num_legs = robot.num_legs;
-        // the leg order in Phen is: FL FR ML MR BL BR
+        // the leg order in Phen is: FL ML BL BR MR FR, which is the same as
         // the leg order in Sim Controller is: FL ML BL BR MR FR
-        // so the conversion happens here
-        for (int i = 0; i < num_legs / 2; ++i) {
-            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i) + "-0", i, 0);
-            for (int j = 1; j < robot.legs[2 * i].num_links; ++j) {
-                sm.AddEvoGenMotor("leg_" + std::to_string(2 * i) + "-" + std::to_string(j - 1) +
-                                  "_leg_" + std::to_string(2 * i) + "-" + std::to_string(j), i, j);
-            }
-
-            // the mirrored leg
-            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(2 * i + 1) + "-0", num_legs - 1 - i, 0);
-            for (int j = 1; j < robot.legs[2 * i + 1].num_links; ++j) {
-                sm.AddEvoGenMotor("leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j - 1) +
-                                  "_leg_" + std::to_string(2 * i + 1) + "-" + std::to_string(j), num_legs - 1 - i, j);
+        for (int i = 0; i < num_legs; ++i) {
+            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(i) + "-0", i, 0);
+            for (int j = 1; j < robot.legs[i].num_links; ++j) {
+                sm.AddEvoGenMotor("leg_" + std::to_string(i) + "-" + std::to_string(j - 1) +
+                                  "_leg_" + std::to_string(i) + "-" + std::to_string(j), i, j);
             }
         }
 

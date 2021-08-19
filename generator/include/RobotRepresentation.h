@@ -16,6 +16,7 @@ class RobotRepresentation {
     class Leg {
       public:
         int num_links = 1;
+        // position: [0, 0.5] - FL->BL, [0.5, 1] - BR->FR
         double position = 0;
         // double pos_x = 0;
         // double pos_y = 0;
@@ -26,6 +27,8 @@ class RobotRepresentation {
 
         void update_pos(int myid, int total_legs);
         double length() const;
+        bool operator<(const Leg& other) const;
+
         static double RobotRepresentation::Leg::get_pos(int myid, int total_legs) {
             const double preset_legpos4[4] = {0.01, 0.99, 0.49, 0.51};
             const double preset_legpos6[6] = {0.01, 0.99, 0.49, 0.51, 0.25, 0.75};
@@ -42,7 +45,7 @@ class RobotRepresentation {
     };
 
     int num_legs = 4;
-    // the leg order: FL FR ML MR BL BR
+    // the leg order: FL ML BL BR MR FR
     std::vector<Leg> legs = std::vector<Leg>(4);
     int body_part_id = 0;
     double body_part_gene = 0;

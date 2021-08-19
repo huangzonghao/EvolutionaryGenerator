@@ -154,6 +154,7 @@ std::string generate_demo_robot_string(const std::string& mode,
             if (j == 0) {
                 oss << "<joint name = \"chassis_leg_" << i << "-0\" type = \"continuous\">" << std::endl;
                 oss << "  <parent link = \"chassis\"/>" << std::endl;
+                // position: [0, 0.5] - FL->BL, [0.5, 1] - BR->FR
                 leg_pos_tmp = robot_leg.position; // now the pos gene is in [0, 1]
                 if (leg_pos_tmp < 0.5) {
                     leg_pos_x_tmp = (0.25 - leg_pos_tmp) * 4 * (chassis.x / 2);

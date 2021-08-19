@@ -19,8 +19,8 @@ static const double gen_cross_rate = 0.75f;
 static const double gen_eta_c = 10.0f;
 static const double gen_yl = 0.0;
 static const double gen_yu = 1.0;
-static const int max_num_legs = 3;
-static const int min_num_legs = 2;
+static const int max_num_legs_oneside = 3;
+static const int min_num_legs_oneside = 2;
 static const int max_num_links = 3;
 static const int min_num_links = 2;
 
@@ -30,7 +30,7 @@ namespace evo_float {
 // perturbation of the order O(1/eta_m)
 template<typename Ev>
 struct Mutation_f {
-    double operator()(double raw) {
+    double operator()(double raw, double min = 0.0, double max = 1.0) {
         assert(gen_eta_m != -1.0f);
         double ri = misc::rand<double>();
         double delta_i = ri < 0.5 ?
@@ -38,7 +38,7 @@ struct Mutation_f {
                          1 - pow(2.0 * (1.0 - ri), 1.0 / (gen_eta_m + 1.0));
         assert(!std::isnan(delta_i));
         assert(!std::isinf(delta_i));
-        return std::clamp(raw + delta_i, 0.0, 1.0);
+        return std::clamp(raw + delta_i, min, max);
     }
     int operator()(int raw) {
         if (misc::flip_coin())
@@ -118,96 +118,85 @@ class EvoGenFloat {
         std::vector<double> tmp_data;
         // TODO: how to improve memory management?
         tmp_data.reserve(_data.size());
+        int cursor = 0;
         // body_id
         if (misc::rand<double>() < gen_mutation_rate)
-            tmp_data.push_back(_mutation_op(_data[0]));
+            tmp_data.push_back(_mutation_op(_data[cursor++]));
         else
-            tmp_data.push_back(_data[0]);
+            tmp_data.push_back(_data[cursor++]);
 
         // body_x, body_y, body_z
-        for (int i = 1; i < 4; ++i) {
+        for (int i = 0; i < 3; ++i) {
             if (misc::rand<double>() < gen_mutation_rate)
-                tmp_data.push_back(_mutation_op(_data[i]));
+                tmp_data.push_back(_mutation_op(_data[cursor++]));
             else
-                tmp_data.push_back(_data[i]);
+                tmp_data.push_back(_data[cursor++]);
         }
-        // TODO: mutate num_links
-        int num_legs = _data[4];
-        int tmp_num_legs = num_legs;
-        int num_links = 0;
-        int tmp_num_links = 0;
-        // first mutate num_legs
+
+        // Mutate num_legs
+        int current_num_legs = _data[cursor++];
+        int new_num_legs = current_num_legs;
+        int current_num_links = 0;
+        std::vector<double> tmp_leg;
+        tmp_leg.reserve(30); // a randomly selected large number
         if (misc::rand<double>() < gen_mutation_rate)
-            tmp_num_legs = std::clamp(_mutation_op(tmp_num_legs), min_num_legs, max_num_legs);
-        tmp_data.push_back(tmp_num_legs);
-        int cursor = 5;
-        if (num_legs >= tmp_num_legs) {
-            for (int i = 0; i < tmp_num_legs; ++i) {
-                num_links = _data[cursor];
-                tmp_num_links = num_links;
-                if (misc::rand<double>() < gen_mutation_rate)
-                    tmp_num_links = std::clamp(_mutation_op(tmp_num_links), min_num_links, max_num_links);
-                tmp_data.push_back(tmp_num_links);
-                if (num_links >= tmp_num_links) {
-                    for (int j = 0; j < tmp_num_links * 2; ++j) {
-                        if (misc::rand<double>() < gen_mutation_rate)
-                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
-                        else
-                            tmp_data.push_back(_data[cursor + j + 1]);
-                    }
-                } else {
-                    for (int j = 0; j < num_links * 2; ++j) {
-                        if (misc::rand<double>() < gen_mutation_rate)
-                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
-                        else
-                            tmp_data.push_back(_data[cursor + j + 1]);
-                    }
-                    // add new links
-                    for (int j = 0; j < (tmp_num_links - num_links) * 2; ++j)
-                        tmp_data.push_back(misc::rand<double>());
-                }
-                cursor += num_links * 2 + 1; // cursor tracks the original genome
+            new_num_legs = std::clamp(_mutation_op(new_num_legs), min_num_legs_oneside, max_num_legs_oneside);
+        // TODO: Need to think about the num_leg mutation again
+        new_num_legs = current_num_legs; // disable num_leg mutation
+        tmp_data.push_back(new_num_legs);
+        int leg_cursor_left;
+
+        // Mutate legs
+        for (int i = 0; i < std::min(current_num_legs, new_num_legs); ++i) {
+            // Mutate leg_pos
+            double leg_pos = _data[cursor++];
+            if (misc::rand<double>() < gen_mutation_rate) {
+                if (leg_pos < 0.5)
+                    tmp_data.push_back(_mutation_op(leg_pos, 0.01, 0.49));
+                else
+                    tmp_data.push_back(_mutation_op(leg_pos, 0.51, 0.99));
+            } else {
+                tmp_data.push_back(leg_pos);
             }
-        } else {
-            for (int i = 0; i < num_legs; ++i) {
-                num_links = _data[cursor];
-                tmp_num_links = num_links;
+
+            // Mutate num_links
+            int current_num_links = _data[cursor++];
+            int new_num_links = current_num_links;
+            if (misc::rand<double>() < gen_mutation_rate)
+                new_num_links = std::clamp(_mutation_op(new_num_links), min_num_links, max_num_links);
+            tmp_data.push_back(new_num_links);
+
+            // Mutate links
+            for (int i = 0; i < std::min(current_num_links, new_num_links) * 2; ++i) {
                 if (misc::rand<double>() < gen_mutation_rate)
-                    tmp_num_links = std::clamp(_mutation_op(tmp_num_links), min_num_links, max_num_links);
-                tmp_data.push_back(tmp_num_links);
-                if (num_links >= tmp_num_links) {
-                    for (int j = 0; j < tmp_num_links * 2; ++j) {
-                        if (misc::rand<double>() < gen_mutation_rate)
-                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
-                        else
-                            tmp_data.push_back(_data[cursor + j + 1]);
-                    }
-                } else {
-                    for (int j = 0; j < num_links * 2; ++j) {
-                        if (misc::rand<double>() < gen_mutation_rate)
-                            tmp_data.push_back(_mutation_op(_data[cursor + j + 1]));
-                        else
-                            tmp_data.push_back(_data[cursor + j + 1]);
-                    }
-                    // add new links
-                    for (int j = 0; j < (tmp_num_links - num_links) * 2; ++j)
-                        tmp_data.push_back(misc::rand<double>());
-                }
-                cursor += num_links * 2 + 1;
+                    tmp_data.push_back(_mutation_op(_data[cursor++]));
+                else
+                    tmp_data.push_back(_data[cursor++]);
             }
-            std::vector<double> tmp_leg;
-            tmp_leg.reserve(30); // a randomly selected large number
-            for (int i = 0; i < tmp_num_legs - num_legs; ++i) {
-                generate_random_leg(tmp_leg);
-                tmp_data.insert(tmp_data.end(), tmp_leg.begin(), tmp_leg.end());
+
+            for (int i = 0; i < (new_num_links - current_num_links) * 2; ++i) {
+                tmp_data.push_back(misc::rand<double>()); // link id
+                tmp_data.push_back(misc::rand<double>()); // link scale
             }
         }
+
+        for (int i = 0; i < new_num_legs - current_num_legs; ++i) {
+            generate_random_leg(tmp_leg, 0); // TODO: need to think about which side to add
+            tmp_data.insert(tmp_data.end(), tmp_leg.begin(), tmp_leg.end());
+        }
+
         _data = tmp_data;
         _check_validity();
     }
 
-    void generate_random_leg(std::vector<double>& leg_container) {
+    // leg_side: 0 - left, 1 - right
+    void generate_random_leg(std::vector<double>& leg_container, int leg_side) {
         leg_container.clear();
+        if (leg_side == 0) { // left leg
+            leg_container.push_back(misc::rand<double>(0.01, 0.49)); // leg pos
+        } else { // right leg
+            leg_container.push_back(misc::rand<double>(0.51, 0.99)); // leg pos
+        }
         int num_links = misc::rand<int>(min_num_links, max_num_links + 1);
         leg_container.push_back(num_links);
         for (int j = 0; j < num_links; ++j) {
@@ -218,7 +207,7 @@ class EvoGenFloat {
     }
 
     void cross(const EvoGenFloat& o, EvoGenFloat& c1, EvoGenFloat& c2) {
-        if ( misc::rand<double>() < gen_cross_rate) {
+        if (misc::rand<double>() < gen_cross_rate) {
             // TODO: define meaningful crossover operator
             // _cross_over_op(*this, o, c1, c2);
             c1 = *this;
@@ -234,20 +223,30 @@ class EvoGenFloat {
     }
 
     // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
-    //     for each leg: [num_links, link_1_id, link_1_scale, ...]
+    //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale, ...]
     // Note: num_legs here corresponds to one side only
+    // Leg order: L R (the internal order within each side is not guaranteed here)
     void random() {
         _data.clear();
         _data.push_back(misc::rand<double>()); // body_id
         _data.push_back(misc::rand<double>()); // body_x
         _data.push_back(misc::rand<double>()); // body_y
         _data.push_back(misc::rand<double>()); // body_z
-        int num_legs = misc::rand<int>(min_num_legs, max_num_legs + 1);
-        _data.push_back(num_legs);
+        int num_legs_left = misc::rand<int>(min_num_legs_oneside, max_num_legs_oneside + 1);
+        int num_legs_right = misc::rand<int>(min_num_legs_oneside, max_num_legs_oneside + 1);
+
+        // TODO: force two sides to have the same number of legs for now
+        num_legs_right = num_legs_left;
+
+        _data.push_back(num_legs_left + num_legs_right);
         std::vector<double> tmp_leg;
         tmp_leg.reserve(30); // a randomly selected large number
-        for (int i = 0; i < num_legs; ++i) {
-            generate_random_leg(tmp_leg);
+        for (int i = 0; i < num_legs_left; ++i) {
+            generate_random_leg(tmp_leg, 0);
+            _data.insert(_data.end(), tmp_leg.begin(), tmp_leg.end());
+        }
+        for (int i = 0; i < num_legs_right; ++i) {
+            generate_random_leg(tmp_leg, 1);
             _data.insert(_data.end(), tmp_leg.begin(), tmp_leg.end());
         }
         _check_validity();
