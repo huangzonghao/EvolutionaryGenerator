@@ -138,6 +138,26 @@ bool EvoGenController::Update() {
     }
 
     switch (legs_.size()) {
+    case 2:
+        // Two: FL, FR
+        switch (gait_) {
+        case 0:
+            legs_[0].exe_gait(0);
+            legs_[1].exe_gait(0);
+            gait_ = 1;
+            break;
+        case 1:
+            legs_[0].exe_gait(2);
+            legs_[1].exe_gait(1);
+            gait_ = 2;
+            break;
+        case 2:
+            legs_[0].exe_gait(1);
+            legs_[1].exe_gait(2);
+            gait_ = 1;
+            break;
+        }
+        break;
     case 4:
         // Four: FL, BL, BR, FR
         switch (gait_) {
@@ -197,7 +217,7 @@ bool EvoGenController::Update() {
         }
         break;
     default:
-        std::cout << "Error: Wrong number of legs in controller" << std::endl;
+        std::cout << "Error: Wrong number of legs in controller - " << legs_.size() << std::endl;
         exit(EXIT_FAILURE);
     }
 

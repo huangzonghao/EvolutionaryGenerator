@@ -20,7 +20,7 @@ static const double gen_eta_c = 10.0f;
 static const double gen_yl = 0.0;
 static const double gen_yu = 1.0;
 static const int max_num_legs_oneside = 3;
-static const int min_num_legs_oneside = 2;
+static const int min_num_legs_oneside = 1;
 static const int max_num_links = 3;
 static const int min_num_links = 2;
 
