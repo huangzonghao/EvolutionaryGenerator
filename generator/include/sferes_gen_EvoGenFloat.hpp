@@ -137,14 +137,13 @@ class EvoGenFloat {
         int current_num_legs = _data[cursor++];
         int new_num_legs = current_num_legs;
         int current_num_links = 0;
-        std::vector<double> tmp_leg;
-        tmp_leg.reserve(30); // a randomly selected large number
+        int new_num_links = 0;
         if (misc::rand<double>() < gen_mutation_rate)
-            new_num_legs = std::clamp(_mutation_op(new_num_legs), min_num_legs_oneside, max_num_legs_oneside);
+            new_num_legs = std::clamp(_mutation_op(new_num_legs), min_num_legs_oneside * 2, max_num_legs_oneside * 2);
         // TODO: Need to think about the num_leg mutation again
+        // And don't forget to take care of the new leg adding - there is a side selection issue
         new_num_legs = current_num_legs; // disable num_leg mutation
         tmp_data.push_back(new_num_legs);
-        int leg_cursor_left;
 
         // Mutate legs
         for (int i = 0; i < std::min(current_num_legs, new_num_legs); ++i) {
@@ -160,26 +159,38 @@ class EvoGenFloat {
             }
 
             // Mutate num_links
-            int current_num_links = _data[cursor++];
-            int new_num_links = current_num_links;
+            current_num_links = _data[cursor++];
+            new_num_links = current_num_links;
             if (misc::rand<double>() < gen_mutation_rate)
                 new_num_links = std::clamp(_mutation_op(new_num_links), min_num_links, max_num_links);
             tmp_data.push_back(new_num_links);
 
             // Mutate links
-            for (int i = 0; i < std::min(current_num_links, new_num_links) * 2; ++i) {
-                if (misc::rand<double>() < gen_mutation_rate)
+            for (int i = 0; i < std::min(current_num_links, new_num_links); ++i) {
+                if (misc::rand<double>() < gen_mutation_rate) // link id
+                    tmp_data.push_back(_mutation_op(_data[cursor++]));
+                else
+                    tmp_data.push_back(_data[cursor++]);
+
+                if (misc::rand<double>() < gen_mutation_rate) // link scale
                     tmp_data.push_back(_mutation_op(_data[cursor++]));
                 else
                     tmp_data.push_back(_data[cursor++]);
             }
 
-            for (int i = 0; i < (new_num_links - current_num_links) * 2; ++i) {
+            if (current_num_links > new_num_links) // advance the cursor to skip the dropped links
+                cursor += (current_num_links - new_num_links) * 2;
+
+            // add more links if num_links increased
+            for (int i = 0; i < new_num_links - current_num_links; ++i) {
                 tmp_data.push_back(misc::rand<double>()); // link id
                 tmp_data.push_back(misc::rand<double>()); // link scale
             }
         }
 
+        // add more legs if num_legs increased
+        std::vector<double> tmp_leg;
+        tmp_leg.reserve(30); // a randomly selected large number
         for (int i = 0; i < new_num_legs - current_num_legs; ++i) {
             generate_random_leg(tmp_leg, 0); // TODO: need to think about which side to add
             tmp_data.insert(tmp_data.end(), tmp_leg.begin(), tmp_leg.end());
