@@ -216,42 +216,6 @@ classdef UI < matlab.apps.AppBase
             app.BuildStatButton.Text = 'RebuildStat';
         end
 
-        % Value changed function: GenIDField
-        function GenIDFieldValueChanged(app, event)
-            load_gen(app, str2double(app.GenIDField.Value));
-        end
-
-        % Button pushed function: SimulateRobotButton
-        function SimulateRobotButtonPushed(app, event)
-            % Note here in CG, x goes from left to right and y goes from
-            % top to bottom -- x is column index, y is row index
-            idx = robot_idx_in_archive(app, str2double(app.RobotIDYField.Value), str2double(app.RobotIDXField.Value));
-            if (idx == -1)
-                app.RobotInfoLabel.Text = "Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty";
-            end
-            app.RobotInfoLabel.Text = "Fitness: " + num2str(app.current_gen_archive(idx, 4));
-            dv = app.current_gen_archive(idx, 5:end);
-            dv = dv(~isnan(dv));
-            cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " + ...
-                      fullfile(app.evo_params.result_path, app.sim_params_filename) + " " + ...
-                      num2str(dv);
-            system(cmd_str);
-        end
-
-        % Value changed function: RobotIDXField
-        function RobotIDXFieldValueChanged(app, event)
-            value = str2double(app.RobotIDXField.Value);
-            value = min(max(value, 1), app.evo_params.griddim_1); % note X corresponds to column index of matrix here
-            app.RobotIDXField.Value = num2str(value);
-        end
-
-        % Value changed function: RobotIDYField
-        function RobotIDYFieldValueChanged(app, event)
-            value = str2double(app.RobotIDYField.Value);
-            value = min(max(value, 1), app.evo_params.griddim_0); % note y corresponds to row index of matrix here
-            app.RobotIDYField.Value = num2str(value);
-        end
-
         % Button pushed function: StatPlotButton
         function StatPlotButtonPushed(app, event)
             if (~app.stat_loaded)
@@ -271,6 +235,42 @@ classdef UI < matlab.apps.AppBase
             cmd_str = fullfile(app.evogen_exe_path, app.generator_name) + ...
                       " resume " + app.evo_params.result_basename;
             system(cmd_str);
+        end
+
+        % Button pushed function: SimulateRobotButton
+        function SimulateRobotButtonPushed(app, event)
+            % Note here in CG, x goes from left to right and y goes from
+            % top to bottom -- x is column index, y is row index
+            idx = robot_idx_in_archive(app, str2double(app.RobotIDYField.Value), str2double(app.RobotIDXField.Value));
+            if (idx == -1)
+                app.RobotInfoLabel.Text = "Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty";
+            end
+            app.RobotInfoLabel.Text = "Fitness: " + num2str(app.current_gen_archive(idx, 4));
+            dv = app.current_gen_archive(idx, 5:end);
+            dv = dv(~isnan(dv));
+            cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " + ...
+                      fullfile(app.evo_params.result_path, app.sim_params_filename) + " " + ...
+                      num2str(dv);
+            system(cmd_str);
+        end
+
+        % Value changed function: GenIDField
+        function GenIDFieldValueChanged(app, event)
+            load_gen(app, str2double(app.GenIDField.Value));
+        end
+
+        % Value changed function: RobotIDXField
+        function RobotIDXFieldValueChanged(app, event)
+            value = str2double(app.RobotIDXField.Value);
+            value = min(max(value, 1), app.evo_params.griddim_1); % note X corresponds to column index of matrix here
+            app.RobotIDXField.Value = num2str(value);
+        end
+
+        % Value changed function: RobotIDYField
+        function RobotIDYFieldValueChanged(app, event)
+            value = str2double(app.RobotIDYField.Value);
+            value = min(max(value, 1), app.evo_params.griddim_0); % note y corresponds to row index of matrix here
+            app.RobotIDYField.Value = num2str(value);
         end
     end
 
