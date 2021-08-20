@@ -1,3 +1,4 @@
+#include <algorithm> // std::replace
 #include <regex>
 #include <filesystem>
 
@@ -38,7 +39,9 @@ void new_training() {
     char time_buffer [80];
     strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
 
-    std::string log_dir = Result_Output_Dir + "/" + sim_params.env_name + "_" +
+    std::string env_name_converted(sim_params.env_name);
+    std::replace(env_name_converted.begin(), env_name_converted.end(), '.', '_');
+    std::string log_dir = Result_Output_Dir + "/" + env_name_converted + "_" +
                           "P" + std::to_string(evo_params.pop_size()) +
                           "G" + std::to_string(evo_params.nb_gen()) + "_" +
                           std::to_string(evo_params.grid_shape()[0]) + "x" +
