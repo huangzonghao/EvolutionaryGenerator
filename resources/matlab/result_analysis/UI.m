@@ -3,6 +3,8 @@ classdef UI < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
+        LoadFirstButton      matlab.ui.control.Button
+        LoadLastButton       matlab.ui.control.Button
         ResumeButton         matlab.ui.control.Button
         OpenFolderButton     matlab.ui.control.Button
         ToLabel              matlab.ui.control.Label
@@ -197,6 +199,16 @@ classdef UI < matlab.apps.AppBase
             load_gen(app, app.current_gen - 10);
         end
 
+        % Button pushed function: LoadFirstButton
+        function LoadFirstButtonPushed(app, event)
+            load_gen(app, 0);
+        end
+
+        % Button pushed function: LoadLastButton
+        function LoadLastButtonPushed(app, event)
+            load_gen(app, app.evo_params.nb_gen);
+        end
+
         % Button pushed function: BuildStatButton
         function BuildStatButtonPushed(app, event)
             app.BuildStatButton.Text = 'Building ...';
@@ -308,13 +320,13 @@ classdef UI < matlab.apps.AppBase
             % Create LoadNext10Button
             app.LoadNext10Button = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.LoadNext10Button.ButtonPushedFcn = createCallbackFcn(app, @LoadNext10ButtonPushed, true);
-            app.LoadNext10Button.Position = [111 448 36 22];
+            app.LoadNext10Button.Position = [111 448 30 22];
             app.LoadNext10Button.Text = '+10';
 
             % Create LoadPrev10Button
             app.LoadPrev10Button = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.LoadPrev10Button.ButtonPushedFcn = createCallbackFcn(app, @LoadPrev10ButtonPushed, true);
-            app.LoadPrev10Button.Position = [28 448 33 22];
+            app.LoadPrev10Button.Position = [31 448 30 22];
             app.LoadPrev10Button.Text = '-10';
 
             % Create SimulateRobotButton
@@ -435,6 +447,18 @@ classdef UI < matlab.apps.AppBase
             app.ResumeButton.ButtonPushedFcn = createCallbackFcn(app, @ResumeButtonPushed, true);
             app.ResumeButton.Position = [12 156 73 22];
             app.ResumeButton.Text = 'Resume';
+
+            % Create LoadLastButton
+            app.LoadLastButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
+            app.LoadLastButton.Position = [87 427 30 22];
+            app.LoadLastButton.Text = '>>';
+
+            % Create LoadFirstButton
+            app.LoadFirstButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
+            app.LoadFirstButton.Position = [57 427 30 22];
+            app.LoadFirstButton.Text = '<<';
 
             % Show the figure after all components are created
             app.EvolutionaryRobogamiResultViewerUIFigure.Visible = 'on';
