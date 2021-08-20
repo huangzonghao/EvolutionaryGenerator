@@ -19,6 +19,14 @@ void SimulatorParams::SetCamera(double from_x, double from_y, double from_z,
     camera_pos[5] = to_z;
 }
 
+std::string SimulatorParams::GetEnv() const {
+    if (env_name.find('.') == std::string::npos)
+        // return the env_name directly if it's not a filename
+        return env_name;
+    else
+        return env_dir + "/" + env_name;
+}
+
 bool SimulatorParams::Save(const std::string& filename) const {
     std::ofstream ofs(filename);
     if (!ofs) {
