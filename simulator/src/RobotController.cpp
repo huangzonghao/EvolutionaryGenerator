@@ -137,88 +137,30 @@ bool EvoGenController::Update() {
         update_counter_ = 0;
     }
 
-    switch (legs_.size()) {
+    int marker = 0;
+    switch (gait_) {
+    case 0:
+        for (int i = 0; i < legs_.size(); ++i) {
+            legs_[i].exe_gait(0);
+        }
+        gait_ = 1;
+        break;
+    case 1:
+        marker = 1;
+        for (int i = 0; i < legs_.size(); ++i) {
+            legs_[i].exe_gait((3 + marker) / 2);
+            marker *= -1;
+        }
+        gait_ = 2;
+        break;
     case 2:
-        // Two: FL, FR
-        switch (gait_) {
-        case 0:
-            legs_[0].exe_gait(0);
-            legs_[1].exe_gait(0);
-            gait_ = 1;
-            break;
-        case 1:
-            legs_[0].exe_gait(2);
-            legs_[1].exe_gait(1);
-            gait_ = 2;
-            break;
-        case 2:
-            legs_[0].exe_gait(1);
-            legs_[1].exe_gait(2);
-            gait_ = 1;
-            break;
+        marker = -1;
+        for (int i = 0; i < legs_.size(); ++i) {
+            legs_[i].exe_gait((3 + marker) / 2);
+            marker *= -1;
         }
+        gait_ = 1;
         break;
-    case 4:
-        // Four: FL, BL, BR, FR
-        switch (gait_) {
-        case 0:
-            legs_[0].exe_gait(0);
-            legs_[1].exe_gait(0);
-            legs_[2].exe_gait(0);
-            legs_[3].exe_gait(0);
-            gait_ = 1;
-            break;
-        case 1:
-            legs_[0].exe_gait(2);
-            legs_[1].exe_gait(1);
-            legs_[2].exe_gait(2);
-            legs_[3].exe_gait(1);
-            gait_ = 2;
-            break;
-        case 2:
-            legs_[0].exe_gait(1);
-            legs_[1].exe_gait(2);
-            legs_[2].exe_gait(1);
-            legs_[3].exe_gait(2);
-            gait_ = 1;
-            break;
-        }
-        break;
-    case 6:
-        // Six:  FL, ML, BL, BR, MR, FR
-        switch (gait_) {
-        case 0:
-            legs_[0].exe_gait(0);
-            legs_[1].exe_gait(0);
-            legs_[2].exe_gait(0);
-            legs_[3].exe_gait(0);
-            legs_[4].exe_gait(0);
-            legs_[5].exe_gait(0);
-            gait_ = 1;
-            break;
-        case 1:
-            legs_[0].exe_gait(2);
-            legs_[1].exe_gait(1);
-            legs_[2].exe_gait(2);
-            legs_[3].exe_gait(1);
-            legs_[4].exe_gait(2);
-            legs_[5].exe_gait(1);
-            gait_ = 2;
-            break;
-        case 2:
-            legs_[0].exe_gait(1);
-            legs_[1].exe_gait(2);
-            legs_[2].exe_gait(1);
-            legs_[3].exe_gait(2);
-            legs_[4].exe_gait(1);
-            legs_[5].exe_gait(2);
-            gait_ = 1;
-            break;
-        }
-        break;
-    default:
-        std::cout << "Error: Wrong number of legs in controller - " << legs_.size() << std::endl;
-        exit(EXIT_FAILURE);
     }
 
     return false;
