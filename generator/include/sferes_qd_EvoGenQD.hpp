@@ -46,7 +46,7 @@ class EvoGenQD
             indiv = std::make_shared<Phen>(this->_evo_params);
             indiv->random();
         }
-        this->_eval_pop(_init_pop, 0, _init_pop.size());
+        this->_eval_pop(_init_pop);
         _add(_init_pop, _added);
 
         _container.get_full_content(this->_pop);
@@ -58,24 +58,20 @@ class EvoGenQD
         _selector(_parents, this->_pop);
 
         // Generation of the offspring
-        std::vector<size_t> a(_parents.size());
-        for (int i = 0; i < a.size(); ++i)
-            a[i] = i;
-
-        misc::rand_ind(a, _parents.size());
+        const auto& ids = misc::randomized_indices(_parents.size());
         for (size_t i = 0; i < _pop_size; i += 2) {
             std::shared_ptr<Phen> i1, i2;
-            _parents[a[i]]->cross(_parents[a[i + 1]], i1, i2);
+            _parents[ids[i]]->cross(_parents[ids[i + 1]], i1, i2);
             i1->mutate();
             i2->mutate();
             i1->develop();
             i2->develop();
-            _offspring[a[i]] = i1;
-            _offspring[a[i + 1]] = i2;
+            _offspring[ids[i]] = i1;
+            _offspring[ids[i + 1]] = i2;
         }
 
         // Evaluation of the offspring
-        this->_eval_pop(_offspring, 0, _offspring.size());
+        this->_eval_pop(_offspring);
 
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);

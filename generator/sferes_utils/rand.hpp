@@ -75,16 +75,17 @@ inline T gaussian_rand(T m = 0.0, T v = 1.0)
 }
 
 // randomize indices
-inline void rand_ind(std::vector<size_t>& a1, size_t size)
+inline std::vector<int> randomized_indices(size_t size)
 {
-    a1.resize(size);
-    for (size_t i = 0; i < a1.size(); ++i)
-        a1[i] = i;
-    for (size_t i = 0; i < a1.size(); ++i) {
-        size_t k = rand(i, a1.size());
-        assert(k < a1.size());
-        std::swap(a1[i], a1[k]);
+    std::vector<int> ids(size);
+    for (size_t i = 0; i < ids.size(); ++i)
+        ids[i] = i;
+    for (size_t i = 0; i < ids.size(); ++i) {
+        size_t k = rand(i, ids.size());
+        assert(k < ids.size());
+        std::swap(ids[i], ids[k]);
     }
+    return ids;
 }
 
 /// return a random it in the list
