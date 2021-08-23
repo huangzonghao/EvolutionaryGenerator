@@ -56,18 +56,19 @@ class EvoGenEval {
                      size_t start_idx, size_t end_idx)
     {
         for (size_t i = start_idx; i < end_idx; ++i) {
-            pop[i]->develop();
+            if (pop[i]->develop())
+                ++num_valid;
             pop[i]->fit().eval(*pop[i], *sm);
         }
     }
 
     template<typename Phen>
-    void eval(std::vector<std::shared_ptr<Phen>>& pop, size_t begin, size_t end)
-    {
+    void eval(std::vector<std::shared_ptr<Phen>>& pop, size_t begin, size_t end) {
         assert(pop.size());
         assert(begin < pop.size());
         assert(end <= pop.size());
 
+        num_valid = 0;
         size_t batch_size = pop.size() / num_threads;
         size_t num_leftovers = pop.size() % num_threads;
         size_t element_cursor = 0;
@@ -88,6 +89,7 @@ class EvoGenEval {
         for (auto& thread : threads)
             thread.reset();
         _nb_evals += end - begin;
+        std::cout << std::endl << "valid robots of this batch: " << num_valid << "/ " << pop.size() << std::endl;
     }
 
     size_t nb_evals() const { return _nb_evals; }
@@ -97,7 +99,10 @@ class EvoGenEval {
     std::vector<std::shared_ptr<SimulationManager>> sms;
     size_t num_threads;
     std::vector<std::shared_ptr<std::thread>> threads;
+    static int num_valid;
 };
+
+int EvoGenEval::num_valid = 0;
 
 } // namespace eval
 } // namespace sferes

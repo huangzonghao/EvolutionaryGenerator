@@ -6,10 +6,19 @@
 #include <boost/serialization/nvp.hpp>
 
 #include "RobotRepresentation.h"
+#include "MeshInfo.h"
 #include "EvoParams.h"
+
+extern MeshInfo mesh_info; // defined in MeshInfo.cpp
 
 namespace sferes {
 namespace phen {
+
+static const int max_num_legs = 6;
+static const int min_num_legs = 2;
+static const int max_num_links = 3;
+static const int min_num_links = 2;
+static const int gen_max_length = 53;
 
 template <typename Gen, typename Fit>
 class EvoGenPhen {
@@ -20,42 +29,103 @@ class EvoGenPhen {
     template<typename G, typename F>
     friend std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e);
 
+    // scale up a value in [0, 1] to [min, max]
+    inline double scale_up(double raw, double min, double max) {
+        return raw * (max - min) + min;
+    }
+
+    // convert a gene in [0, 1] to integers of {0, 1, ..., count - 1}
+    inline int gene_to_id(double raw, int count) {
+        int ret = std::floor(raw * count);
+        if (ret == count) {
+            ret -= 1;
+        }
+        return ret;
+    }
+
+    // convert a gene in [0, 1] to integers of {min, min + 1, ... , max - 1, max}
+    inline int gene_to_id(double raw, int min, int max) {
+        return gene_to_id(raw, max - min + 1) + min;
+    }
+
     EvoGenPhen() {}
-    EvoGenPhen(double max_p, double min_p) : _max_p(max_p), _min_p(min_p) {}
+    EvoGenPhen(const std::vector<double>& gene, double min_p, double max_p)
+        : _gen(gene), _min_p(min_p), _max_p(max_p) {}
+    EvoGenPhen(double min_p, double max_p) : _min_p(min_p), _max_p(max_p) {}
     EvoGenPhen(const EvoParams& evo_params) { set_params(evo_params); }
 
+    bool valid() { return _valid; }
     Fit& fit() { return _fit; }
     const Fit& fit() const { return _fit; }
 
     Gen& gen()  { return _gen; }
     const Gen& gen() const { return _gen; }
     void mutate() { _gen.mutate(); }
+    // actually the random inits are guaranteed to be valid
     void random() { _gen.random(); }
 
     void cross(const std::shared_ptr<EvoGenPhen> i2,
                std::shared_ptr<EvoGenPhen>& o1,
                std::shared_ptr<EvoGenPhen>& o2) {
         if (!o1)
-            o1 = std::make_shared<EvoGenPhen>(_max_p, _min_p);
+            o1 = std::make_shared<EvoGenPhen>(_min_p, _max_p);
         if (!o2)
-            o2 = std::make_shared<EvoGenPhen>(_max_p, _min_p);
+            o2 = std::make_shared<EvoGenPhen>(_min_p, _max_p);
         _gen.cross(i2->gen(), o1->gen(), o2->gen());
     }
 
-    // Genome to Robot Conversion
+    // Genome to Robot Conversion & Verification
     // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     // Leg order: FL FR ML MR BL BR
-    void develop() {
-        // Right now the only difference between genotype and phenotype is the scale
-        // params. genotype: [0, 1]; phenotype: [_min_p, _max_p];
-        _robot.decode_design_vector(_gen.data(), _min_p, _max_p);
+    // Note: develop is usually called right before fitness eval
+    bool develop() {
+        // Fill in the robot representation here and determin if the gene gives a valid robot
+        // The invalid robot occurs when there are not enough elements in gene to
+        // describe the required number of legs & links
+        int cursor = 0;
+        try {
+            const auto& gene = _gen.data();
+            _robot.body_part_gene = gene.at(cursor++);
+            _robot.body_part_id = gene_to_id(_robot.body_part_gene, mesh_info.num_bodies);
+            for (int i = 0; i < 3; ++i)
+                _robot.body_scales[i] = scale_up(gene.at(cursor++), _min_p, _max_p);
+            _robot.num_legs = gene_to_id(gene.at(cursor++), min_num_legs, max_num_legs);
+            // check if we have enough elements in gene for this many legs
+            _robot.legs.resize(_robot.num_legs);
+            for (int i = 0; i < _robot.num_legs; ++i) {
+                auto& tmp_leg = _robot.legs[i];
+                tmp_leg.position = gene.at(cursor++);
+                tmp_leg.num_links = gene_to_id(gene.at(cursor++), min_num_links, max_num_links);
+                tmp_leg.links.resize(tmp_leg.num_links);
+                for(int j = 0; j < tmp_leg.num_links; ++j) {
+                    auto& tmp_link = tmp_leg.links[j];
+                    tmp_link.part_gene = gene.at(cursor++);
+                    tmp_link.scale = scale_up(gene.at(cursor++), _min_p, _max_p);
+                    tmp_link.part_id = gene_to_id(tmp_link.part_gene, mesh_info.num_legs);
+                }
+            }
+        } catch (const std::out_of_range& oor) {
+            _valid = false;
+            return false;
+        }
+
+        // Sort legs based on their position
+        // Note this information doesn't need to send back to gene, as it's
+        // purely for the conveninece of the controller
+        std::sort(_robot.legs.begin(), _robot.legs.end());
+
+        // Trim the unnecessary elements in gene
+        _gen.resize(cursor);
+        _valid = true;
+        return true;
     }
 
     double data(size_t i) const {
         assert(i < size());
         return _gen.data(i);
     }
+
     size_t size() const { return _gen.size(); }
     const std::vector<double>& data() const { return _gen.data(); }
 
@@ -91,8 +161,9 @@ class EvoGenPhen {
   protected:
     Gen _gen;
     Fit _fit;
-    double _max_p;
     double _min_p;
+    double _max_p;
+    bool _valid = false;
     const double pos[3] = {0.01, 0.25, 0.49};
     RobotRepresentation _robot;
 };

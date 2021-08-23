@@ -23,9 +23,7 @@ namespace nov {
 template <typename Phen>
 class Grid {
   public:
-
     static const size_t dim = 2;
-
     typedef std::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
     typedef typename pop_t::iterator it_t;
@@ -40,8 +38,7 @@ class Grid {
 
     behav_index_t grid_shape = {20, 20};
 
-    Grid()
-    {
+    Grid() {
         // allocate space for _array and _array_parents
         _array.resize(grid_shape);
     }
@@ -52,8 +49,7 @@ class Grid {
         _array.resize(grid_shape);
     }
 
-    template <typename I> behav_index_t get_index(const I& indiv) const
-    {
+    template <typename I> behav_index_t get_index(const I& indiv) const {
         point_t p = get_point(indiv);
         behav_index_t behav_pos;
         for (size_t i = 0; i < grid_shape.size(); ++i) {
@@ -63,8 +59,7 @@ class Grid {
         return behav_pos;
     }
 
-    void get_full_content(std::vector<indiv_t>& container) const
-    {
+    void get_full_content(std::vector<indiv_t>& container) const {
         container.resize(_num_filled);
         int counter = 0;
         for (const indiv_t* ind = _array.data(); ind < (_array.data() + _array.num_elements()); ++ind)
@@ -73,8 +68,7 @@ class Grid {
         assert(counter + 1 == _num_filled);
     }
 
-    bool add(indiv_t i1)
-    {
+    bool add(indiv_t i1) {
         if (i1->fit().dead())
             return false;
 
@@ -100,8 +94,7 @@ class Grid {
         return true;
     }
 
-    void update(pop_t& offspring, pop_t& parents)
-    {
+    void update(pop_t& offspring, pop_t& parents) {
         _update_novelty();
         for (size_t i = 0; i < offspring.size(); i++)
             _update_indiv(offspring[i]);
@@ -119,8 +112,7 @@ class Grid {
 
   protected:
     // Converts the descriptor into a Point_t
-    template <typename I> point_t get_point(const I& indiv) const
-    {
+    template <typename I> point_t get_point(const I& indiv) const {
         point_t p;
         for (size_t i = 0; i < grid_shape.size(); ++i) {
             assert(indiv->fit().desc()[i] >= 0.0);
@@ -131,8 +123,7 @@ class Grid {
         return p;
     }
 
-    template <typename I> double _dist_center(const I& indiv)
-    {
+    template <typename I> double _dist_center(const I& indiv) {
         /* Returns distance to center of behavior descriptor cell */
         double dist = 0.0;
         point_t p = get_point(indiv);
@@ -143,8 +134,7 @@ class Grid {
         return dist;
     }
 
-    void _update_novelty()
-    {
+    void _update_novelty() {
         // tbb::parallel_for(tbb::blocked_range<indiv_t*>(_array.data(), _array.data() + _array.num_elements()),
                           // [&](const tbb::blocked_range<indiv_t*>& r) {
                               // for (indiv_t* indiv = r.begin(); indiv != r.end(); ++indiv) {
@@ -181,8 +171,7 @@ class Grid {
     }
 
     // WARNING, individuals in population can be dead...
-    void _update_indiv(indiv_t& indiv)
-    {
+    void _update_indiv(indiv_t& indiv) {
         if (indiv->fit().dead()) {
             indiv->fit().set_novelty(-std::numeric_limits<double>::infinity());
             indiv->fit().set_local_quality(-std::numeric_limits<double>::infinity());
@@ -202,8 +191,7 @@ class Grid {
         indiv->fit().set_local_quality(count);
     }
 
-    inline view_t get_neighborhood(indiv_t indiv) const
-    {
+    inline view_t get_neighborhood(indiv_t indiv) const {
         behav_index_t ind = get_index(indiv);
         index_gen_t indix;
         int i = 0;

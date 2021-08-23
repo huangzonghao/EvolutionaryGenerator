@@ -193,7 +193,9 @@ class EvoGenEA : public stc::Any<Exact> {
     }
 
     template<typename P>
-    void _eval_pop(P& p, size_t start, size_t end) {
+    void _eval_pop(P& p, size_t start = 0, size_t end = 0) {
+        if (end == 0)
+            end = p.size();
         _eval.eval(p, start, end);
     }
     // override _set_pop if you want to customize / add treatments

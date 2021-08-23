@@ -19,10 +19,7 @@ static const double gen_cross_rate = 0.75f;
 static const double gen_eta_c = 10.0f;
 static const double gen_yl = 0.0;
 static const double gen_yu = 1.0;
-static const int max_num_legs_oneside = 3;
-static const int min_num_legs_oneside = 1;
-static const int max_num_links = 3;
-static const int min_num_links = 2;
+static const int evogen_gene_max_size = 53;
 
 namespace evo_float {
 
@@ -110,157 +107,35 @@ struct CrossOver_f {
 /// in range [0, 1]
 class EvoGenFloat {
   public:
-    EvoGenFloat() {}
+    // TODO: how to pass in this data appropriately.
 
-    // TODO: the mutation code could look much cleaner if all genomes have containers
-    // with same size regardless of genome's actual length
+    EvoGenFloat() : _max_size(evogen_gene_max_size) { _data.resize(_max_size); }
+    EvoGenFloat(int max_size) : _max_size(max_size) { _data.resize(_max_size); }
+    EvoGenFloat(const std::vector<double>& data) : _data(data) {}
+
     void mutate() {
-        std::vector<double> tmp_data;
-        // TODO: how to improve memory management?
-        tmp_data.reserve(_data.size());
-        int cursor = 0;
-        // body_id
-        if (misc::rand<double>() < gen_mutation_rate)
-            tmp_data.push_back(_mutation_op(_data[cursor++]));
-        else
-            tmp_data.push_back(_data[cursor++]);
-
-        // body_x, body_y, body_z
-        for (int i = 0; i < 3; ++i) {
+        for (auto& element : _data) {
             if (misc::rand<double>() < gen_mutation_rate)
-                tmp_data.push_back(_mutation_op(_data[cursor++]));
-            else
-                tmp_data.push_back(_data[cursor++]);
-        }
-
-        // Mutate num_legs
-        int current_num_legs = _data[cursor++];
-        int new_num_legs = current_num_legs;
-        int current_num_links = 0;
-        int new_num_links = 0;
-        if (misc::rand<double>() < gen_mutation_rate)
-            new_num_legs = std::clamp(_mutation_op(new_num_legs), min_num_legs_oneside * 2, max_num_legs_oneside * 2);
-        // TODO: Need to think about the num_leg mutation again
-        // And don't forget to take care of the new leg adding - there is a side selection issue
-        new_num_legs = current_num_legs; // disable num_leg mutation
-        tmp_data.push_back(new_num_legs);
-
-        // Mutate legs
-        for (int i = 0; i < std::min(current_num_legs, new_num_legs); ++i) {
-            // Mutate leg_pos
-            double leg_pos = _data[cursor++];
-            if (misc::rand<double>() < gen_mutation_rate) {
-                if (leg_pos < 0.5)
-                    tmp_data.push_back(_mutation_op(leg_pos, 0.01, 0.49));
-                else
-                    tmp_data.push_back(_mutation_op(leg_pos, 0.51, 0.99));
-            } else {
-                tmp_data.push_back(leg_pos);
-            }
-
-            // Mutate num_links
-            current_num_links = _data[cursor++];
-            new_num_links = current_num_links;
-            if (misc::rand<double>() < gen_mutation_rate)
-                new_num_links = std::clamp(_mutation_op(new_num_links), min_num_links, max_num_links);
-            tmp_data.push_back(new_num_links);
-
-            // Mutate links
-            for (int i = 0; i < std::min(current_num_links, new_num_links); ++i) {
-                if (misc::rand<double>() < gen_mutation_rate) // link id
-                    tmp_data.push_back(_mutation_op(_data[cursor++]));
-                else
-                    tmp_data.push_back(_data[cursor++]);
-
-                if (misc::rand<double>() < gen_mutation_rate) // link scale
-                    tmp_data.push_back(_mutation_op(_data[cursor++]));
-                else
-                    tmp_data.push_back(_data[cursor++]);
-            }
-
-            if (current_num_links > new_num_links) // advance the cursor to skip the dropped links
-                cursor += (current_num_links - new_num_links) * 2;
-
-            // add more links if num_links increased
-            for (int i = 0; i < new_num_links - current_num_links; ++i) {
-                tmp_data.push_back(misc::rand<double>()); // link id
-                tmp_data.push_back(misc::rand<double>()); // link scale
-            }
-        }
-
-        // add more legs if num_legs increased
-        std::vector<double> tmp_leg;
-        tmp_leg.reserve(30); // a randomly selected large number
-        for (int i = 0; i < new_num_legs - current_num_legs; ++i) {
-            generate_random_leg(tmp_leg, 0); // TODO: need to think about which side to add
-            tmp_data.insert(tmp_data.end(), tmp_leg.begin(), tmp_leg.end());
-        }
-
-        _data = tmp_data;
-        _check_validity();
-    }
-
-    // leg_side: 0 - left, 1 - right
-    void generate_random_leg(std::vector<double>& leg_container, int leg_side) {
-        leg_container.clear();
-        if (leg_side == 0) { // left leg
-            leg_container.push_back(misc::rand<double>(0.01, 0.49)); // leg pos
-        } else { // right leg
-            leg_container.push_back(misc::rand<double>(0.51, 0.99)); // leg pos
-        }
-        int num_links = misc::rand<int>(min_num_links, max_num_links + 1);
-        leg_container.push_back(num_links);
-        for (int j = 0; j < num_links; ++j) {
-            // id and scale are up to phen to interpret or pass on to generator
-            leg_container.push_back(misc::rand<double>()); // link id
-            leg_container.push_back(misc::rand<double>()); // link scale
+                element = _mutation_op(element);
         }
     }
 
-    void cross(const EvoGenFloat& o, EvoGenFloat& c1, EvoGenFloat& c2) {
+    void cross(const EvoGenFloat& other, EvoGenFloat& c1, EvoGenFloat& c2) {
         if (misc::rand<double>() < gen_cross_rate) {
-            // TODO: define meaningful crossover operator
-            // _cross_over_op(*this, o, c1, c2);
-            c1 = *this;
-            c2 = o;
+            _cross_over_op(*this, other, c1, c2);
         } else if (misc::flip_coin()) {
             c1 = *this;
-            c2 = o;
+            c2 = other;
         } else {
-            c1 = o;
+            c1 = other;
             c2 = *this;
         }
-        _check_validity();
     }
 
-    // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
-    //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale, ...]
-    // Note: num_legs here corresponds to one side only
-    // Leg order: L R (the internal order within each side is not guaranteed here)
     void random() {
-        _data.clear();
-        _data.push_back(misc::rand<double>()); // body_id
-        _data.push_back(misc::rand<double>()); // body_x
-        _data.push_back(misc::rand<double>()); // body_y
-        _data.push_back(misc::rand<double>()); // body_z
-        int num_legs_left = misc::rand<int>(min_num_legs_oneside, max_num_legs_oneside + 1);
-        int num_legs_right = misc::rand<int>(min_num_legs_oneside, max_num_legs_oneside + 1);
-
-        // TODO: force two sides to have the same number of legs for now
-        num_legs_right = num_legs_left;
-
-        _data.push_back(num_legs_left + num_legs_right);
-        std::vector<double> tmp_leg;
-        tmp_leg.reserve(30); // a randomly selected large number
-        for (int i = 0; i < num_legs_left; ++i) {
-            generate_random_leg(tmp_leg, 0);
-            _data.insert(_data.end(), tmp_leg.begin(), tmp_leg.end());
-        }
-        for (int i = 0; i < num_legs_right; ++i) {
-            generate_random_leg(tmp_leg, 1);
-            _data.insert(_data.end(), tmp_leg.begin(), tmp_leg.end());
-        }
-        _check_validity();
+        _data.resize(_max_size);
+        for (auto& element : _data)
+            element = misc::rand<double>();
     }
 
     const std::vector<double>& data() const { return _data; }
@@ -276,9 +151,11 @@ class EvoGenFloat {
     }
 
     size_t size() const { return _data.size(); }
+    void resize(int new_size) { _data.resize(new_size); }
 
     template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
+        ar & BOOST_SERIALIZATION_NVP(_max_size);
         ar & BOOST_SERIALIZATION_NVP(_data);
     }
 
@@ -286,17 +163,10 @@ class EvoGenFloat {
     evo_float::Mutation_f<EvoGenFloat> _mutation_op;
     evo_float::CrossOver_f<EvoGenFloat> _cross_over_op;
     std::vector<double> _data;
+    int _max_size = 0;
 
-    void _check_validity() const {
-#ifndef NDEBUG
-    for (auto p : _data) {
-        assert(!std::isnan(p));
-        assert(!std::isinf(p));
-        assert(p >= 0 && p <= 1);
-    }
-#endif
-    }
 };
+
 } // namespace gen
 } // namespace sferes
 

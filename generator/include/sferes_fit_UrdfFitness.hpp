@@ -27,6 +27,10 @@ class UrdfFitness {
 
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
+        if (!ind.valid()) {
+            _dead = true;
+            return;
+        }
 
         const auto& robot = ind.get_robot();
         sm.RemoveAllMotors();

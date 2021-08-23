@@ -13,9 +13,9 @@
 constexpr double leg_length_ref = 0.085 * 1.2;
 
 struct Body {
-    double x;
-    double y;
-    double z;
+    double x = 0;
+    double y = 0;
+    double z = 0;
 };
 
 Body body_selector(size_t body_id) {
@@ -182,12 +182,6 @@ std::string generate_demo_robot_string(const std::string& mode,
     return oss.str();
 }
 
-std::string generate_demo_robot_string(const std::string& mode,
-                                       const std::vector<double>& dv,
-                                       const std::string& robot_name) {
-    return generate_demo_robot_string(mode, RobotRepresentation(dv), robot_name);
-}
-
 void generate_demo_robot_file(const std::string& mode,
                               const RobotRepresentation& robot,
                               const std::string& robot_name) {
@@ -201,10 +195,4 @@ void generate_demo_robot_file(const std::string& mode,
     std::ofstream ofs(output_file.c_str(), std::ostream::out);
     ofs << generate_demo_robot_string(mode, robot, robot_name);
     ofs.close();
-}
-
-void generate_demo_robot_file(const std::string& mode,
-                              const std::vector<double>& dv,
-                              const std::string& robot_name) {
-    generate_demo_robot_file(mode, RobotRepresentation(dv), robot_name);
 }

@@ -149,12 +149,6 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     return oss.str();
 }
 
-std::string generate_demo_robogami_robot_string(const std::string& mode,
-                                                const std::vector<double>& dv,
-                                                const std::string& robot_name) {
-    return generate_demo_robogami_robot_string(mode, RobotRepresentation(dv), robot_name);
-}
-
 void generate_demo_robogami_robot_file(const std::string& mode,
                                        const RobotRepresentation& robot,
                                        const std::string& robot_name) {
@@ -168,12 +162,6 @@ void generate_demo_robogami_robot_file(const std::string& mode,
     std::ofstream ofs(output_file.c_str(), std::ostream::out);
     ofs << generate_demo_robogami_robot_string(mode, robot, robot_name);
     ofs.close();
-}
-
-void generate_demo_robogami_robot_file(const std::string& mode,
-                                       const std::vector<double>& dv,
-                                       const std::string& robot_name) {
-    generate_demo_robogami_robot_file(mode, RobotRepresentation(dv), robot_name);
 }
 
 void set_mesh_dir(const std::string& new_root) {

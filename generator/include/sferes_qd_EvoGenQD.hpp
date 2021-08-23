@@ -44,6 +44,7 @@ class EvoGenQD
 
         for (auto& indiv : _init_pop) {
             indiv = std::make_shared<Phen>(this->_evo_params);
+            // random generated genome is guaranteed to be valid i.e. has enough length
             indiv->random();
         }
         this->_eval_pop(_init_pop);
@@ -58,24 +59,22 @@ class EvoGenQD
         _selector(_parents, this->_pop);
 
         // Generation of the offspring
+        // Note: there may be invalid ones generated after cross & mutation
+        // TODO: also mutate the length of the gene?
         const auto& ids = misc::randomized_indices(_parents.size());
-        for (size_t i = 0; i < _pop_size; i += 2) {
+        for (size_t i = 0; i < _parents.size(); i += 2) {
             std::shared_ptr<Phen> i1, i2;
             _parents[ids[i]]->cross(_parents[ids[i + 1]], i1, i2);
             i1->mutate();
             i2->mutate();
-            i1->develop();
-            i2->develop();
             _offspring[ids[i]] = i1;
             _offspring[ids[i + 1]] = i2;
         }
 
         // Evaluation of the offspring
         this->_eval_pop(_offspring);
-
         // Addition of the offspring to the container
         _add(_offspring, _added, _parents);
-
         // Copy of the containt of the container into the _pop object.
         _container.get_full_content(this->_pop);
     }
