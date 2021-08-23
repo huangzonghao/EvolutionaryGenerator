@@ -21,6 +21,7 @@ void init_robogami_library() {
 
 std::string generate_demo_robogami_robot_string(const std::string& mode,
                                                 const RobotRepresentation& robot,
+                                                const std::string& collision_model,
                                                 const std::string& robot_name) {
 
     const std::string mesh_ext = ".obj";
@@ -99,15 +100,48 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
                                                               << mesh_info.scale_z * link_length_scale[j] << "\" />" << std::endl;
             oss << "  </geometry>" << std::endl;
             oss << " </visual>" << std::endl;
-            oss << " <collision>" << std::endl;
-            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 + 0.02 << "\" />" << std::endl;
-            oss << "  <geometry>" << std::endl;
-            oss << "    <mesh filename = \"" << mesh_info.leg_mesh_dir << "/" << part_ids[j] << mesh_ext << "\""
-                                             << " scale = \"" << mesh_info.scale_x << " "
-                                                              << mesh_info.scale_y << " "
-                                                              << mesh_info.scale_z * link_length_scale[j] << "\" />" << std::endl;
-            oss << "  </geometry>" << std::endl;
-            oss << " </collision>" << std::endl;
+            if (collision_model == "primitive") {
+                // Use spheres for collision detection on feet
+                if (j == num_links - 1) {
+                    oss << " <collision>" << std::endl;
+                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 << "\" />" << std::endl;
+                    oss << "  <geometry>" << std::endl;
+                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    oss << "  </geometry>" << std::endl;
+                    oss << " </collision>" << std::endl;
+                    oss << " <collision>" << std::endl;
+                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+                    oss << "  <geometry>" << std::endl;
+                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    oss << "  </geometry>" << std::endl;
+                    oss << " </collision>" << std::endl;
+                } else if (j == num_links - 2) {
+                    oss << " <collision>" << std::endl;
+                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 + 0.02 << "\" />" << std::endl;
+                    oss << "  <geometry>" << std::endl;
+                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    oss << "  </geometry>" << std::endl;
+                    oss << " </collision>" << std::endl;
+                    oss << " <collision>" << std::endl;
+                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+                    oss << "  <geometry>" << std::endl;
+                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    oss << "  </geometry>" << std::endl;
+                    oss << " </collision>" << std::endl;
+                }
+            } else if (collision_model == "mesh") {
+                oss << " <collision>" << std::endl;
+                oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 + 0.02 << "\" />" << std::endl;
+                oss << "  <geometry>" << std::endl;
+                oss << "    <mesh filename = \"" << mesh_info.leg_mesh_dir << "/" << part_ids[j] << mesh_ext << "\""
+                                                 << " scale = \"" << mesh_info.scale_x << " "
+                                                                  << mesh_info.scale_y << " "
+                                                                  << mesh_info.scale_z * link_length_scale[j] << "\" />" << std::endl;
+                oss << "  </geometry>" << std::endl;
+                oss << " </collision>" << std::endl;
+            }
+
+
             oss << " <inertial>" << std::endl;
             oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
             oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
@@ -151,6 +185,7 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
 
 void generate_demo_robogami_robot_file(const std::string& mode,
                                        const RobotRepresentation& robot,
+                                       const std::string& collision_model,
                                        const std::string& robot_name) {
     std::string output_file(Robot_Output_Dir + "/" + robot_name + "/" + robot_name + ".urdf");
 
@@ -160,7 +195,7 @@ void generate_demo_robogami_robot_file(const std::string& mode,
         std::filesystem::create_directory(output_path);
 
     std::ofstream ofs(output_file.c_str(), std::ostream::out);
-    ofs << generate_demo_robogami_robot_string(mode, robot, robot_name);
+    ofs << generate_demo_robogami_robot_string(mode, robot, collision_model, robot_name);
     ofs.close();
 }
 
