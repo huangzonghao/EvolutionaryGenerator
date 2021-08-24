@@ -67,7 +67,7 @@ std::string generate_demo_robogami_robot_string(const std::string& mode,
     double leg_pos_y_tmp;
     double link_z_offset;
     std::string link_name_tmp;
-    int num_legs = robot.num_legs;
+    int num_legs = robot.num_legs();
     int part_ids[3];
     double part_lengths[3];
     double link_length_scale[3];

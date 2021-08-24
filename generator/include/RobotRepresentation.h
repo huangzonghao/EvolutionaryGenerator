@@ -30,11 +30,21 @@ class RobotRepresentation {
         bool operator<(const Leg& other) const;
 
         static double RobotRepresentation::Leg::get_pos(int myid, int total_legs) {
-            const double preset_legpos4[4] = {0.01, 0.99, 0.49, 0.51};
-            const double preset_legpos6[6] = {0.01, 0.99, 0.49, 0.51, 0.25, 0.75};
+            // the position here determines which controller each leg gets
+            const double preset_legpos2[2] = {0.25, 0.75};
+            const double preset_legpos3[3] = {0.01, 0.75, 0.49};
+            const double preset_legpos4[4] = {0.01, 0.49, 0.51, 0.99};
+            const double preset_legpos5[5] = {0.01, 0.49, 0.51, 0.99, 0.25};
+            const double preset_legpos6[6] = {0.01, 0.25, 0.49, 0.51, 0.75, 0.99};
             switch (total_legs) {
+            case 2:
+                return preset_legpos2[myid];
+            case 3:
+                return preset_legpos3[myid];
             case 4:
                 return preset_legpos4[myid];
+            case 5:
+                return preset_legpos5[myid];
             case 6:
                 return preset_legpos6[myid];
             default:
@@ -46,9 +56,8 @@ class RobotRepresentation {
 
     RobotRepresentation();
 
-    int num_legs = 4;
     // the leg order: FL ML BL BR MR FR
-    std::vector<Leg> legs = std::vector<Leg>(4);
+    std::vector<Leg> legs;
     int body_part_id = 0;
     double body_part_gene = 0;
     double body_scales[3] = {1, 1, 1};
@@ -59,8 +68,12 @@ class RobotRepresentation {
     int get_link_part_id(int leg_id, int link_id) const;
     double get_body_size(int dir) const;
     double get_body_length() const;
+    int num_legs() const;
+    void update_num_legs(int new_num_legs);
+    double get_leg_pos(int leg_id) const;
     friend std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot);
   private:
+    int num_legs_ = 0;
     double scale_min_ = 0;
     double scale_max_ = 1;
 };

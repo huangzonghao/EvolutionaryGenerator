@@ -106,7 +106,7 @@ std::string generate_demo_robot_string(const std::string& mode,
     double leg_pos_y_tmp;
     double link_z_offset;
     std::string link_name_tmp;
-    int num_legs = robot.num_legs;
+    int num_legs = robot.num_legs();
     Body bodies[3];
     for (int i = 0; i < num_legs; ++i) {
         const auto& robot_leg = robot.legs[i];

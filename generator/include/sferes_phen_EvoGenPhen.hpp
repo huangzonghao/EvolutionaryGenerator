@@ -77,12 +77,13 @@ class EvoGenPhen {
     // Genome to Robot Conversion & Verification
     // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
-    // Leg order: FL FR ML MR BL BR
+    // Leg order: FL ML BL BR MR FR
     // Note: develop is usually called right before fitness eval
     bool develop() {
         // Fill in the robot representation here and determin if the gene gives a valid robot
         // The invalid robot occurs when there are not enough elements in gene to
         // describe the required number of legs & links
+        // NOTE: any change here means changing the definition of genome
         int cursor = 0;
         try {
             const auto& gene = _gen.data();
@@ -90,12 +91,11 @@ class EvoGenPhen {
             _robot.body_part_id = gene_to_id(_robot.body_part_gene, mesh_info.num_bodies);
             for (int i = 0; i < 3; ++i)
                 _robot.body_scales[i] = scale_up(gene.at(cursor++), _min_p, _max_p);
-            _robot.num_legs = gene_to_id(gene.at(cursor++), min_num_legs, max_num_legs);
-            // check if we have enough elements in gene for this many legs
-            _robot.legs.resize(_robot.num_legs);
-            for (int i = 0; i < _robot.num_legs; ++i) {
+            int num_legs = gene_to_id(gene.at(cursor++), min_num_legs, max_num_legs);
+            _robot.update_num_legs(num_legs);
+            for (int i = 0; i < num_legs; ++i) {
                 auto& tmp_leg = _robot.legs[i];
-                tmp_leg.position = gene.at(cursor++);
+                // tmp_leg.position = gene.at(cursor++);
                 tmp_leg.num_links = gene_to_id(gene.at(cursor++), min_num_links, max_num_links);
                 tmp_leg.links.resize(tmp_leg.num_links);
                 for(int j = 0; j < tmp_leg.num_links; ++j) {

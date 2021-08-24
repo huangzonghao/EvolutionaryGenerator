@@ -24,8 +24,15 @@ bool RobotRepresentation::Leg::operator<(const RobotRepresentation::Leg& other) 
 }
 
 RobotRepresentation::RobotRepresentation() {
-    for (int i = 0; i < num_legs; ++i)
-        legs[i].update_pos(i, num_legs);
+    for (int i = 0; i < num_legs_; ++i)
+        legs[i].update_pos(i, num_legs_);
+}
+
+void RobotRepresentation::update_num_legs(int new_num_legs) {
+    num_legs_ = new_num_legs;
+    legs.resize(num_legs_);
+    for (int i = 0; i < num_legs_; ++i)
+        legs[i].update_pos(i, num_legs_);
 }
 
 int RobotRepresentation::get_body_part_id() const {
@@ -40,14 +47,22 @@ double RobotRepresentation::get_body_size(int dir) const {
     return mesh_info.get_body_size(body_part_id, dir) * body_scales[dir];
 }
 
+int RobotRepresentation::num_legs() const {
+    return num_legs_;
+}
+
 // return length of body along x direction
 double RobotRepresentation::get_body_length() const {
     return get_body_size(0);
 }
 
+double RobotRepresentation::get_leg_pos(int leg_id) const {
+    return legs[leg_id].position;
+}
+
 std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot) {
-    os << "Num of legs: " << robot.num_legs << std::endl;
-    for (int i = 0; i < robot.num_legs; ++i) {
+    os << "Num of legs: " << robot.num_legs_ << std::endl;
+    for (int i = 0; i < robot.num_legs_; ++i) {
         const auto& tmp_leg = robot.legs[i];
         os << "    Leg " << std::to_string(i)
                          << ": leg_pos " << tmp_leg.position

@@ -34,7 +34,7 @@ class UrdfFitness {
 
         const auto& robot = ind.get_robot();
         sm.RemoveAllMotors();
-        int num_legs = robot.num_legs;
+        int num_legs = robot.num_legs();
         // the leg order in Phen is: FL ML BL BR MR FR, which is the same as
         // the leg order in Sim Controller is: FL ML BL BR MR FR
         for (int i = 0; i < num_legs; ++i) {
@@ -60,10 +60,10 @@ class UrdfFitness {
         _desc[0] = robot.get_body_size(1) / body_length;
         _desc[0] /=  2; // assuming the range of the origin ratio is [0, 2], ignoring the rest
         double total_leg_length = 0;
-        for (int i = 0; i < robot.num_legs; ++i) {
+        for (int i = 0; i < num_legs; ++i) {
             total_leg_length += robot.legs[i].length();
         }
-        total_leg_length /= robot.num_legs;
+        total_leg_length /= num_legs;
         _desc[1] = total_leg_length / body_length;
         _desc[1] /= 8; // assuming range [0, 8];
     }
