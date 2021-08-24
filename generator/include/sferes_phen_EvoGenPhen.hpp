@@ -14,11 +14,20 @@ extern MeshInfo mesh_info; // defined in MeshInfo.cpp
 namespace sferes {
 namespace phen {
 
+// phen related values
+static const int robot_meta_size = 1; // num_legs
+static const int body_meta_size = 4; // body_id, body_x, body_y, body_z
+static const int leg_meta_size = 2; // leg_pos, num_links
+static const int link_meta_size = 2; // link_id, link_scale
+
+// controller related values
 static const int max_num_legs = 6;
 static const int min_num_legs = 2;
 static const int max_num_links = 3;
 static const int min_num_links = 2;
-static const int gen_max_length = 53;
+
+// derived values
+static const int gen_max_length = robot_meta_size + body_meta_size + max_num_legs * (leg_meta_size + max_num_links * link_meta_size);
 
 template <typename Gen, typename Fit>
 class EvoGenPhen {
