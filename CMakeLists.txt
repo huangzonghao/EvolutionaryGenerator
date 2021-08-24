@@ -199,15 +199,10 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
 )
-
 set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp)
-
 add_executable(${PROJECT_NAME} ${Headers} ${Sources})
-
 target_link_libraries(${PROJECT_NAME} Generator Simulator)
-
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
-
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # TODO: need to add cplex dll in debug config
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
@@ -216,7 +211,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
     DLL_Copy_Command(${PROJECT_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
@@ -238,13 +232,11 @@ target_link_libraries(${CURRENT_TARGET_NAME} PRIVATE robogami)
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
                                   ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
-
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
@@ -264,7 +256,6 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
 )
-
 set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/MeshInfo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobotRepresentation.cpp
@@ -273,26 +264,21 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/visualizer_main.cpp
 )
-
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
-
 target_link_libraries(${CURRENT_TARGET_NAME}
                       trimesh2
                       Simulator
                       Boost::disable_autolinking
                       ${Boost_SERIALIZATION_LIBRARY_RELEASE})
-
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
                                   ${Boost_INCLUDE_DIR}
                                   ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
-
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
     list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
@@ -305,17 +291,29 @@ if(MSVC)
 endif()
 
 set(CURRENT_TARGET_NAME Convert_Mesh_Models)
-
 set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/mesh_converter_main.cpp
 )
-
 add_executable(${CURRENT_TARGET_NAME} ${Sources})
-
 target_link_libraries(${CURRENT_TARGET_NAME} trimesh2)
-
 target_include_directories(${CURRENT_TARGET_NAME} PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR})
+if(MSVC)
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
+        $<$<CONFIG:Release>: /MP;>
+    )
+    target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
+endif()
 
+set(CURRENT_TARGET_NAME Show_Mesh_Info)
+set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/show_mesh_info_main.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/MeshInfo.cpp)
+add_executable(${CURRENT_TARGET_NAME} ${Sources})
+target_link_libraries(${CURRENT_TARGET_NAME} trimesh2)
+target_include_directories(${CURRENT_TARGET_NAME} PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                                         ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
 if(MSVC)
     source_group("Source Files" FILES ${Sources})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
