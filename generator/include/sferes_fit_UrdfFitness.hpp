@@ -56,18 +56,31 @@ class UrdfFitness {
         // TODO: this part needs to be updated
         // Update Descriptors
         // Note: descriptor needs to be in range [0, 1]
-        double body_length = robot.get_body_length();
-        _desc[0] = robot.get_body_size(1) / body_length;
-        _desc[0] /=  2; // assuming the range of the origin ratio is [0, 2], ignoring the rest
-        double total_leg_length = 0;
+        // double body_length = robot.get_body_length();
+        // _desc[0] = robot.get_body_size(1) / body_length;
+        // _desc[0] /=  2; // assuming the range of the origin ratio is [0, 2], ignoring the rest
+        _desc[0] = ind.gen().data(1);
+        double avg_leg_length = 0;
         for (int i = 0; i < num_legs; ++i) {
-            total_leg_length += robot.legs[i].length();
+            avg_leg_length += robot.legs[i].length();
         }
-        total_leg_length /= num_legs;
-        _desc[1] = total_leg_length / body_length;
-        _desc[1] /= 8; // assuming range [0, 8];
+
+        avg_leg_length /= num_legs;
+        double sd = 0;
+        for (int i = 0; i < num_legs; ++i) {
+            sd += std::pow(robot.legs[i].length(), 2);
+        }
+        sd = std::sqrt(sd / num_legs);
+
+        // _desc[1] = avg_leg_length / body_length;
+        // _desc[1] /= 8; // assuming range [0, 8];
+        _desc[1] = scale_to_unit(sd, 0.5, 1.8); // assuming range [0.5, 1.8];
+
+        // regulate descriptor
+        for (auto& e : _desc)
+            e = std::clamp(e, 0.0, 1.0);
     }
-    static constexpr const char* descriptor_name[2] = {"body width/length", "avg leg length/body_length"};
+    static constexpr const char* descriptor_name[2] = {"body length", "leg length sd"};
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
@@ -82,6 +95,11 @@ class UrdfFitness {
     double _curiosity = 0;
     double _lq = 0;
     double _value = 0;
+
+    // scale the value within the given range to [0, 1]
+    inline double scale_to_unit(double raw, double min, double max) {
+        return (raw - min) / (max - min);
+    }
 };
 
 } // namespace fit
