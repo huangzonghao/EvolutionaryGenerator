@@ -88,7 +88,7 @@ class EvoGenPhen {
         try {
             const auto& gene = _gen.data();
             _robot.body_part_gene = gene.at(cursor++);
-            _robot.body_part_id = gene_to_id(_robot.body_part_gene, mesh_info.num_bodies);
+            _robot.body_part_id = gene_to_id(_robot.body_part_gene, mesh_info.num_bodies());
             for (int i = 0; i < 3; ++i)
                 _robot.body_scales[i] = scale_up(gene.at(cursor++), _min_p, _max_p);
             int num_legs = gene_to_id(gene.at(cursor++), min_num_legs, max_num_legs);
@@ -102,7 +102,7 @@ class EvoGenPhen {
                     auto& tmp_link = tmp_leg.links[j];
                     tmp_link.part_gene = gene.at(cursor++);
                     tmp_link.scale = scale_up(gene.at(cursor++), _min_p, _max_p);
-                    tmp_link.part_id = gene_to_id(tmp_link.part_gene, mesh_info.num_legs);
+                    tmp_link.part_id = gene_to_id(tmp_link.part_gene, mesh_info.num_legs());
                 }
             }
         } catch (const std::out_of_range& oor) {
