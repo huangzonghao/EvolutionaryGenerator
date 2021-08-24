@@ -112,6 +112,7 @@ class Grid {
 
   protected:
     // Converts the descriptor into a Point_t
+    // Ignoring the rest of data in descriptor
     template <typename I> point_t get_point(const I& indiv) const {
         point_t p;
         for (size_t i = 0; i < grid_shape.size(); ++i) {

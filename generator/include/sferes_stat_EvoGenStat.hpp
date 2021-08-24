@@ -72,18 +72,17 @@ class EvoGenStat {
 
         std::ofstream ofs(fname);
 
-        size_t idx = 0;
         ofs.precision(5);
         for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it) {
-            ofs << idx << ",";
-            for (size_t dim = 0; dim < (*it)->fit().desc().size(); ++dim)
+            const auto& desc_size = (*it)->fit().desc().size();
+            ofs << desc_size << ",";
+            for (size_t dim = 0; dim < desc_size; ++dim)
                 ofs << (*it)->fit().desc()[dim] << ",";
             ofs << (*it)->fit().value();
 
             for (size_t dim = 0; dim < (*it)->size(); ++dim)
                 ofs << "," << (*it)->data(dim);
             ofs << std::endl;
-            ++idx;
         }
         ofs.close();
     }
