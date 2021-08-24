@@ -265,15 +265,8 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/visualizer_main.cpp
 )
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
-target_link_libraries(${CURRENT_TARGET_NAME}
-                      trimesh2
-                      Simulator
-                      Boost::disable_autolinking
-                      ${Boost_SERIALIZATION_LIBRARY_RELEASE})
-target_include_directories(${CURRENT_TARGET_NAME}
-                           PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
-                                  ${Boost_INCLUDE_DIR}
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
+target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator)
+target_include_directories(${CURRENT_TARGET_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
     list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})

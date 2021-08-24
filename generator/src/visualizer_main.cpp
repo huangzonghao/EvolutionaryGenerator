@@ -6,6 +6,12 @@
 #include "GenerateDemoRobot.h"
 #include "GenerateDemoRobogamiRobot.h"
 #include "RobotRepresentation.h"
+#include "sferes_gen_EvoGenFloat.hpp"
+#include "sferes_phen_EvoGenPhen.hpp"
+#include "sferes_fit_UrdfFitness.hpp"
+
+typedef sferes::fit::UrdfFitness fit_t;
+typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -17,11 +23,13 @@ int main(int argc, char **argv) {
     int arg_cursor = 1;
     std::string robot_type(argv[arg_cursor++]);
     std::string sim_filename(argv[arg_cursor++]);
-    std::vector<double> design_vector;
+    std::vector<double> gene;
     for (int i = arg_cursor; i < argc; ++i)
-        design_vector.push_back(std::atof(argv[arg_cursor++]));
+        gene.push_back(std::atof(argv[arg_cursor++]));
 
-    RobotRepresentation robot(design_vector, 0.5, 1.5);
+    phen_t phen(gene, 0.5, 1.5);
+    phen.develop();
+    const auto& robot = phen.get_robot();
 
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
@@ -47,7 +55,7 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[2],
                  sim_params.env_rot[3]);
 
-    for (int i = 0; i < robot.num_legs; ++i) {
+    for (int i = 0; i < robot.num_legs(); ++i) {
         sm.AddEvoGenMotor("chassis_leg_" + std::to_string(i) + "-0", i, 0);
         for (int j = 1; j < robot.legs[i].num_links; ++j) {
             sm.AddEvoGenMotor("leg_" + std::to_string(i) + "-" + std::to_string(j - 1) +
