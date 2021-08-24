@@ -113,6 +113,10 @@ classdef UI < matlab.apps.AppBase
 
         function load_result(app)
             result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
+            if (result_path == 0) % User pressed cancel button
+                return;
+            end
+
             figure(app.EvolutionaryRobogamiResultViewerUIFigure);
             evo_xml = xml2struct(fullfile(result_path, app.params_filename));
 
