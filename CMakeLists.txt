@@ -134,11 +134,11 @@ if (NEED_TO_RETURN)
 endif()
 
 if(NOT DEFINED ROBOGAMI_DATA_PATH)
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generator/Robogami/Data/.git)
-        execute_process(COMMAND git submodule update --init --depth 1 -- generator/Robogami/Data
+    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data/.git)
+        execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/Data
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
-    set(ROBOGAMI_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/generator/Robogami/Data CACHE PATH "Path to the Robogami data repo root")
+    set(ROBOGAMI_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data CACHE PATH "Path to the Robogami data repo root")
     message(STATUS "Robogami-Data Configured")
 elseif(NOT EXISTS ${ROBOGAMI_DATA_PATH})
     message(SEND_ERROR "Error: Invalid Robogami-Data Path")
@@ -149,11 +149,11 @@ else()
 endif()
 
 if (NOT DEFINED RobogamiBackend_ROOT)
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generator/Robogami/Backend/.git)
-        execute_process(COMMAND git submodule update --init --depth 1 -- generator/Robogami/Backend
+    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Backend/.git)
+        execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/Backend
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
-    set(RobogamiBackend_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/generator/Robogami/Backend CACHE PATH "Path to Robogami-Backend repo")
+    set(RobogamiBackend_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Backend CACHE PATH "Path to Robogami-Backend repo")
     message(STATUS "Robogami-Backend Configured")
 elseif(NOT EXISTS ${RobogamiBackend_ROOT})
     message(SEND_ERROR "Error: Invalid Robogami-Backend Path")
@@ -164,11 +164,11 @@ else()
 endif()
 
 if (NOT DEFINED RobogamiUI_ROOT)
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generator/Robogami/UI/.git)
-        execute_process(COMMAND git submodule update --init --depth 1 -- generator/Robogami/UI
+    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/UI/.git)
+        execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/UI
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
-    set(RobogamiUI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/generator/Robogami/UI CACHE PATH "Path to Robogami-UI repo")
+    set(RobogamiUI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/UI CACHE PATH "Path to Robogami-UI repo")
     message(STATUS "Robogami-UI Configured")
 elseif(NOT EXISTS ${RobogamiUI_ROOT})
     message(SEND_ERROR "Error: Invalid Robogami-UI Path")
@@ -184,7 +184,7 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(RobogamiBackend_GROUP_FOLDER Robogami)
-add_subdirectory(generator/Robogami/Backend)
+add_subdirectory(Robogami/Backend)
 add_subdirectory(simulator)
 add_subdirectory(generator)
 set_target_properties(Generator Simulator PROPERTIES FOLDER Lib)
