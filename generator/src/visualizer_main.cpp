@@ -3,8 +3,6 @@
 
 #include "SimulatorParams.h"
 #include "SimulationManager.h"
-#include "GenerateDemoRobot.h"
-#include "GenerateDemoRobogamiRobot.h"
 #include "RobotRepresentation.h"
 #include "sferes_gen_EvoGenFloat.hpp"
 #include "sferes_phen_EvoGenPhen.hpp"
@@ -30,6 +28,8 @@ int main(int argc, char **argv) {
     phen_t phen(gene, 0.5, 1.5);
     phen.develop();
     const auto& robot = phen.get_robot();
+
+    robot.type = robot_type;
 
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
@@ -70,14 +70,7 @@ int main(int argc, char **argv) {
     std::filesystem::path result_dir(sim_filename);
     if (std::filesystem::exists(result_dir.parent_path().string() + "/robot_parts"))
         set_mesh_dir(result_dir.parent_path().string() + "/robot_parts");
-
-    if (robot_type == "primitive") {
-        sm.LoadUrdfString(generate_demo_robot_string("leg", robot));
-    } else if (robot_type == "mesh") {
-        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", robot));
-    } else {
-        std::cout << "Error: This visualizer doesn't support robot type " << robot_type << std::endl;
-    }
+    sm.LoadUrdfString(robot.get_urdf_string());
     sm.RunSimulation();
     return 0;
 }

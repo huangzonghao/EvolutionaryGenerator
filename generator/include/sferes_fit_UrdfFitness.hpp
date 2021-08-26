@@ -5,8 +5,6 @@
 #include <boost/serialization/vector.hpp>
 
 #include "RobotRepresentation.h"
-#include "GenerateDemoRobot.h"
-#include "GenerateDemoRobogamiRobot.h"
 #include "SimulationManager.h"
 
 namespace sferes {
@@ -45,9 +43,7 @@ class UrdfFitness {
             }
         }
 
-        sm.LoadUrdfString(generate_demo_robogami_robot_string("leg", robot));
-        // generate_demo_robogami_robot_file("leg", ind.data());
-        // sm.LoadUrdfString(generate_demo_robot_string("leg", ind.data()));
+        sm.LoadUrdfString(robot.get_urdf_string());
         sm.RunSimulation();
 
         // reward x movement and penalize y movement

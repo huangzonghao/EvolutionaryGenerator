@@ -57,6 +57,8 @@ class RobotRepresentation {
     RobotRepresentation();
 
     // the leg order: FL ML BL BR MR FR
+    std::string robot_name = "temp_robot";
+    std::string type = "mesh";
     std::vector<Leg> legs;
     int body_part_id = 0;
     double body_part_gene = 0;
@@ -70,9 +72,14 @@ class RobotRepresentation {
     double get_body_length() const;
     int num_legs() const;
     void update_num_legs(int new_num_legs);
+    std::string get_urdf_string() const;
+    void export_urdf_file(const std::string& output_path) const;
     double get_leg_pos(int leg_id) const;
     friend std::ostream& operator<<(std::ostream& os, const RobotRepresentation& robot);
   private:
+    std::string get_urdf_string_mesh() const;
+    std::string get_urdf_string_primitive() const;
+    bool collision_use_mesh_ = false;
     int num_legs_ = 0;
     double scale_min_ = 0;
     double scale_max_ = 1;
