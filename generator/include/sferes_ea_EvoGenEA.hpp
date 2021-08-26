@@ -49,7 +49,6 @@ class EvoGenEA : public stc::Any<Exact> {
         _populate_params();
         _exp_name = exp_name;
         _make_res_dir();
-        _set_status("running");
         size_t rand_seed = _evo_params.rand_seed();
         if (rand_seed == 1) {
             rand_seed = time(0) + ::getpid();
@@ -63,14 +62,11 @@ class EvoGenEA : public stc::Any<Exact> {
         random_pop();
         _dump_state();
         update_stats_init();
-        for (_gen = 0; _gen < _nb_gen && !_stop; ++_gen)
+        for (_gen = 0; _gen < _nb_gen; ++_gen)
             _iter();
-        if (!_stop)
-            _set_status("finished");
     }
 
     void resume(const std::string& res_dir, int dump_gen_id) {
-        _set_status("resumed");
         _res_dir = res_dir;
         _load_config(_res_dir + "/evo_params.xml");
         _populate_params();
@@ -78,10 +74,8 @@ class EvoGenEA : public stc::Any<Exact> {
         _load_state(_res_dir + "/dumps/gen_" + std::to_string(dump_gen_id) + ".dat");
         _gen = _gen + 1;
         std::cout<<"Resuming at gen: "<< _gen + 1 << std::endl;
-        for (; _gen < _nb_gen && !_stop; ++_gen)
+        for (; _gen < _nb_gen; ++_gen)
             _iter();
-        if (!_stop)
-            _set_status("finished");
     }
 
     void random_pop() {
@@ -146,12 +140,6 @@ class EvoGenEA : public stc::Any<Exact> {
     size_t nb_evals() const { return _eval.nb_evals(); }
     bool dump_enabled() const { return _progress_dump_period != -1; }
 
-    void stop() {
-        _stop = true;
-        _set_status("interrupted");
-    }
-    bool is_stopped() const { return _stop; }
-
     EvoParams& evo_params() { return _evo_params; }
     void set_params(const EvoParams& evo_params) { _evo_params = evo_params; }
 
@@ -164,7 +152,6 @@ class EvoGenEA : public stc::Any<Exact> {
     stat_t _stat;
     std::string _res_dir;
     int _gen = -1;
-    bool _stop = false;
     std::string _exp_name;
 
     std::chrono::steady_clock::time_point tik;
@@ -177,19 +164,6 @@ class EvoGenEA : public stc::Any<Exact> {
         update_stats();
         if (_gen % _progress_dump_period == 0)
             _dump_state();
-        _set_status("running");
-    }
-
-    // the status is a file that tells the state of the experiment
-    // it is useful to tell to the rest of the world if the experiment has
-    // been interrupted
-    // typical values: "running", "interrupted", "finished"
-    void _set_status(const std::string& status) const {
-        if (_progress_dump_period == -1)
-            return;
-        std::string s = _res_dir + "/status.txt";
-        std::ofstream ofs(s.c_str());
-        ofs << _gen + 1 << "/" << _nb_gen << " - " << status;
     }
 
     template<typename P>
@@ -231,8 +205,10 @@ class EvoGenEA : public stc::Any<Exact> {
     void _dump_state() const {
         if (_progress_dump_period == -1)
             return;
-        std::ofstream ofs(_res_dir + "/dumps/gen_" + std::to_string(_gen + 1) + ".dat", std::ios::binary);
+        std::ofstream status_ofs(_res_dir + "/status.txt");
+        status_ofs << _gen + 1 << "/" << _nb_gen;
 
+        std::ofstream ofs(_res_dir + "/dumps/gen_" + std::to_string(_gen + 1) + ".dat", std::ios::binary);
         boost::archive::binary_oarchive oa(ofs);
         oa << BOOST_SERIALIZATION_NVP(_gen)
            << BOOST_SERIALIZATION_NVP(_last_epoch_time)
