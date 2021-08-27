@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <TriMesh.h>
 
-void MeshInfo::load_info() {
+void MeshInfo::init() {
     // bodies
     num_bodies_ = 0;
     body_size.clear();
@@ -40,8 +40,6 @@ void MeshInfo::load_info() {
     }
 }
 
-MeshInfo::MeshInfo() { load_info(); }
-
 const int MeshInfo::num_bodies() const {
     return num_bodies_;
 }
@@ -53,7 +51,6 @@ const int MeshInfo::num_legs() const {
 void MeshInfo::set_mesh_dir(const std::string& new_root) {
     body_mesh_dir = new_root + "/bodies";
     leg_mesh_dir = new_root + "/legs";
-    load_info();
 }
 
 void MeshInfo::print_all_size() {

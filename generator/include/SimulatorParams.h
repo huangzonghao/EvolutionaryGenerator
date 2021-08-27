@@ -11,6 +11,7 @@ class SimulatorParams {
     double time_out = 5;
     std::string env_name = "ground";
     std::string env_dir = ".";
+    std::string parts_dir = ".";
     double env_dim[3] = {5, 3, 0.01};
     double env_rot[4] = {1, 0, 0, 0}; // w, x, y, z
     bool do_viz = false;

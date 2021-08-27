@@ -125,14 +125,7 @@ class EvoGenQD
     }
 
     void _dump_config_extra() const {
-        const std::string& env_file = _sim_params.GetEnv();
-        if (std::filesystem::exists(env_file)) {
-            std::filesystem::copy(env_file, _res_dir);
-            SimulatorParams new_sim_param = _sim_params;
-            new_sim_param.Save(this->_res_dir + "/sim_params.xml");
-        } else {
-            _sim_params.Save(this->_res_dir + "/sim_params.xml");
-        }
+        _sim_params.Save(this->_res_dir + "/sim_params.xml");
     }
 
     void _load_config_extra(const std::string& evo_params_fname) {

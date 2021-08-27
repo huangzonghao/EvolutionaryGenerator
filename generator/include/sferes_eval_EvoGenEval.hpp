@@ -5,8 +5,11 @@
 #include <thread>
 #include <vector>
 
+#include "MeshInfo.h"
 #include "SimulationManager.h"
 #include "SimulatorParams.h"
+
+extern MeshInfo mesh_info;
 
 namespace sferes {
 namespace eval {
@@ -48,6 +51,9 @@ class EvoGenEval {
 
             sms.push_back(sm);
         }
+
+        mesh_info.set_mesh_dir(sim_params.parts_dir);
+        mesh_info.init();
     }
 
     template<typename Phen>

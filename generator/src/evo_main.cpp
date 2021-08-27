@@ -30,7 +30,7 @@ void new_training() {
 
     if (need_to_return) {
         std::cout << "Params files write to " << EvoGen_Params_Dir << std::endl;
-        std::cout << "Edit those files and relaurch" << std::endl;
+        std::cout << "Edit those files and relaunch" << std::endl;
         return;
     }
 
@@ -49,6 +49,20 @@ void new_training() {
                           "_" + time_buffer;
 
     sim_params.env_dir = EvoGen_Maps_Dir;
+    sim_params.parts_dir = Robot_Parts_Dir;
+
+    // copy env file and robot_parts file here
+    if (evo_params.output_enabled()) {
+        std::filesystem::create_directories(log_dir);
+        const std::string& env_file = sim_params.GetEnv();
+        if (std::filesystem::exists(env_file)) { // in case env is ground
+            std::filesystem::copy(env_file, log_dir);
+            sim_params.env_dir = log_dir;
+        }
+
+        std::filesystem::copy(Robot_Parts_Dir, log_dir + "/robot_parts", std::filesystem::copy_options::recursive);
+        sim_params.parts_dir = log_dir + "/robot_parts";
+    }
 
     evo_gen.set_evo_params(evo_params);
     evo_gen.set_sim_params(sim_params);
