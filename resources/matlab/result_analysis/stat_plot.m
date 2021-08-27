@@ -15,7 +15,7 @@ function stat_plot(stat, evo_params, start_gen, end_gen)
     title('Fitness');
     xlabel('generation');
     ylabel('fitness');
-    legend('archive mean', 'top 10% archive mean', 'pop mean');
+    legend('archive mean', 'top 10% archive mean', 'pop mean', 'Location', 'NorthWest');
 
     subplot(2, 1, 2);
     p2 = plot(start_gen : end_gen, stat.coverage(start_gen + 1: end_gen + 1), 'b');
