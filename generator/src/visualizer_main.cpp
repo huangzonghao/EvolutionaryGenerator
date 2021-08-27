@@ -25,15 +25,20 @@ int main(int argc, char **argv) {
     for (int i = arg_cursor; i < argc; ++i)
         gene.push_back(std::atof(argv[arg_cursor++]));
 
+    std::string result_dir = std::filesystem::path(sim_filename).parent_path().string();
+    // If the result dir contains parts lib, use it
+    // Note: the mesh_info must be ready when phen develops the robot
+    if (std::filesystem::exists(result_dir + "/robot_parts"))
+        mesh_info.set_mesh_dir(result_dir + "/robot_parts");
+    mesh_info.init();
+
     phen_t phen(gene, 0.5, 1.5);
     phen.develop();
     const auto& robot = phen.get_robot();
 
-    robot.type = robot_type;
-
     SimulatorParams sim_params;
     sim_params.Load(sim_filename);
-    sim_params.env_dir = std::filesystem::path(sim_filename).parent_path().string();
+    sim_params.env_dir = result_dir;
 
     SimulationManager sm;
     sm.SetTimeout(sim_params.time_out);
@@ -66,10 +71,6 @@ int main(int argc, char **argv) {
     sm.SetVisualization(true);
     // sm.SetRealTime(true);
 
-    // If the result dir contains parts lib, use it
-    std::filesystem::path result_dir(sim_filename);
-    if (std::filesystem::exists(result_dir.parent_path().string() + "/robot_parts"))
-        set_mesh_dir(result_dir.parent_path().string() + "/robot_parts");
     sm.LoadUrdfString(robot.get_urdf_string());
     sm.RunSimulation();
     return 0;
