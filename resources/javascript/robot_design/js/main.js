@@ -21,7 +21,7 @@ preset_leg_pos["6"] = [0.01, 0.25, 0.49, 0.51, 0.75, 0.99];
 
 // TODO: the following 4 values should be read from disk
 const num_body_parts = 5;
-const num_leg_parts = 11;
+const num_leg_parts = 7;
 
 ////////////////////////////////////////////////////////////////////////
 //                               Class                                //
@@ -130,9 +130,9 @@ class RobogamiLibrary {
 
         let loader = new THREE.OBJLoader();
         for (let i = 0; i < num_body_parts; ++i)
-            loader.load('./models/bodies/' + i + '.obj', function (obj) {self.bodies[i] = obj;});
+            loader.load('./robot_parts/bodies/' + i + '.obj', function (obj) {self.bodies[i] = obj;});
         for (let i = 0; i < num_leg_parts; ++i)
-            loader.load('./models/legs/' + i + '.obj', function (obj) {self.legs[i] = obj});
+            loader.load('./robot_parts/legs/' + i + '.obj', function (obj) {self.legs[i] = obj});
     }
 
     post_load_processing() {
