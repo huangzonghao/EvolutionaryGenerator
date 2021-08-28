@@ -131,7 +131,9 @@ class EvoGenQD
     void _load_config_extra(const std::string& evo_params_fname) {
         std::filesystem::path res_path(evo_params_fname);
         _sim_params.Load(res_path.parent_path().string() + "/sim_params.xml");
+        // TODO: the following load should be handled from outside -- probably in evo_main
         _sim_params.env_dir = _res_dir;
+        _sim_params.parts_dir = _res_dir + "/robot_parts";
         this->_eval.set_sim_params(_sim_params);
     }
 
