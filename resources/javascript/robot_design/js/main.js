@@ -4,13 +4,19 @@
 //                             Constants                              //
 ////////////////////////////////////////////////////////////////////////
 
-const allowed_num_legs = [4, 6];
+const allowed_num_legs = [2, 3, 4, 5, 6];
+const min_num_links_per_leg = 2;
 const max_num_links_per_leg = 3;
 const leg_pos_range = [0, 1];
 const link_length_range = [0.5, 1.5];
 const slider_step = 0.01;
-const init_leg_position = [0.01, 0.99, 0.49, 0.51, 0.25, 0.75];
 
+var preset_leg_pos = {};
+preset_leg_pos["2"] = [0.25, 0.75];
+preset_leg_pos["3"] = [0.01, 0.75, 0.49];
+preset_leg_pos["4"] = [0.01, 0.49, 0.51, 0.99];
+preset_leg_pos["5"] = [0.01, 0.49, 0.51, 0.99, 0.25];
+preset_leg_pos["6"] = [0.01, 0.25, 0.49, 0.51, 0.75, 0.99];
 
 // TODO: the following 4 values should be read from disk
 const num_body_parts = 5;
@@ -28,9 +34,9 @@ class RobotLink {
 }
 
 class RobotLeg {
-    constructor(init_pos = 0) {
-        this.position = init_pos;
-        this.num_links = 1;
+    constructor() {
+        this.position = 0;
+        this.num_links = min_num_links_per_leg;
         this.links = [];
         // define an array of 3 links
         for (let i = 0; i < max_num_links_per_leg; ++i)
@@ -43,18 +49,26 @@ class RobotLeg {
         else
             console.log("Error: link idx exceeds total number of links");
     }
+
+    update_position(leg_id, total_num_legs) {
+        this.position = preset_leg_pos[total_num_legs.toString()][leg_id];
+    }
 }
 
 class RobotRepresentation {
     constructor() {
         this.body_id = 0;
-        this.leg_order = ["FL", "FR", "BL", "BR", "ML", "MR"];
         this.name = "Robogami_Temp";
         this.num_legs = 4;
-        // leg order: FL FR BL BR ML MR
+        // leg order: FL ML BL BR MR FR
         this.legs = [];
+        // add enough containers for maximum number of legs and this legs array
+        //     will not be resized later
         for (let i = 0; i < allowed_num_legs[allowed_num_legs.length - 1]; ++i)
-            this.legs.push(new RobotLeg(init_leg_position[i]));
+            this.legs.push(new RobotLeg());
+        // init as a valid robot
+        for (let i = 0; i < this.num_legs; ++i)
+            this.legs[i].update_position(i, this.num_legs);
         this.dv = [];
     }
 
@@ -65,12 +79,16 @@ class RobotRepresentation {
             console.log("Error: leg idx exceeds total number of legs");
     }
 
-    sort_legs() {
-    // TODO: reorder legs based on their leg_pos
+    update_num_legs(new_num_legs) {
+        this.num_legs = new_num_legs;
+        for (let i = 0; i < this.num_legs; ++i) {
+            this.legs[i].update_position(i, this.num_legs);
+        }
     }
 
+    // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+    //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     compile_dv() {
-        sort_legs();
         this.dv.length = 0;
         this.dv.push(this.body_id);
         this.dv.push(1); // body_x
@@ -79,7 +97,7 @@ class RobotRepresentation {
         this.dv.push(this.num_legs);
         for (let i = 0; i < this.num_legs; ++i) {
             let this_leg = this.leg(i);
-            this.dv.push(this_leg.position);
+            // this.dv.push(this_leg.position); // temp disable leg_pos
             this.dv.push(this_leg.num_links);
             for (let j = 0; j < this_leg.num_links; ++j) {
                 this.dv.push(this_leg.link(j).part_id);
@@ -173,7 +191,7 @@ function onBodyIdSelectChange(event) {
 
 function onNumLegsSelectChange(event) {
     var select = event.target;
-    robot.num_legs = parseInt(select.value);
+    robot.update_num_legs(parseInt(select.value))
     update_dropdown_lists();
     draw_robot();
 }
@@ -262,13 +280,14 @@ function init_dropdown_lists() {
         opt.innerHTML = allowed_num_legs[i];
         num_legs_e.appendChild(opt);
     }
+    num_legs_e.value = robot.num_legs.toString();
     num_legs_e.addEventListener('change', onNumLegsSelectChange);
 
     // Num Links
-    for (let i = 0; i < max_num_links_per_leg; ++i) {
+    for (let i = min_num_links_per_leg; i < max_num_links_per_leg + 1; ++i) {
         var opt = document.createElement('option');
-        opt.value = i + 1;
-        opt.innerHTML = i + 1;
+        opt.value = i;
+        opt.innerHTML = i;
         num_links_e.appendChild(opt);
     }
     num_links_e.addEventListener('change', onNumLinksSelectChange);
