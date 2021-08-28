@@ -8,6 +8,7 @@ const allowed_num_legs = [2, 3, 4, 5, 6];
 const min_num_links_per_leg = 2;
 const max_num_links_per_leg = 3;
 const leg_pos_range = [0, 1];
+const body_scale_range = [0.5, 1.5];
 const link_length_range = [0.5, 1.5];
 const slider_step = 0.01;
 
@@ -58,6 +59,7 @@ class RobotLeg {
 class RobotRepresentation {
     constructor() {
         this.body_id = 0;
+        this.body_scales = [1, 1, 1];
         this.name = "Robogami_Temp";
         this.num_legs = 4;
         // leg order: FL ML BL BR MR FR
@@ -91,9 +93,8 @@ class RobotRepresentation {
     compile_dv() {
         this.dv.length = 0;
         this.dv.push(this.body_id);
-        this.dv.push(1); // body_x
-        this.dv.push(1); // body_y
-        this.dv.push(1); // body_z
+        for (let i = 0; i < robot.body_scales.length; ++i) // body scales
+            this.dv.push(robot.body_scales[i]);
         this.dv.push(this.num_legs);
         for (let i = 0; i < this.num_legs; ++i) {
             let this_leg = this.leg(i);
@@ -160,6 +161,12 @@ class RobogamiLibrary {
 ////////////////////////////////////////////////////////////////////////
 
 let body_id_e      = document.getElementById('BodyIdSelect');
+let body_x_e       = document.getElementById('BodyScaleXText');
+let body_x2_e      = document.getElementById('BodyScaleXRange');
+let body_y_e       = document.getElementById('BodyScaleYText');
+let body_y2_e      = document.getElementById('BodyScaleYRange');
+let body_z_e       = document.getElementById('BodyScaleZText');
+let body_z2_e      = document.getElementById('BodyScaleZRange');
 let num_legs_e     = document.getElementById('NumLegsSelect');
 let leg_id_e       = document.getElementById('LegIdSelect');
 let leg_pos_e      = document.getElementById('LegPositionText');
@@ -186,6 +193,48 @@ function onWindowResize(event) {
 function onBodyIdSelectChange(event) {
     var select = event.target;
     robot.body_id = parseInt(select.value);
+    draw_robot();
+}
+
+function onBodyScaleXTextChange(event) {
+    var select = event.target;
+    robot.body_scales[0] = parseFloat(select.value);
+    body_x2_e.value = select.value;
+    draw_robot();
+}
+
+function onBodyScaleXRangeChange(event) {
+    var select = event.target;
+    robot.body_scales[0] = parseFloat(select.value);
+    body_x_e.value = select.value;
+    draw_robot();
+}
+
+function onBodyScaleYTextChange(event) {
+    var select = event.target;
+    robot.body_scales[1] = parseFloat(select.value);
+    body_y2_e.value = select.value;
+    draw_robot();
+}
+
+function onBodyScaleYRangeChange(event) {
+    var select = event.target;
+    robot.body_scales[1] = parseFloat(select.value);
+    body_y_e.value = select.value;
+    draw_robot();
+}
+
+function onBodyScaleZTextChange(event) {
+    var select = event.target;
+    robot.body_scales[2] = parseFloat(select.value);
+    body_z2_e.value = select.value;
+    draw_robot();
+}
+
+function onBodyScaleZRangeChange(event) {
+    var select = event.target;
+    robot.body_scales[2] = parseFloat(select.value);
+    body_z_e.value = select.value;
     draw_robot();
 }
 
@@ -296,6 +345,31 @@ function init_dropdown_lists() {
     resize_select(body_id_e, num_body_parts);
     body_id_e.addEventListener('change', onBodyIdSelectChange);
 
+    // Body Scale
+    body_x_e.addEventListener('change', onBodyScaleXTextChange);
+    body_x2_e.addEventListener('change', onBodyScaleXRangeChange);
+    body_x2_e.min = body_scale_range[0];
+    body_x2_e.max = body_scale_range[1];
+    body_x2_e.step = slider_step;
+    body_x_e.value = robot.body_scales[0];
+    body_x2_e.value = robot.body_scales[0];
+
+    body_y_e.addEventListener('change', onBodyScaleYTextChange);
+    body_y2_e.addEventListener('change', onBodyScaleYRangeChange);
+    body_y2_e.min = body_scale_range[0];
+    body_y2_e.max = body_scale_range[1];
+    body_y2_e.step = slider_step;
+    body_y_e.value = robot.body_scales[1];
+    body_y2_e.value = robot.body_scales[1];
+
+    body_z_e.addEventListener('change', onBodyScaleZTextChange);
+    body_z2_e.addEventListener('change', onBodyScaleZRangeChange);
+    body_z2_e.min = body_scale_range[0];
+    body_z2_e.max = body_scale_range[1];
+    body_z2_e.step = slider_step;
+    body_z_e.value = robot.body_scales[2];
+    body_z2_e.value = robot.body_scales[2];
+
     // Leg ID
     resize_select(leg_id_e, robot.num_legs);
     leg_id_e.addEventListener('change', onLegIdSelectChange);
@@ -360,8 +434,14 @@ function draw_robot() {
     scene.clear();
     // Add body
     let body_obj = robo_lib.bodies[robot.body_id].clone();
+    body_obj.scale.x *= robot.body_scales[0];
+    body_obj.scale.y *= robot.body_scales[1];
+    body_obj.scale.z *= robot.body_scales[2];
     scene.add(body_obj);
-    let body_size = robo_lib.body_size[robot.body_id];
+    let body_size = robo_lib.body_size[robot.body_id].clone();
+    body_size.x *= robot.body_scales[0];
+    body_size.y *= robot.body_scales[1];
+    body_size.z *= robot.body_scales[2];
 
     // Add legs
     let leg_pos_x = 0;
