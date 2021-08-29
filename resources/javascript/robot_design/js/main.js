@@ -106,6 +106,13 @@ class RobotRepresentation {
             }
         }
     }
+
+    export_json() {
+        this.compile_dv();
+        let robot_json = {name: this.name, gene: this.dv};
+        // this long command formats the generated json string and keeps array on the same line
+        return JSON.stringify(robot_json, function(k,v) { if(v instanceof Array) return JSON.stringify(v); return v; }, 2).replace(/\\/g, '') .replace(/\"\[/g, '[') .replace(/\]\"/g,']') .replace(/\"\{/g, '{') .replace(/\}\"/g,'}');
+    }
 }
 
 class RobogamiLibrary {
@@ -176,7 +183,8 @@ let link_id_e      = document.getElementById('LinkIdSelect');
 let part_id_e      = document.getElementById('PartIdSelect');
 let link_length_e  = document.getElementById('LinkLengthText');
 let link_length2_e = document.getElementById('LinkLengthRange');
-let submit_e       = document.getElementById('submitButton');
+let submit_e       = document.getElementById('SubmitButton');
+let save_e         = document.getElementById('SaveButton');
 
 ////////////////////////////////////////////////////////////////////////
 //                             Callbacks                              //
@@ -299,6 +307,10 @@ function onSubmitButtonClick(event) {
     export_robot();
 }
 
+function onSaveButtonClick(event) {
+    demo_write();
+}
+
 ////////////////////////////////////////////////////////////////////////
 //                            Subfunctions                            //
 ////////////////////////////////////////////////////////////////////////
@@ -399,6 +411,9 @@ function init_dropdown_lists() {
     // Submit Button
     submit_e.addEventListener('click', onSubmitButtonClick)
 
+    // Save Button
+    save_e.addEventListener('click', onSaveButtonClick)
+
     update_dropdown_lists();
 }
 
@@ -481,9 +496,21 @@ function render() {
 
 function export_robot() {
     robot.compile_dv();
-    let json_string = JSON.stringify(robot.dv);
-    console.log(json_string);
-    alert(json_string);
+    console.log(robot.dv);
+    alert(robot.dv);
+}
+
+function demo_write() {
+    let date = new Date();
+    let timestamp = date.getFullYear().toString() +
+                    (date.getMonth()+1).toString() +
+                    date.getDate().toString() + "_" +
+                    date.getHours() +  date.getMinutes() +  date.getSeconds();
+
+    let anchor = document.createElement('a');
+    anchor.href = "data:application/octet-stream,"+encodeURIComponent(robot.export_json());
+    anchor.download = robot.name + "_" + timestamp + '.txt';
+    anchor.click();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -511,7 +538,7 @@ controls.rotateSpeed = 1;
 controls.zoomSpeed = 0.1;
 controls.panSpeed = 0.2;
 
-/* Lights setup */
+// Lights setup
 scene.add(new THREE.AmbientLight(0xffffff));
 init_dropdown_lists();
 render();
