@@ -578,9 +578,9 @@ container.appendChild(renderer.domElement);
 window.addEventListener('resize', onWindowResize);
 
 const camera = new THREE.PerspectiveCamera(75, container.clientWidth/container.clientHeight, 0.1, 1000);
-camera.position.x = 0;
-camera.position.y = 40;
-camera.position.z = 300;
+camera.position.x = 200;
+camera.position.y = 100;
+camera.position.z = -300;
 
 // Trackball Control setup
 var controls = new THREE.TrackballControls(camera, renderer.domElement);
