@@ -462,6 +462,12 @@ function draw_robot() {
     if (!robo_lib.loading_done)
         return;
     scene.clear();
+
+    // Display axis
+    const axesHelper = new THREE.AxesHelper(200);
+    axesHelper.material.linewidth = 5;
+    scene.add(axesHelper);
+
     // Add body
     let body_obj = robo_lib.bodies[robot.body_id].clone();
     body_obj.scale.x *= robot.body_scales[0];
