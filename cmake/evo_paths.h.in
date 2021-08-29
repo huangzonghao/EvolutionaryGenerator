@@ -6,25 +6,25 @@
 
 #include <string>
 
+#define EVOGEN_PARAMS_PATH "@EVOGEN_PARAMS_DIR@"
+const std::string EvoGen_Params_Dir(EVOGEN_PARAMS_PATH);
+
 #define EVOGEN_MAPS_PATH "@EVOGEN_MAPS_DIR@"
 const std::string EvoGen_Maps_Dir(EVOGEN_MAPS_PATH);
 
 #define ROBOT_PARTS_PATH "@ROBOT_PARTS_DIR@"
 const std::string Robot_Parts_Dir(ROBOT_PARTS_PATH);
 
-#define MESH_WORKSPACE_PATH "@MESH_WORKSPACE_DIR@"
-const std::string Mesh_Workspace_Dir(MESH_WORKSPACE_PATH);
-
 #define ROBOT_OUTPUT_PATH "@ROBOT_OUTPUT_DIR@"
 const std::string Robot_Output_Dir(ROBOT_OUTPUT_PATH);
-
-#define RESOURCE_MAP_PATH "@RESOURCE_MAP_DIR@"
-const std::string Resource_Map_Dir(RESOURCE_MAP_PATH);
 
 #define RESULT_OUTPUT_PATH "@RESULT_OUTPUT_DIR@"
 const std::string Result_Output_Dir(RESULT_OUTPUT_PATH);
 
-#define EVOGEN_PARAMS_PATH "@EVOGEN_PARAMS_DIR@"
-const std::string EvoGen_Params_Dir(EVOGEN_PARAMS_PATH);
+#define MESH_WORKSPACE_PATH "@MESH_WORKSPACE_DIR@"
+const std::string Mesh_Workspace_Dir(MESH_WORKSPACE_PATH);
+
+#define USER_INPUT_PATH "@USER_INPUT_DIR@"
+const std::string User_Input_Dir(USER_INPUT_PATH);
 
 #endif /* end of include guard: EVO_PATHS_H_SQCM3M8J */

@@ -16,3 +16,6 @@
 [submodule "thirdparty/console_bridge"]
 	path = simulator/thirdparty/console_bridge
 	url = https://github.com/ros/console_bridge.git
+[submodule "thirdparty/rapidjson"]
+	path = thirdparty/rapidjson
+	url = https://github.com/Tencent/rapidjson.git

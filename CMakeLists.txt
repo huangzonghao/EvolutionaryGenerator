@@ -23,23 +23,28 @@ endif()
 set(PROJECT_DEP_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/Install)
 list(APPEND CMAKE_PREFIX_PATH ${PROJECT_DEP_INSTALL_DIR})
 
-if (NOT DEFINED PROJECT_OUTPUT_DIR)
-    set(PROJECT_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Output CACHE PATH "Directory containing the program generated files")
-    file(MAKE_DIRECTORY ${PROJECT_OUTPUT_DIR})
+if (NOT DEFINED PROJECT_WORKSPACE_DIR)
+    set(PROJECT_WORKSPACE_DIR ${PROJECT_BINARY_DIR}/Workspace CACHE PATH "Directory containing the program generated files")
+    file(MAKE_DIRECTORY ${PROJECT_WORKSPACE_DIR})
 endif()
 
 if (NOT DEFINED ROBOT_OUTPUT_DIR)
-    set(ROBOT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Robots CACHE PATH "Directory containing the generated robots")
+    set(ROBOT_OUTPUT_DIR ${PROJECT_WORKSPACE_DIR}/Robots CACHE PATH "Directory containing the generated robots")
     file(MAKE_DIRECTORY ${ROBOT_OUTPUT_DIR})
 endif()
 
 if (NOT DEFINED RESULT_OUTPUT_DIR)
-    set(RESULT_OUTPUT_DIR ${PROJECT_OUTPUT_DIR}/Results CACHE PATH "Directory containing the generated results")
+    set(RESULT_OUTPUT_DIR ${PROJECT_WORKSPACE_DIR}/Results CACHE PATH "Directory containing the generated results")
     file(MAKE_DIRECTORY ${RESULT_OUTPUT_DIR})
 endif()
 
+if (NOT DEFINED USER_INPUT_DIR)
+    set(USER_INPUT_DIR ${PROJECT_WORKSPACE_DIR}/UserInput CACHE PATH "Directory containing the user inputs")
+    file(MAKE_DIRECTORY ${USER_INPUT_DIR})
+endif()
+
 if (NOT DEFINED MESH_WORKSPACE_DIR)
-    set(MESH_WORKSPACE_DIR ${PROJECT_OUTPUT_DIR}/Meshes CACHE PATH "Directory containing the Meshes to be converted")
+    set(MESH_WORKSPACE_DIR ${PROJECT_WORKSPACE_DIR}/Meshes CACHE PATH "Directory containing the Meshes to be converted")
     file(MAKE_DIRECTORY ${MESH_WORKSPACE_DIR})
     file(MAKE_DIRECTORY ${MESH_WORKSPACE_DIR}/legs)
     file(MAKE_DIRECTORY ${MESH_WORKSPACE_DIR}/bodies)
@@ -47,7 +52,7 @@ if (NOT DEFINED MESH_WORKSPACE_DIR)
 endif()
 
 if (NOT DEFINED EVOGEN_PARAMS_DIR)
-    set(EVOGEN_PARAMS_DIR ${PROJECT_OUTPUT_DIR}/Params CACHE PATH "Directory containing the param files for EvoGen")
+    set(EVOGEN_PARAMS_DIR ${PROJECT_WORKSPACE_DIR}/Params CACHE PATH "Directory containing the param files for EvoGen")
     file(MAKE_DIRECTORY ${EVOGEN_PARAMS_DIR})
 endif()
 
@@ -58,7 +63,6 @@ include(DLL_Copy_Command)
 set(ROBOT_PARTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/robot_parts)
 set(EVOGEN_MAPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
 set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(RESOURCE_MAP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
 set(EVOGEN_MATLAB_SCRIPTS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/matlab)
 if (MSVC)
     set(EVOGEN_EXE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE})
@@ -131,6 +135,16 @@ endif()
 if (NEED_TO_RETURN)
     message("Some dependencies were not found. Set corresponding variables as mentioned above. If you use cmake-cli, edit entries in the CMakeCache.txt")
     return()
+endif()
+
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/.git)
+    execute_process(COMMAND git submodule update --init --depth 1 -- thirdparty/rapidjson
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+set(rapidjson_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/include)
+if (NOT TARGET rapidjson)
+    add_library(rapidjson INTERFACE IMPORTED)
+    set_target_properties(rapidjson PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${rapidjson_INCLUDE_DIR}")
 endif()
 
 if(NOT DEFINED ROBOGAMI_DATA_PATH)
@@ -309,4 +323,36 @@ if(MSVC)
         $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
         $<$<CONFIG:Release>: /MP;>
     )
+endif()
+
+set(CURRENT_TARGET_NAME User_Input_Demo)
+set(Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/MeshInfo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/RobotRepresentation.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
+)
+set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/MeshInfo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobotRepresentation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/user_input_demo_main.cpp
+)
+add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
+target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator rapidjson)
+target_include_directories(${CURRENT_TARGET_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
+    list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
+    DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
+        $<$<CONFIG:Release>: /MP;>
+    )
+    target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
