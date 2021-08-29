@@ -30,6 +30,9 @@ int main(int argc, char **argv) {
     // Note: the mesh_info must be ready when phen develops the robot
     if (std::filesystem::exists(result_dir + "/robot_parts"))
         mesh_info.set_mesh_dir(result_dir + "/robot_parts");
+    else
+        mesh_info.set_mesh_dir(Robot_Parts_Dir);
+
     mesh_info.init();
 
     phen_t phen(gene, 0.5, 1.5);
