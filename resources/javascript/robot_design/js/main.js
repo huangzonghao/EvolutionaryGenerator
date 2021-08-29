@@ -88,21 +88,26 @@ class RobotRepresentation {
         }
     }
 
+    // map a number of range [min, max] to a double in [0, 1]
+    scale_down(raw, min, max) {
+        return (raw - min) / (max - min);
+    }
+
     // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
     //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
     compile_dv() {
         this.dv.length = 0;
-        this.dv.push(this.body_id);
+        this.dv.push(this.scale_down(this.body_id, 0, num_body_parts - 1));
         for (let i = 0; i < robot.body_scales.length; ++i) // body scales
-            this.dv.push(robot.body_scales[i]);
-        this.dv.push(this.num_legs);
+            this.dv.push(this.scale_down(robot.body_scales[i], body_scale_range[0], body_scale_range[1]));
+        this.dv.push(this.scale_down(this.num_legs, allowed_num_legs[0], allowed_num_legs[allowed_num_legs.length - 1]));
         for (let i = 0; i < this.num_legs; ++i) {
             let this_leg = this.leg(i);
             // this.dv.push(this_leg.position); // temp disable leg_pos
-            this.dv.push(this_leg.num_links);
+            this.dv.push(this.scale_down(this_leg.num_links, min_num_links_per_leg, max_num_links_per_leg));
             for (let j = 0; j < this_leg.num_links; ++j) {
-                this.dv.push(this_leg.link(j).part_id);
-                this.dv.push(this_leg.link(j).link_length);
+                this.dv.push(this.scale_down(this_leg.link(j).part_id, 0, num_leg_parts - 1));
+                this.dv.push(this.scale_down(this_leg.link(j).link_length, link_length_range[0], link_length_range[1]));
             }
         }
     }
@@ -510,12 +515,18 @@ function export_robot() {
     alert(robot.dv);
 }
 
+function twodigit_str(n) {
+    return n > 9 ? "" + n : "0" + n;
+}
+
 function demo_write() {
     let date = new Date();
     let timestamp = date.getFullYear().toString() +
-                    (date.getMonth()+1).toString() +
-                    date.getDate().toString() + "_" +
-                    date.getHours() +  date.getMinutes() +  date.getSeconds();
+                    twodigit_str((date.getMonth()+1)) +
+                    twodigit_str(date.getDate()) + "_" +
+                    twodigit_str(date.getHours()) +
+                    twodigit_str(date.getMinutes()) +
+                    twodigit_str(date.getSeconds());
 
     let anchor = document.createElement('a');
     anchor.href = "data:application/octet-stream,"+encodeURIComponent(robot.export_json());
