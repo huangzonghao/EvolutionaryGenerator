@@ -167,6 +167,7 @@ class RobogamiLibrary {
 //                            DOM Handles                             //
 ////////////////////////////////////////////////////////////////////////
 
+let robot_name_e   = document.getElementById('RobotNameText');
 let body_id_e      = document.getElementById('BodyIdSelect');
 let body_x_e       = document.getElementById('BodyScaleXText');
 let body_x2_e      = document.getElementById('BodyScaleXRange');
@@ -196,6 +197,11 @@ function onWindowResize(event) {
     renderer.setSize(containerWidth, containerHeight);
     camera.aspect = containerWidth / containerHeight;
     camera.updateProjectionMatrix();
+}
+
+function onRobotNameTextChange(event) {
+    var select = event.target;
+    robot.name = select.value;
 }
 
 function onBodyIdSelectChange(event) {
@@ -334,6 +340,10 @@ function resize_select(select, new_size) {
 }
 
 function init_dropdown_lists() {
+    // Robot Name
+    robot_name_e.value = robot.name;
+    robot_name_e.addEventListener('change', onRobotNameTextChange);
+
     // Num Legs
     for (let i = 0; i < allowed_num_legs.length; ++i) {
         var opt = document.createElement('option');

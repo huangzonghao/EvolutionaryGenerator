@@ -40,6 +40,10 @@ body {
     width: 40px;
 }
 
+.LongTextBox {
+    width: 120px;
+}
+
 .Slider {
 }
 
