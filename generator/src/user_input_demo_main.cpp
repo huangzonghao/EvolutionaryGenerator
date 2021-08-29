@@ -17,7 +17,7 @@
 typedef sferes::fit::UrdfFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
-int main(int argc, char **argv) {
+void user_input_demo() {
     std::vector<std::string> filenames;
     int counter = 0;
     for (const auto& entry : std::filesystem::directory_iterator(User_Input_Dir)) {
@@ -27,11 +27,14 @@ int main(int argc, char **argv) {
     }
     --counter; // counter now equals to the largest possible option
 
-    int user_input = -1;
-    while (user_input < 0 || user_input > counter) {
-        std::cout << "Select robot: ";
+    int user_input = -2;
+    while (user_input < -1 || user_input > counter) {
+        std::cout << "Select robot (-1 to refresh): ";
         std::cin >> user_input;
     }
+    if (user_input == -1)
+        return;
+
     std::cout << "Selected: " << filenames[user_input] << std::endl;
 
     std::ifstream infile(User_Input_Dir + "/" + filenames[user_input]);
@@ -90,5 +93,11 @@ int main(int argc, char **argv) {
 
     sm.LoadUrdfString(robot.get_urdf_string());
     sm.RunSimulation();
+}
+
+int main(int argc, char **argv) {
+    while (true) {
+        user_input_demo();
+    }
     return 0;
 }
