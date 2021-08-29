@@ -47,7 +47,9 @@ int main(int argc, char **argv) {
     mesh_info.set_mesh_dir(Robot_Parts_Dir);
     mesh_info.init();
 
-    phen_t phen(gene, 0.5, 1.5);
+    EvoParams evo_params;
+    evo_params.Load(EvoGen_Params_Dir + "/evo_params.xml");
+    phen_t phen(gene, evo_params.phen_data_min(), evo_params.phen_data_max());
     phen.develop();
     const auto& robot = phen.get_robot();
 
