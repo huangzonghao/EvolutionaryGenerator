@@ -23,6 +23,9 @@ preset_leg_pos["6"] = [0.01, 0.25, 0.49, 0.51, 0.75, 0.99];
 const num_body_parts = 5;
 const num_leg_parts = 7;
 
+const unselect_mat = new THREE.MeshBasicMaterial( { color: 0x444444 } );
+const select_mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+let current_selected_obj;
 ////////////////////////////////////////////////////////////////////////
 //                               Class                                //
 ////////////////////////////////////////////////////////////////////////
@@ -31,6 +34,7 @@ class RobotLink {
     constructor() {
         this.part_id = 0;
         this.link_length = 1.0;
+        this.obj;
     }
 }
 
@@ -58,6 +62,7 @@ class RobotLeg {
 
 class RobotRepresentation {
     constructor() {
+        this.body_obj;
         this.body_id = 0;
         this.body_scales = [1, 1, 1];
         this.name = "Robogami_Temp";
@@ -148,8 +153,7 @@ class RobogamiLibrary {
     }
 
     post_load_processing() {
-        const mat_tmp = new THREE.MeshBasicMaterial( { color: 0x444444 } );
-        function update_helper(child) { if (child.isMesh) child.material = mat_tmp; }
+        function update_helper(child) { if (child.isMesh) child.material = unselect_mat; }
         // need to generate the bounding box of each mesh
         for (let i = 0; i < num_body_parts; ++i) {
             this.bodies[i].traverse(update_helper);
@@ -455,9 +459,16 @@ function update_dropdown_lists() {
     // Leg Position
     leg_pos_e.value = robot_leg.position;
     leg_pos2_e.value = robot_leg.position;
+
+    // Update visualization of selected link part
+    if (robo_lib.loading_done) {
+        mark_body(current_selected_obj, false);
+        current_selected_obj = robot.leg(parseInt(leg_id_e.value)).link(parseInt(link_id_e.value)).obj;
+        mark_body(current_selected_obj, true);
+    }
 }
 
-// TODO: highlight selected link
+// TODO: mesh objs can be reused, do not create a new one everytime
 function draw_robot() {
     if (!robo_lib.loading_done)
         return;
@@ -473,6 +484,7 @@ function draw_robot() {
     body_obj.scale.x *= robot.body_scales[0];
     body_obj.scale.y *= robot.body_scales[1];
     body_obj.scale.z *= robot.body_scales[2];
+    robot.body_obj = body_obj;
     scene.add(body_obj);
     let body_size = robo_lib.body_size[robot.body_id].clone();
     body_size.x *= robot.body_scales[0];
@@ -502,11 +514,22 @@ function draw_robot() {
             link_obj.position.x = leg_pos_x;
             link_obj.position.y = leg_pos_y;
             link_obj.position.z = -leg_total_length - link_size_z / 2;
+            robot.leg(leg_id).link(i).obj = link_obj;
             scene.add(link_obj);
 
             leg_total_length += link_size_z;
         }
     }
+
+    current_selected_obj = robot.leg(parseInt(leg_id_e.value)).link(parseInt(link_id_e.value)).obj;
+    mark_body(current_selected_obj, true);
+}
+
+function mark_body(body_obj, selected = true) {
+    if (selected)
+        body_obj.traverse(function(child){if (child.isMesh) child.material = select_mat;})
+    else
+        body_obj.traverse(function(child){if (child.isMesh) child.material = unselect_mat;})
 }
 
 function render() {
