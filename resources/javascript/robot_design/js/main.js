@@ -176,6 +176,8 @@ class RobogamiLibrary {
 //                            DOM Handles                             //
 ////////////////////////////////////////////////////////////////////////
 
+let config_panel_e = document.getElementById('RobotConfigPanel');
+let visual_panel_e = document.getElementById('RobotVisualPanel');
 let robot_name_e   = document.getElementById('RobotNameText');
 let body_id_e      = document.getElementById('BodyIdSelect');
 let body_x_e       = document.getElementById('BodyScaleXText');
@@ -201,11 +203,29 @@ let save_e         = document.getElementById('SaveButton');
 ////////////////////////////////////////////////////////////////////////
 
 function onWindowResize(event) {
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
-    renderer.setSize(containerWidth, containerHeight);
-    camera.aspect = containerWidth / containerHeight;
+    renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
+    camera.aspect = visual_panel_e.clientWidth / visual_panel_e.clientHeight;
     camera.updateProjectionMatrix();
+}
+
+function onMouseClick(event) {
+    const rect = visual_panel_e.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
+    // raycaster
+    raycaster.setFromCamera(mouse, camera);
+    // calculate objects intersecting the picking ray
+    const intersects = raycaster.intersectObjects(scene.children, true);
+    if (intersects.length > 0) {
+        // not sure why, but the obj returned by raycaster is a different obj
+        // than the one passed to scene, and has an id 1 larger than the orig obj
+        const orig_obj = scene.getObjectById(intersects[0].object.id - 1);
+        if (orig_obj && orig_obj.leg_id != null) { // only obj of leg links has this defined
+            leg_id_e.value = orig_obj.leg_id;
+            link_id_e.value = orig_obj.link_id;
+            update_dropdown_lists();
+        }
+    }
 }
 
 function onRobotNameTextChange(event) {
@@ -514,6 +534,8 @@ function draw_robot() {
             link_obj.position.x = leg_pos_x;
             link_obj.position.y = leg_pos_y;
             link_obj.position.z = -leg_total_length - link_size_z / 2;
+            link_obj.leg_id = leg_id;
+            link_obj.link_id = i;
             robot.leg(leg_id).link(i).obj = link_obj;
             scene.add(link_obj);
 
@@ -569,15 +591,14 @@ function demo_write() {
 var robot = new RobotRepresentation();
 var robo_lib = new RobogamiLibrary();
 
-const container = document.getElementById("RobotVisualPanel");
 const scene = new THREE.Scene();
 scene.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
-renderer.setSize(container.clientWidth, container.clientHeight);
-container.appendChild(renderer.domElement);
+renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
+visual_panel_e.appendChild(renderer.domElement);
 window.addEventListener('resize', onWindowResize);
 
-const camera = new THREE.PerspectiveCamera(75, container.clientWidth/container.clientHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visual_panel_e.clientHeight, 0.1, 1000);
 camera.position.x = 200;
 camera.position.y = 100;
 camera.position.z = -300;
@@ -587,6 +608,11 @@ var controls = new THREE.TrackballControls(camera, renderer.domElement);
 controls.rotateSpeed = 1;
 controls.zoomSpeed = 0.1;
 controls.panSpeed = 0.2;
+
+// Raycaster
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+visual_panel_e.addEventListener('click', onMouseClick, false);
 
 // Lights setup
 scene.add(new THREE.AmbientLight(0xffffff));
