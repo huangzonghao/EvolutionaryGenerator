@@ -1,6 +1,10 @@
 #include <algorithm> // std::replace
 #include <regex>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <filesystem>
+#include <rapidjson/document.h>
 
 #include "SimulatorParams.h"
 #include "EvoParams.h"
@@ -8,7 +12,7 @@
 
 #include "evo_paths.h"
 
-void new_training() {
+void new_training(bool use_user_seeds) {
     EvoGenerator evo_gen;
     EvoParams evo_params;
     SimulatorParams sim_params;
@@ -64,6 +68,35 @@ void new_training() {
         sim_params.parts_dir = log_dir + "/robot_parts";
     }
 
+    if (use_user_seeds) {
+        auto user_seeds = std::make_shared<std::vector<std::vector<double>>>();
+        std::string seed_dir(log_dir + "/user_inputs");
+        std::filesystem::create_directories(seed_dir);
+        // load the user seeds and copy them into result_dir
+        const int max_num_user_inputs = 30;
+        rapidjson::Document jdoc;
+        for (const auto& entry : std::filesystem::directory_iterator(User_Input_Dir)) {
+            if (entry.path().extension().string() == ".txt") {
+                std::filesystem::copy(entry.path(), seed_dir);
+
+                std::ifstream infile(entry.path());
+                std::stringstream ss;
+                ss << infile.rdbuf();
+                jdoc.Parse(ss.str().c_str());
+                const rapidjson::Value& js_gene = jdoc["gene"];
+                std::vector<double> gene(js_gene.Size());
+                for (int i = 0; i < gene.size(); ++i) {
+                    gene[i] = js_gene[i].GetDouble();
+                }
+                user_seeds->push_back(gene);
+
+                if (user_seeds->size() >= max_num_user_inputs)
+                    break;
+            }
+        }
+        evo_gen.set_user_seeds(user_seeds);
+    }
+
     evo_gen.set_evo_params(evo_params);
     evo_gen.set_sim_params(sim_params);
     evo_gen.set_result_dir(log_dir);
@@ -93,13 +126,14 @@ int main(int argc, char **argv) {
     if (argc < 2) {
         const auto& exe_name = std::filesystem::path(std::string(argv[0])).filename().string();
         std::cout << "Usage:"  << std::endl;
-        std::cout << "    " << exe_name << " new"  << std::endl;
-        std::cout << "    " << exe_name << " resume <result_dir_basename>"  << std::endl;
+        std::cout << "    1) To start new training with random seeds: " << exe_name << " new"  << std::endl;
+        std::cout << "    2) To start new training with user seeds: " << exe_name << " new user"  << std::endl;
+        std::cout << "    3) To resume an existing training: " << exe_name << " resume <result_dir_basename>"  << std::endl;
         return 0;
     }
     std::string mode(argv[1]);
     if (mode == "new") {
-        new_training();
+        new_training(argc > 2 && std::string(argv[2]) == "user");
     } else if (mode == "resume") {
         resume_training(std::string(argv[2]));
     } else {

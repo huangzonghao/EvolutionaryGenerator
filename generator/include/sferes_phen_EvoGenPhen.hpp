@@ -62,6 +62,8 @@ class EvoGenPhen {
         : _gen(gene), _min_p(min_p), _max_p(max_p) {}
     EvoGenPhen(double min_p, double max_p) : _min_p(min_p), _max_p(max_p) {}
     EvoGenPhen(const EvoParams& evo_params) { set_params(evo_params); }
+    EvoGenPhen(const std::vector<double>& gene, const EvoParams& evo_params)
+        : _gen(gene) { set_params(evo_params); }
 
     bool valid() { return _valid; }
     Fit& fit() { return _fit; }

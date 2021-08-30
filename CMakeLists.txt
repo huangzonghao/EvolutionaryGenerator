@@ -215,7 +215,7 @@ set(Headers
 )
 set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp)
 add_executable(${PROJECT_NAME} ${Headers} ${Sources})
-target_link_libraries(${PROJECT_NAME} Generator Simulator)
+target_link_libraries(${PROJECT_NAME} Generator Simulator rapidjson)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # TODO: need to add cplex dll in debug config

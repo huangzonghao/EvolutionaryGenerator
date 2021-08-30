@@ -59,7 +59,7 @@ class EvoGenEA : public stc::Any<Exact> {
         std::ofstream ofs;
         ofs.close();
         _dump_config();
-        random_pop();
+        init_pop();
         _dump_state();
         update_stats_init();
         for (_gen = 0; _gen < _nb_gen; ++_gen)
@@ -78,10 +78,10 @@ class EvoGenEA : public stc::Any<Exact> {
             _iter();
     }
 
-    void random_pop() {
+    void init_pop() {
         std::cout << "Gen: 0/" << _nb_gen << " ... ";
         tik = std::chrono::steady_clock::now();
-        stc::exact(this)->random_pop();
+        stc::exact(this)->init_pop();
         time_span = std::chrono::steady_clock::now() - tik;
         _last_epoch_time = time_span.count(); // these two would be booked in stat
         _total_time += _last_epoch_time;

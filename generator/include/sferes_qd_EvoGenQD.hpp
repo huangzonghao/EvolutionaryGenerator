@@ -37,19 +37,25 @@ class EvoGenQD
         this->_eval.set_sim_params(_sim_params);
     }
 
-    // Random initialization of _parents and _offspring
-    void random_pop() {
+    void init_pop() {
         assert(_init_size != 0);
-        _init_pop.resize(_init_size);
+        _init_pop.clear();
 
-        for (auto& indiv : _init_pop) {
-            indiv = std::make_shared<Phen>(this->_evo_params);
-            // random generated genome is guaranteed to be valid i.e. has enough length
-            indiv->random();
+        // Feed in user seeds if exist
+        if (_init_seeds) {
+            int num_seeds_to_load = std::min(_init_size, _init_seeds->size());
+            for (int i = 0; i < num_seeds_to_load; ++i)
+                _init_pop.emplace_back(std::make_shared<Phen>(_init_seeds->at(i), this->_evo_params));
         }
+
+        // Random pop to fill in the blanks
+        for (int i = _init_pop.size(); i < _init_size; ++i) {
+            _init_pop.emplace_back(std::make_shared<Phen>(this->_evo_params));
+            _init_pop.back()->random();
+        }
+
         this->_eval_pop(_init_pop);
         _add(_init_pop, _added);
-
         _container.get_full_content(this->_pop);
     }
 
@@ -88,6 +94,7 @@ class EvoGenQD
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
     const double last_epoch_time() const { return  this->_last_epoch_time; }
+    void set_init_seeds(const std::shared_ptr<std::vector<std::vector<double>>>& new_seeds) { _init_seeds = new_seeds; }
 
   protected:
     // Add the offspring into the container and update the score of the individuals from the
@@ -159,6 +166,7 @@ class EvoGenQD
         _offspring.resize(_pop_size);
     }
 
+    std::shared_ptr<std::vector<std::vector<double>>> _init_seeds;
     SimulatorParams _sim_params;
     size_t _init_size;
     size_t _pop_size;

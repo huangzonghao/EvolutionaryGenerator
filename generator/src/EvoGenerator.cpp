@@ -30,6 +30,8 @@ void EvoGenerator::run() {
     evo_params_.feature_description().emplace_back(fit_t::descriptor_name[0]);
     evo_params_.feature_description().emplace_back(fit_t::descriptor_name[1]);
     qd_t qd(evo_params_, sim_params_);
+    if (user_seeds_)
+        qd.set_init_seeds(user_seeds_);
     qd.set_res_dir(res_dir_);
 
     std::chrono::duration<double> time_span; // in seconds
