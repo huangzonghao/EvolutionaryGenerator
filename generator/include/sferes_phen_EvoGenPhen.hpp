@@ -45,10 +45,12 @@ class EvoGenPhen {
 
     // convert a gene in [0, 1] to integers of {0, 1, ..., count - 1}
     inline int gene_to_id(double raw, int count) {
+        assert(count > 0);
+        assert(raw >= 0);
+        assert(raw <= 1);
+
         int ret = std::floor(raw * count);
-        if (ret == count) {
-            ret -= 1;
-        }
+        ret = std::min(std::max(ret, 0), count - 1);
         return ret;
     }
 
