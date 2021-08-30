@@ -216,7 +216,7 @@ classdef UI < matlab.apps.AppBase
         % Button pushed function: BuildStatButton
         function BuildStatButtonPushed(app, event)
             app.BuildStatButton.Text = 'Building ...';
-            [app.stat, app.stat_loaded] = build_stat(app.evo_params);
+            [app.stat, app.stat_loaded] = build_stat(app.evo_params, app.stat, app.stat_loaded);
             app.BuildStatButton.Text = 'RebuildStat';
         end
 
