@@ -11,6 +11,7 @@
 #include "EvoGenerator.h"
 
 #include "evo_paths.h"
+#include "git_commit_hash.h"
 
 void new_training(bool use_user_seeds) {
     EvoGenerator evo_gen;
@@ -66,6 +67,11 @@ void new_training(bool use_user_seeds) {
 
         std::filesystem::copy(Robot_Parts_Dir, log_dir + "/robot_parts", std::filesystem::copy_options::recursive);
         sim_params.parts_dir = log_dir + "/robot_parts";
+
+        // record latest git commit hash
+        std::ofstream ofs(log_dir + "/git_hash.txt");
+        ofs << git_commit_hash;
+        ofs.close();
     }
 
     if (use_user_seeds) {

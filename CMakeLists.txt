@@ -76,6 +76,11 @@ configure_file(${PROJECT_IN_FILE_DIR}/result_analysis.m.in ${PROJECT_MATLAB_OUTP
 # Need to use the filesystem of C++17
 set(CMAKE_CXX_STANDARD 17)
 
+# Record git hash
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC GIT_COMMIT_HASH)
+configure_file(${PROJECT_IN_FILE_DIR}/git_commit_hash.cpp.in ${PROJECT_IN_FILE_OUTPUT_DIR}/git_commit_hash.cpp @ONLY)
+
 #######################################################################
 #                         Setup Dependencies                          #
 #######################################################################
@@ -212,8 +217,12 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include//git_commit_hash.h
 )
-set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp)
+set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/git_commit_hash.cpp
+)
 add_executable(${PROJECT_NAME} ${Headers} ${Sources})
 target_link_libraries(${PROJECT_NAME} Generator Simulator rapidjson)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
