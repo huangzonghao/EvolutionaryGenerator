@@ -3,6 +3,7 @@ classdef UI < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
+        GenStepField         matlab.ui.control.EditField
         LoadFirstButton      matlab.ui.control.Button
         LoadLastButton       matlab.ui.control.Button
         ResumeButton         matlab.ui.control.Button
@@ -24,8 +25,8 @@ classdef UI < matlab.apps.AppBase
         ResultInfoLabel      matlab.ui.control.Label
         GenLabel             matlab.ui.control.Label
         SimulateRobotButton  matlab.ui.control.Button
-        LoadPrev10Button     matlab.ui.control.Button
-        LoadNext10Button     matlab.ui.control.Button
+        LoadPrevStepButton   matlab.ui.control.Button
+        LoadNextStepButton   matlab.ui.control.Button
         LoadPrevButton       matlab.ui.control.Button
         LoadNextButton       matlab.ui.control.Button
         GenIDField           matlab.ui.control.EditField
@@ -43,6 +44,7 @@ classdef UI < matlab.apps.AppBase
         current_gen_archive
         current_gen_x_idx
         current_gen_y_idx
+        gen_step = 500
         % TODO: should read the following constant values from somewhere
         %     especially the simulator name, which is system dependent
         params_filename = 'evo_params.xml'
@@ -175,6 +177,9 @@ classdef UI < matlab.apps.AppBase
             app.evogen_results_path = evogen_results_path;
             app.evogen_exe_path = evogen_exe_path;
 
+            % init ui assets
+            app.GenStepField.Value = num2str(app.gen_step);
+
             load_result(app);
         end
 
@@ -193,14 +198,14 @@ classdef UI < matlab.apps.AppBase
             load_gen(app, app.current_gen - 1);
         end
 
-        % Button pushed function: LoadNext10Button
-        function LoadNext10ButtonPushed(app, event)
-            load_gen(app, app.current_gen + 10);
+        % Button pushed function: LoadNextStepButton
+        function LoadNextStepButtonPushed(app, event)
+            load_gen(app, app.current_gen + app.gen_step);
         end
 
-        % Button pushed function: LoadPrev10Button
-        function LoadPrev10ButtonPushed(app, event)
-            load_gen(app, app.current_gen - 10);
+        % Button pushed function: LoadPrevStepButton
+        function LoadPrevStepButtonPushed(app, event)
+            load_gen(app, app.current_gen - app.gen_step);
         end
 
         % Button pushed function: LoadFirstButton
@@ -276,6 +281,11 @@ classdef UI < matlab.apps.AppBase
             value = min(max(value, 1), app.evo_params.griddim_0); % note y corresponds to row index of matrix here
             app.RobotIDYField.Value = num2str(value);
         end
+
+        % Value changed function: GenStepField
+        function GenStepFieldValueChanged(app, event)
+            app.gen_step = max(str2double(app.GenStepField.Value), 0);
+        end
     end
 
     % Component initialization
@@ -312,26 +322,26 @@ classdef UI < matlab.apps.AppBase
             % Create LoadNextButton
             app.LoadNextButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
-            app.LoadNextButton.Position = [86 448 26 22];
+            app.LoadNextButton.Position = [86 448 25 22];
             app.LoadNextButton.Text = '>';
 
             % Create LoadPrevButton
             app.LoadPrevButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
-            app.LoadPrevButton.Position = [61 448 26 22];
+            app.LoadPrevButton.Position = [61 448 25 22];
             app.LoadPrevButton.Text = '<';
 
-            % Create LoadNext10Button
-            app.LoadNext10Button = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
-            app.LoadNext10Button.ButtonPushedFcn = createCallbackFcn(app, @LoadNext10ButtonPushed, true);
-            app.LoadNext10Button.Position = [111 448 30 22];
-            app.LoadNext10Button.Text = '+10';
+            % Create LoadNextStepButton
+            app.LoadNextStepButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
+            app.LoadNextStepButton.Position = [108 427 30 22];
+            app.LoadNextStepButton.Text = '+';
 
-            % Create LoadPrev10Button
-            app.LoadPrev10Button = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
-            app.LoadPrev10Button.ButtonPushedFcn = createCallbackFcn(app, @LoadPrev10ButtonPushed, true);
-            app.LoadPrev10Button.Position = [31 448 30 22];
-            app.LoadPrev10Button.Text = '-10';
+            % Create LoadPrevStepButton
+            app.LoadPrevStepButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
+            app.LoadPrevStepButton.Position = [37 427 30 22];
+            app.LoadPrevStepButton.Text = '-';
 
             % Create SimulateRobotButton
             app.SimulateRobotButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
@@ -455,14 +465,20 @@ classdef UI < matlab.apps.AppBase
             % Create LoadLastButton
             app.LoadLastButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
-            app.LoadLastButton.Position = [87 427 30 22];
+            app.LoadLastButton.Position = [111 448 25 22];
             app.LoadLastButton.Text = '>>';
 
             % Create LoadFirstButton
             app.LoadFirstButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
-            app.LoadFirstButton.Position = [57 427 30 22];
+            app.LoadFirstButton.Position = [36 448 25 22];
             app.LoadFirstButton.Text = '<<';
+
+            % Create GenStepField
+            app.GenStepField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.GenStepField.ValueChangedFcn = createCallbackFcn(app, @GenStepFieldValueChanged, true);
+            app.GenStepField.HorizontalAlignment = 'center';
+            app.GenStepField.Position = [68 427 39 22];
 
             % Show the figure after all components are created
             app.EvolutionaryRobogamiResultViewerUIFigure.Visible = 'on';
