@@ -71,13 +71,15 @@ void new_training(bool use_user_seeds) {
     if (use_user_seeds) {
         auto user_seeds = std::make_shared<std::vector<std::vector<double>>>();
         std::string seed_dir(log_dir + "/user_inputs");
-        std::filesystem::create_directories(seed_dir);
+        if (evo_params.output_enabled())
+            std::filesystem::create_directories(seed_dir);
         // load the user seeds and copy them into result_dir
         const int max_num_user_inputs = 30;
         rapidjson::Document jdoc;
         for (const auto& entry : std::filesystem::directory_iterator(User_Input_Dir)) {
             if (entry.path().extension().string() == ".txt") {
-                std::filesystem::copy(entry.path(), seed_dir);
+                if (evo_params.output_enabled())
+                    std::filesystem::copy(entry.path(), seed_dir);
 
                 std::ifstream infile(entry.path());
                 std::stringstream ss;
