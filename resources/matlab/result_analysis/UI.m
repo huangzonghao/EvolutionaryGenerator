@@ -3,6 +3,8 @@ classdef UI < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
+        NickNameField        matlab.ui.control.EditField
+        NickNameSaveButton   matlab.ui.control.Button
         RemoveCompareButton  matlab.ui.control.Button
         AddCompareButton     matlab.ui.control.Button
         ComparePlotButton    matlab.ui.control.Button
@@ -39,6 +41,8 @@ classdef UI < matlab.apps.AppBase
     properties (Access = private)
         result_loaded = false
         result_basename = ""
+        result_nickname
+        result_displayname
         evo_params % parameters of an evolutionary generation process
         stat % variables containing the stats of the result
         stat_loaded = false
@@ -65,22 +69,6 @@ classdef UI < matlab.apps.AppBase
 
     % private helper functions
     methods (Access = private)
-
-        function show_testinfo(app)
-            [~, app.ResultNameLabel.Text, ~] = fileparts(app.evo_params.result_path);
-            app.result_basename = app.ResultNameLabel.Text;
-            app.ResultInfoTextLabel.Text =...
-                sprintf(['# of Gen Finished: %d/%d\n', ...
-                         'Progress: %.2f%%\n', ...
-                         'Init size: %d\n', ...
-                         'Pop size: %d\n', ...
-                         'Map size: %dx%d\n'],...
-                        app.evo_params.nb_gen, app.evo_params.nb_gen_planned, ...
-                        double(app.evo_params.nb_gen) / app.evo_params.nb_gen_planned * 100, ...
-                        app.evo_params.init_size, ...
-                        app.evo_params.gen_size, ...
-                        app.evo_params.griddim_0, app.evo_params.griddim_1);
-        end
 
         function plot_heatmap(app)
             app.archive_map = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
@@ -127,6 +115,7 @@ classdef UI < matlab.apps.AppBase
 
             evo_xml = xml2struct(fullfile(result_path, app.params_filename));
 
+            [~, app.result_basename, ~] = fileparts(result_path);
             app.evo_params.result_path = result_path;
             app.evo_params.nb_gen_planned = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
             app.evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
@@ -145,12 +134,36 @@ classdef UI < matlab.apps.AppBase
             else
                 app.BuildStatButton.Text = 'BuildStat';
             end
-            show_testinfo(app);
+
+            app.ResultInfoTextLabel.Text = ...
+                sprintf(['# of Gen Finished: %d/%d\n', ...
+                         'Progress: %.2f%%\n', ...
+                         'Init size: %d\n', ...
+                         'Pop size: %d\n', ...
+                         'Map size: %dx%d\n'],...
+                        app.evo_params.nb_gen, app.evo_params.nb_gen_planned, ...
+                        double(app.evo_params.nb_gen) / app.evo_params.nb_gen_planned * 100, ...
+                        app.evo_params.init_size, ...
+                        app.evo_params.gen_size, ...
+                        app.evo_params.griddim_0, app.evo_params.griddim_1);
 
             app.StatStartGenField.Value = num2str(0);
             app.StatEndGenField.Value = num2str(app.evo_params.nb_gen);
             app.result_to_compare = app.result_basename;
-            app.CompareListBox.Items = {app.result_basename};
+            if isfile(fullfile(result_path, 'name.mat'))
+                load(fullfile(result_path, 'name.mat'));
+                app.result_nickname = name;
+                app.NickNameField.Value = app.result_nickname;
+                app.NickNameSaveButton.Text = 'ReSave';
+                app.result_displayname = [app.result_nickname, ' - (', app.result_basename, ')'];
+                app.CompareListBox.Items = {app.result_nickname};
+            else
+                app.NickNameSaveButton.Text = 'Save';
+                app.result_displayname = app.result_basename;
+                app.CompareListBox.Items = {app.result_basename};
+            end
+            app.ResultNameLabel.Text = app.result_displayname;
+
             app.current_gen = -1;
             load_gen(app, 0);
             app.result_loaded = true;
@@ -170,6 +183,7 @@ classdef UI < matlab.apps.AppBase
         function bring_figure_back(app)
             figure(app.EvolutionaryRobogamiResultViewerUIFigure);
         end
+
     end
 
     % Callbacks that handle component events
@@ -191,7 +205,7 @@ classdef UI < matlab.apps.AppBase
             % init ui assets
             app.GenStepField.Value = num2str(app.gen_step);
 
-           % load_result(app);
+            load_result(app);
         end
 
         % Button pushed function: LoadResultButton
@@ -242,7 +256,7 @@ classdef UI < matlab.apps.AppBase
                 msgbox('Build Stat first');
                 return;
             end
-            stat_plot(app.stat, app.result_basename, str2double(app.StatStartGenField.Value), str2double(app.StatEndGenField.Value));
+            stat_plot(app.stat, app.result_displayname, str2double(app.StatStartGenField.Value), str2double(app.StatEndGenField.Value));
         end
 
         % Button pushed function: ComparePlotButton
@@ -262,7 +276,13 @@ classdef UI < matlab.apps.AppBase
             [~, result_name, ~] = fileparts(result_path);
             % delete duplicated entries
             app.CompareListBox.Items(app.result_to_compare == result_name) = [];
-            app.CompareListBox.Items{end + 1} = result_name;
+            if isfile(fullfile(result_path, 'name.mat'))
+                load(fullfile(result_path, 'name.mat'));
+                app.CompareListBox.Items{end + 1} = name;
+            else
+                app.CompareListBox.Items{end + 1} = result_name;
+            end
+
             app.result_to_compare(app.result_to_compare == result_name) = [];
             app.result_to_compare(end + 1) = result_name;
         end
@@ -275,6 +295,17 @@ classdef UI < matlab.apps.AppBase
             tmp_value = app.CompareListBox.Value;
             app.CompareListBox.Items(app.result_to_compare == tmp_value) = [];
             app.result_to_compare(app.result_to_compare == tmp_value) = [];
+        end
+
+        % Button pushed function: NickNameSaveButton
+        function NickNameSaveButtonPushed(app, event)
+            name = app.NickNameField.Value;
+            if isempty(name)
+                return;
+            end
+            app.result_nickname = name;
+            save(fullfile(app.evo_params.result_path, 'name.mat'), 'name');
+            app.NickNameSaveButton.Text = 'ReSave';
         end
 
         % Button pushed function: OpenFolderButton
@@ -404,7 +435,7 @@ classdef UI < matlab.apps.AppBase
             app.SimulateRobotButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [114 88 72 22];
+            app.SimulateRobotButton.Position = [326 11 72 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create GenLabel
@@ -453,17 +484,17 @@ classdef UI < matlab.apps.AppBase
             app.RobotIDXField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [19 88 39 22];
+            app.RobotIDXField.Position = [239 11 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [62 88 39 22];
+            app.RobotIDYField.Position = [283 11 39 22];
 
             % Create RobotInfoLabel
             app.RobotInfoLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
-            app.RobotInfoLabel.Position = [23 59 170 22];
+            app.RobotInfoLabel.Position = [14 11 217 22];
             app.RobotInfoLabel.Text = '';
 
             % Create StatPlotButton
@@ -552,6 +583,18 @@ classdef UI < matlab.apps.AppBase
             app.RemoveCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveCompareButtonPushed, true);
             app.RemoveCompareButton.Position = [5 315 37 22];
             app.RemoveCompareButton.Text = 'Del';
+
+            % Create NickNameSaveButton
+            app.NickNameSaveButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.NickNameSaveButton.ButtonPushedFcn = createCallbackFcn(app, @NickNameSaveButtonPushed, true);
+            app.NickNameSaveButton.Tag = 'loadresult';
+            app.NickNameSaveButton.Position = [138 88 50 22];
+            app.NickNameSaveButton.Text = 'Save';
+
+            % Create NickNameField
+            app.NickNameField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.NickNameField.HorizontalAlignment = 'center';
+            app.NickNameField.Position = [5 88 134 22];
 
             % Show the figure after all components are created
             app.EvolutionaryRobogamiResultViewerUIFigure.Visible = 'on';

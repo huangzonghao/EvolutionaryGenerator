@@ -1,11 +1,11 @@
-function stat_plot(stat, result_basename, start_gen, end_gen)
+function stat_plot(stat, result_displayname, start_gen, end_gen)
     num_subplots = 4;
 
     start_gen = max(start_gen, 0);
     end_gen = min(end_gen, length(stat.archive_fits) - 1); % stat contains gen 0
 
     figure();
-    sgtitle(result_basename, 'Interpreter', 'none');
+    sgtitle(result_displayname, 'Interpreter', 'none');
 
     % Fitness Plot
     subplot(num_subplots, 1, 1);
