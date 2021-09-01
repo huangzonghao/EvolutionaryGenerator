@@ -4,7 +4,7 @@ function stat_plot(stat, result_displayname, start_gen, end_gen)
     start_gen = max(start_gen, 0);
     end_gen = min(end_gen, length(stat.archive_fits) - 1); % stat contains gen 0
 
-    figure();
+    figure('units','normalized','outerposition',[.05 .05 .9 .9]);
     sgtitle(result_displayname, 'Interpreter', 'none');
 
     % Fitness Plot

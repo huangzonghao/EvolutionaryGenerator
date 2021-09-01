@@ -1,6 +1,6 @@
 function compare_plot(result_dirs, parent_path)
     num_subplots = 3;
-    figure();
+    figure('units','normalized','outerposition',[.05 .05 .9 .9]);
     p1 = subplot(num_subplots, 1, 1);
     hold on;
     title('Fitness');
