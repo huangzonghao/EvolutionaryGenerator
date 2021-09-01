@@ -40,8 +40,8 @@ classdef UI < matlab.apps.AppBase
 
     properties (Access = private)
         result_loaded = false
+        result_path = ""
         result_basename = ""
-        result_nickname
         result_displayname
         evo_params % parameters of an evolutionary generation process
         stat % variables containing the stats of the result
@@ -101,22 +101,22 @@ classdef UI < matlab.apps.AppBase
                 return
             end
             app.current_gen = gen_to_load;
-            app.current_gen_archive = readmatrix(fullfile(app.evo_params.result_path, strcat(app.archive_prefix, num2str(app.current_gen), app.archive_subfix)));
+            app.current_gen_archive = readmatrix(fullfile(app.result_path, strcat(app.archive_prefix, num2str(app.current_gen), app.archive_subfix)));
             app.GenIDField.Value = num2str(app.current_gen);
             plot_heatmap(app);
         end
 
         function load_result(app)
-            result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
+            tmp_result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
             bring_figure_back(app);
-            if (result_path == 0) % User pressed cancel button
+            if (tmp_result_path == 0) % User pressed cancel button
                 return;
             end
 
-            evo_xml = xml2struct(fullfile(result_path, app.params_filename));
+            evo_xml = xml2struct(fullfile(tmp_result_path, app.params_filename));
 
-            [~, app.result_basename, ~] = fileparts(result_path);
-            app.evo_params.result_path = result_path;
+            [~, app.result_basename, ~] = fileparts(tmp_result_path);
+            app.result_path = tmp_result_path;
             app.evo_params.nb_gen_planned = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
             app.evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
             app.evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
@@ -125,10 +125,11 @@ classdef UI < matlab.apps.AppBase
             app.evo_params.feature_description1 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{1}.Text;
             app.evo_params.feature_description2 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{2}.Text;
 
-            statusfile_id = fopen(fullfile(result_path, 'status.txt'));
+            statusfile_id = fopen(fullfile(tmp_result_path, 'status.txt'));
             status_info = cell2mat(textscan(statusfile_id, '%d/%d%*[^\n]'));
+            fclose(statusfile_id);
             app.evo_params.nb_gen = status_info(1);
-            [app.stat, app.stat_loaded] = load_stat(result_path);
+            [app.stat, app.stat_loaded] = load_stat(tmp_result_path);
             if app.stat_loaded
                 app.BuildStatButton.Text = 'RebuildStat';
             else
@@ -150,18 +151,17 @@ classdef UI < matlab.apps.AppBase
             app.StatStartGenField.Value = num2str(0);
             app.StatEndGenField.Value = num2str(app.evo_params.nb_gen);
             app.result_to_compare = app.result_basename;
-            if isfile(fullfile(result_path, 'name.mat'))
-                load(fullfile(result_path, 'name.mat'));
-                app.result_nickname = name;
-                app.NickNameField.Value = app.result_nickname;
+            [nickname, nickname_loaded] = load_nickname(tmp_result_path);
+            if nickname_loaded
                 app.NickNameSaveButton.Text = 'ReSave';
-                app.result_displayname = [app.result_nickname, ' - (', app.result_basename, ')'];
-                app.CompareListBox.Items = {app.result_nickname};
+                app.result_displayname = [nickname, ' - (', app.result_basename, ')'];
+                app.CompareListBox.Items = {nickname};
             else
                 app.NickNameSaveButton.Text = 'Save';
                 app.result_displayname = app.result_basename;
                 app.CompareListBox.Items = {app.result_basename};
             end
+            app.NickNameField.Value = nickname;
             app.ResultNameLabel.Text = app.result_displayname;
 
             app.current_gen = -1;
@@ -182,6 +182,12 @@ classdef UI < matlab.apps.AppBase
 
         function bring_figure_back(app)
             figure(app.EvolutionaryRobogamiResultViewerUIFigure);
+        end
+
+        function save_nickname(app, nickname)
+            fid = fopen(fullfile(app.result_path, 'name.txt'), 'wt');
+            fprintf(fid, nickname);
+            fclose(fid);
         end
 
     end
@@ -268,17 +274,17 @@ classdef UI < matlab.apps.AppBase
 
         % Button pushed function: AddCompareButton
         function AddCompareButtonPushed(app, event)
-            result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
+            tmp_result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
             bring_figure_back(app);
-            if (result_path == 0) % User pressed cancel button
+            if (tmp_result_path == 0) % User pressed cancel button
                 return;
             end
-            [~, result_name, ~] = fileparts(result_path);
+            [~, result_name, ~] = fileparts(tmp_result_path);
             % delete duplicated entries
             app.CompareListBox.Items(app.result_to_compare == result_name) = [];
-            if isfile(fullfile(result_path, 'name.mat'))
-                load(fullfile(result_path, 'name.mat'));
-                app.CompareListBox.Items{end + 1} = name;
+            [nickname, nickname_loaded] = load_nickname(tmp_result_path);
+            if nickname_loaded
+                app.CompareListBox.Items{end + 1} = nickname;
             else
                 app.CompareListBox.Items{end + 1} = result_name;
             end
@@ -303,14 +309,15 @@ classdef UI < matlab.apps.AppBase
             if isempty(name)
                 return;
             end
-            app.result_nickname = name;
-            save(fullfile(app.evo_params.result_path, 'name.mat'), 'name');
+            save_nickname(app, name);
             app.NickNameSaveButton.Text = 'ReSave';
+            app.result_displayname = [name, ' - (', app.result_basename, ')'];
+            app.ResultNameLabel.Text = app.result_displayname;
         end
 
         % Button pushed function: OpenFolderButton
         function OpenFolderButtonPushed(app, event)
-            winopen(app.evo_params.result_path);
+            winopen(app.result_path);
         end
 
         % Button pushed function: ResumeButton
@@ -332,7 +339,7 @@ classdef UI < matlab.apps.AppBase
             dv = app.current_gen_archive(idx, 5:end);
             dv = dv(~isnan(dv));
             cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " + ...
-                      fullfile(app.evo_params.result_path, app.sim_params_filename) + " " + ...
+                      fullfile(app.result_path, app.sim_params_filename) + " " + ...
                       num2str(dv);
             system(cmd_str);
         end

@@ -27,10 +27,11 @@ function compare_plot(result_dirs, parent_path)
         result_path = fullfile(parent_path, result_dirs(i));
         [stat, stat_loaded] = load_stat(result_path);
         if (stat_loaded)
-            legend_name = result_dirs(i);
-            if isfile(fullfile(result_path, 'name.mat'))
-                load(fullfile(result_path, 'name.mat'));
-                legend_name = name;
+            [nickname, nickname_loaded] = load_nickname(result_path);
+            if nickname_loaded
+                legend_name = nickname;
+            else
+                legend_name = result_dirs(i);
             end
             plot_color = plot_colors(i);
             plot(p1, stat.archive_fits, 'DisplayName', legend_name);
