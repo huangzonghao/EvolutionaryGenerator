@@ -10,8 +10,8 @@ extern MeshInfo mesh_info; // defined in MeshInfo.cpp
 
 RobotRepresentation::Leg::Leg(int myid, int total_legs) { update_pos(myid, total_legs); }
 
-void RobotRepresentation::Leg::update_pos(int myid, int total_legs) {
-    position = get_pos(myid, total_legs);
+void RobotRepresentation::Leg::update_pos(int myid, int total_legs, int alt) {
+    position = get_pos(myid, total_legs, alt);
 }
 
 double RobotRepresentation::Leg::length() const {
@@ -31,11 +31,11 @@ RobotRepresentation::RobotRepresentation() {
         legs[i].update_pos(i, num_legs_);
 }
 
-void RobotRepresentation::update_num_legs(int new_num_legs) {
+void RobotRepresentation::update_num_legs(int new_num_legs, int alt) {
     num_legs_ = new_num_legs;
     legs.resize(num_legs_);
     for (int i = 0; i < num_legs_; ++i)
-        legs[i].update_pos(i, num_legs_);
+        legs[i].update_pos(i, num_legs_, alt);
 }
 
 int RobotRepresentation::get_body_part_id() const {

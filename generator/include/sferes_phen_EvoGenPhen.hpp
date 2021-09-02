@@ -15,7 +15,7 @@ namespace sferes {
 namespace phen {
 
 // phen related values
-static const int robot_meta_size = 1; // num_legs
+static const int robot_meta_size = 2; // num_legs, side of extra leg for 3/5-leg robot
 static const int body_meta_size = 4; // body_id, body_x, body_y, body_z
 static const int leg_meta_size = 2; // leg_pos, num_links
 static const int link_meta_size = 2; // link_id, link_scale
@@ -88,8 +88,8 @@ class EvoGenPhen {
     }
 
     // Genome to Robot Conversion & Verification
-    // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
-    //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
+    // gen format: [body_id, body_x, body_y, body_z, num_legs, alt, leg_1, leg_2, ...]
+    //     for each leg: [(leg_pos), num_links, link_1_id, link_1_scale]
     // Leg order: FL ML BL BR MR FR
     // Note: develop is usually called right before fitness eval
     bool develop() {
@@ -105,7 +105,8 @@ class EvoGenPhen {
             for (int i = 0; i < 3; ++i)
                 _robot.body_scales[i] = scale_up(gene.at(cursor++), _min_p, _max_p);
             int num_legs = gene_to_id(gene.at(cursor++), min_num_legs, max_num_legs);
-            _robot.update_num_legs(num_legs);
+            double alt_gene = gene.at(cursor++); // this is a dumb gene for symmetrical robot
+            _robot.update_num_legs(num_legs, alt_gene > 0.5 ? 1 : 0);
             for (int i = 0; i < num_legs; ++i) {
                 auto& tmp_leg = _robot.legs[i];
                 // tmp_leg.position = gene.at(cursor++);

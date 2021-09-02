@@ -25,26 +25,34 @@ class RobotRepresentation {
         Leg() {}
         Leg(int myid, int total_legs);
 
-        void update_pos(int myid, int total_legs);
+        void update_pos(int myid, int total_legs, int alt = 0);
         double length() const;
         bool operator<(const Leg& other) const;
 
-        static double RobotRepresentation::Leg::get_pos(int myid, int total_legs) {
+        static double RobotRepresentation::Leg::get_pos(int myid, int total_legs, int alt = 0) {
             // the position here determines which controller each leg gets
             const double preset_legpos2[2] = {0.25, 0.75};
             const double preset_legpos3[3] = {0.01, 0.75, 0.49};
+            const double preset_legpos3_alt[3] = {0.51, 0.25, 0.99};
             const double preset_legpos4[4] = {0.01, 0.49, 0.51, 0.99};
             const double preset_legpos5[5] = {0.01, 0.49, 0.51, 0.99, 0.25};
+            const double preset_legpos5_alt[5] = {0.99, 0.51, 0.49, 0.01, 0.75};
             const double preset_legpos6[6] = {0.01, 0.25, 0.49, 0.51, 0.75, 0.99};
             switch (total_legs) {
             case 2:
                 return preset_legpos2[myid];
             case 3:
-                return preset_legpos3[myid];
+                if (alt == 0)
+                    return preset_legpos3[myid];
+                else
+                    return preset_legpos3_alt[myid];
             case 4:
                 return preset_legpos4[myid];
             case 5:
-                return preset_legpos5[myid];
+                if (alt == 0)
+                    return preset_legpos5[myid];
+                else
+                    return preset_legpos5_alt[myid];
             case 6:
                 return preset_legpos6[myid];
             default:
@@ -71,7 +79,7 @@ class RobotRepresentation {
     double get_body_size(int dir) const;
     double get_body_length() const;
     int num_legs() const;
-    void update_num_legs(int new_num_legs);
+    void update_num_legs(int new_num_legs, int alt); // alt: represent the alternative leg layout of asymmetrical robot
     std::string get_urdf_string() const;
     void export_urdf_file(const std::string& output_path) const;
     double get_leg_pos(int leg_id) const;

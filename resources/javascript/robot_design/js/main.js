@@ -15,8 +15,10 @@ const slider_step = 0.01;
 var preset_leg_pos = {};
 preset_leg_pos["2"] = [0.25, 0.75];
 preset_leg_pos["3"] = [0.01, 0.75, 0.49];
+preset_leg_pos["3_alt"] = [0.51, 0.25, 0.99];
 preset_leg_pos["4"] = [0.01, 0.49, 0.51, 0.99];
 preset_leg_pos["5"] = [0.01, 0.49, 0.51, 0.99, 0.25];
+preset_leg_pos["5_alt"] = [0.99, 0.51, 0.49, 0.01, 0.75];
 preset_leg_pos["6"] = [0.01, 0.25, 0.49, 0.51, 0.75, 0.99];
 
 // TODO: the following 4 values should be read from disk
@@ -55,8 +57,13 @@ class RobotLeg {
             console.log("Error: link idx exceeds total number of links");
     }
 
-    update_position(leg_id, total_num_legs) {
-        this.position = preset_leg_pos[total_num_legs.toString()][leg_id];
+    update_position(leg_id, total_num_legs, alt = false) {
+        if (alt && preset_leg_pos[total_num_legs.toString() + "_alt"] != null) {
+            this.position = preset_leg_pos[total_num_legs.toString() + "_alt"][leg_id];
+            console.log("alt leg used");
+        }
+        else
+            this.position = preset_leg_pos[total_num_legs.toString()][leg_id];
     }
 }
 
@@ -77,6 +84,7 @@ class RobotRepresentation {
         for (let i = 0; i < this.num_legs; ++i)
             this.legs[i].update_position(i, this.num_legs);
         this.dv = [];
+        this.alt = false;
     }
 
     leg(idx) {
@@ -89,7 +97,14 @@ class RobotRepresentation {
     update_num_legs(new_num_legs) {
         this.num_legs = new_num_legs;
         for (let i = 0; i < this.num_legs; ++i) {
-            this.legs[i].update_position(i, this.num_legs);
+            this.legs[i].update_position(i, this.num_legs, this.alt);
+        }
+    }
+
+    flip_legs() {
+        this.alt = !this.alt;
+        for (let i = 0; i < this.num_legs; ++i) {
+            this.legs[i].update_position(i, this.num_legs, this.alt);
         }
     }
 
@@ -98,7 +113,7 @@ class RobotRepresentation {
         return (raw - min) / (max - min);
     }
 
-    // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
+    // gen format: [body_id, body_x, body_y, body_z, num_legs, alt, leg_1, leg_2, ...]
     //     for each leg: [(leg_pos), num_links, link_1_id, link_1_scale]
     compile_dv() {
         this.dv.length = 0;
@@ -197,6 +212,7 @@ let link_length_e  = document.getElementById('LinkLengthText');
 let link_length2_e = document.getElementById('LinkLengthRange');
 let submit_e       = document.getElementById('SubmitButton');
 let save_e         = document.getElementById('SaveButton');
+let flip_e         = document.getElementById('FlipButton');
 
 ////////////////////////////////////////////////////////////////////////
 //                             Callbacks                              //
@@ -346,6 +362,11 @@ function onSaveButtonClick(event) {
     demo_write();
 }
 
+function onFlipButtonClick(event) {
+    robot.flip_legs();
+    draw_robot();
+}
+
 ////////////////////////////////////////////////////////////////////////
 //                            Subfunctions                            //
 ////////////////////////////////////////////////////////////////////////
@@ -452,6 +473,9 @@ function init_dropdown_lists() {
 
     // Save Button
     save_e.addEventListener('click', onSaveButtonClick)
+
+    // Flip Button
+    flip_e.addEventListener('click', onFlipButtonClick)
 
     update_dropdown_lists();
 }
