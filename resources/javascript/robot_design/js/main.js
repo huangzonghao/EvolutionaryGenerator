@@ -99,7 +99,7 @@ class RobotRepresentation {
     }
 
     // gen format: [body_id, body_x, body_y, body_z, num_legs, leg_1, leg_2, ...]
-    //     for each leg: [leg_pos, num_links, link_1_id, link_1_scale]
+    //     for each leg: [(leg_pos), num_links, link_1_id, link_1_scale]
     compile_dv() {
         this.dv.length = 0;
         this.dv.push(this.scale_down(this.body_id, 0, num_body_parts - 1));
@@ -188,8 +188,8 @@ let body_z_e       = document.getElementById('BodyScaleZText');
 let body_z2_e      = document.getElementById('BodyScaleZRange');
 let num_legs_e     = document.getElementById('NumLegsSelect');
 let leg_id_e       = document.getElementById('LegIdSelect');
-let leg_pos_e      = document.getElementById('LegPositionText');
-let leg_pos2_e     = document.getElementById('LegPositionRange');
+// let leg_pos_e      = document.getElementById('LegPositionText');
+// let leg_pos2_e     = document.getElementById('LegPositionRange');
 let num_links_e    = document.getElementById('NumLinksSelect');
 let link_id_e      = document.getElementById('LinkIdSelect');
 let part_id_e      = document.getElementById('PartIdSelect');
@@ -324,19 +324,19 @@ function onLinkLengthRangeChange(event) {
     draw_robot();
 }
 
-function onLegPositionTextChange(event) {
-    var select = event.target;
-    robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
-    leg_pos2_e.value = select.value;
-    draw_robot();
-}
+// function onLegPositionTextChange(event) {
+    // var select = event.target;
+    // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
+    // leg_pos2_e.value = select.value;
+    // draw_robot();
+// }
 
-function onLegPositionRangeChange(event) {
-    var select = event.target;
-    robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
-    leg_pos_e.value = select.value;
-    draw_robot();
-}
+// function onLegPositionRangeChange(event) {
+    // var select = event.target;
+    // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
+    // leg_pos_e.value = select.value;
+    // draw_robot();
+// }
 
 function onSubmitButtonClick(event) {
     export_robot();
@@ -441,11 +441,11 @@ function init_dropdown_lists() {
     link_length2_e.step = slider_step;
 
     // Leg Position
-    leg_pos_e.addEventListener('change', onLegPositionTextChange);
-    leg_pos2_e.addEventListener('change', onLegPositionRangeChange);
-    leg_pos2_e.min = leg_pos_range[0];
-    leg_pos2_e.max = leg_pos_range[1];
-    leg_pos2_e.step = slider_step;
+    // leg_pos_e.addEventListener('change', onLegPositionTextChange);
+    // leg_pos2_e.addEventListener('change', onLegPositionRangeChange);
+    // leg_pos2_e.min = leg_pos_range[0];
+    // leg_pos2_e.max = leg_pos_range[1];
+    // leg_pos2_e.step = slider_step;
 
     // Submit Button
     submit_e.addEventListener('click', onSubmitButtonClick)
@@ -477,8 +477,8 @@ function update_dropdown_lists() {
     link_length2_e.value = leg_link.link_length;
 
     // Leg Position
-    leg_pos_e.value = robot_leg.position;
-    leg_pos2_e.value = robot_leg.position;
+    // leg_pos_e.value = robot_leg.position;
+    // leg_pos2_e.value = robot_leg.position;
 
     // Update visualization of selected link part
     if (robo_lib.loading_done) {
