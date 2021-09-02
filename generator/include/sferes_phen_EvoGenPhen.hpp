@@ -39,16 +39,14 @@ class EvoGenPhen {
     friend std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e);
 
     // scale up a value in [0, 1] to [min, max]
-    inline double scale_up(double raw, double min, double max) {
+    inline double gene_to_range(double raw, double min, double max) {
+        assert(raw >= 0); assert(raw <= 1); assert(min <= max);
         return raw * (max - min) + min;
     }
 
     // convert a gene in [0, 1] to integers of {0, 1, ..., count - 1}
     inline int gene_to_id(double raw, int count) {
-        assert(count > 0);
-        assert(raw >= 0);
-        assert(raw <= 1);
-
+        assert(count > 0); assert(raw >= 0); assert(raw <= 1);
         int ret = std::floor(raw * count);
         ret = std::min(std::max(ret, 0), count - 1);
         return ret;
@@ -56,6 +54,7 @@ class EvoGenPhen {
 
     // convert a gene in [0, 1] to integers of {min, min + 1, ... , max - 1, max}
     inline int gene_to_id(double raw, int min, int max) {
+        assert(min <= max);
         return gene_to_id(raw, max - min + 1) + min;
     }
 
@@ -103,7 +102,7 @@ class EvoGenPhen {
             _robot.body_part_gene = gene.at(cursor++);
             _robot.body_part_id = gene_to_id(_robot.body_part_gene, mesh_info.num_bodies());
             for (int i = 0; i < 3; ++i)
-                _robot.body_scales[i] = scale_up(gene.at(cursor++), _min_p, _max_p);
+                _robot.body_scales[i] = gene_to_range(gene.at(cursor++), _min_p, _max_p);
             int num_legs = gene_to_id(gene.at(cursor++), min_num_legs, max_num_legs);
             double alt_gene = gene.at(cursor++); // this is a dumb gene for symmetrical robot
             _robot.update_num_legs(num_legs, alt_gene > 0.5 ? 1 : 0);
@@ -115,7 +114,7 @@ class EvoGenPhen {
                 for(int j = 0; j < tmp_leg.num_links; ++j) {
                     auto& tmp_link = tmp_leg.links[j];
                     tmp_link.part_gene = gene.at(cursor++);
-                    tmp_link.scale = scale_up(gene.at(cursor++), _min_p, _max_p);
+                    tmp_link.scale = gene_to_range(gene.at(cursor++), _min_p, _max_p);
                     tmp_link.part_id = gene_to_id(tmp_link.part_gene, mesh_info.num_legs());
                 }
             }

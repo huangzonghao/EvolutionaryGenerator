@@ -70,7 +70,7 @@ class UrdfFitness {
 
         // _desc[1] = avg_leg_length / body_length;
         // _desc[1] /= 8; // assuming range [0, 8];
-        _desc[1] = scale_to_unit(sd, 0.5, 1.8); // assuming range [0.5, 1.8];
+        _desc[1] = range_to_unit(sd, 0.5, 1.8); // assuming range [0.5, 1.8];
 
         // regulate descriptor
         for (auto& e : _desc)
@@ -93,7 +93,7 @@ class UrdfFitness {
     double _value = 0;
 
     // scale the value within the given range to [0, 1]
-    inline double scale_to_unit(double raw, double min, double max) {
+    inline double range_to_unit(double raw, double min, double max) {
         return (raw - min) / (max - min);
     }
 };
