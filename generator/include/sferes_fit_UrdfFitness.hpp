@@ -55,7 +55,8 @@ class UrdfFitness {
         // double body_length = robot.get_body_length();
         // _desc[0] = robot.get_body_size(1) / body_length;
         // _desc[0] /=  2; // assuming the range of the origin ratio is [0, 2], ignoring the rest
-        _desc[0] = ind.gen().data(1);
+        _desc[0] = ind.data(1);
+        _desc[0] = range_to_unit(robot.get_body_length(), 0.5, 2.3);
         double avg_leg_length = 0;
         for (int i = 0; i < num_legs; ++i) {
             avg_leg_length += robot.legs[i].length();
@@ -64,13 +65,13 @@ class UrdfFitness {
         avg_leg_length /= num_legs;
         double sd = 0;
         for (int i = 0; i < num_legs; ++i) {
-            sd += std::pow(robot.legs[i].length(), 2);
+            sd += std::pow(robot.legs[i].length() - avg_leg_length, 2);
         }
         sd = std::sqrt(sd / num_legs);
 
         // _desc[1] = avg_leg_length / body_length;
         // _desc[1] /= 8; // assuming range [0, 8];
-        _desc[1] = range_to_unit(sd, 0.5, 1.8); // assuming range [0.5, 1.8];
+        _desc[1] = range_to_unit(sd, 0, 1); // assuming range [0, 1];
 
         // regulate descriptor
         for (auto& e : _desc)
