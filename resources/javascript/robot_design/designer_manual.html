@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>EvoGen - Robot Designer Manual</title>
+    </head>
+    <body>
+        <div id="content"></div>
+        <script src="js/lib/marked.min.js"></script>
+        <script>
+            fetch('designer_manual.md')
+                .then(response => response.text())
+                .then(data => document.getElementById('content').innerHTML = marked(data));
+        </script>
+    </body>
+</html>
+
