@@ -15,19 +15,17 @@
 
 <body>
     <div id="RobotConfigPanel">
+        <p><button onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button></p>
         <p align="center">Robot Config</p>
+        <p>Name: <input class="LongTextBox" id="RobotNameText"></p>
         <p>
-        <button onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button>
-        </p>
-        <p>
-            Name:
-            <input class="LongTextBox" id="RobotNameText">
+            Num Legs:
+            <select class="SelectList" id="NumLegsSelect"></select>
+            <button type="input" id="FlipButton">Flip Legs</button>
         </p>
         <hr>
-        <p>
-            Body ID:
-            <select class="SelectList" id="BodyIdSelect"></select>
-        </p>
+        <p align="center">Body Config</p>
+        <p>Body ID: <select class="SelectList" id="BodyIdSelect"></select></p>
         <p>
             Body Scale X:
             <input class="TextBox" id="BodyScaleXText">
@@ -44,43 +42,27 @@
             <input type="range" id="BodyScaleZRange">
         </p>
         <hr>
+        <p align="center">Target Leg Config</p>
         <p>
-            Num Legs:
-            <select class="SelectList" id="NumLegsSelect"></select>
-            <button type="input" id="FlipButton">Flip Legs</button>
-        </p>
-        <p>
-            Leg ID:
-            <select class="SelectList" id="LegIdSelect"></select>
-            # Links:
-            <select class="SelectList" id="NumLinksSelect"></select>
+            Leg ID: <select class="SelectList" id="LegIdSelect"></select>
+            # Links: <select class="SelectList" id="NumLinksSelect"></select>
         </p>
         <!-- <p> -->
             <!-- Leg Position: -->
             <!-- <input class="TextBox" id="LegPositionText"> -->
             <!-- <input type="range" id="LegPositionRange"> -->
         <!-- </p> -->
-        <p>
-            Link ID:
-            <select class="SelectList" id="LinkIdSelect"></select>
-        </p>
-        <hr>
-        <p>
-            Part ID:
-            <select class="SelectList" id="PartIdSelect"></select>
-        </p>
+        <p align="center">Target Link Config</p>
+        <p>Link ID: <select class="SelectList" id="LinkIdSelect"></select></p>
+        <p>Part ID: <select class="SelectList" id="PartIdSelect"></select></p>
         <p>
             Link Scale:
             <input class="TextBox" id="LinkLengthText">
             <input type="range" id="LinkLengthRange">
         </p>
         <hr>
-        <p>
-            <button type="input" id="SubmitButton">Submit</button>
-        </p>
-        <p>
-            <button type="input" id="SaveButton">Save</button>
-        </p>
+        <p align="center"><button type="input" id="SubmitButton">Test</button></p>
+        <p align="center"><button type="input" id="SaveButton">Save</button></p>
     </div>
 
     <div id="RobotVisualPanel"></div>
