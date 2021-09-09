@@ -11,7 +11,7 @@ void MeshInfo::init() {
     for (int i = 0; true; ++i) {
         std::string file_to_read(body_mesh_dir + "/" + std::to_string(i) + ".obj");
         if (std::filesystem::exists(file_to_read)) {
-            TriMesh *mesh_tmp = TriMesh::read(file_to_read.c_str());
+            trimesh::TriMesh *mesh_tmp = trimesh::TriMesh::read(file_to_read);
             mesh_tmp->need_bbox();
             const auto& bbox_size = mesh_tmp->bbox.size();
             body_size.push_back({bbox_size[0] * scale_x, bbox_size[1] * scale_y, bbox_size[2] * scale_z});
@@ -28,7 +28,7 @@ void MeshInfo::init() {
     for (int i = 0; true; ++i) {
         std::string file_to_read(leg_mesh_dir + "/" + std::to_string(i) + ".obj");
         if (std::filesystem::exists(file_to_read)) {
-            TriMesh *mesh_tmp = TriMesh::read(file_to_read.c_str());
+            trimesh::TriMesh *mesh_tmp = trimesh::TriMesh::read(file_to_read);
             mesh_tmp->need_bbox();
             const auto& bbox_size = mesh_tmp->bbox.size();
             leg_size.push_back({bbox_size[0] * scale_x, bbox_size[1] * scale_y, bbox_size[2] * scale_z});

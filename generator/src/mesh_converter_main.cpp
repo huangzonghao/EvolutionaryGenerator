@@ -24,8 +24,8 @@ void convert_stl_in_dir(const std::string& input_dir, const std::string& output_
         const auto& tmp_path = entry.path();
         const auto& tmp_ext = tmp_path.extension().string();
         if (tmp_ext == in_ext || tmp_ext == in_ext2) {
-            TriMesh *mesh = TriMesh::read(tmp_path.string().c_str());
-            mesh->write(std::string(output_dir + "/" + tmp_path.stem().string() + out_ext).c_str());
+            trimesh::TriMesh *mesh = trimesh::TriMesh::read(tmp_path.string());
+            mesh->write(std::string(output_dir + "/" + tmp_path.stem().string() + out_ext));
             std::cout << tmp_path << " converted" << std::endl;
             delete mesh;
             if (converted_dir_not_created) {
