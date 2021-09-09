@@ -65,7 +65,7 @@ class Grid {
         for (const indiv_t* ind = _array.data(); ind < (_array.data() + _array.num_elements()); ++ind)
             if (*ind) container[counter++] = *ind;
 
-        assert(counter + 1 == _num_filled);
+        assert(counter == _num_filled);
     }
 
     bool add(indiv_t i1) {
