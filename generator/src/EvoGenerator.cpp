@@ -6,7 +6,7 @@
 #include <filesystem>
 
 #include "sferes_fit_UrdfFitness.hpp"
-#include "sferes_fit_RobogamiFitness.hpp"
+// #include "sferes_fit_RobogamiFitness.hpp"
 #include "sferes_gen_EvoGenFloat.hpp"
 #include "sferes_phen_EvoGenPhen.hpp"
 #include "sferes_eval_EvoGenEval.hpp"

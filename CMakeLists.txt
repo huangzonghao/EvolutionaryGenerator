@@ -10,6 +10,10 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
+if (NOT DEFINED ENABLE_ROBOGAMI)
+    set(ENABLE_ROBOGAMI OFF CACHE BOOL "Whether to use Robogami functions")
+endif()
+
 if (NOT DEFINED PROJECT_IN_FILE_OUTPUT_DIR)
     set(PROJECT_IN_FILE_OUTPUT_DIR ${PROJECT_BINARY_DIR}/include CACHE PATH "Partial file output dir")
     file(MAKE_DIRECTORY ${PROJECT_IN_FILE_OUTPUT_DIR})
@@ -152,49 +156,51 @@ if (NOT TARGET rapidjson)
     set_target_properties(rapidjson PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${rapidjson_INCLUDE_DIR}")
 endif()
 
-if(NOT DEFINED ROBOGAMI_DATA_PATH)
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data/.git)
-        execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/Data
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+if (ENABLE_ROBOGAMI)
+    if(NOT DEFINED ROBOGAMI_DATA_PATH)
+        if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data/.git)
+            execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/Data
+                            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        endif()
+        set(ROBOGAMI_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data CACHE PATH "Path to the Robogami data repo root")
+        message(STATUS "Robogami-Data Configured")
+    elseif(NOT EXISTS ${ROBOGAMI_DATA_PATH})
+        message(SEND_ERROR "Error: Invalid Robogami-Data Path")
+        set(ROBOGAMI_DATA_PATH "Path to Robogami data repo" CACHE PATH "Path to the Robogami data repo root" FORCE)
+        set(NEED_TO_RETURN True)
+    else()
+        message(STATUS "Robogami-Data Found")
     endif()
-    set(ROBOGAMI_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data CACHE PATH "Path to the Robogami data repo root")
-    message(STATUS "Robogami-Data Configured")
-elseif(NOT EXISTS ${ROBOGAMI_DATA_PATH})
-    message(SEND_ERROR "Error: Invalid Robogami-Data Path")
-    set(ROBOGAMI_DATA_PATH "Path to Robogami data repo" CACHE PATH "Path to the Robogami data repo root" FORCE)
-    set(NEED_TO_RETURN True)
-else()
-    message(STATUS "Robogami-Data Found")
-endif()
 
-if (NOT DEFINED RobogamiBackend_ROOT)
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Backend/.git)
-        execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/Backend
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    if (NOT DEFINED RobogamiBackend_ROOT)
+        if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Backend/.git)
+            execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/Backend
+                            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        endif()
+        set(RobogamiBackend_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Backend CACHE PATH "Path to Robogami-Backend repo")
+        message(STATUS "Robogami-Backend Configured")
+    elseif(NOT EXISTS ${RobogamiBackend_ROOT})
+        message(SEND_ERROR "Error: Invalid Robogami-Backend Path")
+        set(RobogamiBackend_ROOT "Path to Robogami-Backend repo" CACHE PATH "Path to Robogami-Backend repo" FORCE)
+        set(NEED_TO_RETURN True)
+    else()
+        message(STATUS "Robogami-Backend Found")
     endif()
-    set(RobogamiBackend_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Backend CACHE PATH "Path to Robogami-Backend repo")
-    message(STATUS "Robogami-Backend Configured")
-elseif(NOT EXISTS ${RobogamiBackend_ROOT})
-    message(SEND_ERROR "Error: Invalid Robogami-Backend Path")
-    set(RobogamiBackend_ROOT "Path to Robogami-Backend repo" CACHE PATH "Path to Robogami-Backend repo" FORCE)
-    set(NEED_TO_RETURN True)
-else()
-    message(STATUS "Robogami-Backend Found")
-endif()
 
-if (NOT DEFINED RobogamiUI_ROOT)
-    if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/UI/.git)
-        execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/UI
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    if (NOT DEFINED RobogamiUI_ROOT)
+        if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/UI/.git)
+            execute_process(COMMAND git submodule update --init --depth 1 -- Robogami/UI
+                            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        endif()
+        set(RobogamiUI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/UI CACHE PATH "Path to Robogami-UI repo")
+        message(STATUS "Robogami-UI Configured")
+    elseif(NOT EXISTS ${RobogamiUI_ROOT})
+        message(SEND_ERROR "Error: Invalid Robogami-UI Path")
+        set(RobogamiUI_ROOT "Path to Robogami-UI repo" CACHE PATH "Path to Robogami-UI repo" FORCE)
+        set(NEED_TO_RETURN True)
+    else()
+        message(STATUS "Robogami-UI Found")
     endif()
-    set(RobogamiUI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/UI CACHE PATH "Path to Robogami-UI repo")
-    message(STATUS "Robogami-UI Configured")
-elseif(NOT EXISTS ${RobogamiUI_ROOT})
-    message(SEND_ERROR "Error: Invalid Robogami-UI Path")
-    set(RobogamiUI_ROOT "Path to Robogami-UI repo" CACHE PATH "Path to Robogami-UI repo" FORCE)
-    set(NEED_TO_RETURN True)
-else()
-    message(STATUS "Robogami-UI Found")
 endif()
 
 #######################################################################
@@ -202,8 +208,10 @@ endif()
 #######################################################################
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(RobogamiBackend_GROUP_FOLDER Robogami)
-add_subdirectory(Robogami/Backend)
+if (ENABLE_ROBOGAMI)
+    set(RobogamiBackend_GROUP_FOLDER Robogami)
+    add_subdirectory(Robogami/Backend)
+endif()
 add_subdirectory(thirdparty/trimesh2)
 add_subdirectory(simulator)
 add_subdirectory(generator)
@@ -246,29 +254,31 @@ if(MSVC)
         $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
 
-set(CURRENT_TARGET_NAME Export_Robotgami_Library)
-set(Sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobogamiLibrary.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/export_robogami_library.cpp
-)
-add_executable(${CURRENT_TARGET_NAME} ${Sources})
-target_link_libraries(${CURRENT_TARGET_NAME} PRIVATE robogami)
-target_include_directories(${CURRENT_TARGET_NAME}
-                           PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
-    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-    DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
-endif()
-if(MSVC)
-    source_group("Header Files" FILES ${Headers})
-    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
-        $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
-        $<$<CONFIG:Release>: /MP;>
+if (ENABLE_ROBOGAMI)
+    set(CURRENT_TARGET_NAME Export_Robotgami_Library)
+    set(Sources
+        ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobogamiLibrary.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/export_robogami_library.cpp
     )
-    target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
-        $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
+    add_executable(${CURRENT_TARGET_NAME} ${Sources})
+    target_link_libraries(${CURRENT_TARGET_NAME} PRIVATE robogami)
+    target_include_directories(${CURRENT_TARGET_NAME}
+                               PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
+                                      ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+        set(CURRENT_TARGET_DEP_DLLS ${Protobuf_BIN_PATH}/libprotobuf.dll)
+        set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+        DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+    if(MSVC)
+        source_group("Header Files" FILES ${Headers})
+        target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+            $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
+            $<$<CONFIG:Release>: /MP;>
+        )
+        target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
+            $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
+    endif()
 endif()
 
 set(CURRENT_TARGET_NAME Genotype_Visualizer)
