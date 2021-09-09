@@ -55,9 +55,11 @@ struct Mutation_f {
 // distant solutions to be selected as offspring.
 template<typename Ev>
 struct CrossOver_f {
+    // TODO: this crossover doesn't seem to do what we expected
     void operator()(const Ev& f1, const Ev& f2, Ev &child1, Ev &child2) {
         assert(gen_eta_c != -1);
-        for (unsigned int i = 0; i < f1.size(); i++) {
+        int min_size = std::min(f1.size(), f2.size());
+        for (unsigned int i = 0; i < min_size; ++i) {
             double y1 = std::min(f1.data(i), f2.data(i));
             double y2 = std::max(f1.data(i), f2.data(i));
             if (fabs(y1 - y2) > std::numeric_limits<double>::epsilon()) {
@@ -91,8 +93,7 @@ struct CrossOver_f {
                     child1.data(i, c2);
                     child2.data(i, c1);
                 }
-            }
-            else{
+            } else{
                 // case where y1 == y2
                 // the two genes are the same (which may come for example,
                 // when the two parents are the same individual)
