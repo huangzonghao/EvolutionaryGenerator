@@ -124,11 +124,12 @@ endif()
 
 # The postprocess module is not required by this project, but somehow needed
 # to avoid a 'postprocess dll not found' error when using the Chrono 6.0.0 installer.
+set(Chrono_DIR_Cache ${Chrono_DIR}) # Chrono_DIR would be overwritten after a failed search
 find_package(Chrono
              COMPONENTS Irrlicht Vehicle Postprocess
              CONFIG QUIET)
 if (NOT Chrono_FOUND)
-    set(Chrono_DIR ${Chrono_DIR}/cmake)
+    set(Chrono_DIR ${Chrono_DIR_Cache}/cmake)
     find_package(Chrono
                 COMPONENTS Irrlicht Vehicle Postprocess
                 CONFIG QUIET)
