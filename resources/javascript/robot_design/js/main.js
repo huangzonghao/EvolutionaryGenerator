@@ -476,6 +476,7 @@ function init_dropdown_lists() {
         env_e.appendChild(opt);
     }
     env_e.addEventListener('change', onEnvSelectChange);
+    meta_info.env = env_e.options[env_e.selectedIndex].text;
 
     // Gen ID Button
     gen_id_btn_e.addEventListener('click', onGenUserIDButtonClick)
@@ -710,7 +711,7 @@ function demo_write() {
 
     let anchor = document.createElement('a');
     anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
-    anchor.download = meta_info.user_id + "_" + timestamp + '.txt';
+    anchor.download = meta_info.user_id.toString() + "_" + meta_info.env + "_" + robot.ver + '.txt';
     anchor.click();
 }
 
