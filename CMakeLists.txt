@@ -60,12 +60,18 @@ if (NOT DEFINED EVOGEN_PARAMS_DIR)
     file(MAKE_DIRECTORY ${EVOGEN_PARAMS_DIR})
 endif()
 
+if (NOT DEFINED JS_UI_OUTPUT_DIR)
+    set(JS_UI_OUTPUT_DIR ${PROJECT_WORKSPACE_DIR}/JavascriptUI CACHE PATH "Directory containing the javascript UI")
+    file(MAKE_DIRECTORY ${JS_UI_OUTPUT_DIR})
+endif()
+
 # copy DLLs for Windows
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(DLL_Copy_Command)
 
 set(ROBOT_PARTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/robot_parts)
 set(EVOGEN_MAPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
+set(JS_UI_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/javascript/robot_design)
 set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(EVOGEN_MATLAB_SCRIPTS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/matlab)
 if (MSVC)
@@ -377,3 +383,13 @@ if(MSVC)
     target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
         $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
+
+set(CURRENT_TARGET_NAME Generate_Javascript_UI)
+add_custom_target(${CURRENT_TARGET_NAME} ALL)
+add_custom_command(TARGET ${CURRENT_TARGET_NAME} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND}
+                   -D JS_UI_SOURCE_DIR=${JS_UI_SOURCE_DIR}
+                   -D JS_UI_OUTPUT_DIR=${JS_UI_OUTPUT_DIR}
+                   -D ROBOT_PARTS_DIR=${ROBOT_PARTS_DIR}
+                   -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Generate_Javascript_UI.cmake
+)
