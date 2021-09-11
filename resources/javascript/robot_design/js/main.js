@@ -33,24 +33,6 @@ let current_selected_obj;
 //                               Class                                //
 ////////////////////////////////////////////////////////////////////////
 
-class MetaInfo {
-    constructor() {
-        this.user_id = "";
-        this.user_gender = "";
-        this.user_age = "";
-        this.user_major = "";
-        this.user_degree = "";
-        this.env = "";
-
-        this.generate_user_id();
-    }
-
-    generate_user_id() {
-        let new_id = Math.floor(Math.random() * 1e6); // make user id a six-digit number
-        this.user_id = new_id.toString().padStart(6, "0");
-    }
-}
-
 class RobotLink {
     constructor() {
         this.part_id = 0;
@@ -88,6 +70,7 @@ class RobotLeg {
 
 class RobotRepresentation {
     constructor() {
+        this.env = "";
         this.ver = 0;
         this.body_obj;
         this.body_id = 0;
@@ -211,18 +194,11 @@ class EnvironmentLibrary {
 
 let config_panel_e = document.getElementById('RobotConfigPanel');
 let visual_panel_e = document.getElementById('RobotVisualPanel');
-
-// Meta
-let user_id_e     = document.getElementById('UserIDText');
-let gen_id_btn_e  = document.getElementById('GenUserIDButton');
-let user_gender_e = document.getElementById('UserGenderSelect');
-let user_age_e    = document.getElementById('UserAgeText');
-let user_major_e  = document.getElementById('UserMajorText');
-let user_degree_e = document.getElementById('UserDegreeText');
-let env_e         = document.getElementById('EnvSelect');
-let ver_e         = document.getElementById('VerSelect');
+let user_id_e      = document.getElementById('UserIDText');
 
 // Robot Config
+let env_e          = document.getElementById('EnvSelect');
+let ver_e          = document.getElementById('VerSelect');
 let body_id_e      = document.getElementById('BodyIdSelect');
 let body_x_e       = document.getElementById('BodyScaleXText');
 let body_x2_e      = document.getElementById('BodyScaleXRange');
@@ -277,42 +253,17 @@ function onMouseClick(event) {
 
 function onUserIDTextChange(event) {
     var select = event.target;
-    meta_info.user_id = select.value;
-}
-
-function onUserGenderSelectChange(event) {
-    var select = event.target;
-    meta_info.user_gender = select.options[select.selectedIndex].text;
-}
-
-function onUserAgeTextChange(event) {
-    var select = event.target;
-    meta_info.user_age = select.value;
-}
-
-function onUserMajorTextChange(event) {
-    var select = event.target;
-    meta_info.user_major = select.value;
-}
-
-function onUserDegreeTextChange(event) {
-    var select = event.target;
-    meta_info.user_degree = select.value;
+    user_id = select.value;
 }
 
 function onEnvSelectChange(event) {
     var select = event.target;
-    meta_info.env = select.options[select.selectedIndex].text;
+    robot.env = select.options[select.selectedIndex].text;
 }
 
 function onVerSelectChange(event) {
     var select = event.target;
     robot.ver = select.value;
-}
-
-function onGenUserIDButtonClick(event) {
-    meta_info.generate_user_id();
-    user_id_e.value = meta_info.user_id;
 }
 
 function onBodyIdSelectChange(event) {
@@ -456,17 +407,8 @@ function resize_select(select, new_size) {
 }
 
 function init_dropdown_lists() {
-    // User Info
-    user_id_e.value = meta_info.user_id;
+    user_id_e.value = user_id;
     user_id_e.addEventListener('change', onUserIDTextChange);
-    user_gender_e.value = meta_info.user_gender;
-    user_gender_e.addEventListener('change', onUserGenderSelectChange);
-    user_age_e.value = meta_info.user_age;
-    user_age_e.addEventListener('change', onUserAgeTextChange);
-    user_major_e.value = meta_info.user_major;
-    user_major_e.addEventListener('change', onUserMajorTextChange);
-    user_degree_e.value = meta_info.user_degree;
-    user_degree_e.addEventListener('change', onUserDegreeTextChange);
 
     // Environment Select
     for (let i = 0; i < env_lib.env_list.length; ++i) {
@@ -476,10 +418,7 @@ function init_dropdown_lists() {
         env_e.appendChild(opt);
     }
     env_e.addEventListener('change', onEnvSelectChange);
-    meta_info.env = env_e.options[env_e.selectedIndex].text;
-
-    // Gen ID Button
-    gen_id_btn_e.addEventListener('click', onGenUserIDButtonClick)
+    robot.env = env_e.options[env_e.selectedIndex].text;
 
     // Ver Select
     ver_e.value = robot.ver;
@@ -696,22 +635,24 @@ function demo_write() {
 
     robot.compile_dv();
     let json_dict = {
-        user_id: meta_info.user_id,
-        user_gender: meta_info.user_gender,
-        user_age: meta_info.user_age,
-        user_major: meta_info.user_major,
-        user_degree: meta_info.user_degree,
-        environment: meta_info.env,
+        user_id: user_id,
+        environment: robot.env,
         ver: robot.ver,
         datetime: timestamp,
         gene: robot.dv
     };
+
     // this long command formats the generated json string and keeps array on the same line
-    let json_str = JSON.stringify(json_dict, function(k,v) { if(v instanceof Array) return JSON.stringify(v); return v; }, 2).replace(/\\/g, '') .replace(/\"\[/g, '[') .replace(/\]\"/g,']') .replace(/\"\{/g, '{') .replace(/\}\"/g,'}');
+    let json_str = JSON.stringify(json_dict, function(k,v) { if(v instanceof Array) return JSON.stringify(v); return v; }, 2)
+                   .replace(/\\/g, '')
+                   .replace(/\"\[/g, '[')
+                   .replace(/\]\"/g,']')
+                   .replace(/\"\{/g, '{')
+                   .replace(/\}\"/g,'}');
 
     let anchor = document.createElement('a');
     anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
-    anchor.download = meta_info.user_id.toString() + "_" + meta_info.env + "_" + robot.ver + '.txt';
+    anchor.download = user_id.toString() + "_" + robot.env + "_" + robot.ver + '.txt';
     anchor.click();
 }
 
@@ -719,7 +660,7 @@ function demo_write() {
 //                           Main Function                            //
 ////////////////////////////////////////////////////////////////////////
 
-var meta_info = new MetaInfo();
+var user_id = "";
 var robot = new RobotRepresentation();
 var robo_lib = new RobogamiLibrary();
 var env_lib = new EnvironmentLibrary();

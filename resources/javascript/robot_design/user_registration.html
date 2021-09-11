@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>EvoGen - New User</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width * 0.5, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <div align="center">
+        <p align="center">New User Registration</p>
+        <p>Participant ID: <input class="TextBox" id="UserIDText" style="width:45px" readonly>
+        <button type="input" id="GenUserIDButton">New ID</button>
+        <button type="input" id="CopyUserIDButton">Copy</button></p>
+        <p>Gender: <select class="SelectList" id="UserGenderSelect">
+            <option value="0"></option>
+            <option value="1">M</option>
+            <option value="2">F</option>
+        </select>
+        Age: <input class="TextBox" id="UserAgeText"></p>
+        <p>Major: <input class="LongTextBox" id="UserMajorText"></p>
+        <p>Degree: <input class="LongTextBox" id="UserDegreeText"></p>
+        <button type="input" id="SaveUserButton">Save User</button>
+    </div>
+
+    <script src="js/user_registration.js"></script>
+</body>
+
+</html>

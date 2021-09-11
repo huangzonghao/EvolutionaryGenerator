@@ -15,29 +15,18 @@
 
 <body>
     <div id="RobotConfigPanel">
-        <p><button onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button></p>
         <div align="center">
-            <p align="center">Meta</p>
             <p>
-                Participant ID: <input class="LongTextBox" id="UserIDText">
-                <button type="input" id="GenUserIDButton">Generate New</button>
+                <button onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button>
+                <button onclick=" window.open('user_registration.html','_blank')">New User</button>
             </p>
-            <p>
-                Gender: <select class="SelectList" id="UserGenderSelect">
-                            <option value="0"></option>
-                            <option value="1">M</option>
-                            <option value="2">F</option>
-                        </select>
-                Age: <input class="TextBox" id="UserAgeText">
-            </p>
-            <p>Major: <input class="LongTextBox" id="UserMajorText"></p>
-            <p>Degree: <input class="LongTextBox" id="UserDegreeText"></p>
-            <p>Environment: <select class="SelectList" id="EnvSelect" style="width:90px"></select></p>
+            <p>Participant ID: <input class="TextBox" id="UserIDText" style="width:45px"></p>
         </div>
         <hr>
 
         <div align="center">
             <p align="center">Robot Config</p>
+            <p>Environment: <select class="SelectList" id="EnvSelect" style="width:90px"></select></p>
             <p>
                 Ver:
                 <select class="SelectList" id="VerSelect">
