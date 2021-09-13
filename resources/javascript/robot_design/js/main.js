@@ -4,6 +4,7 @@
 //                             Constants                              //
 ////////////////////////////////////////////////////////////////////////
 
+const max_ver = 2;
 const allowed_num_legs = [2, 3, 4, 5, 6];
 const min_num_links_per_leg = 2;
 const max_num_links_per_leg = 3;
@@ -96,40 +97,76 @@ class RobotRepresentation {
             console.log("Error: leg idx exceeds total number of legs");
     }
 
+    update_leg_position() {
+        for (let i = 0; i < this.num_legs; ++i) {
+            this.legs[i].update_position(i, this.num_legs, this.alt);
+        }
+    }
+
     update_num_legs(new_num_legs) {
+        // there are already enough leg containers in this robot object
         this.num_legs = new_num_legs;
-        for (let i = 0; i < this.num_legs; ++i) {
-            this.legs[i].update_position(i, this.num_legs, this.alt);
-        }
+        this.update_leg_position();
     }
 
-    flip_legs() {
-        this.alt = !this.alt;
-        for (let i = 0; i < this.num_legs; ++i) {
-            this.legs[i].update_position(i, this.num_legs, this.alt);
-        }
+    update_leg_layout(new_alt) {
+        this.alt = new_alt;
+        this.update_leg_position();
     }
 
-    // map a number of range [min, max] to a double in [0, 1]
-    scale_down(raw, min, max) {
-        return (raw - min) / (max - min);
+    flip_legs() { this.update_leg_layout(!this.alt); }
+
+    // double2double maping is points to points, while int2double mapping is points to bins
+    // map a double of range [min, max] to a double in [0, 1]
+    scale_down_double(raw, min, max) { return (raw - min) / (max - min); }
+    // map an int of range [min, max] to an double in [0, 1)
+    // The returned number is placed at the center of each bin
+    scale_down_int(raw, min, max) { return (raw - min + 0.5) / (max - min + 1); }
+
+    // map a double of range [0, 1] to a double of [min, max]
+    scale_up_double(raw, min, max) { return raw * (max - min) + min; }
+    // map a double of range [0, 1) to an int of [min, max]
+    scale_up_int(raw, min, max) {
+        let ret = Math.floor(raw * (max - min + 1)) + min;
+        if (ret > max) // when raw >= 1
+            ret = max;
+        return ret;
     }
 
     // gen format: [body_id, body_x, body_y, body_z, num_legs, alt, leg_1, leg_2, ...]
     //     for each leg: [(leg_pos), num_links, link_1_id, link_1_scale]
     compile_dv() {
         this.dv.length = 0;
-        this.dv.push(this.scale_down(this.body_id, 0, num_body_parts - 1));
+        this.dv.push(this.scale_down_int(this.body_id, 0, num_body_parts - 1));
         for (let i = 0; i < robot.body_scales.length; ++i) // body scales
-            this.dv.push(this.scale_down(robot.body_scales[i], body_scale_range[0], body_scale_range[1]));
-        this.dv.push(this.scale_down(this.num_legs, allowed_num_legs[0], allowed_num_legs[allowed_num_legs.length - 1]));
+            this.dv.push(this.scale_down_double(robot.body_scales[i], body_scale_range[0], body_scale_range[1]));
+        this.dv.push(this.scale_down_int(this.num_legs, allowed_num_legs[0], allowed_num_legs[allowed_num_legs.length - 1]));
+        this.dv.push(robot.alt ? 1 : 0);
         for (let i = 0; i < this.num_legs; ++i) {
             let this_leg = this.leg(i);
             // this.dv.push(this_leg.position); // temp disable leg_pos
-            this.dv.push(this.scale_down(this_leg.num_links, min_num_links_per_leg, max_num_links_per_leg));
+            this.dv.push(this.scale_down_int(this_leg.num_links, min_num_links_per_leg, max_num_links_per_leg));
             for (let j = 0; j < this_leg.num_links; ++j) {
-                this.dv.push(this.scale_down(this_leg.link(j).part_id, 0, num_leg_parts - 1));
-                this.dv.push(this.scale_down(this_leg.link(j).link_length, link_length_range[0], link_length_range[1]));
+                this.dv.push(this.scale_down_int(this_leg.link(j).part_id, 0, num_leg_parts - 1));
+                this.dv.push(this.scale_down_double(this_leg.link(j).link_length, link_length_range[0], link_length_range[1]));
+            }
+        }
+    }
+
+    parse_dv(gene) {
+        let counter = 0;
+        this.body_id = this.scale_up_int(gene[counter++], 0, num_body_parts - 1);
+        for (let i = 0; i < this.body_scales.length; ++i) // body scales
+            this.body_scales[i] = this.scale_up_double(gene[counter++], body_scale_range[0], body_scale_range[1]);
+        this.update_num_legs(this.scale_up_int(gene[counter++], allowed_num_legs[0], allowed_num_legs[allowed_num_legs.length - 1]));
+        this.update_leg_layout(gene[counter++] > 0.5 ? true : false);
+        for (let i = 0; i < this.num_legs; ++i) {
+            let this_leg = this.leg(i);
+            // this_leg.position = gene[counter++]; // temp disable leg_pos
+            this_leg.num_links = this.scale_up_int(gene[counter++], min_num_links_per_leg, max_num_links_per_leg);
+            for (let j = 0; j < this_leg.num_links; ++j) {
+                this_leg.link(j).part_id = this.scale_up_int(gene[counter++], 0, num_leg_parts - 1);
+                this_leg.link(j).link_length = this.scale_up_double(gene[counter++], link_length_range[0], link_length_range[1]);
             }
         }
     }
@@ -186,6 +223,14 @@ class EnvironmentLibrary {
     constructor() {
         this.env_list = ["ground", "Sine2.obj", "Valley5.obj"];
     }
+
+    check_env_id(env_name) {
+        for (let i = 0; i < this.env_list.length; ++i) {
+            if (env_name == this.env_list[i])
+                return i;
+        }
+        return -1;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -220,6 +265,7 @@ let flip_btn_e     = document.getElementById('FlipButton');
 // IO
 let submit_btn_e   = document.getElementById('SubmitButton');
 let save_btn_e     = document.getElementById('SaveButton');
+let load_btn_e     = document.getElementById('LoadButton');
 
 ////////////////////////////////////////////////////////////////////////
 //                             Callbacks                              //
@@ -379,6 +425,30 @@ function onSaveButtonClick(event) {
     demo_write();
 }
 
+function onLoadButtonClick(event) {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+        reader.onload = readerEvent => {
+            let json_str = readerEvent.target.result;
+            let json_dict = JSON.parse(json_str);
+
+            user_id = json_dict.user_id;
+            robot.env = json_dict.environment;
+            robot.ver = json_dict.ver;
+            robot.parse_dv(json_dict.gene);
+
+            update_meta_display();
+            update_dropdown_lists();
+            draw_robot();
+        }
+    }
+    input.click();
+}
+
 function onFlipButtonClick(event) {
     robot.flip_legs();
     draw_robot();
@@ -421,6 +491,7 @@ function init_dropdown_lists() {
     robot.env = env_e.options[env_e.selectedIndex].text;
 
     // Ver Select
+    resize_select(ver_e, max_ver + 1);
     ver_e.value = robot.ver;
     ver_e.addEventListener('change', onVerSelectChange);
 
@@ -498,16 +569,22 @@ function init_dropdown_lists() {
     // leg_pos2_e.max = leg_pos_range[1];
     // leg_pos2_e.step = slider_step;
 
-    // Submit Button
+    // IO Buttons
     submit_btn_e.addEventListener('click', onSubmitButtonClick)
-
-    // Save Button
     save_btn_e.addEventListener('click', onSaveButtonClick)
+    load_btn_e.addEventListener('click', onLoadButtonClick)
 
     // Flip Button
     flip_btn_e.addEventListener('click', onFlipButtonClick)
 
     update_dropdown_lists();
+}
+
+function update_meta_display() {
+    user_id_e.value = user_id;
+    env_e.value = env_lib.check_env_id(robot.env);
+    ver_e.value = robot.ver;
+    num_legs_e.value = robot.num_legs.toString(); // num_legs only need auto update here
 }
 
 function update_dropdown_lists() {
@@ -660,7 +737,7 @@ function demo_write() {
 //                           Main Function                            //
 ////////////////////////////////////////////////////////////////////////
 
-var user_id = "";
+var user_id = "000000";
 var robot = new RobotRepresentation();
 var robo_lib = new RobogamiLibrary();
 var env_lib = new EnvironmentLibrary();
