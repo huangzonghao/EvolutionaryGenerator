@@ -7,19 +7,20 @@
     * Each robot can be iterated up to 2 times.
 
 ## Design Workflow
-### Fill in Meta Info
+### Register User
 * **Participant ID**
     * A random six-digit participant ID would be automatically generated at start.
-    * User can generate a new random ID by pressing the `Generate New`. Or input
-        an ID of their choice.
+    * User can generate a new random ID by pressing the `Generate New`. 
+* All the other informations shown in the registration page are optional.
+
+### Fill in Meta Info
+* Fill in the Participant ID.
 * Use the `Environment` drop-down list to select the environment that the robot
     is designed for.
-* The rest of the Meta Info are optional.
+* Use the `Version` drop-down list to indicate the number of times that the
+    robot has been iterated.
 
 ### Design Robot
-* **Version**
-    * Use the `Version` drop-down list to indicate the number of times that the
-        robot has been iterated.
 * **Body**
     * Use the `Body ID` drop-down list to select different body meshes.
     * Use the slider or text box to change the x, y and z scale of the body mesh.
@@ -45,5 +46,4 @@
     * Use the `Save` button to save the design to file.
 
 ### Test Simulation
-* Generate the test command by pressing the `Test` button.
-* Copy the command and run the text executable with it.
+* Save the design by clicking the `Save` button, and run `User_Input_Demo`
