@@ -94,6 +94,20 @@ class RobotRepresentation {
         this.reset();
     }
 
+    copy_leg(target_id, source_id) {
+        if (target_id == source_id)
+            return false;
+        let target_leg = this.legs[target_id];
+        let source_leg = this.legs[source_id];
+        // copy everything but position
+        target_leg.num_links = source_leg.num_links;
+        for (let i = 0; i < target_leg.num_links; ++i) {
+            target_leg.links[i].part_id = source_leg.links[i].part_id;
+            target_leg.links[i].link_length = source_leg.links[i].link_length;
+        }
+        return true;
+    }
+
     reset() {
         this.parse_dv(this.init_gene);
     }
@@ -268,6 +282,8 @@ let link_id_e      = document.getElementById('LinkIdSelect');
 let part_id_e      = document.getElementById('PartIdSelect');
 let link_length_e  = document.getElementById('LinkLengthText');
 let link_length2_e = document.getElementById('LinkLengthRange');
+let copy_leg_e     = document.getElementById('CopyLegSelect');
+let copy_leg_btn_e = document.getElementById('CopyLegButton');
 let flip_btn_e     = document.getElementById('FlipButton');
 let reset_btn_e    = document.getElementById('ResetButton');
 
@@ -372,6 +388,7 @@ function onBodyScaleZRangeChange(event) {
 function onNumLegsSelectChange(event) {
     var select = event.target;
     robot.update_num_legs(parseInt(select.value))
+    resize_select(copy_leg_e, robot.num_legs);
     update_dropdown_lists();
     draw_robot();
 }
@@ -425,6 +442,13 @@ function onLinkLengthRangeChange(event) {
     // leg_pos_e.value = select.value;
     // draw_robot();
 // }
+
+function onCopyLegButtonClick(event) {
+    if (robot.copy_leg(leg_id_e.value, copy_leg_e.value)) { // if copy happened
+        update_dropdown_lists();
+        draw_robot();
+    }
+}
 
 function onSubmitButtonClick(event) {
     export_robot();
@@ -533,6 +557,7 @@ function init_dropdown_lists() {
     // Body ID
     resize_select(body_id_e, num_body_parts);
     body_id_e.addEventListener('change', onBodyIdSelectChange);
+    body_id_e.value = robot.body_id;
 
     // Body Scale
     body_x_e.addEventListener('change', onBodyScaleXTextChange);
@@ -577,6 +602,10 @@ function init_dropdown_lists() {
     link_length2_e.min = link_length_range[0];
     link_length2_e.max = link_length_range[1];
     link_length2_e.step = slider_step;
+
+    // Copy Leg
+    resize_select(copy_leg_e, robot.num_legs);
+    copy_leg_btn_e.addEventListener('click', onCopyLegButtonClick)
 
     // Leg Position
     // leg_pos_e.addEventListener('change', onLegPositionTextChange);
