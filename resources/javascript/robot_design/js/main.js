@@ -88,6 +88,14 @@ class RobotRepresentation {
             this.legs[i].update_position(i, this.num_legs);
         this.dv = [];
         this.alt = false;
+
+        this.init_gene = new Array(100).fill(0.5); // Use a long enough gene
+
+        this.reset();
+    }
+
+    reset() {
+        this.parse_dv(this.init_gene);
     }
 
     leg(idx) {
@@ -261,6 +269,7 @@ let part_id_e      = document.getElementById('PartIdSelect');
 let link_length_e  = document.getElementById('LinkLengthText');
 let link_length2_e = document.getElementById('LinkLengthRange');
 let flip_btn_e     = document.getElementById('FlipButton');
+let reset_btn_e    = document.getElementById('ResetButton');
 
 // IO
 let submit_btn_e   = document.getElementById('SubmitButton');
@@ -454,6 +463,13 @@ function onFlipButtonClick(event) {
     draw_robot();
 }
 
+function onResetButtonClick(event) {
+    robot.reset();
+    update_meta_display();
+    update_dropdown_lists();
+    draw_robot();
+}
+
 ////////////////////////////////////////////////////////////////////////
 //                            Subfunctions                            //
 ////////////////////////////////////////////////////////////////////////
@@ -574,8 +590,9 @@ function init_dropdown_lists() {
     save_btn_e.addEventListener('click', onSaveButtonClick)
     load_btn_e.addEventListener('click', onLoadButtonClick)
 
-    // Flip Button
+    // Robot Config Buttons
     flip_btn_e.addEventListener('click', onFlipButtonClick)
+    reset_btn_e.addEventListener('click', onResetButtonClick)
 
     update_dropdown_lists();
 }
