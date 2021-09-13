@@ -729,7 +729,7 @@ function demo_write() {
 
     let anchor = document.createElement('a');
     anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
-    anchor.download = user_id.toString() + "_" + robot.env + "_" + robot.ver + '.txt';
+    anchor.download = "evogen_" + user_id.toString() + "_" + robot.env + "_" + robot.ver + '.txt';
     anchor.click();
 }
 

@@ -17,13 +17,21 @@
 typedef sferes::fit::UrdfFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
-void user_input_demo() {
+void user_input_demo(const std::string& input_dir) {
     std::vector<std::string> filenames;
     int counter = 0;
-    for (const auto& entry : std::filesystem::directory_iterator(User_Input_Dir)) {
-        std::string filename(entry.path().filename().string());
-        std::cout << counter++ << ") " << filename << std::endl;
-        filenames.push_back(filename);
+    for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
+        try {
+            std::string filename(entry.path().filename().string());
+            if (filename.find("evogen_") != std::string::npos) {
+                std::cout << counter++ << ") " << filename << std::endl;
+                filenames.push_back(filename);
+            }
+        } catch (const std::system_error) {
+            // This error would be thrown if filename contains non-utf8 characters
+            // And none of our files would contain those characters, so we can
+            // safely ignore this error.
+        }
     }
     --counter; // counter now equals to the largest possible option
 
@@ -37,7 +45,7 @@ void user_input_demo() {
 
     std::cout << "Selected: " << filenames[user_input] << std::endl;
 
-    std::ifstream infile(User_Input_Dir + "/" + filenames[user_input]);
+    std::ifstream infile(input_dir + "/" + filenames[user_input]);
     std::stringstream ss;
     ss << infile.rdbuf();
     rapidjson::Document jdoc;
@@ -59,6 +67,7 @@ void user_input_demo() {
     SimulatorParams sim_params;
     sim_params.Load(EvoGen_Params_Dir + "/sim_params.xml");
     sim_params.env_dir = EvoGen_Maps_Dir;
+    sim_params.SetEnv(jdoc["environment"].GetString());
 
     SimulationManager sm;
     sm.SetTimeout(sim_params.time_out);
@@ -96,8 +105,14 @@ void user_input_demo() {
 }
 
 int main(int argc, char **argv) {
+    std::string user_input_dir;
+    if (argc > 1) {
+        user_input_dir = std::string(argv[1]);
+    } else {
+        user_input_dir = User_Input_Dir;
+    }
     while (true) {
-        user_input_demo();
+        user_input_demo(user_input_dir);
     }
     return 0;
 }
