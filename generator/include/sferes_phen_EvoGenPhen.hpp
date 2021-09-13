@@ -44,15 +44,15 @@ class EvoGenPhen {
         return raw * (max - min) + min;
     }
 
-    // convert a gene in [0, 1] to integers of {0, 1, ..., count - 1}
+    // convert a gene in [0, 1) to integers of {0, 1, ..., count - 1}
     inline int gene_to_id(double raw, int count) {
         assert(count > 0); assert(raw >= 0); assert(raw <= 1);
         int ret = std::floor(raw * count);
-        ret = std::min(std::max(ret, 0), count - 1);
+        ret = std::min(ret, count - 1); // ret == count when raw == 1
         return ret;
     }
 
-    // convert a gene in [0, 1] to integers of {min, min + 1, ... , max - 1, max}
+    // convert a gene in [0, 1) to integers of {min, min + 1, ... , max - 1, max}
     inline int gene_to_id(double raw, int min, int max) {
         assert(min <= max);
         return gene_to_id(raw, max - min + 1) + min;
