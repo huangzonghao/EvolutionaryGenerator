@@ -17,7 +17,7 @@
 typedef sferes::fit::UrdfFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
-void user_input_demo(const std::string& input_dir) {
+bool user_input_demo(const std::string& input_dir) {
     std::vector<std::string> filenames;
     int counter = 0;
     for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
@@ -33,19 +33,29 @@ void user_input_demo(const std::string& input_dir) {
             // safely ignore this error.
         }
     }
-    --counter; // counter now equals to the largest possible option
 
-    int user_input = -2;
-    while (user_input < -1 || user_input > counter) {
-        std::cout << "Select robot (-1 to refresh): ";
+    char user_input = '0';
+    int selected_id = 0;
+    while (true) {
+        std::cout << "Select robot ('r' to refresh, 'q' to quit): ";
         std::cin >> user_input;
+        if (user_input == 'r') {
+            return true; // loop again
+        } else if (user_input == 'q') {
+            return false; // exit program
+        } else {
+            selected_id = user_input - '0';
+            if (selected_id > -1 && selected_id < counter) {
+                break;
+            } else {
+                std::cout << "Invalid input: " << user_input << std::endl;
+            }
+        }
     }
-    if (user_input == -1)
-        return;
 
-    std::cout << "Selected: " << filenames[user_input] << std::endl;
+    std::cout << "Selected: " << filenames[selected_id] << std::endl;
 
-    std::ifstream infile(input_dir + "/" + filenames[user_input]);
+    std::ifstream infile(input_dir + "/" + filenames[selected_id]);
     std::stringstream ss;
     ss << infile.rdbuf();
     rapidjson::Document jdoc;
@@ -102,6 +112,8 @@ void user_input_demo(const std::string& input_dir) {
 
     sm.LoadUrdfString(robot.get_urdf_string());
     sm.RunSimulation();
+
+    return true;
 }
 
 int main(int argc, char **argv) {
@@ -112,7 +124,8 @@ int main(int argc, char **argv) {
         user_input_dir = User_Input_Dir;
     }
     while (true) {
-        user_input_demo(user_input_dir);
+        if (!user_input_demo(user_input_dir))
+            break;
     }
     return 0;
 }
