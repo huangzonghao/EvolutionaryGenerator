@@ -23,7 +23,7 @@ preset_leg_pos["5_alt"] = [0.99, 0.51, 0.49, 0.01, 0.75];
 preset_leg_pos["6"] = [0.01, 0.25, 0.49, 0.51, 0.75, 0.99];
 
 // TODO: the following 4 values should be read from disk
-const num_body_parts = 5;
+const num_body_parts = 6;
 const num_leg_parts = 7;
 
 const unselect_mat = new THREE.MeshBasicMaterial( { color: 0x444444 } );
