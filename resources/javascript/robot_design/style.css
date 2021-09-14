@@ -28,28 +28,31 @@ body {
     box-sizing: border-box;
 }
 
-.SelectList {
+.select {
     text-align: center;
     margin:   0px;
     padding:  0px;
     height:   30px;
     width:    40px;
+    background: #eeeeee;
+    border: 1px solid black;
+}
+
+.display_select {
+    border: 0;
+    height:   30px;
+    width:    30px;
 }
 
 .TextBox {
     width: 40px;
-}
-
-.LongTextBox {
-    width: 120px;
+    border: 1px solid black;
 }
 
 .Slider {
 }
 
-/* just try to center the submit button */
-#submitButton {
-    margin: 0;
-    position: absolute;
-    left: 5%;
+.button {
+    margin: 2px;
+    padding: 5px 10px;
 }

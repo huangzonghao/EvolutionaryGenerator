@@ -14,31 +14,29 @@
 </head>
 
 <body>
-    <div id="RobotConfigPanel">
-        <div align="center">
+    <div id="RobotConfigPanel" align="center">
+        <div id="MetaPanel" align="center">
             <p>
-                <button onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button>
-                <button onclick=" window.open('user_registration.html','_blank')">New User</button>
+                <button class="button" onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button>
+                <button class="button" onclick=" window.open('user_registration.html','_blank')">New User</button>
             </p>
             <p>Participant ID: <input class="TextBox" id="UserIDText" style="width:45px"></p>
         </div>
         <hr>
-
         <div align="center">
-            <p align="center">Robot Config</p>
-            <p>Environment: <select class="SelectList" id="EnvSelect" style="width:90px"></select>
-               Ver: <select class="SelectList" id="VerSelect"></select></p>
-            <p><button type="input" id="ResetButton">Reset</button></p>
+            <p>Environment: <select class="select" id="EnvSelect" style="width:90px"></select>
+               Ver: <select class="select" id="VerSelect"></select></p>
+            <p><button class="button" id="ResetButton">Reset</button></p>
             <p>
-                Num Legs: <select class="SelectList" id="NumLegsSelect"></select>
-                <button type="input" id="FlipButton">Flip Legs</button>
+                Num Legs: <select class="select" id="NumLegsSelect"></select>
+                <button class="button" id="FlipButton">Flip Legs</button>
             </p>
         </div>
         <hr>
 
         <div align="center">
             <p align="center">Body Config</p>
-            <p>Body ID: <select class="SelectList" id="BodyIdSelect"></select></p>
+            <p>Body ID: <select class="select" id="BodyIdSelect"></select></p>
             <p>
                 Body Scale X:
                 <input class="TextBox" id="BodyScaleXText">
@@ -60,8 +58,8 @@
         <div align="center">
             <p align="center">Target Leg Config</p>
             <p>
-                Leg ID: <select class="SelectList" id="LegIdSelect"></select>
-                # Links: <select class="SelectList" id="NumLinksSelect"></select>
+                Leg ID: <select class="select display_select" id="LegIdSelect"></select>
+                # Links: <select class="select" id="NumLinksSelect"></select>
             </p>
             <!-- <p> -->
                 <!-- Leg Position: -->
@@ -73,8 +71,8 @@
         <div align="center">
             <p align="center">Target Link Config</p>
             <p>
-                Link ID: <select class="SelectList" id="LinkIdSelect"></select>
-                Part ID: <select class="SelectList" id="PartIdSelect"></select>
+                Link ID: <select class="select display_select" id="LinkIdSelect"></select>
+                Part ID: <select class="select" id="PartIdSelect"></select>
             </p>
             <p>
                 Link Scale:
@@ -82,14 +80,14 @@
                 <input type="range" id="LinkLengthRange">
             </p>
             <p>
-                Copy Leg: <select class="SelectList" id="CopyLegSelect"></select>
-                <button type="input" id="CopyLegButton">Copy Leg</button>
+                Copy Leg: <select class="select" id="CopyLegSelect"></select>
+                <button class="button" id="CopyLegButton">Copy Leg</button>
             </p>
             <hr>
             <p align="center">
-                <button type="input" id="SubmitButton">Show Gene</button>
-                <button type="input" id="SaveButton">Save</button>
-                <button type="input" id="LoadButton">Load</button>
+                <button class="button" id="SubmitButton">Show Gene</button>
+                <button class="button" id="SaveButton">Save</button>
+                <button class="button" id="LoadButton">Load</button>
             </p>
         </div>
     </div>
