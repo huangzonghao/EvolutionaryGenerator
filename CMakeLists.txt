@@ -87,9 +87,13 @@ configure_file(${PROJECT_IN_FILE_DIR}/result_analysis.m.in ${PROJECT_MATLAB_OUTP
 set(CMAKE_CXX_STANDARD 17)
 
 # Record git hash
+# TODO: Ideally there should be a target (or command) depend on the git HEAD file,
+# and will be updated everytime git HEAD got updated. And the main Evolutionary_Generator
+# target should depend on this target. Therefore we don't need to run the whole cmake
+# script everytime there is an update to git HEAD
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_COMMIT_HASH)
-configure_file(${PROJECT_IN_FILE_DIR}/git_commit_hash.cpp.in ${PROJECT_IN_FILE_OUTPUT_DIR}/git_commit_hash.cpp @ONLY)
+configure_file(${PROJECT_IN_FILE_DIR}/git_commit_hash.txt.in ${PROJECT_WORKSPACE_DIR}/git_commit_hash.txt @ONLY)
 
 #######################################################################
 #                         Setup Dependencies                          #
@@ -233,12 +237,8 @@ set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include//git_commit_hash.h
 )
-set(Sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp
-    ${PROJECT_IN_FILE_OUTPUT_DIR}/git_commit_hash.cpp
-)
+set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp)
 add_executable(${PROJECT_NAME} ${Headers} ${Sources})
 target_link_libraries(${PROJECT_NAME} Generator Simulator rapidjson)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})

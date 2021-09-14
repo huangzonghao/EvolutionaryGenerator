@@ -6,6 +6,9 @@
 
 #include <string>
 
+#define EVOGEN_WORKSPACE_PATH "@PROJECT_WORKSPACE_DIR@"
+const std::string EvoGen_Workspace_Dir(EVOGEN_WORKSPACE_PATH);
+
 #define EVOGEN_PARAMS_PATH "@EVOGEN_PARAMS_DIR@"
 const std::string EvoGen_Params_Dir(EVOGEN_PARAMS_PATH);
 
@@ -27,4 +30,4 @@ const std::string Mesh_Workspace_Dir(MESH_WORKSPACE_PATH);
 #define USER_INPUT_PATH "@USER_INPUT_DIR@"
 const std::string User_Input_Dir(USER_INPUT_PATH);
 
-#endif /* end of include guard: EVO_PATHS_H_SQCM3M8J */
+#endif /* end of include guard: EVOGEN_EVO_PATHS_H_ */

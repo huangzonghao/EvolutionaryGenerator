@@ -1,3 +1,0 @@
-#include "git_commit_hash.h"
-#define GIT_COMMIT_HASH "@GIT_COMMIT_HASH@"
-const std::string git_commit_hash(GIT_COMMIT_HASH);
