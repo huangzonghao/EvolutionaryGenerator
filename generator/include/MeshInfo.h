@@ -16,6 +16,8 @@ class MeshInfo {
     const int num_bodies() const;
     const int num_legs() const;
     void print_all_size();
+    std::array<double, 3> get_body_size(int body_id) const;
+    std::array<double, 3> get_leg_size(int leg_id) const;
     double get_body_size(int body_id, int dim) const;
     double get_leg_size(int leg_id, int dim) const;
     double get_leg_length(int leg_id) const;

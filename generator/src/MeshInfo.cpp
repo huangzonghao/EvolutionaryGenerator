@@ -62,6 +62,14 @@ void MeshInfo::print_all_size() {
         std::cout << i << ": " << leg_size[i][0] << ", " << leg_size[i][1] << ", " << leg_size[i][2] << std::endl;
 }
 
+std::array<double, 3> MeshInfo::get_body_size(int body_id) const {
+    return body_size[body_id];
+}
+
+std::array<double, 3> MeshInfo::get_leg_size(int leg_id) const {
+    return leg_size[leg_id];
+}
+
 double MeshInfo::get_body_size(int body_id, int dim) const {
     return body_size[body_id][dim];
 }

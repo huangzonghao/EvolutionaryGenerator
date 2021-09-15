@@ -106,70 +106,76 @@ std::string RobotRepresentation::get_urdf_string_mesh() const {
     double leg_pos_x_tmp;
     double leg_pos_y_tmp;
     double link_z_offset;
-    std::string link_name_tmp;
-    int num_legs = num_legs_;
-    int part_ids[3];
-    double part_lengths[3];
-    double link_length_scale[3];
-    for (int i = 0; i < num_legs; ++i) {
+    int part_id = 0;
+    double link_length_scale = 0;
+    double link_length = 0;
+    for (int i = 0; i < num_legs_; ++i) {
         const auto& robot_leg = legs[i];
         link_z_offset = 0;
-        int num_links = robot_leg.num_links;
-        double leg_length = 0;
-        for (int j = 0; j < num_links; ++j) {
-            const auto& leg_link = robot_leg.links[j];
-            part_ids[j] = get_link_part_id(i, j);
-            part_lengths[j] = mesh_info.get_leg_size(part_ids[j], 2);
-            link_length_scale[j] = leg_link.scale;
-            leg_length += part_lengths[j] * link_length_scale[j];
-        }
-        for (int j = 0; j < num_links; ++j) {
+        for (int j = 0; j < robot_leg.num_links; ++j) {
+            part_id = robot_leg.links[j].part_id;
+            const auto& part_size = mesh_info.get_leg_size(part_id);
+            link_length_scale = robot_leg.links[j].scale;
+            link_length = part_size[2] * robot_leg.links[j].scale;
+
             oss << "<link name = \"leg_" << i << "-" << j << "\">" << std::endl;
             oss << " <visual>" << std::endl;
-            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -0.5 << "\" />" << std::endl;
+            oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_length * -0.5 << "\" />" << std::endl;
             oss << "  <geometry>" << std::endl;
-            oss << "    <mesh filename = \"" << mesh_info.leg_mesh_dir << "/" << part_ids[j] << mesh_ext << "\""
+            oss << "    <mesh filename = \"" << mesh_info.leg_mesh_dir << "/" << part_id << mesh_ext << "\""
                                              << " scale = \"" << mesh_info.scale_x << " "
                                                               << mesh_info.scale_y << " "
-                                                              << mesh_info.scale_z * link_length_scale[j] << "\" />" << std::endl;
+                                                              << mesh_info.scale_z * link_length_scale << "\" />" << std::endl;
             oss << "  </geometry>" << std::endl;
             oss << " </visual>" << std::endl;
             if (collision_use_mesh_) {
                 oss << " <collision>" << std::endl;
-                oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 + 0.02 << "\" />" << std::endl;
+                oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_length * -0.5 << "\" />" << std::endl;
                 oss << "  <geometry>" << std::endl;
-                oss << "    <mesh filename = \"" << mesh_info.leg_mesh_dir << "/" << part_ids[j] << mesh_ext << "\""
+                oss << "    <mesh filename = \"" << mesh_info.leg_mesh_dir << "/" << part_id << mesh_ext << "\""
                                                  << " scale = \"" << mesh_info.scale_x << " "
                                                                   << mesh_info.scale_y << " "
-                                                                  << mesh_info.scale_z * link_length_scale[j] << "\" />" << std::endl;
+                                                                  << mesh_info.scale_z * link_length_scale << "\" />" << std::endl;
                 oss << "  </geometry>" << std::endl;
                 oss << " </collision>" << std::endl;
             } else {
-                // Use spheres for collision detection on feet
-                if (j == num_links - 1) {
+                // // Use spheres for collision detection on feet
+                // if (j == robot_leg.num_links - 1) {
+                    // oss << " <collision>" << std::endl;
+                    // oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_length * -1 << "\" />" << std::endl;
+                    // oss << "  <geometry>" << std::endl;
+                    // oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    // oss << "  </geometry>" << std::endl;
+                    // oss << " </collision>" << std::endl;
+                    // oss << " <collision>" << std::endl;
+                    // oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+                    // oss << "  <geometry>" << std::endl;
+                    // oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    // oss << "  </geometry>" << std::endl;
+                    // oss << " </collision>" << std::endl;
+                // } else if (j == robot_leg.num_links - 2) {
+                    // oss << " <collision>" << std::endl;
+                    // oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_length * -1 + 0.02 << "\" />" << std::endl;
+                    // oss << "  <geometry>" << std::endl;
+                    // oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    // oss << "  </geometry>" << std::endl;
+                    // oss << " </collision>" << std::endl;
+                    // oss << " <collision>" << std::endl;
+                    // oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
+                    // oss << "  <geometry>" << std::endl;
+                    // oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    // oss << "  </geometry>" << std::endl;
+                    // oss << " </collision>" << std::endl;
+                // }
+
+                // Use bounding box for collision detection
+                // only enable collision detection on some parts to avoid self-collsion
+                if (j == robot_leg.num_links - 1 ||
+                    (j == 0 && robot_leg.num_links == 3)) {
                     oss << " <collision>" << std::endl;
-                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 << "\" />" << std::endl;
+                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << link_length * -0.5 << "\" />" << std::endl;
                     oss << "  <geometry>" << std::endl;
-                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
-                    oss << "  </geometry>" << std::endl;
-                    oss << " </collision>" << std::endl;
-                    oss << " <collision>" << std::endl;
-                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-                    oss << "  <geometry>" << std::endl;
-                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
-                    oss << "  </geometry>" << std::endl;
-                    oss << " </collision>" << std::endl;
-                } else if (j == num_links - 2) {
-                    oss << " <collision>" << std::endl;
-                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 " << part_lengths[j] * link_length_scale[j] * -1 + 0.02 << "\" />" << std::endl;
-                    oss << "  <geometry>" << std::endl;
-                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
-                    oss << "  </geometry>" << std::endl;
-                    oss << " </collision>" << std::endl;
-                    oss << " <collision>" << std::endl;
-                    oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-                    oss << "  <geometry>" << std::endl;
-                    oss << "    <sphere radius = \"0.01\"/>" << std::endl;
+                    oss << "    <box size=\"" << part_size[0] << " " << part_size[1] << " " << link_length << "\"/>" << std::endl;
                     oss << "  </geometry>" << std::endl;
                     oss << " </collision>" << std::endl;
                 }
@@ -189,7 +195,7 @@ std::string RobotRepresentation::get_urdf_string_mesh() const {
                 oss << "  <parent link = \"chassis\"/>" << std::endl;
                 // position: [0, 0.5] - FL->BL, [0.5, 1] - BR->FR
                 leg_pos_tmp = robot_leg.position; // now the pos gene is in [0, 1]
-                leg_pos_y_tmp = chassis_y * 0.5 + mesh_info.get_leg_size(part_ids[j], 1) * 0.5 + 0.05;
+                leg_pos_y_tmp = chassis_y * 0.5 + mesh_info.get_leg_size(part_id, 1) * 0.5 + 0.05;
                 if (leg_pos_tmp < 0.5) {
                     leg_pos_x_tmp = (0.25 - leg_pos_tmp) * 2 * chassis_x;
                 } else {
@@ -207,7 +213,7 @@ std::string RobotRepresentation::get_urdf_string_mesh() const {
             oss << "   <axis xyz = \"0 1 0\" />" << std::endl;
             oss << "</joint>" << std::endl;
             oss << std::endl;
-            link_z_offset = -(part_lengths[j] * link_length_scale[j] + 0.01);
+            link_z_offset = -(link_length + 0.01);
         } // for links
     } // for legs
 
@@ -310,7 +316,6 @@ std::string RobotRepresentation::get_urdf_string_primitive() const {
     double leg_pos_x_tmp;
     double leg_pos_y_tmp;
     double link_z_offset;
-    std::string link_name_tmp;
     int num_legs = num_legs_;
     Body bodies[3];
     for (int i = 0; i < num_legs; ++i) {
