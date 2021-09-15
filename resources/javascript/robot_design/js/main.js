@@ -456,6 +456,7 @@ function onSubmitButtonClick(event) {
 
 function onSaveButtonClick(event) {
     demo_write();
+    ver_e.value = Math.min(parseInt(ver_e.value) + 1, max_ver);
 }
 
 function onLoadButtonClick(event) {
