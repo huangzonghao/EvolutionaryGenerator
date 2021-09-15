@@ -717,7 +717,7 @@ function draw_robot() {
             robot.leg(leg_id).link(i).obj = link_obj;
             scene.add(link_obj);
 
-            leg_total_length += link_size_z;
+            leg_total_length += link_size_z + 2; // note in the UI the mesh are not scaled, so 2 means 0.02 in evogen
         }
     }
 
