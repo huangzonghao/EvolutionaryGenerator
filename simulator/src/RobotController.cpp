@@ -43,6 +43,10 @@ void WheelController::exe_gait(){
 
 void LegController::SetMotors(const std::vector<std::shared_ptr<SimMotor>>& motors) {
     motors_ = motors;
+
+    // Update motor PID
+    for (auto& motor : motors)
+        motor->SetPID(80);
 }
 
 void LegController::exe_gait(size_t gait_id) {
@@ -97,19 +101,19 @@ void LegController::exe_gait2(size_t gait_id) {
 void LegController::exe_gait3(size_t gait_id) {
     switch (gait_id) {
     case 0: // still
-        motors_[0]->SetPhase(-0.3);
+        motors_[0]->SetPhase(-0.4);
         motors_[1]->SetPhase(0.5);
         motors_[2]->SetPhase(0.4);
         break;
     case 1: // forward
-        motors_[0]->SetPhase(-0.8);
+        motors_[0]->SetPhase(-1.2);
         motors_[1]->SetPhase(0.8);
-        motors_[2]->SetPhase(0.8);
+        motors_[2]->SetPhase(0.4);
         break;
     case 2: // backward
         motors_[0]->SetPhase(0.3);
         motors_[1]->SetPhase(0.2);
-        motors_[2]->SetPhase(0.2);
+        motors_[2]->SetPhase(-0.2);
         break;
     }
 }
