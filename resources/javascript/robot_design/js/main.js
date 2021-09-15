@@ -317,7 +317,7 @@ function onMouseClick(event) {
         if (orig_obj && orig_obj.leg_id != null) { // only obj of leg links has this defined
             leg_id_e.value = orig_obj.leg_id;
             link_id_e.value = orig_obj.link_id;
-            update_dropdown_lists();
+            update_panel_for_new_target();
         }
     }
 }
@@ -389,24 +389,24 @@ function onNumLegsSelectChange(event) {
     var select = event.target;
     robot.update_num_legs(parseInt(select.value))
     resize_select(copy_leg_e, robot.num_legs);
-    update_dropdown_lists();
+    update_panel_for_new_target();
     draw_robot();
 }
 
 function onLegIdSelectChange(event) {
-    update_dropdown_lists();
+    update_panel_for_new_target();
 }
 
 function onNumLinksSelectChange(event) {
     var select = event.target;
     robot.leg(leg_id_e.selectedIndex).num_links = parseInt(select.value);
-    update_dropdown_lists();
+    update_panel_for_new_target();
     draw_robot();
 }
 
 function onLinkIdSelectChange(event) {
     var select = event.target;
-    update_dropdown_lists();
+    update_panel_for_new_target();
 }
 
 function onPartIdSelectChange(event) {
@@ -445,7 +445,7 @@ function onLinkLengthRangeChange(event) {
 
 function onCopyLegButtonClick(event) {
     if (robot.copy_leg(leg_id_e.value, copy_leg_e.value)) { // if copy happened
-        update_dropdown_lists();
+        update_panel_for_new_target();
         draw_robot();
     }
 }
@@ -475,8 +475,7 @@ function onLoadButtonClick(event) {
             robot.ver = json_dict.ver;
             robot.parse_dv(json_dict.gene);
 
-            update_meta_display();
-            update_dropdown_lists();
+            update_panel_for_new_robot();
             draw_robot();
         }
     }
@@ -490,8 +489,7 @@ function onFlipButtonClick(event) {
 
 function onResetButtonClick(event) {
     robot.reset();
-    update_meta_display();
-    update_dropdown_lists();
+    update_panel_for_new_robot();
     draw_robot();
 }
 
@@ -517,8 +515,9 @@ function resize_select(select, new_size) {
     }
 }
 
-function init_dropdown_lists() {
-    user_id_e.value = user_id;
+// Setup callbacks, generate select lists that will not be changed through out
+// the design process.
+function init_panel() {
     user_id_e.addEventListener('change', onUserIDTextChange);
 
     // Environment Select
@@ -533,7 +532,6 @@ function init_dropdown_lists() {
 
     // Ver Select
     resize_select(ver_e, max_ver + 1);
-    ver_e.value = robot.ver;
     ver_e.addEventListener('change', onVerSelectChange);
 
     // Num Legs
@@ -543,7 +541,6 @@ function init_dropdown_lists() {
         opt.innerHTML = allowed_num_legs[i];
         num_legs_e.appendChild(opt);
     }
-    num_legs_e.value = robot.num_legs.toString();
     num_legs_e.addEventListener('change', onNumLegsSelectChange);
 
     // Num Links
@@ -558,7 +555,6 @@ function init_dropdown_lists() {
     // Body ID
     resize_select(body_id_e, num_body_parts);
     body_id_e.addEventListener('change', onBodyIdSelectChange);
-    body_id_e.value = robot.body_id;
 
     // Body Scale
     body_x_e.addEventListener('change', onBodyScaleXTextChange);
@@ -566,31 +562,23 @@ function init_dropdown_lists() {
     body_x2_e.min = body_scale_range[0];
     body_x2_e.max = body_scale_range[1];
     body_x2_e.step = slider_step;
-    body_x_e.value = robot.body_scales[0];
-    body_x2_e.value = robot.body_scales[0];
 
     body_y_e.addEventListener('change', onBodyScaleYTextChange);
     body_y2_e.addEventListener('change', onBodyScaleYRangeChange);
     body_y2_e.min = body_scale_range[0];
     body_y2_e.max = body_scale_range[1];
     body_y2_e.step = slider_step;
-    body_y_e.value = robot.body_scales[1];
-    body_y2_e.value = robot.body_scales[1];
 
     body_z_e.addEventListener('change', onBodyScaleZTextChange);
     body_z2_e.addEventListener('change', onBodyScaleZRangeChange);
     body_z2_e.min = body_scale_range[0];
     body_z2_e.max = body_scale_range[1];
     body_z2_e.step = slider_step;
-    body_z_e.value = robot.body_scales[2];
-    body_z2_e.value = robot.body_scales[2];
 
     // Leg ID
-    resize_select(leg_id_e, robot.num_legs);
     leg_id_e.addEventListener('change', onLegIdSelectChange);
 
     // Link ID
-    resize_select(link_id_e, parseInt(num_links_e.value));
     link_id_e.addEventListener('change', onLinkIdSelectChange);
 
     // Part ID
@@ -605,7 +593,6 @@ function init_dropdown_lists() {
     link_length2_e.step = slider_step;
 
     // Copy Leg
-    resize_select(copy_leg_e, robot.num_legs);
     copy_leg_btn_e.addEventListener('click', onCopyLegButtonClick)
 
     // Leg Position
@@ -624,18 +611,30 @@ function init_dropdown_lists() {
     flip_btn_e.addEventListener('click', onFlipButtonClick)
     reset_btn_e.addEventListener('click', onResetButtonClick)
 
-    update_dropdown_lists();
+    update_panel_for_new_robot();
 }
 
-function update_meta_display() {
+// Update the values and lists that might be changed after loading a new robot.
+function update_panel_for_new_robot() {
     user_id_e.value = user_id;
     env_e.value = env_lib.check_env_id(robot.env);
     ver_e.value = robot.ver;
-    num_legs_e.value = robot.num_legs.toString(); // num_legs only need auto update here
+    body_id_e.value = robot.body_id;
+    body_x_e.value = robot.body_scales[0];
+    body_x2_e.value = robot.body_scales[0];
+    body_y_e.value = robot.body_scales[1];
+    body_y2_e.value = robot.body_scales[1];
+    body_z_e.value = robot.body_scales[2];
+    body_z2_e.value = robot.body_scales[2];
+    num_legs_e.value = robot.num_legs; // num_legs only need auto update here
+    resize_select(copy_leg_e, robot.num_legs);
+
+    update_panel_for_new_target();
 }
 
-function update_dropdown_lists() {
-    // Leg ID
+// Update the values and lists that might be changed after selecting a new target link.
+function update_panel_for_new_target() {
+    // Leg ID -- might be changed after num_legs being changed
     resize_select(leg_id_e, robot.num_legs);
     let robot_leg = robot.leg(leg_id_e.selectedIndex);
 
@@ -814,5 +813,5 @@ visual_panel_e.addEventListener('click', onMouseClick, false);
 
 // Lights setup
 scene.add(new THREE.AmbientLight(0xffffff));
-init_dropdown_lists();
+init_panel();
 render();
