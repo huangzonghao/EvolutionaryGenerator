@@ -5,7 +5,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #SingleInstance force
 
 ; Set up constants
-class_time := 2400000 ; 2400s (40min)
+class_time := 1800000 ; 1800s (30min)
 counter := 1
 
 MsgBox % "Press OK to Launch Training"
@@ -21,11 +21,10 @@ Loop
     Sleep %class_time%
     WinActivate % "Evolutionary_Generator (Running) - Microsoft Visual Studio"
     Sleep 500
-    Send {Ctrl Down}{Shift Down}{F5 Down}
+    Send {Shift Down}{F5 Down}
     Sleep 200
-    Send {Ctrl Up}{Shift Up}{F5 Up}
-
-    ; also try to restart training in case error occurs
+    Send {Shift Up}{F5 Up}
+    Sleep 1000
     WinActivate % "Evolutionary_Generator - Microsoft Visual Studio"
     Sleep 500
     Send {F5 Down}
