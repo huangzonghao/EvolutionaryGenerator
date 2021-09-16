@@ -8,6 +8,8 @@
 #include "sferes_phen_EvoGenPhen.hpp"
 #include "sferes_fit_UrdfFitness.hpp"
 
+#include "evo_paths.h"
+
 typedef sferes::fit::UrdfFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
