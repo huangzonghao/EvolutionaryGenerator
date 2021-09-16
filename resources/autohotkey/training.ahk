@@ -24,6 +24,14 @@ Loop
     Send {Ctrl Down}{Shift Down}{F5 Down}
     Sleep 200
     Send {Ctrl Up}{Shift Up}{F5 Up}
+
+    ; also try to restart training in case error occurs
+    WinActivate % "Evolutionary_Generator - Microsoft Visual Studio"
+    Sleep 500
+    Send {F5 Down}
+    Sleep 100
+    Send {F5 Up}
+
     Traytip % "EvoGen Training", % Format("{1:d} classes done, class time {2:d}min", counter, class_time / 60 / 1000)
     counter := counter + 1
 }
