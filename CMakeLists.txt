@@ -226,7 +226,7 @@ endif()
 add_subdirectory(thirdparty/trimesh2)
 add_subdirectory(simulator)
 add_subdirectory(generator)
-set_target_properties(Generator Simulator PROPERTIES FOLDER Lib)
+set_target_properties(Generator Simulator trimesh2 PROPERTIES FOLDER Lib)
 
 #######################################################################
 #                               Targets                               #
@@ -321,12 +321,11 @@ if(MSVC)
 endif()
 
 set(CURRENT_TARGET_NAME Convert_Mesh_Models)
-set(Sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/mesh_converter_main.cpp
-)
+set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/mesh_converter_main.cpp)
 add_executable(${CURRENT_TARGET_NAME} ${Sources})
 target_link_libraries(${CURRENT_TARGET_NAME} trimesh2)
 target_include_directories(${CURRENT_TARGET_NAME} PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR})
+set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES FOLDER Tools)
 if(MSVC)
     source_group("Source Files" FILES ${Sources})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
@@ -344,6 +343,7 @@ add_executable(${CURRENT_TARGET_NAME} ${Sources})
 target_link_libraries(${CURRENT_TARGET_NAME} trimesh2)
 target_include_directories(${CURRENT_TARGET_NAME} PUBLIC ${PROJECT_IN_FILE_OUTPUT_DIR}
                                                          ${CMAKE_CURRENT_SOURCE_DIR}/generator/include)
+set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES FOLDER Tools)
 if(MSVC)
     source_group("Source Files" FILES ${Sources})
     target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
@@ -394,3 +394,4 @@ add_custom_command(TARGET ${CURRENT_TARGET_NAME} PRE_BUILD
                    -D PROJECT_WORKSPACE_DIR=${PROJECT_WORKSPACE_DIR}
                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Generate_Javascript_UI.cmake
 )
+set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES FOLDER Tools)
