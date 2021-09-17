@@ -391,6 +391,7 @@ add_custom_command(TARGET ${CURRENT_TARGET_NAME} PRE_BUILD
                    -D JS_UI_SOURCE_DIR=${JS_UI_SOURCE_DIR}
                    -D JS_UI_OUTPUT_DIR=${JS_UI_OUTPUT_DIR}
                    -D ROBOT_PARTS_DIR=${ROBOT_PARTS_DIR}
+                   -D EVOGEN_MAPS_DIR=${EVOGEN_MAPS_DIR}
                    -D PROJECT_WORKSPACE_DIR=${PROJECT_WORKSPACE_DIR}
                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Generate_Javascript_UI.cmake
 )
