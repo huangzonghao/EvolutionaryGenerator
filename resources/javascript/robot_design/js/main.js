@@ -746,7 +746,7 @@ function draw_env() {
     scene.clear();
 
     // Display axis
-    const axesHelper = new THREE.AxesHelper(200);
+    const axesHelper = new THREE.AxesHelper(500);
     axesHelper.material.linewidth = 5;
     scene.add(axesHelper);
 
