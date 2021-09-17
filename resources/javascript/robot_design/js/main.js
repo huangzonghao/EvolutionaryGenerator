@@ -479,6 +479,8 @@ function onSaveButtonClick(event) {
             next_id = 0;
             alert("You have finished for environment " + robot.env + ", now move to next environment");
         }
+        robot.reset();
+        update_drawing();
     }
     ver_e.value = next_ver;
     robot_id_e.value = next_id;
