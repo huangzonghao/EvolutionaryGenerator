@@ -27,7 +27,7 @@ const env_to_use = ["ground", "Sine2.obj", "Valley5.obj"];
 const num_body_parts = 6;
 const num_leg_parts = 7;
 
-const unselect_mat = new THREE.MeshBasicMaterial( { color: 0x444444 } );
+const unselect_mat = new THREE.MeshPhongMaterial( { color: 0x8796aa, shininess: 50 } );
 const select_mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
 ////////////////////////////////////////////////////////////////////////
@@ -228,7 +228,7 @@ class MeshLibrary {
                 loader.load('./maps/' + e_name, function (obj) {self.envs[e_name] = obj});
             else { // basic shapes
                 if (e_name == "ground") {
-                    self.envs[e_name] = new THREE.Mesh(new THREE.BoxGeometry(4000, 3000, 100), unselect_mat);
+                    self.envs[e_name] = new THREE.Mesh(new THREE.BoxGeometry(4000, 3000, 100));
                 }
             }
         }
@@ -252,8 +252,9 @@ class MeshLibrary {
             bbox.getSize(this.leg_size[i]);
         }
 
-        for (let obj of this.envs) {
-            obj.traverse(update_helper);
+        // TODO: for some reason `let obj of this.envs` won't work
+        for (let e_name of this.env_names) {
+            this.envs[e_name].traverse(update_helper);
         }
     }
 }
@@ -770,6 +771,11 @@ function update_drawing() {
     } else {
         draw_env();
     }
+
+    // explictily add camera to scene, since the light is a child of camera.
+    // otherwise the camera would be automatically added (not sure to where, maybe renderer)
+    scene.add(camera);
+    scene.add(amb_light);
 }
 
 function render() {
@@ -832,16 +838,14 @@ var canvas_show_robot = true;
 let current_env = "";
 
 const scene = new THREE.Scene();
-scene.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
 visual_panel_e.appendChild(renderer.domElement);
 window.addEventListener('resize', onWindowResize);
 
 const camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visual_panel_e.clientHeight, 0.1, 1000);
-camera.position.x = 200;
-camera.position.y = 100;
-camera.position.z = -300;
+camera.position.set(238, 270, 100);
+camera.up.set(0.35, 0.4, 0.8); // set the up direction of the camera
 
 // Trackball Control setup
 var controls = new THREE.TrackballControls(camera, renderer.domElement);
@@ -855,6 +859,10 @@ const mouse = new THREE.Vector2();
 visual_panel_e.addEventListener('click', onMouseClick, false);
 
 // Lights setup
-scene.add(new THREE.AmbientLight(0xffffff));
+const amb_light = new THREE.AmbientLight(0xffffff, 0.2); // color and intensity
+// for dir light, set the "from" pos (light pos) and "to" pos (light.target pos)
+// const dir_light = new THREE.DirectionalLight(0xffffff, 1); // color and intensity
+const point_light = new THREE.PointLight(0xffffff, 1); // color and intensity
+camera.add(point_light); // so that the light follows the camera
 init_panel();
 render();
