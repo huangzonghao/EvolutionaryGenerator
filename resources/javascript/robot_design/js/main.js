@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 const max_ver = 2;
+const max_id = 1;
 const allowed_num_legs = [2, 3, 4, 5, 6];
 const min_num_links_per_leg = 2;
 const max_num_links_per_leg = 3;
@@ -71,6 +72,7 @@ class RobotLeg {
 class RobotRepresentation {
     constructor() {
         this.env = "";
+        this.id = 0;
         this.ver = 0;
         this.body_obj;
         this.body_id = 0;
@@ -269,6 +271,7 @@ let user_id_e      = document.getElementById('UserIDText');
 
 // Robot Config
 let env_e          = document.getElementById('EnvSelect');
+let robot_id_e     = document.getElementById('RobotIDSelect');
 let ver_e          = document.getElementById('VerSelect');
 let body_id_e      = document.getElementById('BodyIdSelect');
 let body_x_e       = document.getElementById('BodyScaleXText');
@@ -336,6 +339,11 @@ function onEnvSelectChange(event) {
     var select = event.target;
     robot.env = select.options[select.selectedIndex].text;
     update_drawing();
+}
+
+function onRobotIDSelectChange(event) {
+    var select = event.target;
+    robot.id = select.value;
 }
 
 function onVerSelectChange(event) {
@@ -462,7 +470,20 @@ function onSubmitButtonClick(event) {
 
 function onSaveButtonClick(event) {
     demo_write();
-    ver_e.value = Math.min(parseInt(ver_e.value) + 1, max_ver);
+    let next_ver = parseInt(ver_e.value) + 1;
+    let next_id = parseInt(robot_id_e.value);
+    if (next_ver > max_ver) {
+        next_ver = 0;
+        next_id = next_id + 1;
+        if (next_id > max_id) {
+            next_id = 0;
+            alert("You have finished for environment " + robot.env + ", now move to next environment");
+        }
+    }
+    ver_e.value = next_ver;
+    robot_id_e.value = next_id;
+    robot.ver = next_ver;
+    robot.id = next_id;
 }
 
 function onLoadButtonClick(event) {
@@ -478,6 +499,7 @@ function onLoadButtonClick(event) {
 
             user_id = json_dict.user_id;
             robot.env = json_dict.environment;
+            robot.id = json_dict.id;
             robot.ver = json_dict.ver;
             robot.parse_dv(json_dict.gene);
 
@@ -541,7 +563,9 @@ function init_panel() {
     env_e.addEventListener('change', onEnvSelectChange);
     robot.env = env_e.options[env_e.selectedIndex].text;
 
-    // Ver Select
+    // Robot ID Select
+    resize_select(robot_id_e, max_id + 1);
+    ver_e.addEventListener('change', onRobotIDSelectChange);
     resize_select(ver_e, max_ver + 1);
     ver_e.addEventListener('change', onVerSelectChange);
 
@@ -630,6 +654,7 @@ function init_panel() {
 function update_panel_for_new_robot() {
     user_id_e.value = user_id;
     env_e.value = mesh_lib.env_ids[robot.env];
+    robot_id_e.value = robot.id;
     ver_e.value = robot.ver;
     body_id_e.value = robot.body_id;
     body_x_e.value = robot.body_scales[0];
@@ -807,6 +832,7 @@ function demo_write() {
     let json_dict = {
         user_id: user_id,
         environment: robot.env,
+        id: robot.id,
         ver: robot.ver,
         datetime: timestamp,
         gene: robot.dv
@@ -822,7 +848,7 @@ function demo_write() {
 
     let anchor = document.createElement('a');
     anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
-    anchor.download = "evogen_" + user_id.toString() + "_" + robot.env + "_" + robot.ver + '.txt';
+    anchor.download = "evogen_" + user_id.toString() + "_" + robot.env + "_" + robot.id + "." + robot.ver + '.txt';
     anchor.click();
 }
 
