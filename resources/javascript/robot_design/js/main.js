@@ -62,7 +62,6 @@ class RobotLeg {
     update_position(leg_id, total_num_legs, alt = false) {
         if (alt && preset_leg_pos[total_num_legs.toString() + "_alt"] != null) {
             this.position = preset_leg_pos[total_num_legs.toString() + "_alt"][leg_id];
-            console.log("alt leg used");
         }
         else
             this.position = preset_leg_pos[total_num_legs.toString()][leg_id];
@@ -742,6 +741,8 @@ function mark_body(body_obj, selected = true) {
 }
 
 function draw_env() {
+    if (current_env == robot.env)
+        return;
     scene.clear();
 
     // Display axis
@@ -755,6 +756,8 @@ function draw_env() {
     env_obj.scale.y *= 0.1;
     env_obj.scale.z *= 0.1;
     scene.add(env_obj);
+
+    current_env = robot.env;
 }
 
 function update_drawing() {
@@ -762,6 +765,7 @@ function update_drawing() {
         return;
 
     if (canvas_show_robot) {
+        current_env = "";
         draw_robot();
     } else {
         draw_env();
@@ -825,6 +829,7 @@ var robot = new RobotRepresentation();
 var mesh_lib = new MeshLibrary();
 var current_selected_obj;
 var canvas_show_robot = true;
+let current_env = "";
 
 const scene = new THREE.Scene();
 scene.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
