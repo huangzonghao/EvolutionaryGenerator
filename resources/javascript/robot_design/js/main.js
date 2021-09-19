@@ -14,7 +14,7 @@ const body_scale_range = [0.5, 1.5];
 const link_length_range = [0.5, 1.5];
 const slider_step = 0.01;
 
-var preset_leg_pos = {};
+let preset_leg_pos = {};
 preset_leg_pos["2"] = [0.25, 0.75];
 preset_leg_pos["3"] = [0.01, 0.75, 0.49];
 preset_leg_pos["3_alt"] = [0.51, 0.25, 0.99];
@@ -211,7 +211,7 @@ class MeshLibrary {
 
         this.loading_done = false;
 
-        var self = this;
+        let self = this;
         THREE.DefaultLoadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
             self.loading_done = false;
         };
@@ -331,76 +331,76 @@ function onMouseClick(event) {
 }
 
 function onUserIDTextChange(event) {
-    var select = event.target;
+    let select = event.target;
     user_id = select.value;
 }
 
 function onEnvSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.env = select.options[select.selectedIndex].text;
     update_drawing();
 }
 
 function onRobotIDSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.id = select.value;
 }
 
 function onVerSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.ver = select.value;
 }
 
 function onBodyIdSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.body_id = parseInt(select.value);
     update_drawing();
 }
 
 function onBodyScaleXTextChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.body_scales[0] = parseFloat(select.value);
     body_x2_e.value = select.value;
     update_drawing();
 }
 
 function onBodyScaleXRangeChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.body_scales[0] = parseFloat(select.value);
     body_x_e.value = select.value;
     update_drawing();
 }
 
 function onBodyScaleYTextChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.body_scales[1] = parseFloat(select.value);
     body_y2_e.value = select.value;
     update_drawing();
 }
 
 function onBodyScaleYRangeChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.body_scales[1] = parseFloat(select.value);
     body_y_e.value = select.value;
     update_drawing();
 }
 
 function onBodyScaleZTextChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.body_scales[2] = parseFloat(select.value);
     body_z2_e.value = select.value;
     update_drawing();
 }
 
 function onBodyScaleZRangeChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.body_scales[2] = parseFloat(select.value);
     body_z_e.value = select.value;
     update_drawing();
 }
 
 function onNumLegsSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.update_num_legs(parseInt(select.value))
     resize_select(copy_leg_e, robot.num_legs);
     update_panel_for_new_target();
@@ -412,46 +412,46 @@ function onLegIdSelectChange(event) {
 }
 
 function onNumLinksSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.leg(leg_id_e.selectedIndex).num_links = parseInt(select.value);
     update_panel_for_new_target();
     update_drawing();
 }
 
 function onLinkIdSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     update_panel_for_new_target();
 }
 
 function onPartIdSelectChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).part_id = select.selectedIndex;
     update_drawing();
 }
 
 function onLinkLengthTextChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
     link_length2_e.value = select.value;
     update_drawing();
 }
 
 function onLinkLengthRangeChange(event) {
-    var select = event.target;
+    let select = event.target;
     robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
     link_length_e.value = select.value;
     update_drawing();
 }
 
 // function onLegPositionTextChange(event) {
-    // var select = event.target;
+    // let select = event.target;
     // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
     // leg_pos2_e.value = select.value;
     // update_drawing();
 // }
 
 // function onLegPositionRangeChange(event) {
-    // var select = event.target;
+    // let select = event.target;
     // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
     // leg_pos_e.value = select.value;
     // update_drawing();
@@ -545,7 +545,7 @@ function resize_select(select, new_size) {
             select.remove(i);
     } else {
         for (let i = select.length; i < new_size; ++i) {
-            var opt = document.createElement('option');
+            let opt = document.createElement('option');
             opt.value = i;
             opt.innerHTML = i;
             select.appendChild(opt);
@@ -560,7 +560,7 @@ function init_panel() {
 
     // Environment Select
     for (let i = 0; i < mesh_lib.env_names.length; ++i) {
-        var opt = document.createElement('option');
+        let opt = document.createElement('option');
         opt.value = i;
         opt.innerHTML = mesh_lib.env_names[i];
         env_e.appendChild(opt);
@@ -576,7 +576,7 @@ function init_panel() {
 
     // Num Legs
     for (let i = 0; i < allowed_num_legs.length; ++i) {
-        var opt = document.createElement('option');
+        let opt = document.createElement('option');
         opt.value = allowed_num_legs[i];
         opt.innerHTML = allowed_num_legs[i];
         num_legs_e.appendChild(opt);
@@ -585,7 +585,7 @@ function init_panel() {
 
     // Num Links
     for (let i = min_num_links_per_leg; i < max_num_links_per_leg + 1; ++i) {
-        var opt = document.createElement('option');
+        let opt = document.createElement('option');
         opt.value = i;
         opt.innerHTML = i;
         num_links_e.appendChild(opt);
@@ -861,11 +861,11 @@ function demo_write() {
 //                           Main Function                            //
 ////////////////////////////////////////////////////////////////////////
 
-var user_id = "000000";
-var robot = new RobotRepresentation();
-var mesh_lib = new MeshLibrary();
-var current_selected_obj;
-var canvas_show_robot = true;
+let user_id = "000000";
+let robot = new RobotRepresentation();
+let mesh_lib = new MeshLibrary();
+let current_selected_obj;
+let canvas_show_robot = true;
 let current_env = "";
 
 const scene = new THREE.Scene();
@@ -879,7 +879,7 @@ camera.position.set(238, 270, 100);
 camera.up.set(0.35, 0.4, 0.8); // set the up direction of the camera
 
 // Trackball Control setup
-var controls = new THREE.TrackballControls(camera, renderer.domElement);
+let controls = new THREE.TrackballControls(camera, renderer.domElement);
 controls.rotateSpeed = 1;
 controls.zoomSpeed = 0.1;
 controls.panSpeed = 0.2;
