@@ -117,6 +117,12 @@ bool user_input_demo(const std::string& input_dir) {
 }
 
 int main(int argc, char **argv) {
+    for (int i = 0; i < argc; ++i) {
+        std::cout << argv[i] << std::endl;
+    }
+    system("pause");
+    return 0;
+
     std::string user_input_dir;
     if (argc > 1) {
         user_input_dir = std::string(argv[1]);

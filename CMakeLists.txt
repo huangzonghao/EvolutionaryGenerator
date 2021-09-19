@@ -352,7 +352,7 @@ if(MSVC)
     )
 endif()
 
-set(CURRENT_TARGET_NAME User_Input_Demo)
+set(CURRENT_TARGET_NAME User_Design_Simulator)
 set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/MeshInfo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/RobotRepresentation.h
@@ -363,7 +363,7 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/MeshInfo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobotRepresentation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/user_input_demo_main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/user_design_simulator_main.cpp
 )
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
 target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator rapidjson)
@@ -372,6 +372,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
     list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
+
+    # Generate .reg file to register the protocol
+    set(PATH_TO_UI_SIM_EXE ${EVOGEN_EXE_PATH}/${CURRENT_TARGET_NAME}.exe)
+    configure_file(${PROJECT_IN_FILE_DIR}/add_js_ui_simulation_protocol.reg.in ${PROJECT_WORKSPACE_DIR}/add_js_ui_simulation_protocol.reg)
 endif()
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
