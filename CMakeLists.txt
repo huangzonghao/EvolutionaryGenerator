@@ -375,7 +375,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
     # Generate .reg file to register the protocol
     set(PATH_TO_UI_SIM_EXE ${EVOGEN_EXE_PATH}/${CURRENT_TARGET_NAME}.exe)
+    file(TO_NATIVE_PATH "${PATH_TO_UI_SIM_EXE}" PATH_TO_UI_SIM_EXE) # use native slash in windows, otherwise the application won't start
+    string(REPLACE "\\" "\\\\" PATH_TO_UI_SIM_EXE ${PATH_TO_UI_SIM_EXE}) # need to escape the backslash in the reg script, otherwise the entry won't be loaded to registry
     configure_file(${PROJECT_IN_FILE_DIR}/add_js_ui_simulation_protocol.reg.in ${PROJECT_WORKSPACE_DIR}/add_js_ui_simulation_protocol.reg)
+    configure_file(${PROJECT_IN_FILE_DIR}/remove_js_ui_simulation_protocol.reg.in ${PROJECT_WORKSPACE_DIR}/remove_js_ui_simulation_protocol.reg)
 endif()
 if(MSVC)
     source_group("Header Files" FILES ${Headers})

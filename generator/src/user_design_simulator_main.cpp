@@ -3,8 +3,6 @@
 #include <sstream>
 #include <filesystem>
 
-#include <rapidjson/document.h>
-
 #include "SimulatorParams.h"
 #include "SimulationManager.h"
 #include "RobotRepresentation.h"
@@ -17,53 +15,25 @@
 typedef sferes::fit::UrdfFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
-bool user_input_demo(const std::string& input_dir) {
-    std::vector<std::string> filenames;
-    int counter = 0;
-    for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
-        try {
-            std::string filename(entry.path().filename().string());
-            if (filename.find("evogen_") != std::string::npos) {
-                std::cout << counter++ << ") " << filename << std::endl;
-                filenames.push_back(filename);
-            }
-        } catch (const std::system_error) {
-            // This error would be thrown if filename contains non-utf8 characters
-            // And none of our files would contain those characters, so we can
-            // safely ignore this error.
-        }
+int main(int argc, char **argv) {
+    if (argc < 2) {
+        std::cout << "User_Design_Simulator: Not enough input. Launch this program from browser" << std::endl
+                  << "    Input format: <environment>, <gene>" << std::endl;
+        return 1;
     }
 
-    char user_input = '0';
-    int selected_id = 0;
-    while (true) {
-        std::cout << "Select robot ('r' to refresh, 'q' to quit): ";
-        std::cin >> user_input;
-        if (user_input == 'r') {
-            return true; // loop again
-        } else if (user_input == 'q') {
-            return false; // exit program
-        } else {
-            selected_id = user_input - '0';
-            if (selected_id > -1 && selected_id < counter) {
-                break;
-            } else {
-                std::cout << "Invalid input: " << user_input << std::endl;
-            }
-        }
+    std::string tmp_str;
+    std::string env;
+    std::vector<double> gene;
+    std::stringstream input_ss(argv[1]);
+    if (input_ss.good()) {
+        std::getline(input_ss, tmp_str, ':'); // first remove the protocol scheme
+        std::getline(input_ss, env, ','); // read in environment
     }
-
-    std::cout << "Selected: " << filenames[selected_id] << std::endl;
-
-    std::ifstream infile(input_dir + "/" + filenames[selected_id]);
-    std::stringstream ss;
-    ss << infile.rdbuf();
-    rapidjson::Document jdoc;
-    jdoc.Parse(ss.str().c_str());
-    const rapidjson::Value& js_gene = jdoc["gene"];
-    std::vector<double> gene(js_gene.Size());
-    for (int i = 0; i < gene.size(); ++i)
-        gene[i] = js_gene[i].GetDouble();
+    while(input_ss.good()) {
+        std::getline(input_ss, tmp_str, ',');
+        gene.push_back(std::stod(tmp_str));
+    }
 
     mesh_info.set_mesh_dir(Robot_Parts_Dir);
     mesh_info.init();
@@ -77,7 +47,7 @@ bool user_input_demo(const std::string& input_dir) {
     SimulatorParams sim_params;
     sim_params.Load(EvoGen_Params_Dir + "/sim_params.xml");
     sim_params.env_dir = EvoGen_Maps_Dir;
-    sim_params.SetEnv(jdoc["environment"].GetString());
+    sim_params.SetEnv(env);
 
     SimulationManager sm;
     sm.SetTimeout(sim_params.time_out);
@@ -113,25 +83,5 @@ bool user_input_demo(const std::string& input_dir) {
     sm.LoadUrdfString(robot.get_urdf_string());
     sm.RunSimulation();
 
-    return true;
-}
-
-int main(int argc, char **argv) {
-    for (int i = 0; i < argc; ++i) {
-        std::cout << argv[i] << std::endl;
-    }
-    system("pause");
-    return 0;
-
-    std::string user_input_dir;
-    if (argc > 1) {
-        user_input_dir = std::string(argv[1]);
-    } else {
-        user_input_dir = User_Input_Dir;
-    }
-    while (true) {
-        if (!user_input_demo(user_input_dir))
-            break;
-    }
     return 0;
 }

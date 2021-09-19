@@ -296,7 +296,7 @@ let reset_btn_e    = document.getElementById('ResetButton');
 let tg_env_btn_e   = document.getElementById('ToggleEnvButton');
 
 // IO
-let submit_btn_e   = document.getElementById('SubmitButton');
+let test_btn_e     = document.getElementById('TestButton');
 let save_btn_e     = document.getElementById('SaveButton');
 let load_btn_e     = document.getElementById('LoadButton');
 
@@ -464,8 +464,11 @@ function onCopyLegButtonClick(event) {
     }
 }
 
-function onSubmitButtonClick(event) {
-    export_robot();
+function onTestButtonClick(event) {
+    robot.compile_dv();
+    let anchor = document.createElement('a');
+    anchor.href = "evogen-uisim:" + robot.env + "," + robot.dv;
+    anchor.click();
 }
 
 function onSaveButtonClick(event) {
@@ -640,7 +643,7 @@ function init_panel() {
     // leg_pos2_e.step = slider_step;
 
     // IO Buttons
-    submit_btn_e.addEventListener('click', onSubmitButtonClick)
+    test_btn_e.addEventListener('click', onTestButtonClick)
     save_btn_e.addEventListener('click', onSaveButtonClick)
     load_btn_e.addEventListener('click', onLoadButtonClick)
 

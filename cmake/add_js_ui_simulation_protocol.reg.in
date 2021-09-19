@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\evogen-uisim]
+@="EvoGen_User_Design_Simulator"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\evogen-uisim\shell]
+
+[HKEY_CLASSES_ROOT\evogen-uisim\shell\open]
+
+[HKEY_CLASSES_ROOT\evogen-uisim\shell\open\command]
+@="\"@PATH_TO_UI_SIM_EXE@\" \"%1\""
