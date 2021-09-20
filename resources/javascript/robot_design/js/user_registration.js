@@ -11,6 +11,7 @@ class MetaInfo {
         this.user_age = "";
         this.user_major = "";
         this.user_degree = "";
+        this.user_degree_year = "";
 
         this.generate_user_id();
     }
@@ -32,6 +33,7 @@ let user_gender_e   = document.getElementById('UserGenderSelect');
 let user_age_e      = document.getElementById('UserAgeText');
 let user_major_e    = document.getElementById('UserMajorText');
 let user_degree_e   = document.getElementById('UserDegreeText');
+let user_degree_year_e = document.getElementById('UserDegreeYearText');
 let save_user_btn_e = document.getElementById('SaveUserButton');
 
 ////////////////////////////////////////////////////////////////////////
@@ -72,6 +74,11 @@ function onUserDegreeTextChange(event) {
     meta_info.user_degree = select.value;
 }
 
+function onUserDegreeYearTextChange(event) {
+    var select = event.target;
+    meta_info.user_degree_year = select.value;
+}
+
 function onSaveUserButtonClick(event) {
     write_user();
     copy_to_clipboard(meta_info.user_id);
@@ -100,6 +107,7 @@ function write_user() {
         user_age: meta_info.user_age,
         user_major: meta_info.user_major,
         user_degree: meta_info.user_degree,
+        user_degree_year: meta_info.user_degree_year,
         datetime: timestamp,
     };
 
@@ -142,4 +150,6 @@ user_major_e.value = meta_info.user_major;
 user_major_e.addEventListener('change', onUserMajorTextChange);
 user_degree_e.value = meta_info.user_degree;
 user_degree_e.addEventListener('change', onUserDegreeTextChange);
+user_degree_year_e.addEventListener('change', onUserDegreeYearTextChange);
+user_degree_year_e.value = meta_info.user_degree_year;
 save_user_btn_e.addEventListener('click', onSaveUserButtonClick)
