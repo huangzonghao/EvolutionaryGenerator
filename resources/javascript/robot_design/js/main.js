@@ -23,6 +23,8 @@ preset_leg_pos["5"] = [0.01, 0.49, 0.51, 0.99, 0.25];
 preset_leg_pos["5_alt"] = [0.99, 0.51, 0.49, 0.01, 0.75];
 preset_leg_pos["6"] = [0.01, 0.25, 0.49, 0.51, 0.75, 0.99];
 const env_to_use = ["ground", "Sine2.obj", "Valley5.obj"];
+const body_part_name = ["base", "long", "x long", "thin", "long&thin", "short&thin"];
+const leg_part_name = ["base", "x-wide", "y-wide", "y-wide&short", "y-wide&long", "long", "x long"];
 
 // TODO: the following 4 values should be read from disk
 const num_body_parts = 6;
@@ -655,6 +657,9 @@ function init_panel() {
 
     // Body ID
     resize_select(body_id_e, num_body_parts);
+    for (let i = 0; i < body_id_e.options.length; ++i) {
+        body_id_e.options[i].text = body_part_name[i];
+    }
 
     // Body Scale
     body_x2_e.min = body_scale_range[0];
@@ -671,6 +676,9 @@ function init_panel() {
 
     // Part ID
     resize_select(part_id_e, num_leg_parts);
+    for (let i = 0; i < part_id_e.options.length; ++i) {
+        part_id_e.options[i].text = leg_part_name[i];
+    }
 
     // Link Scale
     link_length2_e.min = link_length_range[0];
