@@ -298,6 +298,7 @@ let flip_btn_e     = document.getElementById('FlipButton');
 let reset_btn_e    = document.getElementById('ResetButton');
 
 // Meta
+let load_user_btn_e  = document.getElementById('LoadUserButton');
 let tg_env_btn_e     = document.getElementById('ToggleEnvButton');
 let robot_up_btn_e   = document.getElementById('MoveRobotUpButton');
 let robot_down_btn_e = document.getElementById('MoveRobotDownButton');
@@ -333,11 +334,6 @@ function onMouseClick(event) {
             update_panel_for_new_target();
         }
     }
-}
-
-function onUserIDTextChange(event) {
-    let select = event.target;
-    user_id = select.value;
 }
 
 function onEnvSelectChange(event) {
@@ -531,6 +527,23 @@ function onResetButtonClick(event) {
     update_drawing();
 }
 
+function onLoadUserButtonClick(event) {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+        reader.onload = readerEvent => {
+            let json_str = readerEvent.target.result;
+            let json_dict = JSON.parse(json_str);
+            user_id = json_dict.user_id;
+            user_id_e.innerHTML = user_id;
+        }
+    }
+    input.click();
+}
+
 function onToggleEnvButtonClick(event) {
     if (canvas_show_env) {
         remove_env();
@@ -584,8 +597,6 @@ function resize_select(select, new_size) {
 // Setup callbacks, generate select lists that will not be changed through out
 // the design process.
 function init_panel() {
-    user_id_e.addEventListener('change', onUserIDTextChange);
-
     // Environment Select
     for (let i = 0; i < mesh_lib.env_names.length; ++i) {
         let opt = document.createElement('option');
@@ -678,6 +689,7 @@ function init_panel() {
     // Robot Config Buttons
     flip_btn_e.addEventListener('click', onFlipButtonClick);
     reset_btn_e.addEventListener('click', onResetButtonClick);
+    load_user_btn_e.addEventListener('click', onLoadUserButtonClick);
     tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
     tg_env_btn_e.innerHTML = 'Show Env';
     robot_up_btn_e.addEventListener('click', onMoveRobotUpButtonClick);
@@ -688,7 +700,7 @@ function init_panel() {
 
 // Update the values and lists that might be changed after loading a new robot.
 function update_panel_for_new_robot() {
-    user_id_e.value = user_id;
+    user_id_e.innerHTML = user_id;
     env_e.value = mesh_lib.env_ids[robot.env];
     robot_id_e.value = robot.id;
     ver_e.value = robot.ver;

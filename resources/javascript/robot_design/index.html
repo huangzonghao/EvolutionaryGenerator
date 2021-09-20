@@ -15,18 +15,20 @@
 
 <body>
     <div id="LeftPanel" align="center">
+        <h2>EvoGen Robot Design</h1>
         <div id="MetaPanel" align="center">
             <p>
                 <button class="button" onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button>
                 <button class="button" onclick=" window.open('user_registration.html','_blank')">New User</button>
+                <button class="button" id="LoadUserButton">Load User</button>
             </p>
-            <p>Participant ID: <input class="TextBox" id="UserIDText" style="width:45px"></p>
+            <p>Participant ID: <span id="UserIDText"></span></p>
         </div>
         <hr>
         <div align="center">
             <p>Environment: <select class="select" id="EnvSelect" style="width:90px"></select></p>
-            <p>Robot ID: <select class="select" id="RobotIDSelect"></select></p>
-            <p>Robot Ver: <select class="select" id="VerSelect"></select></p>
+            <p>Robot ID: <select class="select" id="RobotIDSelect"></select>
+               Ver: <select class="select" id="VerSelect"></select></p>
 
         </div>
         <hr>
