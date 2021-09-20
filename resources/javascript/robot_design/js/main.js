@@ -267,48 +267,7 @@ class MeshLibrary {
 //                            DOM Handles                             //
 ////////////////////////////////////////////////////////////////////////
 
-let left_panel_e   = document.getElementById('LeftPanel');
-let right_panel_e  = document.getElementById('RightPanel');
-let visual_panel_e = document.getElementById('RobotCanvas');
-let user_id_e      = document.getElementById('UserIDText');
-
-// Robot Config
-let env_e          = document.getElementById('EnvSelect');
-let robot_id_e     = document.getElementById('RobotIDSelect');
-let ver_e          = document.getElementById('VerSelect');
-let body_id_e      = document.getElementById('BodyIdSelect');
-let body_x_e       = document.getElementById('BodyScaleXText');
-let body_x2_e      = document.getElementById('BodyScaleXRange');
-let body_y_e       = document.getElementById('BodyScaleYText');
-let body_y2_e      = document.getElementById('BodyScaleYRange');
-let body_z_e       = document.getElementById('BodyScaleZText');
-let body_z2_e      = document.getElementById('BodyScaleZRange');
-let num_legs_e     = document.getElementById('NumLegsSelect');
-let leg_id_e       = document.getElementById('LegIdSelect');
-// let leg_pos_e      = document.getElementById('LegPositionText');
-// let leg_pos2_e     = document.getElementById('LegPositionRange');
-let num_links_e    = document.getElementById('NumLinksSelect');
-let link_id_e      = document.getElementById('LinkIdSelect');
-let part_id_e      = document.getElementById('PartIdSelect');
-let link_length_e  = document.getElementById('LinkLengthText');
-let link_length2_e = document.getElementById('LinkLengthRange');
-let copy_leg_e     = document.getElementById('CopyLegSelect');
-let copy_leg_btn_e = document.getElementById('CopyLegButton');
-let flip_btn_e     = document.getElementById('FlipButton');
-let reset_btn_e    = document.getElementById('ResetButton');
-
-// Meta
-let load_user_btn_e  = document.getElementById('LoadUserButton');
-let tg_env_btn_e     = document.getElementById('ToggleEnvButton');
-let robot_up_btn_e   = document.getElementById('MoveRobotUpButton');
-let robot_down_btn_e = document.getElementById('MoveRobotDownButton');
-let test_btn_e       = document.getElementById('TestButton');
-let save_btn_e       = document.getElementById('SaveButton');
-let load_btn_e       = document.getElementById('LoadButton');
-
-////////////////////////////////////////////////////////////////////////
-//                             Callbacks                              //
-////////////////////////////////////////////////////////////////////////
+window.addEventListener('resize', onWindowResize);
 
 function onWindowResize(event) {
     renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
@@ -316,6 +275,11 @@ function onWindowResize(event) {
     camera.updateProjectionMatrix();
 }
 
+let left_panel_e = document.getElementById('LeftPanel');
+let right_panel_e = document.getElementById('RightPanel');
+
+let visual_panel_e = document.getElementById('RobotCanvas');
+visual_panel_e.addEventListener('click', onMouseClick, false);
 function onMouseClick(event) {
     const rect = visual_panel_e.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -336,28 +300,41 @@ function onMouseClick(event) {
     }
 }
 
+let user_id_e = document.getElementById('UserIDText');
+
+// Robot Config
+let env_e = document.getElementById('EnvSelect');
+env_e.addEventListener('change', onEnvSelectChange);
 function onEnvSelectChange(event) {
     let select = event.target;
     robot.env = select.options[select.selectedIndex].text;
     draw_env();
 }
 
+let robot_id_e = document.getElementById('RobotIDSelect');
+robot_id_e.addEventListener('change', onRobotIDSelectChange);
 function onRobotIDSelectChange(event) {
     let select = event.target;
     robot.id = select.value;
 }
 
+let ver_e = document.getElementById('VerSelect');
+ver_e.addEventListener('change', onVerSelectChange);
 function onVerSelectChange(event) {
     let select = event.target;
     robot.ver = select.value;
 }
 
+let body_id_e = document.getElementById('BodyIdSelect');
+body_id_e.addEventListener('change', onBodyIdSelectChange);
 function onBodyIdSelectChange(event) {
     let select = event.target;
     robot.body_id = parseInt(select.value);
     update_drawing();
 }
 
+let body_x_e = document.getElementById('BodyScaleXText');
+body_x_e.addEventListener('change', onBodyScaleXTextChange);
 function onBodyScaleXTextChange(event) {
     let select = event.target;
     robot.body_scales[0] = parseFloat(select.value);
@@ -365,6 +342,8 @@ function onBodyScaleXTextChange(event) {
     update_drawing();
 }
 
+let body_x2_e = document.getElementById('BodyScaleXRange');
+body_x2_e.addEventListener('change', onBodyScaleXRangeChange);
 function onBodyScaleXRangeChange(event) {
     let select = event.target;
     robot.body_scales[0] = parseFloat(select.value);
@@ -372,6 +351,8 @@ function onBodyScaleXRangeChange(event) {
     update_drawing();
 }
 
+let body_y_e = document.getElementById('BodyScaleYText');
+body_y_e.addEventListener('change', onBodyScaleYTextChange);
 function onBodyScaleYTextChange(event) {
     let select = event.target;
     robot.body_scales[1] = parseFloat(select.value);
@@ -379,6 +360,8 @@ function onBodyScaleYTextChange(event) {
     update_drawing();
 }
 
+let body_y2_e = document.getElementById('BodyScaleYRange');
+body_y2_e.addEventListener('change', onBodyScaleYRangeChange);
 function onBodyScaleYRangeChange(event) {
     let select = event.target;
     robot.body_scales[1] = parseFloat(select.value);
@@ -386,6 +369,8 @@ function onBodyScaleYRangeChange(event) {
     update_drawing();
 }
 
+let body_z_e = document.getElementById('BodyScaleZText');
+body_z_e.addEventListener('change', onBodyScaleZTextChange);
 function onBodyScaleZTextChange(event) {
     let select = event.target;
     robot.body_scales[2] = parseFloat(select.value);
@@ -393,6 +378,8 @@ function onBodyScaleZTextChange(event) {
     update_drawing();
 }
 
+let body_z2_e = document.getElementById('BodyScaleZRange');
+body_z2_e.addEventListener('change', onBodyScaleZRangeChange);
 function onBodyScaleZRangeChange(event) {
     let select = event.target;
     robot.body_scales[2] = parseFloat(select.value);
@@ -400,6 +387,8 @@ function onBodyScaleZRangeChange(event) {
     update_drawing();
 }
 
+let num_legs_e = document.getElementById('NumLegsSelect');
+num_legs_e.addEventListener('change', onNumLegsSelectChange);
 function onNumLegsSelectChange(event) {
     let select = event.target;
     robot.update_num_legs(parseInt(select.value))
@@ -408,42 +397,14 @@ function onNumLegsSelectChange(event) {
     update_drawing();
 }
 
+let leg_id_e = document.getElementById('LegIdSelect');
+leg_id_e.addEventListener('change', onLegIdSelectChange);
 function onLegIdSelectChange(event) {
     update_panel_for_new_target();
 }
 
-function onNumLinksSelectChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).num_links = parseInt(select.value);
-    update_panel_for_new_target();
-    update_drawing();
-}
-
-function onLinkIdSelectChange(event) {
-    let select = event.target;
-    update_panel_for_new_target();
-}
-
-function onPartIdSelectChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).part_id = select.selectedIndex;
-    update_drawing();
-}
-
-function onLinkLengthTextChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
-    link_length2_e.value = select.value;
-    update_drawing();
-}
-
-function onLinkLengthRangeChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
-    link_length_e.value = select.value;
-    update_drawing();
-}
-
+// let leg_pos_e = document.getElementById('LegPositionText');
+// leg_pos_e.addEventListener('change', onLegPositionTextChange);
 // function onLegPositionTextChange(event) {
     // let select = event.target;
     // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
@@ -451,6 +412,8 @@ function onLinkLengthRangeChange(event) {
     // update_drawing();
 // }
 
+// let leg_pos2_e = document.getElementById('LegPositionRange');
+// leg_pos2_e.addEventListener('change', onLegPositionRangeChange);
 // function onLegPositionRangeChange(event) {
     // let select = event.target;
     // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
@@ -458,6 +421,51 @@ function onLinkLengthRangeChange(event) {
     // update_drawing();
 // }
 
+let num_links_e = document.getElementById('NumLinksSelect');
+num_links_e.addEventListener('change', onNumLinksSelectChange);
+function onNumLinksSelectChange(event) {
+    let select = event.target;
+    robot.leg(leg_id_e.selectedIndex).num_links = parseInt(select.value);
+    update_panel_for_new_target();
+    update_drawing();
+}
+
+let link_id_e = document.getElementById('LinkIdSelect');
+link_id_e.addEventListener('change', onLinkIdSelectChange);
+function onLinkIdSelectChange(event) {
+    let select = event.target;
+    update_panel_for_new_target();
+}
+
+let part_id_e = document.getElementById('PartIdSelect');
+part_id_e.addEventListener('change', onPartIdSelectChange);
+function onPartIdSelectChange(event) {
+    let select = event.target;
+    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).part_id = select.selectedIndex;
+    update_drawing();
+}
+
+let link_length_e = document.getElementById('LinkLengthText');
+link_length_e.addEventListener('change', onLinkLengthTextChange);
+function onLinkLengthTextChange(event) {
+    let select = event.target;
+    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
+    link_length2_e.value = select.value;
+    update_drawing();
+}
+
+let link_length2_e = document.getElementById('LinkLengthRange');
+link_length2_e.addEventListener('change', onLinkLengthRangeChange);
+function onLinkLengthRangeChange(event) {
+    let select = event.target;
+    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
+    link_length_e.value = select.value;
+    update_drawing();
+}
+
+let copy_leg_e = document.getElementById('CopyLegSelect');
+let copy_leg_btn_e = document.getElementById('CopyLegButton');
+copy_leg_btn_e.addEventListener('click', onCopyLegButtonClick);
 function onCopyLegButtonClick(event) {
     if (robot.copy_leg(leg_id_e.value, copy_leg_e.value)) { // if copy happened
         update_panel_for_new_target();
@@ -465,6 +473,77 @@ function onCopyLegButtonClick(event) {
     }
 }
 
+let flip_btn_e = document.getElementById('FlipButton');
+flip_btn_e.addEventListener('click', onFlipButtonClick);
+function onFlipButtonClick(event) {
+    robot.flip_legs();
+    update_drawing();
+}
+
+let reset_btn_e = document.getElementById('ResetButton');
+reset_btn_e.addEventListener('click', onResetButtonClick);
+function onResetButtonClick(event) {
+    robot.reset();
+    update_panel_for_new_robot();
+    update_drawing();
+}
+
+// Meta
+let load_user_btn_e = document.getElementById('LoadUserButton');
+load_user_btn_e.addEventListener('click', onLoadUserButtonClick);
+function onLoadUserButtonClick(event) {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+        reader.onload = readerEvent => {
+            let json_str = readerEvent.target.result;
+            let json_dict = JSON.parse(json_str);
+            user_id = json_dict.user_id;
+            user_id_e.innerHTML = user_id;
+        }
+    }
+    input.click();
+}
+
+let tg_env_btn_e = document.getElementById('ToggleEnvButton');
+tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
+function onToggleEnvButtonClick(event) {
+    if (canvas_show_env) {
+        remove_env();
+        canvas_show_env = false;
+        tg_env_btn_e.innerHTML = 'Show Env';
+    } else {
+        canvas_show_env = true;
+        draw_env();
+        tg_env_btn_e.innerHTML = 'Hide Env';
+    }
+}
+
+let robot_up_btn_e = document.getElementById('MoveRobotUpButton');
+robot_up_btn_e.addEventListener('click', onMoveRobotUpButtonClick);
+function onMoveRobotUpButtonClick(event) {
+    if (!canvas_show_env)
+        return;
+    // achieve this by moving env down
+    env_obj.position.z -= 25;
+    draw_env();
+}
+
+let robot_down_btn_e = document.getElementById('MoveRobotDownButton');
+robot_down_btn_e.addEventListener('click', onMoveRobotDownButtonClick);
+function onMoveRobotDownButtonClick(event) {
+    if (!canvas_show_env)
+        return;
+    // achieve this by moving env up
+    env_obj.position.z += 25;
+    draw_env();
+}
+
+let test_btn_e = document.getElementById('TestButton');
+test_btn_e.addEventListener('click', onTestButtonClick);
 function onTestButtonClick(event) {
     robot.compile_dv();
     let anchor = document.createElement('a');
@@ -472,6 +551,8 @@ function onTestButtonClick(event) {
     anchor.click();
 }
 
+let save_btn_e = document.getElementById('SaveButton');
+save_btn_e.addEventListener('click', onSaveButtonClick);
 function onSaveButtonClick(event) {
     demo_write();
     let next_ver = parseInt(ver_e.value) + 1;
@@ -492,6 +573,8 @@ function onSaveButtonClick(event) {
     robot.id = next_id;
 }
 
+let load_btn_e = document.getElementById('LoadButton');
+load_btn_e.addEventListener('click', onLoadButtonClick);
 function onLoadButtonClick(event) {
     let input = document.createElement('input');
     input.type = 'file';
@@ -514,62 +597,6 @@ function onLoadButtonClick(event) {
         }
     }
     input.click();
-}
-
-function onFlipButtonClick(event) {
-    robot.flip_legs();
-    update_drawing();
-}
-
-function onResetButtonClick(event) {
-    robot.reset();
-    update_panel_for_new_robot();
-    update_drawing();
-}
-
-function onLoadUserButtonClick(event) {
-    let input = document.createElement('input');
-    input.type = 'file';
-    input.onchange = e => {
-        let file = e.target.files[0];
-        let reader = new FileReader();
-        reader.readAsText(file,'UTF-8');
-        reader.onload = readerEvent => {
-            let json_str = readerEvent.target.result;
-            let json_dict = JSON.parse(json_str);
-            user_id = json_dict.user_id;
-            user_id_e.innerHTML = user_id;
-        }
-    }
-    input.click();
-}
-
-function onToggleEnvButtonClick(event) {
-    if (canvas_show_env) {
-        remove_env();
-        canvas_show_env = false;
-        tg_env_btn_e.innerHTML = 'Show Env';
-    } else {
-        canvas_show_env = true;
-        draw_env();
-        tg_env_btn_e.innerHTML = 'Hide Env';
-    }
-}
-
-function onMoveRobotUpButtonClick(event) {
-    if (!canvas_show_env)
-        return;
-    // achieve this by moving env down
-    env_obj.position.z -= 25;
-    draw_env();
-}
-
-function onMoveRobotDownButtonClick(event) {
-    if (!canvas_show_env)
-        return;
-    // achieve this by moving env up
-    env_obj.position.z += 25;
-    draw_env();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -604,14 +631,11 @@ function init_panel() {
         opt.innerHTML = mesh_lib.env_names[i];
         env_e.appendChild(opt);
     }
-    env_e.addEventListener('change', onEnvSelectChange);
     robot.env = env_e.options[env_e.selectedIndex].text;
 
     // Robot ID Select
     resize_select(robot_id_e, max_id + 1);
-    ver_e.addEventListener('change', onRobotIDSelectChange);
     resize_select(ver_e, max_ver + 1);
-    ver_e.addEventListener('change', onVerSelectChange);
 
     // Num Legs
     for (let i = 0; i < allowed_num_legs.length; ++i) {
@@ -620,7 +644,6 @@ function init_panel() {
         opt.innerHTML = allowed_num_legs[i];
         num_legs_e.appendChild(opt);
     }
-    num_legs_e.addEventListener('change', onNumLegsSelectChange);
 
     // Num Links
     for (let i = min_num_links_per_leg; i < max_num_links_per_leg + 1; ++i) {
@@ -629,71 +652,37 @@ function init_panel() {
         opt.innerHTML = i;
         num_links_e.appendChild(opt);
     }
-    num_links_e.addEventListener('change', onNumLinksSelectChange);
 
     // Body ID
     resize_select(body_id_e, num_body_parts);
-    body_id_e.addEventListener('change', onBodyIdSelectChange);
 
     // Body Scale
-    body_x_e.addEventListener('change', onBodyScaleXTextChange);
-    body_x2_e.addEventListener('change', onBodyScaleXRangeChange);
     body_x2_e.min = body_scale_range[0];
     body_x2_e.max = body_scale_range[1];
     body_x2_e.step = slider_step;
 
-    body_y_e.addEventListener('change', onBodyScaleYTextChange);
-    body_y2_e.addEventListener('change', onBodyScaleYRangeChange);
     body_y2_e.min = body_scale_range[0];
     body_y2_e.max = body_scale_range[1];
     body_y2_e.step = slider_step;
 
-    body_z_e.addEventListener('change', onBodyScaleZTextChange);
-    body_z2_e.addEventListener('change', onBodyScaleZRangeChange);
     body_z2_e.min = body_scale_range[0];
     body_z2_e.max = body_scale_range[1];
     body_z2_e.step = slider_step;
 
-    // Leg ID
-    leg_id_e.addEventListener('change', onLegIdSelectChange);
-
-    // Link ID
-    link_id_e.addEventListener('change', onLinkIdSelectChange);
-
     // Part ID
     resize_select(part_id_e, num_leg_parts);
-    part_id_e.addEventListener('change', onPartIdSelectChange);
 
     // Link Scale
-    link_length_e.addEventListener('change', onLinkLengthTextChange);
-    link_length2_e.addEventListener('change', onLinkLengthRangeChange);
     link_length2_e.min = link_length_range[0];
     link_length2_e.max = link_length_range[1];
     link_length2_e.step = slider_step;
 
-    // Copy Leg
-    copy_leg_btn_e.addEventListener('click', onCopyLegButtonClick);
-
     // Leg Position
-    // leg_pos_e.addEventListener('change', onLegPositionTextChange);
-    // leg_pos2_e.addEventListener('change', onLegPositionRangeChange);
     // leg_pos2_e.min = leg_pos_range[0];
     // leg_pos2_e.max = leg_pos_range[1];
     // leg_pos2_e.step = slider_step;
 
-    // IO Buttons
-    test_btn_e.addEventListener('click', onTestButtonClick);
-    save_btn_e.addEventListener('click', onSaveButtonClick);
-    load_btn_e.addEventListener('click', onLoadButtonClick);
-
-    // Robot Config Buttons
-    flip_btn_e.addEventListener('click', onFlipButtonClick);
-    reset_btn_e.addEventListener('click', onResetButtonClick);
-    load_user_btn_e.addEventListener('click', onLoadUserButtonClick);
-    tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
     tg_env_btn_e.innerHTML = 'Show Env';
-    robot_up_btn_e.addEventListener('click', onMoveRobotUpButtonClick);
-    robot_down_btn_e.addEventListener('click', onMoveRobotDownButtonClick);
 
     update_panel_for_new_robot();
 }
@@ -912,7 +901,6 @@ const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
 visual_panel_e.appendChild(renderer.domElement);
-window.addEventListener('resize', onWindowResize);
 
 const camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visual_panel_e.clientHeight, 0.1, 4000);
 camera.position.set(238, 270, 100);
@@ -927,7 +915,6 @@ controls.panSpeed = 0.2;
 // Raycaster
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-visual_panel_e.addEventListener('click', onMouseClick, false);
 
 // Lights setup
 const amb_light = new THREE.AmbientLight(0xffffff, 0.2); // color and intensity
