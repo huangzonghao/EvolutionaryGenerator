@@ -10,7 +10,7 @@ body {
     overflow: hidden;
 }
 
-#RobotConfigPanel {
+#LeftPanel {
     float: left;
     width: 20%;
     height: 100%;
@@ -19,9 +19,18 @@ body {
     overflow-y:scroll;
 }
 
-#RobotVisualPanel {
-    float:   right;
-    width:   80%;
+#RightPanel {
+    float: left;
+    width: 20%;
+    height: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow-y:scroll;
+}
+
+#RobotCanvas {
+    float:   left;
+    width:   60%;
     height:  100%;
     padding: 5px;
     overflow-y:scroll;

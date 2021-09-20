@@ -28,6 +28,7 @@ const env_to_use = ["ground", "Sine2.obj", "Valley5.obj"];
 const num_body_parts = 6;
 const num_leg_parts = 7;
 
+const env_mat = new THREE.MeshPhongMaterial( { color: 0x888888, shininess: 50 } );
 const unselect_mat = new THREE.MeshPhongMaterial( { color: 0x8796aa, shininess: 50 } );
 const select_mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
@@ -230,7 +231,7 @@ class MeshLibrary {
                 loader.load('./maps/' + e_name, function (obj) {self.envs[e_name] = obj});
             else { // basic shapes
                 if (e_name == "ground") {
-                    self.envs[e_name] = new THREE.Mesh(new THREE.BoxGeometry(4000, 3000, 100));
+                    self.envs[e_name] = new THREE.Mesh(new THREE.BoxGeometry(2000, 2000, 10));
                 }
             }
         }
@@ -238,6 +239,7 @@ class MeshLibrary {
 
     post_load_processing() {
         function update_helper(child) { if (child.isMesh) child.material = unselect_mat; }
+        function env_update_helper(child) { if (child.isMesh) child.material = env_mat; }
         // need to generate the bounding box of each mesh
         for (let i = 0; i < num_body_parts; ++i) {
             this.bodies[i].traverse(update_helper);
@@ -256,7 +258,7 @@ class MeshLibrary {
 
         // TODO: for some reason `let obj of this.envs` won't work
         for (let e_name of this.env_names) {
-            this.envs[e_name].traverse(update_helper);
+            this.envs[e_name].traverse(env_update_helper);
         }
     }
 }
@@ -265,8 +267,9 @@ class MeshLibrary {
 //                            DOM Handles                             //
 ////////////////////////////////////////////////////////////////////////
 
-let config_panel_e = document.getElementById('RobotConfigPanel');
-let visual_panel_e = document.getElementById('RobotVisualPanel');
+let left_panel_e   = document.getElementById('LeftPanel');
+let right_panel_e  = document.getElementById('RightPanel');
+let visual_panel_e = document.getElementById('RobotCanvas');
 let user_id_e      = document.getElementById('UserIDText');
 
 // Robot Config
@@ -293,12 +296,14 @@ let copy_leg_e     = document.getElementById('CopyLegSelect');
 let copy_leg_btn_e = document.getElementById('CopyLegButton');
 let flip_btn_e     = document.getElementById('FlipButton');
 let reset_btn_e    = document.getElementById('ResetButton');
-let tg_env_btn_e   = document.getElementById('ToggleEnvButton');
 
-// IO
-let test_btn_e     = document.getElementById('TestButton');
-let save_btn_e     = document.getElementById('SaveButton');
-let load_btn_e     = document.getElementById('LoadButton');
+// Meta
+let tg_env_btn_e     = document.getElementById('ToggleEnvButton');
+let robot_up_btn_e   = document.getElementById('MoveRobotUpButton');
+let robot_down_btn_e = document.getElementById('MoveRobotDownButton');
+let test_btn_e       = document.getElementById('TestButton');
+let save_btn_e       = document.getElementById('SaveButton');
+let load_btn_e       = document.getElementById('LoadButton');
 
 ////////////////////////////////////////////////////////////////////////
 //                             Callbacks                              //
@@ -338,7 +343,7 @@ function onUserIDTextChange(event) {
 function onEnvSelectChange(event) {
     let select = event.target;
     robot.env = select.options[select.selectedIndex].text;
-    update_drawing();
+    draw_env();
 }
 
 function onRobotIDSelectChange(event) {
@@ -527,8 +532,31 @@ function onResetButtonClick(event) {
 }
 
 function onToggleEnvButtonClick(event) {
-    canvas_show_robot = !canvas_show_robot;
-    update_drawing();
+    if (canvas_show_env) {
+        remove_env();
+        canvas_show_env = false;
+        tg_env_btn_e.innerHTML = 'Show Env';
+    } else {
+        canvas_show_env = true;
+        draw_env();
+        tg_env_btn_e.innerHTML = 'Hide Env';
+    }
+}
+
+function onMoveRobotUpButtonClick(event) {
+    if (!canvas_show_env)
+        return;
+    // achieve this by moving env down
+    env_obj.position.z -= 25;
+    draw_env();
+}
+
+function onMoveRobotDownButtonClick(event) {
+    if (!canvas_show_env)
+        return;
+    // achieve this by moving env up
+    env_obj.position.z += 25;
+    draw_env();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -633,7 +661,7 @@ function init_panel() {
     link_length2_e.step = slider_step;
 
     // Copy Leg
-    copy_leg_btn_e.addEventListener('click', onCopyLegButtonClick)
+    copy_leg_btn_e.addEventListener('click', onCopyLegButtonClick);
 
     // Leg Position
     // leg_pos_e.addEventListener('change', onLegPositionTextChange);
@@ -643,14 +671,17 @@ function init_panel() {
     // leg_pos2_e.step = slider_step;
 
     // IO Buttons
-    test_btn_e.addEventListener('click', onTestButtonClick)
-    save_btn_e.addEventListener('click', onSaveButtonClick)
-    load_btn_e.addEventListener('click', onLoadButtonClick)
+    test_btn_e.addEventListener('click', onTestButtonClick);
+    save_btn_e.addEventListener('click', onSaveButtonClick);
+    load_btn_e.addEventListener('click', onLoadButtonClick);
 
     // Robot Config Buttons
-    flip_btn_e.addEventListener('click', onFlipButtonClick)
-    reset_btn_e.addEventListener('click', onResetButtonClick)
-    tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick)
+    flip_btn_e.addEventListener('click', onFlipButtonClick);
+    reset_btn_e.addEventListener('click', onResetButtonClick);
+    tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
+    tg_env_btn_e.innerHTML = 'Show Env';
+    robot_up_btn_e.addEventListener('click', onMoveRobotUpButtonClick);
+    robot_down_btn_e.addEventListener('click', onMoveRobotDownButtonClick);
 
     update_panel_for_new_robot();
 }
@@ -711,11 +742,6 @@ function update_panel_for_new_target() {
 function draw_robot() {
     scene.clear();
 
-    // Display axis
-    const axesHelper = new THREE.AxesHelper(200);
-    axesHelper.material.linewidth = 5;
-    scene.add(axesHelper);
-
     // Add body
     let body_obj = mesh_lib.bodies[robot.body_id].clone();
     body_obj.scale.x *= robot.body_scales[0];
@@ -772,36 +798,36 @@ function mark_body(body_obj, selected = true) {
 }
 
 function draw_env() {
-    if (current_env == robot.env)
+    if (!canvas_show_env)
         return;
-    scene.clear();
-
-    // Display axis
-    const axesHelper = new THREE.AxesHelper(500);
-    axesHelper.material.linewidth = 5;
-    scene.add(axesHelper);
-
-    // Add Env
-    let env_obj = mesh_lib.envs[robot.env].clone();
-    env_obj.scale.x *= 0.1;
-    env_obj.scale.y *= 0.1;
-    env_obj.scale.z *= 0.1;
+    if (current_env_name != robot.env) {
+        // remove env from scene
+        if (env_obj != null)
+            env_obj.removeFromParent();
+        // add new env
+        env_obj = mesh_lib.envs[robot.env].clone();
+        env_obj.position.z = -100;
+        current_env_name = robot.env;
+    }
     scene.add(env_obj);
+}
 
-    current_env = robot.env;
+function remove_env() {
+    current_env_name = "";
+    env_obj.removeFromParent();
 }
 
 function update_drawing() {
     if (!mesh_lib.loading_done)
         return;
 
-    if (canvas_show_robot) {
-        current_env = "";
-        draw_robot();
-    } else {
-        draw_env();
-    }
+    draw_robot();
 
+    // TODO: we have to do the following because draw_robot would clear the scene
+    draw_env();
+    // Display axis
+    axes_obj.size = 200;
+    scene.add(axes_obj);
     // explictily add camera to scene, since the light is a child of camera.
     // otherwise the camera would be automatically added (not sure to where, maybe renderer)
     scene.add(camera);
@@ -865,8 +891,10 @@ let user_id = "000000";
 let robot = new RobotRepresentation();
 let mesh_lib = new MeshLibrary();
 let current_selected_obj;
-let canvas_show_robot = true;
-let current_env = "";
+let canvas_show_env = false;
+let current_env_name = "";
+let env_obj;
+const axes_obj = new THREE.AxesHelper(200);
 
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -874,7 +902,7 @@ renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
 visual_panel_e.appendChild(renderer.domElement);
 window.addEventListener('resize', onWindowResize);
 
-const camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visual_panel_e.clientHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visual_panel_e.clientHeight, 0.1, 4000);
 camera.position.set(238, 270, 100);
 camera.up.set(0.35, 0.4, 0.8); // set the up direction of the camera
 

@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <div id="RobotConfigPanel" align="center">
+    <div id="LeftPanel" align="center">
         <div id="MetaPanel" align="center">
             <p>
                 <button class="button" onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button>
@@ -24,21 +24,36 @@
         </div>
         <hr>
         <div align="center">
-            <p>Env: <select class="select" id="EnvSelect" style="width:90px"></select>
-               ID: <select class="select" id="RobotIDSelect"></select></p>
-               Ver: <select class="select" id="VerSelect"></select></p>
+            <p>Environment: <select class="select" id="EnvSelect" style="width:90px"></select></p>
+            <p>Robot ID: <select class="select" id="RobotIDSelect"></select></p>
+            <p>Robot Ver: <select class="select" id="VerSelect"></select></p>
 
-            <p><button class="button" id="ResetButton">Reset Robot</button>
-               <button class="button" id="ToggleEnvButton">Toggle Env</button></p>
-
-            <p>Num Legs: <select class="select" id="NumLegsSelect"></select>
-               <button class="button" id="FlipButton">Flip Legs</button></p>
         </div>
         <hr>
-
+        <div>
+            <p><button class="button" id="ToggleEnvButton">Toggle Env</button></p>
+            <p>Move Robot:
+               <button class="button" id="MoveRobotUpButton">Up</button>
+               <button class="button" id="MoveRobotDownButton">Down</button></p>
+        </div>
+        <hr>
         <div align="center">
+            <button class="button" id="TestButton">Test</button>
+            <button class="button" id="SaveButton">Save</button>
+            <button class="button" id="LoadButton">Load</button>
+        </div>
+
+    </div>
+
+    <div id="RobotCanvas"></div>
+
+    <div id="RightPanel" align="center">
+        <div align="center">
+            <p>Num Legs: <select class="select" id="NumLegsSelect"></select>
+               <button class="button" id="FlipButton">Flip Legs</button></p>
+            <hr>
             <p align="center">Body Config</p>
-            <p>Body ID: <select class="select" id="BodyIdSelect"></select></p>
+            <p>Body Mesh: <select class="select" id="BodyIdSelect"></select></p>
             <p>
                 Body Scale X:
                 <input class="TextBox" id="BodyScaleXText">
@@ -58,11 +73,8 @@
         <hr>
 
         <div align="center">
-            <p align="center">Target Leg Config</p>
-            <p>
-                Leg ID: <select class="select display_select" id="LegIdSelect"></select>
-                # Links: <select class="select" id="NumLinksSelect"></select>
-            </p>
+            <p>Target Leg: <select class="select display_select" id="LegIdSelect"></select>
+               Num Links: <select class="select" id="NumLinksSelect"></select></p>
             <!-- <p> -->
                 <!-- Leg Position: -->
                 <!-- <input class="TextBox" id="LegPositionText"> -->
@@ -71,30 +83,19 @@
         </div>
 
         <div align="center">
-            <p align="center">Target Link Config</p>
-            <p>
-                Link ID: <select class="select display_select" id="LinkIdSelect"></select>
-                Part ID: <select class="select" id="PartIdSelect"></select>
-            </p>
+            <p>Target Link: <select class="select display_select" id="LinkIdSelect"></select>
+               Link Mesh: <select class="select" id="PartIdSelect"></select></p>
             <p>
                 Link Scale:
                 <input class="TextBox" id="LinkLengthText">
                 <input type="range" id="LinkLengthRange">
             </p>
-            <p>
-                Copy Leg: <select class="select" id="CopyLegSelect"></select>
-                <button class="button" id="CopyLegButton">Copy Leg</button>
-            </p>
             <hr>
-            <p align="center">
-                <button class="button" id="TestButton">Test</button>
-                <button class="button" id="SaveButton">Save</button>
-                <button class="button" id="LoadButton">Load</button>
-            </p>
+            <p>Copy Leg: <select class="select" id="CopyLegSelect"></select>
+               <button class="button" id="CopyLegButton">Copy Leg</button></p>
+            <p><button class="button" id="ResetButton">Reset Robot</button></p>
         </div>
     </div>
-
-    <div id="RobotVisualPanel"></div>
 
     <!-- TODO: currently need to wait till the html loaded - might be done with js command? -->
     <!-- JS Source Code -->
