@@ -121,8 +121,11 @@ endif()
 #######################################################################
 #                               Targets                               #
 #######################################################################
-set(CURRENT_TARGET_NAME Simulator)
 
+###############
+#  Simulator  #
+###############
+set(CURRENT_TARGET_NAME Simulator)
 set(Headers
     include/ChRobot.h
     include/ChUrdfDoc.h
@@ -130,27 +133,22 @@ set(Headers
     include/RobotController.h
     include/SimMotor.h
     include/SimulationManager.h)
-
 set(Sources
     src/ChUrdfDoc.cpp
     # src/ChRobogami.cpp
     src/RobotController.cpp
     src/SimMotor.cpp
     src/SimulationManager.cpp)
-
 add_library(${CURRENT_TARGET_NAME} STATIC ${Headers} ${Sources})
-
 target_link_libraries(${CURRENT_TARGET_NAME}
                       ${CHRONO_LIBRARIES}
                       ${urdfdom_LIBRARIES})
                       # FBE_Proto)
-
 target_include_directories(${CURRENT_TARGET_NAME}
                            PUBLIC ${EIGEN3_INCLUDE_DIR}
                                   ${urdfdom_INCLUDE_DIRS}
                                   ${CHRONO_INCLUDE_DIRS}
                                   ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES
                       COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
                       COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
@@ -167,26 +165,21 @@ if(MSVC)
         # EIGEN_DONT_VECTORIZE; EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
 endif()
 
-
+#################
+#  chrono_test  #
+#################
 set(CURRENT_TARGET_NAME chrono_test)
-
 set(Headers ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h)
-
 set(Sources src/chrono_test.cpp)
-
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
-
 target_link_libraries(${CURRENT_TARGET_NAME} Simulator)
-
 target_include_directories(${CURRENT_TARGET_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
-
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
     list(APPEND CURRENT_TARGET_DEP_DLLS ${CHRONO_DLLS})
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
     DLL_Copy_Command(${CURRENT_TARGET_NAME}_COPY_DLLS "${CURRENT_TARGET_DEP_DLLS}" ${CMAKE_CURRENT_BINARY_DIR})
 endif()
-
 if(MSVC)
     source_group("Header Files" FILES ${Headers})
     source_group("Source Files" FILES ${Sources})
@@ -196,20 +189,17 @@ if(MSVC)
     )
 endif()
 
+######################
+#  memory_leak_test  #
+######################
 set(CURRENT_TARGET_NAME memory_leak_test)
-
 set(Sources src/memory_leak_test.cpp)
-
 add_executable(${CURRENT_TARGET_NAME} ${Sources})
-
 if(MSVC)
     source_group("Source Files" FILES ${Sources})
 endif()
-
 target_link_libraries(${CURRENT_TARGET_NAME} ${CHRONO_LIBRARIES})
-
 target_include_directories(${CURRENT_TARGET_NAME} PUBLIC ${CHRONO_INCLUDE_DIRS})
-
 set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES
                       COMPILE_FLAGS "${CHRONO_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}"
                       COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""

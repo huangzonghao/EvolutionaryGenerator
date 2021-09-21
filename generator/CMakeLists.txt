@@ -1,6 +1,10 @@
 #######################################################################
 #                               Targets                               #
 #######################################################################
+
+###############
+#  Generator  #
+###############
 set(CURRENT_TARGET_NAME Generator)
 set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/EvoGenerator.h
@@ -58,6 +62,9 @@ if(MSVC)
     )
 endif()
 
+###################
+#  robogami_test  #
+###################
 if (ENABLE_ROBOGAMI)
     set(CURRENT_TARGET_NAME robogami_test)
     set(Headers

@@ -232,6 +232,9 @@ set_target_properties(Generator Simulator trimesh2 PROPERTIES FOLDER Lib)
 #                               Targets                               #
 #######################################################################
 
+############################
+#  Evolutionary_Generator  #
+############################
 set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoGenerator.h
@@ -261,6 +264,9 @@ if(MSVC)
         $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
 
+##############################
+#  Export_Robotgami_Library  #
+##############################
 if (ENABLE_ROBOGAMI)
     set(CURRENT_TARGET_NAME Export_Robotgami_Library)
     set(Sources
@@ -288,6 +294,9 @@ if (ENABLE_ROBOGAMI)
     endif()
 endif()
 
+#########################
+#  Genotype_Visualizer  #
+#########################
 set(CURRENT_TARGET_NAME Genotype_Visualizer)
 set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/MeshInfo.h
@@ -320,6 +329,9 @@ if(MSVC)
         $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
 
+#########################
+#  Convert_Mesh_Models  #
+#########################
 set(CURRENT_TARGET_NAME Convert_Mesh_Models)
 set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/mesh_converter_main.cpp)
 add_executable(${CURRENT_TARGET_NAME} ${Sources})
@@ -352,6 +364,9 @@ if(MSVC)
     )
 endif()
 
+###########################
+#  User_Design_Simulator  #
+###########################
 set(CURRENT_TARGET_NAME User_Design_Simulator)
 set(Headers
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/MeshInfo.h
@@ -391,6 +406,9 @@ if(MSVC)
         $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
 
+############################
+#  Generate_Javascript_UI  #
+############################
 set(CURRENT_TARGET_NAME Generate_Javascript_UI)
 add_custom_target(${CURRENT_TARGET_NAME} ALL)
 add_custom_command(TARGET ${CURRENT_TARGET_NAME} PRE_BUILD
