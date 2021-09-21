@@ -308,92 +308,81 @@ let user_id_e = document.getElementById('UserIDText');
 let env_e = document.getElementById('EnvSelect');
 env_e.addEventListener('change', onEnvSelectChange);
 function onEnvSelectChange(event) {
-    let select = event.target;
-    robot.env = select.options[select.selectedIndex].text;
+    robot.env = env_e.options[env_e.selectedIndex].text;
     draw_env();
 }
 
 let robot_id_e = document.getElementById('RobotIDSelect');
 robot_id_e.addEventListener('change', onRobotIDSelectChange);
 function onRobotIDSelectChange(event) {
-    let select = event.target;
-    robot.id = select.value;
+    robot.id = robot_id_e.value;
 }
 
 let ver_e = document.getElementById('VerSelect');
 ver_e.addEventListener('change', onVerSelectChange);
 function onVerSelectChange(event) {
-    let select = event.target;
-    robot.ver = select.value;
+    robot.ver = ver_e.value;
 }
 
 let body_id_e = document.getElementById('BodyIdSelect');
 body_id_e.addEventListener('change', onBodyIdSelectChange);
 function onBodyIdSelectChange(event) {
-    let select = event.target;
-    robot.body_id = parseInt(select.value);
+    robot.body_id = parseInt(body_id_e.value);
     update_drawing();
 }
 
 let body_x_e = document.getElementById('BodyScaleXText');
 body_x_e.addEventListener('change', onBodyScaleXTextChange);
 function onBodyScaleXTextChange(event) {
-    let select = event.target;
-    robot.body_scales[0] = parseFloat(select.value);
-    body_x2_e.value = select.value;
+    robot.body_scales[0] = parseFloat(body_x_e.value);
+    body_x2_e.value = body_x_e.value;
     update_drawing();
 }
 
 let body_x2_e = document.getElementById('BodyScaleXRange');
 body_x2_e.addEventListener('change', onBodyScaleXRangeChange);
 function onBodyScaleXRangeChange(event) {
-    let select = event.target;
-    robot.body_scales[0] = parseFloat(select.value);
-    body_x_e.value = select.value;
+    robot.body_scales[0] = parseFloat(body_x2_e.value);
+    body_x_e.value = body_x2_e.value;
     update_drawing();
 }
 
 let body_y_e = document.getElementById('BodyScaleYText');
 body_y_e.addEventListener('change', onBodyScaleYTextChange);
 function onBodyScaleYTextChange(event) {
-    let select = event.target;
-    robot.body_scales[1] = parseFloat(select.value);
-    body_y2_e.value = select.value;
+    robot.body_scales[1] = parseFloat(body_y_e.value);
+    body_y2_e.value = body_y_e.value;
     update_drawing();
 }
 
 let body_y2_e = document.getElementById('BodyScaleYRange');
 body_y2_e.addEventListener('change', onBodyScaleYRangeChange);
 function onBodyScaleYRangeChange(event) {
-    let select = event.target;
-    robot.body_scales[1] = parseFloat(select.value);
-    body_y_e.value = select.value;
+    robot.body_scales[1] = parseFloat(body_y2_e.value);
+    body_y_e.value = body_y2_e.value;
     update_drawing();
 }
 
 let body_z_e = document.getElementById('BodyScaleZText');
 body_z_e.addEventListener('change', onBodyScaleZTextChange);
 function onBodyScaleZTextChange(event) {
-    let select = event.target;
-    robot.body_scales[2] = parseFloat(select.value);
-    body_z2_e.value = select.value;
+    robot.body_scales[2] = parseFloat(body_z_e.value);
+    body_z2_e.value = body_z_e.value;
     update_drawing();
 }
 
 let body_z2_e = document.getElementById('BodyScaleZRange');
 body_z2_e.addEventListener('change', onBodyScaleZRangeChange);
 function onBodyScaleZRangeChange(event) {
-    let select = event.target;
-    robot.body_scales[2] = parseFloat(select.value);
-    body_z_e.value = select.value;
+    robot.body_scales[2] = parseFloat(body_z2_e.value);
+    body_z_e.value = body_z2_e.value;
     update_drawing();
 }
 
 let num_legs_e = document.getElementById('NumLegsSelect');
 num_legs_e.addEventListener('change', onNumLegsSelectChange);
 function onNumLegsSelectChange(event) {
-    let select = event.target;
-    robot.update_num_legs(parseInt(select.value))
+    robot.update_num_legs(parseInt(num_legs_e.value))
     resize_select(copy_leg_e, robot.num_legs);
     update_panel_for_new_target();
     update_drawing();
@@ -408,26 +397,23 @@ function onLegIdSelectChange(event) {
 // let leg_pos_e = document.getElementById('LegPositionText');
 // leg_pos_e.addEventListener('change', onLegPositionTextChange);
 // function onLegPositionTextChange(event) {
-    // let select = event.target;
-    // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
-    // leg_pos2_e.value = select.value;
+    // robot.leg(leg_id_e.selectedIndex).position = parseFloat(leg_pos_e.value);
+    // leg_pos2_e.value = leg_pos_e.value;
     // update_drawing();
 // }
 
 // let leg_pos2_e = document.getElementById('LegPositionRange');
 // leg_pos2_e.addEventListener('change', onLegPositionRangeChange);
 // function onLegPositionRangeChange(event) {
-    // let select = event.target;
-    // robot.leg(leg_id_e.selectedIndex).position = parseFloat(select.value);
-    // leg_pos_e.value = select.value;
+    // robot.leg(leg_id_e.selectedIndex).position = parseFloat(leg_pos2_e.value);
+    // leg_pos_e.value = leg_pos2_e.value;
     // update_drawing();
 // }
 
 let num_links_e = document.getElementById('NumLinksSelect');
 num_links_e.addEventListener('change', onNumLinksSelectChange);
 function onNumLinksSelectChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).num_links = parseInt(select.value);
+    robot.leg(leg_id_e.selectedIndex).num_links = parseInt(num_links_e.value);
     update_panel_for_new_target();
     update_drawing();
 }
@@ -435,33 +421,29 @@ function onNumLinksSelectChange(event) {
 let link_id_e = document.getElementById('LinkIdSelect');
 link_id_e.addEventListener('change', onLinkIdSelectChange);
 function onLinkIdSelectChange(event) {
-    let select = event.target;
     update_panel_for_new_target();
 }
 
 let part_id_e = document.getElementById('PartIdSelect');
 part_id_e.addEventListener('change', onPartIdSelectChange);
 function onPartIdSelectChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).part_id = select.selectedIndex;
+    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).part_id = part_id_e.selectedIndex;
     update_drawing();
 }
 
 let link_length_e = document.getElementById('LinkLengthText');
 link_length_e.addEventListener('change', onLinkLengthTextChange);
 function onLinkLengthTextChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
-    link_length2_e.value = select.value;
+    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(link_length_e.value);
+    link_length2_e.value = link_length_e.value;
     update_drawing();
 }
 
 let link_length2_e = document.getElementById('LinkLengthRange');
 link_length2_e.addEventListener('change', onLinkLengthRangeChange);
 function onLinkLengthRangeChange(event) {
-    let select = event.target;
-    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(select.value);
-    link_length_e.value = select.value;
+    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(link_length2_e.value);
+    link_length_e.value = link_length2_e.value;
     update_drawing();
 }
 
@@ -814,9 +796,9 @@ function build_robot() {
 
 function mark_body(body_obj, selected = true) {
     if (selected)
-        body_obj.traverse(function(child){if (child.isMesh) child.material = select_mat;})
+        body_obj.traverse(function(child){if (child.isMesh) child.material = select_mat;});
     else
-        body_obj.traverse(function(child){if (child.isMesh) child.material = unselect_mat;})
+        body_obj.traverse(function(child){if (child.isMesh) child.material = unselect_mat;});
 }
 
 function draw_env() {

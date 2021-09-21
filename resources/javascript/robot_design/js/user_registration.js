@@ -27,21 +27,16 @@ class MetaInfo {
 ////////////////////////////////////////////////////////////////////////
 
 let user_id_e = document.getElementById('UserIDText');
-user_id_e.addEventListener('change', onUserIDTextChange);
-function onUserIDTextChange(event) {
-    var select = event.target;
-    meta_info.user_id = select.value;
-}
 
 let gen_id_btn_e = document.getElementById('GenUserIDButton');
-gen_id_btn_e.addEventListener('click', onGenUserIDButtonClick)
+gen_id_btn_e.addEventListener('click', onGenUserIDButtonClick);
 function onGenUserIDButtonClick(event) {
     meta_info.generate_user_id();
     user_id_e.value = meta_info.user_id;
 }
 
 let copy_id_btn_e = document.getElementById('CopyUserIDButton');
-copy_id_btn_e.addEventListener('click', onCopyUserIDButtonClick)
+copy_id_btn_e.addEventListener('click', onCopyUserIDButtonClick);
 function onCopyUserIDButtonClick(event) {
     copy_to_clipboard(meta_info.user_id);
 }
@@ -49,40 +44,35 @@ function onCopyUserIDButtonClick(event) {
 let user_gender_e = document.getElementById('UserGenderSelect');
 user_gender_e.addEventListener('change', onUserGenderSelectChange);
 function onUserGenderSelectChange(event) {
-    var select = event.target;
-    meta_info.user_gender = select.options[select.selectedIndex].text;
+    meta_info.user_gender = user_gender_e.options[user_gender_e.selectedIndex].text;
 }
 
 let user_age_e = document.getElementById('UserAgeText');
 user_age_e.addEventListener('change', onUserAgeTextChange);
 function onUserAgeTextChange(event) {
-    var select = event.target;
-    meta_info.user_age = select.value;
+    meta_info.user_age = user_age_e.value;
 }
 
 let user_major_e = document.getElementById('UserMajorText');
 user_major_e.addEventListener('change', onUserMajorTextChange);
 function onUserMajorTextChange(event) {
-    var select = event.target;
-    meta_info.user_major = select.value;
+    meta_info.user_major = user_major_e.value;
 }
 
 let user_degree_e = document.getElementById('UserDegreeText');
 user_degree_e.addEventListener('change', onUserDegreeTextChange);
 function onUserDegreeTextChange(event) {
-    var select = event.target;
-    meta_info.user_degree = select.value;
+    meta_info.user_degree = user_degree_e.value;
 }
 
 let user_degree_year_e = document.getElementById('UserDegreeYearText');
 user_degree_year_e.addEventListener('change', onUserDegreeYearTextChange);
 function onUserDegreeYearTextChange(event) {
-    var select = event.target;
-    meta_info.user_degree_year = select.value;
+    meta_info.user_degree_year = user_degree_year_e.value;
 }
 
 let save_user_btn_e = document.getElementById('SaveUserButton');
-save_user_btn_e.addEventListener('click', onSaveUserButtonClick)
+save_user_btn_e.addEventListener('click', onSaveUserButtonClick);
 function onSaveUserButtonClick(event) {
     write_user();
     copy_to_clipboard(meta_info.user_id);
