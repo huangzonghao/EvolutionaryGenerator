@@ -23,8 +23,8 @@ preset_leg_pos["5"] = [0.01, 0.49, 0.51, 0.99, 0.25];
 preset_leg_pos["5_alt"] = [0.99, 0.51, 0.49, 0.01, 0.75];
 preset_leg_pos["6"] = [0.01, 0.25, 0.49, 0.51, 0.75, 0.99];
 const env_to_use = ["ground", "Sine2.obj", "Valley5.obj"];
-const body_part_name = ["base", "long", "x long", "thin", "long&thin", "short&thin"];
-const leg_part_name = ["base", "x-wide", "y-wide", "y-wide&short", "y-wide&long", "long", "x long"];
+const body_part_name = ["base", "long", "extra long", "thin", "long & thin", "short & thin"];
+const leg_part_name = ["base", "x-wide", "y-wide", "y-wide & short", "y-wide & long", "long", "extra long"];
 
 // TODO: the following 4 values should be read from disk
 const num_body_parts = 6;
