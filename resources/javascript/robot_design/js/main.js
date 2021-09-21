@@ -531,7 +531,6 @@ function onMoveRobotUpButtonClick(event) {
         return;
     // achieve this by moving env down
     env_obj.position.z -= 25;
-    draw_env();
 }
 
 let robot_down_btn_e = document.getElementById('MoveRobotDownButton');
@@ -541,7 +540,6 @@ function onMoveRobotDownButtonClick(event) {
         return;
     // achieve this by moving env up
     env_obj.position.z += 25;
-    draw_env();
 }
 
 let test_btn_e = document.getElementById('TestButton');
@@ -747,17 +745,32 @@ function update_panel_for_new_target() {
     }
 }
 
-// TODO: mesh objs can be reused, do not create a new one everytime
-function draw_robot() {
-    scene.clear();
+function init_canvas() {
+    // Lights setup
+    const amb_light = new THREE.AmbientLight(0xffffff, 0.2); // color and intensity
+    // for dir light, set the "from" pos (light pos) and "to" pos (light.target pos)
+    // const dir_light = new THREE.DirectionalLight(0xffffff, 1); // color and intensity
+    const point_light = new THREE.PointLight(0xffffff, 1); // color and intensity
+    // explictily add camera to scene, since the light is a child of camera.
+    // otherwise the camera would be automatically added (not sure to where, maybe renderer)
+    scene.add(camera);
+    scene.add(amb_light);
+    camera.add(point_light); // so that the light follows the camera
+    // Display axis
+    const axes_obj = new THREE.AxesHelper(200);
+    scene.add(axes_obj);
+}
 
+// TODO: mesh objs can be reused, do not create a new one everytime
+function build_robot() {
+    robot_obj.clear();
     // Add body
     let body_obj = mesh_lib.bodies[robot.body_id].clone();
     body_obj.scale.x *= robot.body_scales[0];
     body_obj.scale.y *= robot.body_scales[1];
     body_obj.scale.z *= robot.body_scales[2];
     robot.body_obj = body_obj;
-    scene.add(body_obj);
+    robot_obj.add(body_obj);
     let body_size = mesh_lib.body_size[robot.body_id].clone();
     body_size.x *= robot.body_scales[0];
     body_size.y *= robot.body_scales[1];
@@ -789,7 +802,7 @@ function draw_robot() {
             link_obj.leg_id = leg_id;
             link_obj.link_id = i;
             robot.leg(leg_id).link(i).obj = link_obj;
-            scene.add(link_obj);
+            robot_obj.add(link_obj);
 
             leg_total_length += link_size_z + 2; // note in the UI the mesh are not scaled, so 2 means 0.02 in evogen
         }
@@ -811,8 +824,7 @@ function draw_env() {
         return;
     if (current_env_name != robot.env) {
         // remove env from scene
-        if (env_obj != null)
-            env_obj.removeFromParent();
+        scene.remove(env_obj);
         // add new env
         env_obj = mesh_lib.envs[robot.env].clone();
         env_obj.position.z = -100;
@@ -830,21 +842,13 @@ function update_drawing() {
     if (!mesh_lib.loading_done)
         return;
 
-    draw_robot();
-
-    // TODO: we have to do the following because draw_robot would clear the scene
-    draw_env();
-    // Display axis
-    axes_obj.size = 200;
-    scene.add(axes_obj);
-    // explictily add camera to scene, since the light is a child of camera.
-    // otherwise the camera would be automatically added (not sure to where, maybe renderer)
-    scene.add(camera);
-    scene.add(amb_light);
+    scene.remove(robot_obj);
+    build_robot();
+    scene.add(robot_obj);
 }
 
-function render() {
-    window.requestAnimationFrame(render);
+function animate() {
+    window.requestAnimationFrame(animate);
     renderer.render(scene, camera);
     controls.update();
 }
@@ -903,8 +907,9 @@ let current_selected_obj;
 let canvas_show_env = false;
 let current_env_name = "";
 let env_obj;
-const axes_obj = new THREE.AxesHelper(200);
+let robot_obj = new THREE.Object3D();
 
+// Set up scene, renderer, camera and trackball control
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
@@ -914,7 +919,6 @@ const camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visu
 camera.position.set(238, 270, 100);
 camera.up.set(0.35, 0.4, 0.8); // set the up direction of the camera
 
-// Trackball Control setup
 let controls = new THREE.TrackballControls(camera, renderer.domElement);
 controls.rotateSpeed = 1;
 controls.zoomSpeed = 0.1;
@@ -924,11 +928,6 @@ controls.panSpeed = 0.2;
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-// Lights setup
-const amb_light = new THREE.AmbientLight(0xffffff, 0.2); // color and intensity
-// for dir light, set the "from" pos (light pos) and "to" pos (light.target pos)
-// const dir_light = new THREE.DirectionalLight(0xffffff, 1); // color and intensity
-const point_light = new THREE.PointLight(0xffffff, 1); // color and intensity
-camera.add(point_light); // so that the light follows the camera
 init_panel();
-render();
+init_canvas();
+animate(); // starts the animation
