@@ -235,6 +235,11 @@ set_target_properties(Generator Simulator trimesh2 PROPERTIES FOLDER Lib)
 ############################
 #  Evolutionary_Generator  #
 ############################
+# TODO: add a pre-build custom command to update the git hash -- git hash maybe changed
+#     if other part of the repo changed, but if no rebuild triggered, then those changes
+#     are not relvent to us
+#     Add a customized command to generate file. And add git head as dependency,
+#     make the generated file as source to the main target
 set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoGenerator.h
