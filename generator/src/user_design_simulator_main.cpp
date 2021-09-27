@@ -15,6 +15,12 @@
 typedef sferes::fit::UrdfFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
+void debug_pause() {
+    do {
+        std::cout << std::endl;
+    } while (!std::cin.get());
+}
+
 int main(int argc, char **argv) {
     if (argc < 2) {
         std::cout << "User_Design_Simulator: Not enough input. Launch this program from browser" << std::endl
@@ -83,5 +89,11 @@ int main(int argc, char **argv) {
     sm.LoadUrdfString(robot.get_urdf_string());
     sm.RunSimulation();
 
+    std::cout << std::endl << std::endl
+              << "=========================================================" << std::endl
+              << "The score of this robot: " << sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY()) << std::endl
+              << "=========================================================" << std::endl;
+
+    debug_pause();
     return 0;
 }
