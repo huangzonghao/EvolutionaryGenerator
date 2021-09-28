@@ -30,9 +30,19 @@ const leg_part_name = ["base", "x-wide", "y-wide", "y-wide & short", "y-wide & l
 const num_body_parts = 6;
 const num_leg_parts = 7;
 
+////////////////////////////////////////////////////////////////////////
+//                          Global Variables                          //
+////////////////////////////////////////////////////////////////////////
 const env_mat = new THREE.MeshPhongMaterial( { color: 0x888888, shininess: 50 } );
 const unselect_mat = new THREE.MeshPhongMaterial( { color: 0x8796aa, shininess: 50 } );
 const select_mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+
+let user_id = "000000";
+let canvas_show_env = false;
+let current_env_name = "";
+let current_selected_obj;
+let env_obj;
+let robot_obj = new THREE.Object3D();
 
 ////////////////////////////////////////////////////////////////////////
 //                               Class                                //
@@ -882,14 +892,8 @@ function demo_write() {
 //                           Main Function                            //
 ////////////////////////////////////////////////////////////////////////
 
-let user_id = "000000";
 let robot = new RobotRepresentation();
 let mesh_lib = new MeshLibrary();
-let current_selected_obj;
-let canvas_show_env = false;
-let current_env_name = "";
-let env_obj;
-let robot_obj = new THREE.Object3D();
 
 // Set up scene, renderer, camera and trackball control
 const scene = new THREE.Scene();
