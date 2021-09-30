@@ -38,7 +38,6 @@ const env_mat = new THREE.MeshPhongMaterial( { color: 0x888888, shininess: 50 } 
 const unselect_mat = new THREE.MeshPhongMaterial( { color: 0x8796aa, shininess: 50 } );
 const select_mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
-let user_id = "000000";
 let canvas_show_env = false;
 let current_env_name = "";
 let current_selected_obj;
@@ -279,6 +278,9 @@ class MeshLibrary {
 
 class UserStudy {
     constructor() {
+        this.init_user_id = "000000";
+        this.user_id = this.init_user_id;
+
         this.in_test_gap = false;
         this.timer_set = false;
         this.sec_passed = 0;
@@ -293,6 +295,14 @@ class UserStudy {
         this.env_currsor = 0;
 
         this.disable();
+    }
+
+    load_user(new_user_id) {
+        this.user_id = new_user_id;
+        user_id_e.innerHTML = new_user_id;
+        if (parseInt(new_user_id) != 0) {
+            this.enable();
+        }
     }
 
     enable() {
@@ -324,8 +334,8 @@ class UserStudy {
         ver_e.disabled = false;
         env_e.disabled = false;
         // Disable need to remove user id
-        user_id = init_user_id;
-        user_id_e.innerHTML = user_id;
+        this.user_id = this.init_user_id;
+        user_id_e.innerHTML = this.user_id;
     }
 
     // TODO: need to update the logic here
@@ -639,11 +649,7 @@ function onLoadUserButtonClick(event) {
         reader.onload = readerEvent => {
             let json_str = readerEvent.target.result;
             let json_dict = JSON.parse(json_str);
-            user_id = json_dict.user_id;
-            user_id_e.innerHTML = user_id;
-            if (parseInt(user_id) != 0) {
-                user_study.enable();
-            }
+            user_study.load_user(json_dict.user_id);
         }
     }
     input.click();
@@ -719,7 +725,7 @@ function onLoadButtonClick(event) {
             let json_dict = JSON.parse(json_str);
 
             if (!user_study.enabled) {
-                user_id = json_dict.user_id;
+                user_study.user_id = json_dict.user_id;
                 robot.env = json_dict.environment;
                 robot.id = json_dict.id;
                 robot.ver = json_dict.ver;
@@ -829,7 +835,7 @@ function init_panel() {
 
 // Update the values and lists that might be changed after loading a new robot.
 function update_panel_for_new_robot() {
-    user_id_e.innerHTML = user_id;
+    user_id_e.innerHTML = user_study.user_id;
     env_e.value = mesh_lib.env_ids[robot.env];
     robot_id_e.value = robot.id;
     ver_e.value = robot.ver;
@@ -1009,7 +1015,7 @@ function demo_write() {
 
     robot.compile_dv();
     let json_dict = {
-        user_id: user_id,
+        user_id: user_study.user_id,
         environment: robot.env,
         id: robot.id,
         ver: robot.ver,
@@ -1027,7 +1033,7 @@ function demo_write() {
 
     let anchor = document.createElement('a');
     anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
-    anchor.download = "evogen_" + user_id.toString() + "_" + robot.env + "_" + robot.id + "." + robot.ver + '.txt';
+    anchor.download = "evogen_" + user_study.user_id.toString() + "_" + robot.env + "_" + robot.id + "." + robot.ver + '.txt';
     anchor.click();
 }
 
