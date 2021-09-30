@@ -13,6 +13,7 @@ const leg_pos_range = [0, 1];
 const body_scale_range = [0.5, 1.5];
 const link_length_range = [0.5, 1.5];
 const slider_step = 0.01;
+const minimum_test_gap = 20;
 
 let preset_leg_pos = {};
 preset_leg_pos["2"] = [0.25, 0.75];
@@ -216,6 +217,7 @@ class MeshLibrary {
         this.leg_size = [];
 
         this.env_names = env_to_use;
+        this.env_names.unshift("Training.obj");
         this.env_ids = [];
         for (let i = 0; i < this.env_names.length; ++i) {
             this.env_ids[this.env_names[i]] = i;
@@ -275,6 +277,126 @@ class MeshLibrary {
     }
 }
 
+class UserStudy {
+    constructor() {
+        this.in_test_gap = false;
+        this.timer_set = false;
+        this.sec_passed = 0;
+        this.count_down_interval;
+        this.current_ver = 0;
+        this.total_ver = max_ver;
+        let tmp_array = new Array(mesh_lib.env_names.length - 1);
+        for (let i = 0; i < tmp_array.length; ++i) {
+            tmp_array[i] = i + 1;
+        }
+        this.env_ids = this.shuffle(tmp_array);
+        this.env_currsor = 0;
+
+        this.disable();
+    }
+
+    enable() {
+        this.enabled = true;
+        user_study_label_e.innerHTML = "User Study in Progress";
+        user_study_label_e.style.color = "red";
+        user_study_progress_label_e.innerHTML = this.current_ver;
+        user_study_total_label_e.innerHTML = this.total_ver + 1;
+        user_study_status_e.style.visibility = "visible";
+        save_btn_e.disabled = true;
+        robot_id_e.disabled = true;
+        ver_e.disabled = true;
+        env_e.disabled = true;
+        load_env(this.env_ids[this.env_currsor]);
+        let tmp_string = mesh_lib.env_names[this.env_ids[0]];
+        for (let i = 1; i < this.env_ids.length; ++i) {
+            tmp_string += ", " + mesh_lib.env_names[this.env_ids[i]];
+        }
+        user_study_env_list_label_e.innerHTML = tmp_string;
+    }
+
+    disable() {
+        this.enabled = false;
+        user_study_label_e.innerHTML = "Testing/Training";
+        user_study_label_e.style.color = "black";
+        user_study_status_e.style.visibility = "hidden";
+        save_btn_e.disabled = false;
+        robot_id_e.disabled = false;
+        ver_e.disabled = false;
+        env_e.disabled = false;
+        // Disable need to remove user id
+        user_id = init_user_id;
+        user_id_e.innerHTML = user_id;
+    }
+
+    // TODO: need to update the logic here
+    next_ver() {
+        let next_ver = this.current_ver + 1;
+        let next_id = parseInt(robot_id_e.value);
+        if (next_ver > user_study.total_ver) {
+            user_study_progress_label_e.innerHTML = next_ver; // splash for the last time
+            next_ver = 0;
+            next_id = next_id + 1;
+            if (next_id > max_id) {
+                next_id = 0;
+                alert("You have finished for environment " + robot.env + ", now move to next environment");
+                this.next_env();
+            }
+            robot.reset();
+            update_drawing();
+        }
+        robot.id = next_id;
+        robot_id_e.value = next_id;
+        ver_e.value = next_ver;
+        user_study_progress_label_e.innerHTML = next_ver;
+        robot.ver = next_ver;
+        this.current_ver = next_ver;
+    }
+
+    next_env() {
+        this.env_currsor += 1;
+        if (this.env_currsor > this.env_ids.length - 1) {
+            alert("Thank you! You have finished the user study!");
+            this.disable();
+            return;
+        }
+        load_env(this.env_ids[this.env_currsor]);
+    }
+
+    freeze_test_btn() {
+        let self = this;
+        if (this.in_test_gap && !this.timer_set) {
+            update_count_down();
+            self.count_down_interval = setInterval(update_count_down, 1000);
+            setTimeout(function() {
+                test_btn_e.disabled = false;
+                self.in_test_gap = false;
+                self.timer_set = false;
+                self.sec_passed = 0;
+                test_btn_e.innerHTML = "Test";
+                clearInterval(self.count_down_interval);
+            }, minimum_test_gap * 1000);
+            this.timer_set = true;
+        }
+    }
+
+    shuffle(array) {
+        let currentIndex = array.length,  randomIndex;
+
+        // While there remain elements to shuffle...
+        while (currentIndex != 0) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 //                            DOM Handles                             //
 ////////////////////////////////////////////////////////////////////////
@@ -310,6 +432,21 @@ function onMouseClick(event) {
             update_panel_for_new_target();
         }
     }
+
+    if (user_study.enabled) {
+        user_study.freeze_test_btn();
+    }
+}
+
+let user_study_status_e = document.getElementById('UserStudyStatus');
+let user_study_label_e = document.getElementById('UserStudyModeLabel');
+let user_study_progress_label_e = document.getElementById('UserStudyProgressLabel');
+let user_study_total_label_e = document.getElementById('UserStudyTotalLabel');
+let env_label_e = document.getElementById('EnvLabel');
+let user_study_env_list_label_e = document.getElementById('UserStudyEnvListLabel');
+
+function update_count_down() {
+    test_btn_e.innerHTML = "Wait " + (minimum_test_gap - user_study.sec_passed++).toFixed(0) + " s";
 }
 
 let user_id_e = document.getElementById('UserIDText');
@@ -318,7 +455,14 @@ let user_id_e = document.getElementById('UserIDText');
 let env_e = document.getElementById('EnvSelect');
 env_e.addEventListener('change', onEnvSelectChange);
 function onEnvSelectChange(event) {
+    load_env(env_e.selectedIndex);
+}
+
+function load_env(new_env_id) {
+    new_env_id = Math.min(Math.max(0, new_env_id), mesh_lib.env_names.length - 1);
+    env_e.selectedIndex = new_env_id;
     robot.env = env_e.options[env_e.selectedIndex].text;
+    env_label_e.innerHTML = robot.env;
     draw_env();
 }
 
@@ -497,6 +641,9 @@ function onLoadUserButtonClick(event) {
             let json_dict = JSON.parse(json_str);
             user_id = json_dict.user_id;
             user_id_e.innerHTML = user_id;
+            if (parseInt(user_id) != 0) {
+                user_study.enable();
+            }
         }
     }
     input.click();
@@ -541,28 +688,21 @@ function onTestButtonClick(event) {
     let anchor = document.createElement('a');
     anchor.href = "evogen-uisim:" + robot.env + "," + robot.dv;
     anchor.click();
+
+    if (user_study.enabled) {
+        test_btn_e.disabled = true;
+        test_btn_e.innerHTML = "Click Canvas";
+        user_study.in_test_gap = true;
+        // TODO: merge it into user study obj
+        onSaveButtonClick();
+    }
 }
 
 let save_btn_e = document.getElementById('SaveButton');
 save_btn_e.addEventListener('click', onSaveButtonClick);
 function onSaveButtonClick(event) {
     demo_write();
-    let next_ver = parseInt(ver_e.value) + 1;
-    let next_id = parseInt(robot_id_e.value);
-    if (next_ver > max_ver) {
-        next_ver = 0;
-        next_id = next_id + 1;
-        if (next_id > max_id) {
-            next_id = 0;
-            alert("You have finished for environment " + robot.env + ", now move to next environment");
-        }
-        robot.reset();
-        update_drawing();
-    }
-    ver_e.value = next_ver;
-    robot_id_e.value = next_id;
-    robot.ver = next_ver;
-    robot.id = next_id;
+    user_study.next_ver();
 }
 
 let load_btn_e = document.getElementById('LoadButton');
@@ -578,10 +718,12 @@ function onLoadButtonClick(event) {
             let json_str = readerEvent.target.result;
             let json_dict = JSON.parse(json_str);
 
-            user_id = json_dict.user_id;
-            robot.env = json_dict.environment;
-            robot.id = json_dict.id;
-            robot.ver = json_dict.ver;
+            if (!user_study.enabled) {
+                user_id = json_dict.user_id;
+                robot.env = json_dict.environment;
+                robot.id = json_dict.id;
+                robot.ver = json_dict.ver;
+            }
             robot.parse_dv(json_dict.gene);
 
             update_panel_for_new_robot();
@@ -627,7 +769,7 @@ function init_panel() {
 
     // Robot ID Select
     resize_select(robot_id_e, max_id + 1);
-    resize_select(ver_e, max_ver + 1);
+    resize_select(ver_e, user_study.total_ver + 1);
 
     // Num Legs
     for (let i = 0; i < allowed_num_legs.length; ++i) {
@@ -700,6 +842,7 @@ function update_panel_for_new_robot() {
     body_z2_e.value = robot.body_scales[2];
     num_legs_e.value = robot.num_legs; // num_legs only need auto update here
     resize_select(copy_leg_e, robot.num_legs);
+    env_label_e.innerHTML = robot.env;
 
     update_panel_for_new_target();
 }
@@ -894,6 +1037,7 @@ function demo_write() {
 
 let robot = new RobotRepresentation();
 let mesh_lib = new MeshLibrary();
+let user_study = new UserStudy();
 
 // Set up scene, renderer, camera and trackball control
 const scene = new THREE.Scene();

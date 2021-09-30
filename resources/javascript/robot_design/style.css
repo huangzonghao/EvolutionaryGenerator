@@ -19,6 +19,15 @@ body {
     overflow-y:scroll;
 }
 
+#CenterPanel {
+    float:   left;
+    width:   60%;
+    height:  100%;
+    padding: 5px;
+    overflow-y:scroll;
+    box-sizing: border-box;
+}
+
 #RightPanel {
     float: left;
     width: 20%;
@@ -26,15 +35,6 @@ body {
     padding: 5px;
     box-sizing: border-box;
     overflow-y:scroll;
-}
-
-#RobotCanvas {
-    float:   left;
-    width:   60%;
-    height:  100%;
-    padding: 5px;
-    overflow-y:scroll;
-    box-sizing: border-box;
 }
 
 .select {

@@ -26,7 +26,7 @@
         </div>
         <hr>
         <div align="center">
-            <p>Environment: <select class="select" id="EnvSelect" style="width:90px"></select></p>
+            <p>Environment: <select class="select" id="EnvSelect" style="width:100px"></select></p>
             <p>Robot ID: <select class="select" id="RobotIDSelect"></select>
                Ver: <select class="select" id="VerSelect"></select></p>
 
@@ -47,7 +47,20 @@
 
     </div>
 
-    <div id="RobotCanvas"></div>
+    <div id="CenterPanel">
+        <div id="UIStatusPanel" style="position:absolute">
+            <span id="UserStudyModeLabel"></span>
+            <br>
+            <div id="UserStudyStatus">
+                Progress: <span id="UserStudyProgressLabel"></span> / <span id="UserStudyTotalLabel"></span>
+                <br>
+                Current env: <span id="EnvLabel"></span>
+                <br>
+                Environmens: <span id="UserStudyEnvListLabel"></span>
+            </div>
+        </div>
+        <div id="RobotCanvas" style="height:100%"></div>
+    </div>
 
     <div id="RightPanel" align="center">
         <div align="center">
