@@ -83,6 +83,7 @@ int main(int argc, char **argv) {
         }
     }
 
+    sm.EnableEarlyTermination();
     sm.SetVisualization(true);
     // sm.SetRealTime(true);
 

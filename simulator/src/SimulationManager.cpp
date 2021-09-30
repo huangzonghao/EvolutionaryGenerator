@@ -204,7 +204,7 @@ bool SimulationManager::RunSimulation() {
     // update fall down threshold
     fall_down_thresh = robot_doc_->GetMinPos().z() * 1.5 - 2;
 
-    if(do_viz_){
+    if(do_viz_) {
         ChRealtimeStepTimer realtime_timer;
         using namespace chrono::irrlicht;
         using namespace irr::core;
@@ -223,13 +223,18 @@ bool SimulationManager::RunSimulation() {
         vis_app.SetTimestep(step_size_);
 
         tik = std::chrono::steady_clock::now();
+        bool device_running = true;
         // while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
         while (ch_system_->GetChTime() < timeout_ && !task_done_ ) {
-            vis_app.GetDevice()->run(); // this should have been checked as one of the
+            device_running = vis_app.GetDevice()->run(); // this should have been checked as one of the
                                         // while loop conditions, but it starts to return
                                         // false since the second vis_app instance.
                                         // So I have to call it inside the loop and ignore
                                         // the return value in order to keep the UI interaction
+            if (early_termination_enabled_ && !device_running) {
+                std::cout << "User closed" << std::endl;
+                break;
+            }
             vis_app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             // vis_app.GetSceneManager()->getActiveCamera()->setTarget(vector3dfCH(camera_body->GetPos()));
             vis_app.DrawAll();
@@ -245,10 +250,9 @@ bool SimulationManager::RunSimulation() {
                 break;
             }
         }
-        vis_app.GetDevice()->closeDevice();
+        vis_app.GetDevice()->closeDevice(); // TODO: with this code is seems the irrlicht part didn't init the device status correctly
         tok = std::chrono::steady_clock::now();
-    }
-    else{
+    } else {
         tik = std::chrono::steady_clock::now();
         while(ch_system_->GetChTime() < timeout_ && !task_done_ && !check_termination()) {
             ch_system_->DoStepDynamics(step_size_);
