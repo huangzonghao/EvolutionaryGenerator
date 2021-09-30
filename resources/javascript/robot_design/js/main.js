@@ -4,8 +4,8 @@
 //                             Constants                              //
 ////////////////////////////////////////////////////////////////////////
 
-const max_ver = 2;
-const max_id = 1;
+const max_ver = 10;
+const max_id = 0;
 const allowed_num_legs = [2, 3, 4, 5, 6];
 const min_num_links_per_leg = 2;
 const max_num_links_per_leg = 3;
