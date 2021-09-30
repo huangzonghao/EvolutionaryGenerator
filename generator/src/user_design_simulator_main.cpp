@@ -1,3 +1,5 @@
+#include <chrono>
+#include <thread>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -16,9 +18,10 @@ typedef sferes::fit::UrdfFitness fit_t;
 typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 
 void debug_pause() {
-    do {
-        std::cout << std::endl;
-    } while (!std::cin.get());
+    // do {
+        // std::cout << std::endl;
+    // } while (!std::cin.get());
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
 int main(int argc, char **argv) {
