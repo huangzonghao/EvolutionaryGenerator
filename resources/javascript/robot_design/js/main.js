@@ -233,6 +233,7 @@ class MeshLibrary {
             self.loading_done = true;
             self.post_load_processing();
             update_drawing();
+            hide_env();
         };
         let loader = new THREE.OBJLoader();
         for (let i = 0; i < num_body_parts; ++i)
@@ -316,7 +317,7 @@ class UserStudy {
         robot_id_e.disabled = true;
         ver_e.disabled = true;
         env_e.disabled = true;
-        load_env(this.env_ids[this.env_currsor]);
+        load_env_by_id(this.env_ids[this.env_currsor]);
         let tmp_string = mesh_lib.env_names[this.env_ids[0]];
         for (let i = 1; i < this.env_ids.length; ++i) {
             tmp_string += ", " + mesh_lib.env_names[this.env_ids[i]];
@@ -369,7 +370,7 @@ class UserStudy {
             this.disable();
             return;
         }
-        load_env(this.env_ids[this.env_currsor]);
+        load_env_by_id(this.env_ids[this.env_currsor]);
     }
 
     freeze_test_btn() {
@@ -465,15 +466,7 @@ let user_id_e = document.getElementById('UserIDText');
 let env_e = document.getElementById('EnvSelect');
 env_e.addEventListener('change', onEnvSelectChange);
 function onEnvSelectChange(event) {
-    load_env(env_e.selectedIndex);
-}
-
-function load_env(new_env_id) {
-    new_env_id = Math.min(Math.max(0, new_env_id), mesh_lib.env_names.length - 1);
-    env_e.selectedIndex = new_env_id;
-    robot.env = env_e.options[env_e.selectedIndex].text;
-    env_label_e.innerHTML = robot.env;
-    draw_env();
+    load_env_by_id(env_e.selectedIndex);
 }
 
 let robot_id_e = document.getElementById('RobotIDSelect');
@@ -659,13 +652,9 @@ let tg_env_btn_e = document.getElementById('ToggleEnvButton');
 tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
 function onToggleEnvButtonClick(event) {
     if (canvas_show_env) {
-        remove_env();
-        canvas_show_env = false;
-        tg_env_btn_e.innerHTML = 'Show Env';
+        hide_env();
     } else {
-        canvas_show_env = true;
-        draw_env();
-        tg_env_btn_e.innerHTML = 'Hide Env';
+        show_env();
     }
 }
 
@@ -974,9 +963,30 @@ function draw_env() {
     scene.add(env_obj);
 }
 
-function remove_env() {
+function show_env() {
+    canvas_show_env = true;
+    draw_env();
+    tg_env_btn_e.innerHTML = 'Hide Env';
+    robot_up_btn_e.disabled = false;
+    robot_down_btn_e.disabled = false;
+}
+
+function hide_env() {
     current_env_name = "";
-    env_obj.removeFromParent();
+    if (env_obj != null)
+        env_obj.removeFromParent();
+    canvas_show_env = false;
+    tg_env_btn_e.innerHTML = 'Show Env';
+    robot_up_btn_e.disabled = true;
+    robot_down_btn_e.disabled = true;
+}
+
+function load_env_by_id(new_env_id) {
+    new_env_id = Math.min(Math.max(0, new_env_id), mesh_lib.env_names.length - 1);
+    env_e.selectedIndex = new_env_id;
+    robot.env = env_e.options[env_e.selectedIndex].text;
+    env_label_e.innerHTML = robot.env;
+    draw_env();
 }
 
 function update_drawing() {
