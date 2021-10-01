@@ -397,6 +397,7 @@ class UserStudyManager {
                 this.next_env();
             }
             robot.reset();
+            update_panel_for_new_robot();
             canvas.update_drawing();
         }
         robot.id = next_id;
