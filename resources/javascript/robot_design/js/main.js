@@ -381,6 +381,10 @@ class UserStudyManager {
         // Disable need to remove user id
         this.user_id = this.init_user_id;
         user_id_e.innerHTML = this.user_id;
+
+        test_btn_e.disabled = false;
+        test_btn_e.innerHTML = "Test";
+        this.in_test_gap = false;
     }
 
     // TODO: need to update the logic here
