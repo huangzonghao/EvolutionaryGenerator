@@ -641,7 +641,9 @@ function onBodyIdSelectChange(event) {
 let body_x_e = document.getElementById('BodyScaleXText');
 body_x_e.addEventListener('change', onBodyScaleXTextChange);
 function onBodyScaleXTextChange(event) {
-    robot.body_scales[0] = parseFloat(body_x_e.value);
+    let tmp_scale = clamp(parseFloat(body_x_e.value), body_scale_range);
+    body_x_e.value = tmp_scale;
+    robot.body_scales[0] = tmp_scale;
     body_x2_e.value = body_x_e.value;
     canvas.update_drawing();
 }
@@ -657,7 +659,9 @@ function onBodyScaleXRangeChange(event) {
 let body_y_e = document.getElementById('BodyScaleYText');
 body_y_e.addEventListener('change', onBodyScaleYTextChange);
 function onBodyScaleYTextChange(event) {
-    robot.body_scales[1] = parseFloat(body_y_e.value);
+    let tmp_scale = clamp(parseFloat(body_y_e.value), body_scale_range);
+    body_y_e.value = tmp_scale;
+    robot.body_scales[1] = tmp_scale
     body_y2_e.value = body_y_e.value;
     canvas.update_drawing();
 }
@@ -673,7 +677,9 @@ function onBodyScaleYRangeChange(event) {
 let body_z_e = document.getElementById('BodyScaleZText');
 body_z_e.addEventListener('change', onBodyScaleZTextChange);
 function onBodyScaleZTextChange(event) {
-    robot.body_scales[2] = parseFloat(body_z_e.value);
+    let tmp_scale = clamp(parseFloat(body_z_e.value), body_scale_range);
+    body_z_e.value = tmp_scale;
+    robot.body_scales[2] = tmp_scale;
     body_z2_e.value = body_z_e.value;
     canvas.update_drawing();
 }
@@ -704,7 +710,9 @@ function onLegIdSelectChange(event) {
 // let leg_pos_e = document.getElementById('LegPositionText');
 // leg_pos_e.addEventListener('change', onLegPositionTextChange);
 // function onLegPositionTextChange(event) {
-    // robot.leg(leg_id_e.selectedIndex).position = parseFloat(leg_pos_e.value);
+    // let tmp_pos = clamp(parseFloat(leg_pos_e.value), leg_pos_range);
+    // leg_pos_e.value = tmp_pos;
+    // robot.leg(leg_id_e.selectedIndex).position = tmp_pos;
     // leg_pos2_e.value = leg_pos_e.value;
     // canvas.update_drawing();
 // }
@@ -741,7 +749,9 @@ function onPartIdSelectChange(event) {
 let link_length_e = document.getElementById('LinkLengthText');
 link_length_e.addEventListener('change', onLinkLengthTextChange);
 function onLinkLengthTextChange(event) {
-    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(link_length_e.value);
+    let tmp_length = clamp(parseFloat(link_length_e.value), link_length_range);
+    link_length_e.value = tmp_length;
+    robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = tmp_length;
     link_length2_e.value = link_length_e.value;
     canvas.update_drawing();
 }
@@ -1037,6 +1047,15 @@ function export_robot() {
     robot.compile_dv();
     console.log(robot.dv);
     alert(robot.dv);
+}
+
+function clamp(raw, min, max) {
+    return Math.min(Math.max(raw, min), max);
+}
+
+// range = [min, max]
+function clamp(raw, range) {
+    return Math.min(Math.max(raw, range[0]), range[1]);
 }
 
 function twodigit_str(n) {
