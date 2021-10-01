@@ -339,18 +339,18 @@ class UserStudyManager {
         this.env_ids = this.shuffle(tmp_array);
         this.env_currsor = 0;
 
-        this.disable();
+        this.stop();
     }
 
     load_user(new_user_id) {
         this.user_id = new_user_id;
         user_id_e.innerHTML = new_user_id;
         if (parseInt(new_user_id) != 0) {
-            this.enable();
+            this.start();
         }
     }
 
-    enable() {
+    start() {
         this.enabled = true;
         user_study_label_e.innerHTML = "User Study in Progress";
         user_study_label_e.style.color = "red";
@@ -369,7 +369,7 @@ class UserStudyManager {
         user_study_env_list_label_e.innerHTML = tmp_string;
     }
 
-    disable() {
+    stop() {
         this.enabled = false;
         user_study_label_e.innerHTML = "Testing/Training";
         user_study_label_e.style.color = "black";
@@ -411,7 +411,7 @@ class UserStudyManager {
         this.env_currsor += 1;
         if (this.env_currsor > this.env_ids.length - 1) {
             alert("Thank you! You have finished the user study!");
-            this.disable();
+            this.stop();
             return;
         }
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
