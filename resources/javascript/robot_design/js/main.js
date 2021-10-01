@@ -345,9 +345,6 @@ class UserStudyManager {
     load_user(new_user_id) {
         this.user_id = new_user_id;
         user_id_e.innerHTML = new_user_id;
-        if (parseInt(new_user_id) != 0) {
-            this.start();
-        }
     }
 
     start() {
@@ -388,6 +385,16 @@ class UserStudyManager {
     }
 
     // TODO: need to update the logic here
+    post_test() {
+        test_btn_e.disabled = true;
+        test_btn_e.innerHTML = "Click Canvas";
+        this.in_test_gap = true;
+
+        this.dump_robot();
+        this.next_ver();
+    }
+
+    // Private Functions
     next_ver() {
         let next_ver = this.current_ver + 1;
         let next_id = parseInt(robot_id_e.value);
@@ -420,6 +427,39 @@ class UserStudyManager {
             return;
         }
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
+    }
+
+    dump_robot() {
+        let date = new Date();
+        let timestamp = date.getFullYear().toString() +
+                        twodigit_str((date.getMonth()+1)) +
+                        twodigit_str(date.getDate()) + "_" +
+                        twodigit_str(date.getHours()) +
+                        twodigit_str(date.getMinutes()) +
+                        twodigit_str(date.getSeconds());
+
+        robot.compile_dv();
+        let json_dict = {
+            user_id: this.user_id,
+            environment: robot.env,
+            id: robot.id,
+            ver: robot.ver,
+            datetime: timestamp,
+            gene: robot.dv
+        };
+
+        // this long command formats the generated json string and keeps array on the same line
+        let json_str = JSON.stringify(json_dict, function(k,v) { if(v instanceof Array) return JSON.stringify(v); return v; }, 2)
+                       .replace(/\\/g, '')
+                       .replace(/\"\[/g, '[')
+                       .replace(/\]\"/g,']')
+                       .replace(/\"\{/g, '{')
+                       .replace(/\}\"/g,'}');
+
+        let anchor = document.createElement('a');
+        anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
+        anchor.download = "evogen_" + this.user_id.toString() + "_" + robot.env + "_" + robot.id + "." + robot.ver + '.txt';
+        anchor.click();
     }
 
     freeze_test_btn() {
@@ -807,6 +847,9 @@ function onLoadUserButtonClick(event) {
             let json_str = readerEvent.target.result;
             let json_dict = JSON.parse(json_str);
             user_study.load_user(json_dict.user_id);
+            if (parseInt(json_dict.user_id) != 0) {
+                user_study.start();
+            }
         }
     }
     input.click();
@@ -849,19 +892,14 @@ function onTestButtonClick(event) {
     anchor.click();
 
     if (user_study.enabled) {
-        test_btn_e.disabled = true;
-        test_btn_e.innerHTML = "Click Canvas";
-        user_study.in_test_gap = true;
-        // TODO: merge it into user study obj
-        onSaveButtonClick();
+        user_study.post_test();
     }
 }
 
 let save_btn_e = document.getElementById('SaveButton');
 save_btn_e.addEventListener('click', onSaveButtonClick);
 function onSaveButtonClick(event) {
-    demo_write();
-    user_study.next_ver();
+    user_study.dump_robot();
 }
 
 let load_btn_e = document.getElementById('LoadButton');
@@ -878,7 +916,7 @@ function onLoadButtonClick(event) {
             let json_dict = JSON.parse(json_str);
 
             if (!user_study.enabled) {
-                user_study.user_id = json_dict.user_id;
+                user_study.load_user(json_dict.user_id);
                 robot.env = json_dict.environment;
                 robot.id = json_dict.id;
                 robot.ver = json_dict.ver;
@@ -1064,39 +1102,6 @@ function clamp(raw, range) {
 
 function twodigit_str(n) {
     return n > 9 ? "" + n : "0" + n;
-}
-
-function demo_write() {
-    let date = new Date();
-    let timestamp = date.getFullYear().toString() +
-                    twodigit_str((date.getMonth()+1)) +
-                    twodigit_str(date.getDate()) + "_" +
-                    twodigit_str(date.getHours()) +
-                    twodigit_str(date.getMinutes()) +
-                    twodigit_str(date.getSeconds());
-
-    robot.compile_dv();
-    let json_dict = {
-        user_id: user_study.user_id,
-        environment: robot.env,
-        id: robot.id,
-        ver: robot.ver,
-        datetime: timestamp,
-        gene: robot.dv
-    };
-
-    // this long command formats the generated json string and keeps array on the same line
-    let json_str = JSON.stringify(json_dict, function(k,v) { if(v instanceof Array) return JSON.stringify(v); return v; }, 2)
-                   .replace(/\\/g, '')
-                   .replace(/\"\[/g, '[')
-                   .replace(/\]\"/g,']')
-                   .replace(/\"\{/g, '{')
-                   .replace(/\}\"/g,'}');
-
-    let anchor = document.createElement('a');
-    anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
-    anchor.download = "evogen_" + user_study.user_id.toString() + "_" + robot.env + "_" + robot.id + "." + robot.ver + '.txt';
-    anchor.click();
 }
 
 ////////////////////////////////////////////////////////////////////////
