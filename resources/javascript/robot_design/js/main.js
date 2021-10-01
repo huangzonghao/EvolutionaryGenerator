@@ -344,7 +344,10 @@ class UserStudyManager {
             tmp_array[i] = i + 1;
         }
         this.env_ids = this.shuffle(tmp_array);
+        this.env_string = "";
         this.env_currsor = 0;
+
+        this.meta_dumped = false;
 
         this.stop();
     }
@@ -372,6 +375,7 @@ class UserStudyManager {
             tmp_string += ", " + mesh_lib.env_names[this.env_ids[i]];
         }
         user_study_env_list_label_e.innerHTML = tmp_string;
+        this.env_string = tmp_string;
     }
 
     stop() {
@@ -392,8 +396,12 @@ class UserStudyManager {
         this.in_test_gap = false;
     }
 
-    // TODO: need to update the logic here
     post_test() {
+        if (!this.meta_dumped) {
+            this.dump_meta();
+            this.meta_dumped = true;
+        }
+
         test_btn_e.disabled = true;
         test_btn_e.innerHTML = "Click Canvas";
         this.in_test_gap = true;
@@ -404,6 +412,7 @@ class UserStudyManager {
 
     // Private Functions
     next_ver() {
+        // TODO: update the logic here!
         let next_ver = this.current_ver + 1;
         let next_id = parseInt(robot_id_e.value);
         if (next_ver > user_study.total_ver) {
@@ -435,6 +444,37 @@ class UserStudyManager {
             return;
         }
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
+    }
+
+    dump_meta() {
+        let date = new Date();
+        let timestamp = date.getFullYear().toString() +
+                        twodigit_str((date.getMonth()+1)) +
+                        twodigit_str(date.getDate()) + "_" +
+                        twodigit_str(date.getHours()) +
+                        twodigit_str(date.getMinutes()) +
+                        twodigit_str(date.getSeconds());
+
+        let json_dict = {
+            user_id: this.user_id,
+            env_ids: this.env_ids,
+            env_string: this.env_string,
+            datetime: timestamp
+        };
+
+        // this long command formats the generated json string and keeps array on the same line
+        let json_str = JSON.stringify(json_dict, function(k,v) { if(v instanceof Array) return JSON.stringify(v); return v; }, 2)
+                       .replace(/\\/g, '')
+                       .replace(/\"\[/g, '[')
+                       .replace(/\]\"/g,']')
+                       .replace(/\"\{/g, '{')
+                       .replace(/\}\"/g,'}');
+
+        let anchor = document.createElement('a');
+        anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
+        anchor.download = "UserStudy_" + user_study.user_id.toString() + "_" + timestamp + ".txt";
+        anchor.click();
+
     }
 
     dump_robot() {
