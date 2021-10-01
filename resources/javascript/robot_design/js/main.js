@@ -100,7 +100,7 @@ class RobotRepresentation {
 
         this.init_gene = new Array(100).fill(0.5); // Use a long enough gene
 
-        this.reset();
+        this.reset_design();
     }
 
     copy_leg(target_id, source_id) {
@@ -118,6 +118,13 @@ class RobotRepresentation {
     }
 
     reset() {
+        this.env = "";
+        this.id = 0;
+        this.ver = 0;
+        this.reset_design();
+    }
+
+    reset_design() {
         this.parse_dv(this.init_gene);
     }
 
@@ -358,6 +365,7 @@ class UserStudyManager {
         robot_id_e.disabled = true;
         ver_e.disabled = true;
         env_e.disabled = true;
+        reset_robot(true); // full reset
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
         let tmp_string = mesh_lib.env_names[this.env_ids[0]];
         for (let i = 1; i < this.env_ids.length; ++i) {
@@ -826,9 +834,13 @@ function onFlipButtonClick(event) {
 }
 
 let reset_btn_e = document.getElementById('ResetButton');
-reset_btn_e.addEventListener('click', onResetButtonClick);
-function onResetButtonClick(event) {
-    robot.reset();
+reset_btn_e.addEventListener('click', e => { reset_robot() });
+function reset_robot(fullreset = false) {
+    if (fullreset) {
+        robot.reset();
+    } else {
+        robot.reset_design();
+    }
     update_panel_for_new_robot();
     canvas.update_drawing();
 }
