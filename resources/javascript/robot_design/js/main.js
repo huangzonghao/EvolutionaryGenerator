@@ -34,15 +34,10 @@ const num_leg_parts = 7;
 ////////////////////////////////////////////////////////////////////////
 //                          Global Variables                          //
 ////////////////////////////////////////////////////////////////////////
+
 const env_mat = new THREE.MeshPhongMaterial( { color: 0x888888, shininess: 50 } );
 const unselect_mat = new THREE.MeshPhongMaterial( { color: 0x8796aa, shininess: 50 } );
 const select_mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-
-let canvas_show_env = false;
-let current_env_name = "";
-let current_selected_obj;
-let env_obj;
-let robot_obj = new THREE.Object3D();
 
 ////////////////////////////////////////////////////////////////////////
 //                               Class                                //
@@ -206,6 +201,56 @@ class RobotRepresentation {
             }
         }
     }
+
+    // TODO: mesh objs can be reused, do not create a new one everytime
+    build_robot() {
+        let robot_obj = new THREE.Object3D();
+        robot_obj.clear();
+        // Add body
+        let body_obj = mesh_lib.bodies[this.body_id].clone();
+        body_obj.scale.x *= this.body_scales[0];
+        body_obj.scale.y *= this.body_scales[1];
+        body_obj.scale.z *= this.body_scales[2];
+        this.body_obj = body_obj;
+        robot_obj.add(body_obj);
+        let body_size = mesh_lib.body_size[this.body_id].clone();
+        body_size.x *= this.body_scales[0];
+        body_size.y *= this.body_scales[1];
+        body_size.z *= this.body_scales[2];
+
+        // Add legs
+        let leg_pos_x = 0;
+        let leg_pos_y = 0;
+        let leg_pos_gene = 0;
+        let leg_total_length = 0;
+        let link_size_z = 0;
+        for (let leg_id = 0; leg_id < this.num_legs; ++leg_id) {
+            leg_total_length = 0;
+            leg_pos_gene = this.leg(leg_id).position;
+            if (leg_pos_gene < 0.5) {
+                leg_pos_x = (0.25 - leg_pos_gene) * 2 * body_size.x;
+                leg_pos_y = body_size.y / 2 + mesh_lib.leg_size[this.leg(leg_id).link(0).part_id].y;
+            } else {
+                leg_pos_x = (leg_pos_gene - 0.75) * 2 * body_size.x;
+                leg_pos_y = -(body_size.y / 2 + mesh_lib.leg_size[this.leg(leg_id).link(0).part_id].y);
+            }
+            for (let i = 0; i < this.leg(leg_id).num_links; ++i) {
+                let link_obj = mesh_lib.legs[this.leg(leg_id).link(i).part_id].clone();
+                link_size_z = mesh_lib.leg_size[this.leg(leg_id).link(i).part_id].z * this.leg(leg_id).link(i).link_length;
+                link_obj.scale.z *= this.leg(leg_id).link(i).link_length;
+                link_obj.position.x = leg_pos_x;
+                link_obj.position.y = leg_pos_y;
+                link_obj.position.z = -leg_total_length - link_size_z / 2;
+                link_obj.leg_id = leg_id;
+                link_obj.link_id = i;
+                this.leg(leg_id).link(i).obj = link_obj;
+                robot_obj.add(link_obj);
+
+                leg_total_length += link_size_z + 2; // note in the UI the mesh are not scaled, so 2 means 0.02 in evogen
+            }
+        }
+        return robot_obj;
+    }
 }
 
 class MeshLibrary {
@@ -232,8 +277,7 @@ class MeshLibrary {
         THREE.DefaultLoadingManager.onLoad = function () {
             self.loading_done = true;
             self.post_load_processing();
-            update_drawing();
-            hide_env();
+            canvas.update_drawing();
         };
         let loader = new THREE.OBJLoader();
         for (let i = 0; i < num_body_parts; ++i)
@@ -277,7 +321,7 @@ class MeshLibrary {
     }
 }
 
-class UserStudy {
+class UserStudyManager {
     constructor() {
         this.init_user_id = "000000";
         this.user_id = this.init_user_id;
@@ -317,7 +361,7 @@ class UserStudy {
         robot_id_e.disabled = true;
         ver_e.disabled = true;
         env_e.disabled = true;
-        load_env_by_id(this.env_ids[this.env_currsor]);
+        canvas.load_env_by_id(this.env_ids[this.env_currsor]);
         let tmp_string = mesh_lib.env_names[this.env_ids[0]];
         for (let i = 1; i < this.env_ids.length; ++i) {
             tmp_string += ", " + mesh_lib.env_names[this.env_ids[i]];
@@ -353,7 +397,7 @@ class UserStudy {
                 this.next_env();
             }
             robot.reset();
-            update_drawing();
+            canvas.update_drawing();
         }
         robot.id = next_id;
         robot_id_e.value = next_id;
@@ -370,7 +414,7 @@ class UserStudy {
             this.disable();
             return;
         }
-        load_env_by_id(this.env_ids[this.env_currsor]);
+        canvas.load_env_by_id(this.env_ids[this.env_currsor]);
     }
 
     freeze_test_btn() {
@@ -408,6 +452,111 @@ class UserStudy {
     }
 }
 
+// Manages the THREE.js canvas
+class CanvasManager {
+    constructor() {
+        this.env_enabled = false;
+        this.current_env_name = "";
+        this.current_selected_obj;
+        this.env_obj;
+        this.robot_obj = new THREE.Object3D();
+
+        this.hide_env();
+
+        // Set up scene, renderer, camera and trackball control
+        this.scene = new THREE.Scene();
+        this.renderer = new THREE.WebGLRenderer({ alpha: true });
+        this.renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
+        visual_panel_e.appendChild(this.renderer.domElement);
+
+        this.camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visual_panel_e.clientHeight, 0.1, 4000);
+        this.camera.position.set(238, 270, 100);
+        this.camera.up.set(0.35, 0.4, 0.8); // set the up direction of the camera
+
+        this.controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
+        this.controls.rotateSpeed = 1;
+        this.controls.zoomSpeed = 0.1;
+        this.controls.panSpeed = 0.2;
+
+        // Raycaster
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+
+        // Lights setup
+        this.amb_light = new THREE.AmbientLight(0xffffff, 0.2); // color and intensity
+        // for dir light, set the "from" pos (light pos) and "to" pos (light.target pos)
+        // const dir_light = new THREE.DirectionalLight(0xffffff, 1); // color and intensity
+        this.point_light = new THREE.PointLight(0xffffff, 1); // color and intensity
+        // explictily add camera to scene, since the light is a child of camera.
+        // otherwise the camera would be automatically added (not sure to where, maybe renderer)
+        this.scene.add(this.camera);
+        this.scene.add(this.amb_light);
+        this.camera.add(this.point_light); // so that the light follows the camera
+        // Display axis
+        this.axes_obj = new THREE.AxesHelper(200);
+        this.scene.add(this.axes_obj);
+    }
+
+    draw_env() {
+        if (!this.env_enabled)
+            return;
+        if (this.current_env_name != robot.env) {
+            // remove env from scene
+            this.scene.remove(this.env_obj);
+            // add new env
+            this.env_obj = mesh_lib.envs[robot.env].clone();
+            this.env_obj.position.z = -100;
+            this.current_env_name = robot.env;
+        }
+        this.scene.add(this.env_obj);
+    }
+
+    show_env() {
+        this.env_enabled = true;
+        this.draw_env();
+        tg_env_btn_e.innerHTML = 'Hide Env';
+        robot_up_btn_e.disabled = false;
+        robot_down_btn_e.disabled = false;
+    }
+
+    hide_env() {
+        this.current_env_name = "";
+        if (this.env_obj != null)
+            this.env_obj.removeFromParent();
+        this.env_enabled = false;
+        tg_env_btn_e.innerHTML = 'Show Env';
+        robot_up_btn_e.disabled = true;
+        robot_down_btn_e.disabled = true;
+    }
+
+    mark_body(body_obj, selected = true) {
+        if (selected)
+            body_obj.traverse(function(child){if (child.isMesh) child.material = select_mat;});
+        else
+            body_obj.traverse(function(child){if (child.isMesh) child.material = unselect_mat;});
+    }
+
+    load_env_by_id(new_env_id) {
+        new_env_id = Math.min(Math.max(0, new_env_id), mesh_lib.env_names.length - 1);
+        env_e.selectedIndex = new_env_id;
+        robot.env = env_e.options[env_e.selectedIndex].text;
+        env_label_e.innerHTML = robot.env;
+        this.draw_env();
+    }
+
+    update_drawing() {
+        if (!mesh_lib.loading_done)
+            return;
+
+        this.scene.remove(this.robot_obj);
+        this.robot_obj = robot.build_robot();
+        this.scene.add(this.robot_obj);
+
+        this.current_selected_obj = robot.leg(parseInt(leg_id_e.value)).link(parseInt(link_id_e.value)).obj;
+        this.mark_body(canvas.current_selected_obj, true);
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 //                            DOM Handles                             //
 ////////////////////////////////////////////////////////////////////////
@@ -415,9 +564,9 @@ class UserStudy {
 window.addEventListener('resize', onWindowResize);
 
 function onWindowResize(event) {
-    renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
-    camera.aspect = visual_panel_e.clientWidth / visual_panel_e.clientHeight;
-    camera.updateProjectionMatrix();
+    canvas.renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
+    canvas.camera.aspect = visual_panel_e.clientWidth / visual_panel_e.clientHeight;
+    canvas.camera.updateProjectionMatrix();
 }
 
 let left_panel_e = document.getElementById('LeftPanel');
@@ -427,16 +576,16 @@ let visual_panel_e = document.getElementById('RobotCanvas');
 visual_panel_e.addEventListener('click', onMouseClick, false);
 function onMouseClick(event) {
     const rect = visual_panel_e.getBoundingClientRect();
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
+    canvas.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    canvas.mouse.y = - ((event.clientY - rect.top) / rect.height) * 2 + 1;
     // raycaster
-    raycaster.setFromCamera(mouse, camera);
+    canvas.raycaster.setFromCamera(canvas.mouse, canvas.camera);
     // calculate objects intersecting the picking ray
-    const intersects = raycaster.intersectObjects(scene.children, true);
+    const intersects = canvas.raycaster.intersectObjects(canvas.scene.children, true);
     if (intersects.length > 0) {
         // not sure why, but the obj returned by raycaster is a different obj
         // than the one passed to scene, and has an id 1 larger than the orig obj
-        const orig_obj = scene.getObjectById(intersects[0].object.id - 1);
+        const orig_obj = canvas.scene.getObjectById(intersects[0].object.id - 1);
         if (orig_obj && orig_obj.leg_id != null) { // only obj of leg links has this defined
             leg_id_e.value = orig_obj.leg_id;
             link_id_e.value = orig_obj.link_id;
@@ -466,7 +615,7 @@ let user_id_e = document.getElementById('UserIDText');
 let env_e = document.getElementById('EnvSelect');
 env_e.addEventListener('change', onEnvSelectChange);
 function onEnvSelectChange(event) {
-    load_env_by_id(env_e.selectedIndex);
+    canvas.load_env_by_id(env_e.selectedIndex);
 }
 
 let robot_id_e = document.getElementById('RobotIDSelect');
@@ -485,7 +634,7 @@ let body_id_e = document.getElementById('BodyIdSelect');
 body_id_e.addEventListener('change', onBodyIdSelectChange);
 function onBodyIdSelectChange(event) {
     robot.body_id = parseInt(body_id_e.value);
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let body_x_e = document.getElementById('BodyScaleXText');
@@ -493,7 +642,7 @@ body_x_e.addEventListener('change', onBodyScaleXTextChange);
 function onBodyScaleXTextChange(event) {
     robot.body_scales[0] = parseFloat(body_x_e.value);
     body_x2_e.value = body_x_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let body_x2_e = document.getElementById('BodyScaleXRange');
@@ -501,7 +650,7 @@ body_x2_e.addEventListener('change', onBodyScaleXRangeChange);
 function onBodyScaleXRangeChange(event) {
     robot.body_scales[0] = parseFloat(body_x2_e.value);
     body_x_e.value = body_x2_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let body_y_e = document.getElementById('BodyScaleYText');
@@ -509,7 +658,7 @@ body_y_e.addEventListener('change', onBodyScaleYTextChange);
 function onBodyScaleYTextChange(event) {
     robot.body_scales[1] = parseFloat(body_y_e.value);
     body_y2_e.value = body_y_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let body_y2_e = document.getElementById('BodyScaleYRange');
@@ -517,7 +666,7 @@ body_y2_e.addEventListener('change', onBodyScaleYRangeChange);
 function onBodyScaleYRangeChange(event) {
     robot.body_scales[1] = parseFloat(body_y2_e.value);
     body_y_e.value = body_y2_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let body_z_e = document.getElementById('BodyScaleZText');
@@ -525,7 +674,7 @@ body_z_e.addEventListener('change', onBodyScaleZTextChange);
 function onBodyScaleZTextChange(event) {
     robot.body_scales[2] = parseFloat(body_z_e.value);
     body_z2_e.value = body_z_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let body_z2_e = document.getElementById('BodyScaleZRange');
@@ -533,7 +682,7 @@ body_z2_e.addEventListener('change', onBodyScaleZRangeChange);
 function onBodyScaleZRangeChange(event) {
     robot.body_scales[2] = parseFloat(body_z2_e.value);
     body_z_e.value = body_z2_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let num_legs_e = document.getElementById('NumLegsSelect');
@@ -542,7 +691,7 @@ function onNumLegsSelectChange(event) {
     robot.update_num_legs(parseInt(num_legs_e.value))
     resize_select(copy_leg_e, robot.num_legs);
     update_panel_for_new_target();
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let leg_id_e = document.getElementById('LegIdSelect');
@@ -556,7 +705,7 @@ function onLegIdSelectChange(event) {
 // function onLegPositionTextChange(event) {
     // robot.leg(leg_id_e.selectedIndex).position = parseFloat(leg_pos_e.value);
     // leg_pos2_e.value = leg_pos_e.value;
-    // update_drawing();
+    // canvas.update_drawing();
 // }
 
 // let leg_pos2_e = document.getElementById('LegPositionRange');
@@ -564,7 +713,7 @@ function onLegIdSelectChange(event) {
 // function onLegPositionRangeChange(event) {
     // robot.leg(leg_id_e.selectedIndex).position = parseFloat(leg_pos2_e.value);
     // leg_pos_e.value = leg_pos2_e.value;
-    // update_drawing();
+    // canvas.update_drawing();
 // }
 
 let num_links_e = document.getElementById('NumLinksSelect');
@@ -572,7 +721,7 @@ num_links_e.addEventListener('change', onNumLinksSelectChange);
 function onNumLinksSelectChange(event) {
     robot.leg(leg_id_e.selectedIndex).num_links = parseInt(num_links_e.value);
     update_panel_for_new_target();
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let link_id_e = document.getElementById('LinkIdSelect');
@@ -585,7 +734,7 @@ let part_id_e = document.getElementById('PartIdSelect');
 part_id_e.addEventListener('change', onPartIdSelectChange);
 function onPartIdSelectChange(event) {
     robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).part_id = part_id_e.selectedIndex;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let link_length_e = document.getElementById('LinkLengthText');
@@ -593,7 +742,7 @@ link_length_e.addEventListener('change', onLinkLengthTextChange);
 function onLinkLengthTextChange(event) {
     robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(link_length_e.value);
     link_length2_e.value = link_length_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let link_length2_e = document.getElementById('LinkLengthRange');
@@ -601,7 +750,7 @@ link_length2_e.addEventListener('change', onLinkLengthRangeChange);
 function onLinkLengthRangeChange(event) {
     robot.leg(leg_id_e.selectedIndex).link(parseInt(link_id_e.value)).link_length = parseFloat(link_length2_e.value);
     link_length_e.value = link_length2_e.value;
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let copy_leg_e = document.getElementById('CopyLegSelect');
@@ -610,7 +759,7 @@ copy_leg_btn_e.addEventListener('click', onCopyLegButtonClick);
 function onCopyLegButtonClick(event) {
     if (robot.copy_leg(leg_id_e.value, copy_leg_e.value)) { // if copy happened
         update_panel_for_new_target();
-        update_drawing();
+        canvas.update_drawing();
     }
 }
 
@@ -618,7 +767,7 @@ let flip_btn_e = document.getElementById('FlipButton');
 flip_btn_e.addEventListener('click', onFlipButtonClick);
 function onFlipButtonClick(event) {
     robot.flip_legs();
-    update_drawing();
+    canvas.update_drawing();
 }
 
 let reset_btn_e = document.getElementById('ResetButton');
@@ -626,7 +775,7 @@ reset_btn_e.addEventListener('click', onResetButtonClick);
 function onResetButtonClick(event) {
     robot.reset();
     update_panel_for_new_robot();
-    update_drawing();
+    canvas.update_drawing();
 }
 
 // Meta
@@ -651,29 +800,29 @@ function onLoadUserButtonClick(event) {
 let tg_env_btn_e = document.getElementById('ToggleEnvButton');
 tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
 function onToggleEnvButtonClick(event) {
-    if (canvas_show_env) {
-        hide_env();
+    if (canvas.env_enabled) {
+        canvas.hide_env();
     } else {
-        show_env();
+        canvas.show_env();
     }
 }
 
 let robot_up_btn_e = document.getElementById('MoveRobotUpButton');
 robot_up_btn_e.addEventListener('click', onMoveRobotUpButtonClick);
 function onMoveRobotUpButtonClick(event) {
-    if (!canvas_show_env)
+    if (!canvas.env_enabled)
         return;
     // achieve this by moving env down
-    env_obj.position.z -= 25;
+    canvas.env_obj.position.z -= 25;
 }
 
 let robot_down_btn_e = document.getElementById('MoveRobotDownButton');
 robot_down_btn_e.addEventListener('click', onMoveRobotDownButtonClick);
 function onMoveRobotDownButtonClick(event) {
-    if (!canvas_show_env)
+    if (!canvas.env_enabled)
         return;
     // achieve this by moving env up
-    env_obj.position.z += 25;
+    canvas.env_obj.position.z += 25;
 }
 
 let test_btn_e = document.getElementById('TestButton');
@@ -722,7 +871,7 @@ function onLoadButtonClick(event) {
             robot.parse_dv(json_dict.gene);
 
             update_panel_for_new_robot();
-            update_drawing();
+            canvas.update_drawing();
         }
     }
     input.click();
@@ -869,139 +1018,18 @@ function update_panel_for_new_target() {
 
     // Update visualization of selected link part
     if (mesh_lib.loading_done) {
-        mark_body(current_selected_obj, false);
-        current_selected_obj = robot.leg(parseInt(leg_id_e.value)).link(parseInt(link_id_e.value)).obj;
-        mark_body(current_selected_obj, true);
+        canvas.mark_body(canvas.current_selected_obj, false);
+        canvas.current_selected_obj = robot.leg(parseInt(leg_id_e.value)).link(parseInt(link_id_e.value)).obj;
+        canvas.mark_body(canvas.current_selected_obj, true);
     }
 }
 
-function init_canvas() {
-    // Lights setup
-    const amb_light = new THREE.AmbientLight(0xffffff, 0.2); // color and intensity
-    // for dir light, set the "from" pos (light pos) and "to" pos (light.target pos)
-    // const dir_light = new THREE.DirectionalLight(0xffffff, 1); // color and intensity
-    const point_light = new THREE.PointLight(0xffffff, 1); // color and intensity
-    // explictily add camera to scene, since the light is a child of camera.
-    // otherwise the camera would be automatically added (not sure to where, maybe renderer)
-    scene.add(camera);
-    scene.add(amb_light);
-    camera.add(point_light); // so that the light follows the camera
-    // Display axis
-    const axes_obj = new THREE.AxesHelper(200);
-    scene.add(axes_obj);
-}
-
-// TODO: mesh objs can be reused, do not create a new one everytime
-function build_robot() {
-    robot_obj.clear();
-    // Add body
-    let body_obj = mesh_lib.bodies[robot.body_id].clone();
-    body_obj.scale.x *= robot.body_scales[0];
-    body_obj.scale.y *= robot.body_scales[1];
-    body_obj.scale.z *= robot.body_scales[2];
-    robot.body_obj = body_obj;
-    robot_obj.add(body_obj);
-    let body_size = mesh_lib.body_size[robot.body_id].clone();
-    body_size.x *= robot.body_scales[0];
-    body_size.y *= robot.body_scales[1];
-    body_size.z *= robot.body_scales[2];
-
-    // Add legs
-    let leg_pos_x = 0;
-    let leg_pos_y = 0;
-    let leg_pos_gene = 0;
-    let leg_total_length = 0;
-    let link_size_z = 0;
-    for (let leg_id = 0; leg_id < robot.num_legs; ++leg_id) {
-        leg_total_length = 0;
-        leg_pos_gene = robot.leg(leg_id).position;
-        if (leg_pos_gene < 0.5) {
-            leg_pos_x = (0.25 - leg_pos_gene) * 2 * body_size.x;
-            leg_pos_y = body_size.y / 2 + mesh_lib.leg_size[robot.leg(leg_id).link(0).part_id].y;
-        } else {
-            leg_pos_x = (leg_pos_gene - 0.75) * 2 * body_size.x;
-            leg_pos_y = -(body_size.y / 2 + mesh_lib.leg_size[robot.leg(leg_id).link(0).part_id].y);
-        }
-        for (let i = 0; i < robot.leg(leg_id).num_links; ++i) {
-            let link_obj = mesh_lib.legs[robot.leg(leg_id).link(i).part_id].clone();
-            link_size_z = mesh_lib.leg_size[robot.leg(leg_id).link(i).part_id].z * robot.leg(leg_id).link(i).link_length;
-            link_obj.scale.z *= robot.leg(leg_id).link(i).link_length;
-            link_obj.position.x = leg_pos_x;
-            link_obj.position.y = leg_pos_y;
-            link_obj.position.z = -leg_total_length - link_size_z / 2;
-            link_obj.leg_id = leg_id;
-            link_obj.link_id = i;
-            robot.leg(leg_id).link(i).obj = link_obj;
-            robot_obj.add(link_obj);
-
-            leg_total_length += link_size_z + 2; // note in the UI the mesh are not scaled, so 2 means 0.02 in evogen
-        }
-    }
-
-    current_selected_obj = robot.leg(parseInt(leg_id_e.value)).link(parseInt(link_id_e.value)).obj;
-    mark_body(current_selected_obj, true);
-}
-
-function mark_body(body_obj, selected = true) {
-    if (selected)
-        body_obj.traverse(function(child){if (child.isMesh) child.material = select_mat;});
-    else
-        body_obj.traverse(function(child){if (child.isMesh) child.material = unselect_mat;});
-}
-
-function draw_env() {
-    if (!canvas_show_env)
-        return;
-    if (current_env_name != robot.env) {
-        // remove env from scene
-        scene.remove(env_obj);
-        // add new env
-        env_obj = mesh_lib.envs[robot.env].clone();
-        env_obj.position.z = -100;
-        current_env_name = robot.env;
-    }
-    scene.add(env_obj);
-}
-
-function show_env() {
-    canvas_show_env = true;
-    draw_env();
-    tg_env_btn_e.innerHTML = 'Hide Env';
-    robot_up_btn_e.disabled = false;
-    robot_down_btn_e.disabled = false;
-}
-
-function hide_env() {
-    current_env_name = "";
-    if (env_obj != null)
-        env_obj.removeFromParent();
-    canvas_show_env = false;
-    tg_env_btn_e.innerHTML = 'Show Env';
-    robot_up_btn_e.disabled = true;
-    robot_down_btn_e.disabled = true;
-}
-
-function load_env_by_id(new_env_id) {
-    new_env_id = Math.min(Math.max(0, new_env_id), mesh_lib.env_names.length - 1);
-    env_e.selectedIndex = new_env_id;
-    robot.env = env_e.options[env_e.selectedIndex].text;
-    env_label_e.innerHTML = robot.env;
-    draw_env();
-}
-
-function update_drawing() {
-    if (!mesh_lib.loading_done)
-        return;
-
-    scene.remove(robot_obj);
-    build_robot();
-    scene.add(robot_obj);
-}
-
+// TODO: for some reason this function cannot be part of the canvas manager class
+// otherwise the self call won't work
 function animate() {
     window.requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-    controls.update();
+    canvas.renderer.render(canvas.scene, canvas.camera);
+    canvas.controls.update();
 }
 
 function export_robot() {
@@ -1053,27 +1081,8 @@ function demo_write() {
 
 let robot = new RobotRepresentation();
 let mesh_lib = new MeshLibrary();
-let user_study = new UserStudy();
-
-// Set up scene, renderer, camera and trackball control
-const scene = new THREE.Scene();
-const renderer = new THREE.WebGLRenderer({ alpha: true });
-renderer.setSize(visual_panel_e.clientWidth, visual_panel_e.clientHeight);
-visual_panel_e.appendChild(renderer.domElement);
-
-const camera = new THREE.PerspectiveCamera(75, visual_panel_e.clientWidth / visual_panel_e.clientHeight, 0.1, 4000);
-camera.position.set(238, 270, 100);
-camera.up.set(0.35, 0.4, 0.8); // set the up direction of the camera
-
-let controls = new THREE.TrackballControls(camera, renderer.domElement);
-controls.rotateSpeed = 1;
-controls.zoomSpeed = 0.1;
-controls.panSpeed = 0.2;
-
-// Raycaster
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
+let user_study = new UserStudyManager();
+let canvas = new CanvasManager();
 
 init_panel();
-init_canvas();
 animate(); // starts the animation
