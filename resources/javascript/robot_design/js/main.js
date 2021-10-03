@@ -338,14 +338,15 @@ class UserStudyManager {
         this.sec_passed = 0;
         this.count_down_interval;
         this.current_ver = 0;
+        this.current_id = 0;
         this.total_ver = max_ver;
         let tmp_array = new Array(mesh_lib.env_names.length - 1);
         for (let i = 0; i < tmp_array.length; ++i) {
             tmp_array[i] = i + 1;
         }
         this.env_ids = this.shuffle(tmp_array);
+        this.env_currsor = 0; // the cursor for this.env_ids
         this.env_string = "";
-        this.env_currsor = 0;
 
         this.meta_dumped = false;
 
@@ -407,42 +408,53 @@ class UserStudyManager {
         this.in_test_gap = true;
 
         this.dump_robot();
-        this.next_ver();
+        this.next_ver(); // TODO: bump ver number after clicking canvas
     }
 
     // Private Functions
     next_ver() {
-        // TODO: update the logic here!
         let next_ver = this.current_ver + 1;
-        let next_id = parseInt(robot_id_e.value);
-        if (next_ver > user_study.total_ver) {
-            user_study_progress_label_e.innerHTML = next_ver; // splash for the last time
+
+        if (this.current_ver == this.total_ver) {
+            user_study_progress_label_e.innerHTML = this.current_ver + 1;
+            this.next_id();
             next_ver = 0;
-            next_id = next_id + 1;
-            if (next_id > max_id) {
-                next_id = 0;
-                alert("You have finished for environment " + robot.env + ", now move to next environment");
-                this.next_env();
-            }
-            robot.reset();
-            update_panel_for_new_robot();
-            canvas.update_drawing();
         }
-        robot.id = next_id;
-        robot_id_e.value = next_id;
+
         ver_e.value = next_ver;
         user_study_progress_label_e.innerHTML = next_ver;
         robot.ver = next_ver;
         this.current_ver = next_ver;
     }
 
+    next_id() {
+        let next_id = this.current_id + 1;
+
+        if (this.current_id == max_id) {
+            this.next_env();
+            next_id = 0;
+        }
+
+        robot.reset_design();
+        robot.id = next_id;
+        robot_id_e.value = next_id;
+        update_panel_for_new_robot();
+        canvas.update_drawing();
+        this.current_id = next_id;
+    }
+
     next_env() {
-        this.env_currsor += 1;
-        if (this.env_currsor > this.env_ids.length - 1) {
+        if (this.env_currsor == this.env_ids.length - 1) {
             alert("Thank you! You have finished the user study!");
             this.stop();
+            // TODO: add a splash screen here to block view of everything?
             return;
         }
+        let curr_env = robot.env;
+        this.env_currsor += 1;
+        robot.env = mesh_lib.env_names[this.env_ids[this.env_currsor]]; // TODO: currently useless, as canvas.load_env_by_id also sets robot.env
+        alert("You have finished for environment " + curr_env +
+              ", now move to next environment " + robot.env);
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
     }
 
@@ -474,7 +486,6 @@ class UserStudyManager {
         anchor.href = "data:application/octet-stream,"+encodeURIComponent(json_str);
         anchor.download = "UserStudy_" + user_study.user_id.toString() + "_" + timestamp + ".txt";
         anchor.click();
-
     }
 
     dump_robot() {
@@ -632,7 +643,8 @@ class CanvasManager {
     load_env_by_id(new_env_id) {
         new_env_id = Math.min(Math.max(0, new_env_id), mesh_lib.env_names.length - 1);
         env_e.selectedIndex = new_env_id;
-        robot.env = env_e.options[env_e.selectedIndex].text;
+        // TODO: decouple canvas env and robot env (and user_study env)
+        robot.env = mesh_lib.env_names[new_env_id];
         env_label_e.innerHTML = robot.env;
         this.draw_env();
     }
