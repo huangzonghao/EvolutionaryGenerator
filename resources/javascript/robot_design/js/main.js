@@ -408,54 +408,23 @@ class UserStudyManager {
         this.in_test_gap = true;
 
         this.dump_robot();
-        this.next_ver(); // TODO: bump ver number after clicking canvas
     }
 
-    // Private Functions
-    next_ver() {
-        let next_ver = this.current_ver + 1;
+    pre_next_test() {
+        this.next_ver();
 
-        if (this.current_ver == this.total_ver) {
-            user_study_progress_label_e.innerHTML = this.current_ver + 1;
-            this.next_id();
-            next_ver = 0;
-        }
-
-        ver_e.value = next_ver;
-        user_study_progress_label_e.innerHTML = next_ver;
-        robot.ver = next_ver;
-        this.current_ver = next_ver;
-    }
-
-    next_id() {
-        let next_id = this.current_id + 1;
-
-        if (this.current_id == max_id) {
-            this.next_env();
-            next_id = 0;
-        }
-
-        robot.reset_design();
-        robot.id = next_id;
-        robot_id_e.value = next_id;
-        update_panel_for_new_robot();
-        canvas.update_drawing();
-        this.current_id = next_id;
-    }
-
-    next_env() {
-        if (this.env_currsor == this.env_ids.length - 1) {
-            alert("Thank you! You have finished the user study!");
-            this.stop();
-            // TODO: add a splash screen here to block view of everything?
-            return;
-        }
-        let curr_env = robot.env;
-        this.env_currsor += 1;
-        robot.env = mesh_lib.env_names[this.env_ids[this.env_currsor]]; // TODO: currently useless, as canvas.load_env_by_id also sets robot.env
-        alert("You have finished for environment " + curr_env +
-              ", now move to next environment " + robot.env);
-        canvas.load_env_by_id(this.env_ids[this.env_currsor]);
+        let self = this;
+        update_count_down();
+        self.count_down_interval = setInterval(update_count_down, 1000);
+        setTimeout(function() {
+            test_btn_e.disabled = false;
+            self.in_test_gap = false;
+            self.timer_set = false;
+            self.sec_passed = 0;
+            test_btn_e.innerHTML = "Test";
+            clearInterval(self.count_down_interval);
+        }, minimum_test_gap * 1000);
+        this.timer_set = true;
     }
 
     dump_meta() {
@@ -521,21 +490,51 @@ class UserStudyManager {
         anchor.click();
     }
 
-    freeze_test_btn() {
-        let self = this;
-        if (this.in_test_gap && !this.timer_set) {
-            update_count_down();
-            self.count_down_interval = setInterval(update_count_down, 1000);
-            setTimeout(function() {
-                test_btn_e.disabled = false;
-                self.in_test_gap = false;
-                self.timer_set = false;
-                self.sec_passed = 0;
-                test_btn_e.innerHTML = "Test";
-                clearInterval(self.count_down_interval);
-            }, minimum_test_gap * 1000);
-            this.timer_set = true;
+    // Private Functions
+    next_ver() {
+        let next_ver = this.current_ver + 1;
+
+        if (this.current_ver == this.total_ver) {
+            user_study_progress_label_e.innerHTML = this.current_ver + 1;
+            this.next_id();
+            next_ver = 0;
         }
+
+        ver_e.value = next_ver;
+        user_study_progress_label_e.innerHTML = next_ver;
+        robot.ver = next_ver;
+        this.current_ver = next_ver;
+    }
+
+    next_id() {
+        let next_id = this.current_id + 1;
+
+        if (this.current_id == max_id) {
+            this.next_env();
+            next_id = 0;
+        }
+
+        robot.reset_design();
+        robot.id = next_id;
+        robot_id_e.value = next_id;
+        update_panel_for_new_robot();
+        canvas.update_drawing();
+        this.current_id = next_id;
+    }
+
+    next_env() {
+        if (this.env_currsor == this.env_ids.length - 1) {
+            alert("Thank you! You have finished the user study!");
+            this.stop();
+            // TODO: add a splash screen here to block view of everything?
+            return;
+        }
+        let curr_env = robot.env;
+        this.env_currsor += 1;
+        robot.env = mesh_lib.env_names[this.env_ids[this.env_currsor]]; // TODO: currently useless, as canvas.load_env_by_id also sets robot.env
+        alert("You have finished for environment " + curr_env +
+              ", now move to next environment " + robot.env);
+        canvas.load_env_by_id(this.env_ids[this.env_currsor]);
     }
 
     shuffle(array) {
@@ -698,8 +697,11 @@ function onMouseClick(event) {
         }
     }
 
+    // TODO: add a div to block the entire screen instead of doing something like this
     if (user_study.enabled) {
-        user_study.freeze_test_btn();
+        if (user_study.in_test_gap && !user_study.timer_set) {
+            user_study.pre_next_test();
+        }
     }
 }
 
