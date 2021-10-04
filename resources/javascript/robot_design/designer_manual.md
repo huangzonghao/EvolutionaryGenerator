@@ -49,11 +49,11 @@
 * Save the design by clicking the `Save` button, and run `User_Input_Demo`
 
 ### Notes
-* To run local js files in firefox:
+* To run local `js` files in firefox:
     * Go to `about:config`
     * Toggle `privacy.file_unique_origin` from `true` to `false`
 * To download `.txt` file automatically in firefox:
     * Go to `Help/More troubleshooting information`
     * Open `Profile Folder`
     * Add the entry for `.txt` to `handlers.json`
-    * No need to restart firefox
+    * Need to restart firefox
