@@ -332,11 +332,6 @@ class UserStudyManager {
     constructor() {
         this.init_user_id = "000000";
         this.user_id = this.init_user_id;
-
-        this.in_test_gap = false;
-        this.timer_set = false;
-        this.sec_passed = 0;
-        this.count_down_interval;
         this.current_ver = 0;
         this.current_id = 0;
         this.total_ver = max_ver;
@@ -348,6 +343,8 @@ class UserStudyManager {
         this.env_currsor = 0; // the cursor for this.env_ids
         this.env_string = "";
 
+        this.sec_passed = 0;
+        this.count_down_interval;
         this.meta_dumped = false;
 
         this.stop();
@@ -394,7 +391,6 @@ class UserStudyManager {
 
         test_btn_e.disabled = false;
         test_btn_e.innerHTML = "Test";
-        this.in_test_gap = false;
     }
 
     post_test() {
@@ -405,26 +401,24 @@ class UserStudyManager {
 
         test_btn_e.disabled = true;
         test_btn_e.innerHTML = "Click Canvas";
-        this.in_test_gap = true;
 
         this.dump_robot();
+
+        this.freeze_screen();
     }
 
     pre_next_test() {
         this.next_ver();
 
         let self = this;
-        update_count_down();
-        self.count_down_interval = setInterval(update_count_down, 1000);
+        this.update_count_down();
+        self.count_down_interval = setInterval(this.update_count_down, 1000);
         setTimeout(function() {
             test_btn_e.disabled = false;
-            self.in_test_gap = false;
-            self.timer_set = false;
             self.sec_passed = 0;
             test_btn_e.innerHTML = "Test";
             clearInterval(self.count_down_interval);
         }, minimum_test_gap * 1000);
-        this.timer_set = true;
     }
 
     dump_meta() {
@@ -526,7 +520,6 @@ class UserStudyManager {
         if (this.env_currsor == this.env_ids.length - 1) {
             alert("Thank you! You have finished the user study!");
             this.stop();
-            // TODO: add a splash screen here to block view of everything?
             return;
         }
         let curr_env = robot.env;
@@ -536,6 +529,23 @@ class UserStudyManager {
               ", now move to next environment " + robot.env);
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
     }
+
+    freeze_screen() {
+        let self = this;
+        let blind_e = document.createElement("div");
+        blind_e.id = "Blind";
+        blind_e.addEventListener("click", function(event) {
+            self.pre_next_test();
+            let blind_e = document.getElementById('Blind');
+            blind_e.remove();
+        });
+        document.body.appendChild(blind_e)
+    }
+
+    update_count_down() {
+        test_btn_e.innerHTML = "Wait " + (minimum_test_gap - this.sec_passed++).toFixed(0) + " s";
+    }
+
 
     shuffle(array) {
         let currentIndex = array.length,  randomIndex;
@@ -696,13 +706,6 @@ function onMouseClick(event) {
             update_panel_for_new_target();
         }
     }
-
-    // TODO: add a div to block the entire screen instead of doing something like this
-    if (user_study.enabled) {
-        if (user_study.in_test_gap && !user_study.timer_set) {
-            user_study.pre_next_test();
-        }
-    }
 }
 
 let user_study_status_e = document.getElementById('UserStudyStatus');
@@ -711,10 +714,6 @@ let user_study_progress_label_e = document.getElementById('UserStudyProgressLabe
 let user_study_total_label_e = document.getElementById('UserStudyTotalLabel');
 let env_label_e = document.getElementById('EnvLabel');
 let user_study_env_list_label_e = document.getElementById('UserStudyEnvListLabel');
-
-function update_count_down() {
-    test_btn_e.innerHTML = "Wait " + (minimum_test_gap - user_study.sec_passed++).toFixed(0) + " s";
-}
 
 let user_id_e = document.getElementById('UserIDText');
 
