@@ -474,17 +474,19 @@ class UserStudyManager {
     pre_next_test() {
         this.next_ver();
 
-        // Set up the test button freezing timer
-        let timer_counter = minimum_test_gap;
-        let test_btn_interval = setInterval(function f() {
-            test_btn_e.textContent= "Wait " + timer_counter;
-            if(timer_counter-- == 0) {
-                test_btn_e.disabled = false;
-                test_btn_e.innerHTML = "Test";
-                clearInterval(test_btn_interval);
-            }
-            return f; // so that this function is called at the beginning of interval
-        }(), 1000);
+        if (this.in_user_study) {
+            // Set up the test button freezing timer
+            let timer_counter = minimum_test_gap;
+            let test_btn_interval = setInterval(function f() {
+                test_btn_e.textContent= "Wait " + timer_counter;
+                if(timer_counter-- == 0) {
+                    test_btn_e.disabled = false;
+                    test_btn_e.innerHTML = "Test";
+                    clearInterval(test_btn_interval);
+                }
+                return f; // so that this function is called at the beginning of interval
+            }(), 1000);
+        }
     }
 
     dump_meta() {
