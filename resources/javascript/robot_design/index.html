@@ -19,10 +19,14 @@
         <div id="MetaPanel" align="center">
             <p>
                 <button class="button" onclick=" window.open('designer_manual.html','_blank')">Designer Manual</button>
-                <button class="button" onclick=" window.open('user_registration.html','_blank')">New User</button>
+                <button class="button" id="NewUserButton" onclick=" window.open('user_registration.html','_blank')">New User</button>
                 <button class="button" id="LoadUserButton">Load User</button>
             </p>
             <p>Participant ID: <span id="UserIDText" style="text-decoration:underline"></span></p>
+            <p>
+                <button class="button" id="TrainingButton" disabled="true"></button>
+                <button class="button" id="UserStudyButton" disabled="true"></button>
+            </p>
         </div>
         <hr>
         <div align="center">
@@ -49,9 +53,9 @@
 
     <div id="CenterPanel">
         <div id="UIStatusPanel" class="unselectable" style="position:absolute">
-            <span id="UserStudyModeLabel"></span>
+            <span id="UserStudyModeLabel"></span><span id="UserStudyTimerLabel" style="float:right"></span>
             <br>
-            <div id="UserStudyStatus">
+            <div id="UserStudyStatusLabel">
                 Progress: <span id="UserStudyProgressLabel"></span> / <span id="UserStudyTotalLabel"></span>
                 <br>
                 Current env: <span id="EnvLabel"></span>

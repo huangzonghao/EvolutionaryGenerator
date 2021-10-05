@@ -14,7 +14,6 @@ body {
     float: left;
     width: 20%;
     height: 100%;
-    padding: 5px;
     box-sizing: border-box;
     overflow-y:scroll;
 }
@@ -32,12 +31,13 @@ body {
     float: left;
     width: 20%;
     height: 100%;
-    padding: 5px;
     box-sizing: border-box;
     overflow-y:scroll;
 }
 
-#Blind {
+.blind {
+    padding: 0;
+    margin: 0;
     position: absolute;
     width: 100%;
     height: 100%;

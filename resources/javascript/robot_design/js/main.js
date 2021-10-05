@@ -14,6 +14,7 @@ const body_scale_range = [0.5, 1.5];
 const link_length_range = [0.5, 1.5];
 const slider_step = 0.01;
 const minimum_test_gap = 20;
+const training_session_minutes = 10;
 
 let preset_leg_pos = {};
 preset_leg_pos["2"] = [0.25, 0.75];
@@ -344,6 +345,9 @@ class UserStudyManager {
         this.env_string = "";
 
         this.meta_dumped = false;
+        this.in_training = false;
+        this.in_user_study = false;
+        this.robot_config_blind_e;
 
         this.stop();
     }
@@ -351,10 +355,61 @@ class UserStudyManager {
     load_user(new_user_id) {
         this.user_id = new_user_id;
         user_id_e.innerHTML = new_user_id;
+        if (this.user_id != 0) {
+            training_btn_e.disabled = false;
+            user_study_btn_e.disabled = false;
+        }
     }
 
-    start() {
-        this.enabled = true;
+    start_training() {
+        this.in_training = true;
+        canvas.load_env_by_id(0); // training map is always the first
+
+        training_btn_e.innerHTML = "Stop Training";
+        user_study_btn_e.disabled = true;
+        user_study_label_e.innerHTML = "Training in progress";
+        robot_id_e.disabled = true;
+        ver_e.disabled = true;
+        env_e.disabled = true;
+        new_user_btn_e.disabled = true;
+        load_user_btn_e.disabled = true;
+
+        let self_class = this;
+        // set up the timer
+        let start = Date.now();
+        let interval_sec = training_session_minutes * 60 * 1000;
+        let training_interval = setInterval(function self_func() {
+            if (!self_class.in_training) {
+                clearInterval(training_interval);
+                return;
+            }
+            let diff = Date.now() - start;
+            let ns = (((interval_sec - diff) / 1000) >> 0);
+            let m = (ns / 60) >> 0
+            let s = ns - m * 60;
+            user_study_timer_e.textContent = m + ':' + ((''+s).length > 1 ? '' : '0') + s;
+            if(diff > interval_sec) {
+                clearInterval(training_interval);
+                self_class.stop_training();
+            }
+            return self_func;
+        }(), 1000);
+    }
+
+    stop_training() {
+        this.in_training = false;
+        user_study_label_e.innerHTML = "Training done";
+        training_btn_e.innerHTML = "Start Training";
+        training_btn_e.disabled = true;
+        user_study_timer_e.textContent = '';
+        user_study_btn_e.disabled = false;
+        this.freeze_robot_config();
+        alert("Training done\nProceed to user study next");
+    }
+
+    start_user_study() {
+        this.in_user_study = true;
+        this.unfreeze_robot_config();
         user_study_label_e.innerHTML = "User Study in Progress";
         user_study_label_e.style.color = "red";
         user_study_progress_label_e.innerHTML = this.current_ver;
@@ -364,6 +419,10 @@ class UserStudyManager {
         robot_id_e.disabled = true;
         ver_e.disabled = true;
         env_e.disabled = true;
+        new_user_btn_e.disabled = true;
+        load_user_btn_e.disabled = true;
+        training_btn_e.disabled = true;
+        user_study_btn_e.disabled = true;
         reset_robot(true); // full reset
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
         let tmp_string = mesh_lib.env_names[this.env_ids[0]];
@@ -375,8 +434,10 @@ class UserStudyManager {
     }
 
     stop() {
-        this.enabled = false;
-        user_study_label_e.innerHTML = "Testing/Training";
+        this.in_user_study = false;
+        new_user_btn_e.disabled = false;
+        load_user_btn_e.disabled = false;
+        user_study_label_e.innerHTML = "Testing";
         user_study_label_e.style.color = "black";
         user_study_status_e.style.visibility = "hidden";
         save_btn_e.disabled = false;
@@ -389,6 +450,11 @@ class UserStudyManager {
 
         test_btn_e.disabled = false;
         test_btn_e.innerHTML = "Test";
+
+        training_btn_e.disabled = true;
+        training_btn_e.innerHTML = "Start Training";
+        user_study_btn_e.disabled = true;
+        user_study_btn_e.innerHTML = "Start User Study";
     }
 
     post_test() {
@@ -534,12 +600,25 @@ class UserStudyManager {
         let self = this;
         let blind_e = document.createElement("div");
         blind_e.id = "Blind";
+        blind_e.classList.add("blind");
         blind_e.addEventListener("click", function(event) {
             self.pre_next_test();
             let blind_e = document.getElementById('Blind');
             blind_e.remove();
         });
         document.body.appendChild(blind_e)
+    }
+
+    freeze_robot_config() {
+        this.robot_config_blind_e = document.createElement("div");
+        this.robot_config_blind_e.id = "RightPanelBlind";
+        this.robot_config_blind_e.classList.add("blind");
+        this.robot_config_blind_e.style.top = right_panel_e.offsetTop;
+        right_panel_e.appendChild(this.robot_config_blind_e)
+    }
+
+    unfreeze_robot_config() {
+        if (this.robot_config_blind_e) this.robot_config_blind_e.remove();
     }
 
     shuffle(array) {
@@ -703,8 +782,9 @@ function onMouseClick(event) {
     }
 }
 
-let user_study_status_e = document.getElementById('UserStudyStatus');
 let user_study_label_e = document.getElementById('UserStudyModeLabel');
+let user_study_timer_e = document.getElementById('UserStudyTimerLabel');
+let user_study_status_e = document.getElementById('UserStudyStatusLabel');
 let user_study_progress_label_e = document.getElementById('UserStudyProgressLabel');
 let user_study_total_label_e = document.getElementById('UserStudyTotalLabel');
 let env_label_e = document.getElementById('EnvLabel');
@@ -894,6 +974,7 @@ function reset_robot(fullreset = false) {
 }
 
 // Meta
+let new_user_btn_e = document.getElementById('NewUserButton');
 let load_user_btn_e = document.getElementById('LoadUserButton');
 load_user_btn_e.addEventListener('click', onLoadUserButtonClick);
 function onLoadUserButtonClick(event) {
@@ -907,13 +988,23 @@ function onLoadUserButtonClick(event) {
             let json_str = readerEvent.target.result;
             let json_dict = JSON.parse(json_str);
             user_study.load_user(json_dict.user_id);
-            if (parseInt(json_dict.user_id) != 0) {
-                user_study.start();
-            }
         }
     }
     input.click();
 }
+
+let training_btn_e = document.getElementById('TrainingButton');
+training_btn_e.addEventListener('click', onTrainingButtonClick);
+function onTrainingButtonClick(event) {
+    if (user_study.in_training) {
+        user_study.stop_training();
+    } else {
+        user_study.start_training();
+    }
+}
+
+let user_study_btn_e = document.getElementById('UserStudyButton');
+user_study_btn_e.addEventListener('click', e => { user_study.start_user_study(); });
 
 let tg_env_btn_e = document.getElementById('ToggleEnvButton');
 tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
@@ -951,7 +1042,7 @@ function onTestButtonClick(event) {
     anchor.href = "evogen-uisim:" + robot.env + "," + robot.dv;
     anchor.click();
 
-    if (user_study.enabled) {
+    if (user_study.in_user_study) {
         user_study.post_test();
     }
 }
@@ -975,7 +1066,7 @@ function onLoadButtonClick(event) {
             let json_str = readerEvent.target.result;
             let json_dict = JSON.parse(json_str);
 
-            if (!user_study.enabled) {
+            if (!user_study.in_user_study) {
                 user_study.load_user(json_dict.user_id);
                 robot.env = json_dict.environment;
                 robot.id = json_dict.id;
