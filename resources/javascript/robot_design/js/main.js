@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 const max_ver = 10;
-const max_id = 0;
+const g_robots_per_env = 1;
 const allowed_num_legs = [2, 3, 4, 5, 6];
 const min_num_links_per_leg = 2;
 const max_num_links_per_leg = 3;
@@ -335,7 +335,8 @@ class UserStudyManager {
         this.user_id = this.init_user_id;
         this.current_ver = 0;
         this.current_id = 0;
-        this.total_ver = max_ver;
+        this.updates_per_robot = max_ver;
+        this.robots_per_env = g_robots_per_env;
         this.env_ids;
         this.env_string = "";
         this.env_currsor = 0; // the cursor for this.env_ids
@@ -408,7 +409,7 @@ class UserStudyManager {
         user_study_label_e.innerHTML = "User Study in Progress";
         user_study_label_e.style.color = "red";
         user_study_progress_label_e.innerHTML = this.current_ver;
-        user_study_total_label_e.innerHTML = this.total_ver + 1;
+        user_study_total_label_e.innerHTML = this.updates_per_robot + 1;
         user_study_status_e.style.visibility = "visible";
         save_btn_e.disabled = true;
         robot_id_e.disabled = true;
@@ -521,6 +522,8 @@ class UserStudyManager {
             user_id: this.user_id,
             env_ids: this.env_ids,
             env_string: this.env_string,
+            updates_per_robot: this.updates_per_robot,
+            robots_per_env: this.robots_per_env,
             datetime: timestamp
         };
 
@@ -575,7 +578,7 @@ class UserStudyManager {
     next_ver() {
         let next_ver = this.current_ver + 1;
 
-        if (this.current_ver == this.total_ver) {
+        if (this.current_ver == this.updates_per_robot) {
             user_study_progress_label_e.innerHTML = this.current_ver + 1;
             this.next_id();
             next_ver = 0;
@@ -590,7 +593,7 @@ class UserStudyManager {
     next_id() {
         let next_id = this.current_id + 1;
 
-        if (this.current_id == max_id) {
+        if (this.current_id + 1 >= this.robots_per_env) {
             this.next_env();
             next_id = 0;
         }
@@ -1148,8 +1151,8 @@ function init_panel() {
     robot.env = env_e.options[env_e.selectedIndex].text;
 
     // Robot ID Select
-    resize_select(robot_id_e, max_id + 1);
-    resize_select(ver_e, user_study.total_ver + 1);
+    resize_select(robot_id_e, g_robots_per_env);
+    resize_select(ver_e, user_study.updates_per_robot + 1);
 
     // Num Legs
     for (let i = 0; i < allowed_num_legs.length; ++i) {
