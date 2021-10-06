@@ -424,13 +424,31 @@ class UserStudyManager {
         training_btn_e.disabled = true;
         user_study_btn_e.disabled = true;
         reset_robot(true); // full reset
+
+        let tmp_string = '';
+        for (let i = 0; i < this.env_ids.length; ++i) {
+            tmp_string += mesh_lib.env_names[this.env_ids[i]];
+            if (i != this.env_ids.length - 1) {
+                tmp_string += ", ";
+            }
+        }
+        this.env_string = tmp_string;
+
+        // init env
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
-        let tmp_string = mesh_lib.env_names[this.env_ids[0]];
-        for (let i = 1; i < this.env_ids.length; ++i) {
-            tmp_string += ", " + mesh_lib.env_names[this.env_ids[i]];
+        tmp_string = '';
+        for (let i = 0; i < this.env_ids.length; ++i) {
+            if (i == this.env_currsor) {
+                tmp_string += "<strong>" + mesh_lib.env_names[this.env_ids[i]] + "</strong>";
+            } else {
+                tmp_string += mesh_lib.env_names[this.env_ids[i]].fontcolor("grey");
+            }
+
+            if (i != this.env_ids.length - 1) {
+                tmp_string += ", ";
+            }
         }
         user_study_env_list_label_e.innerHTML = tmp_string;
-        this.env_string = tmp_string;
     }
 
     stop() {
@@ -596,6 +614,19 @@ class UserStudyManager {
         alert("You have finished for environment " + curr_env +
               ", now move to next environment " + robot.env);
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
+        let tmp_string = '';
+        for (let i = 0; i < this.env_ids.length; ++i) {
+            if (i == this.env_currsor) {
+                tmp_string += "<strong>" + mesh_lib.env_names[this.env_ids[i]] + "</strong>";
+            } else {
+                tmp_string += mesh_lib.env_names[this.env_ids[i]].fontcolor("grey");
+            }
+
+            if (i != this.env_ids.length - 1) {
+                tmp_string += ", ";
+            }
+        }
+        user_study_env_list_label_e.innerHTML = tmp_string;
     }
 
     freeze_screen() {
@@ -730,7 +761,6 @@ class CanvasManager {
         env_e.selectedIndex = new_env_id;
         // TODO: decouple canvas env and robot env (and user_study env)
         robot.env = mesh_lib.env_names[new_env_id];
-        env_label_e.innerHTML = robot.env;
         this.draw_env();
     }
 
@@ -789,7 +819,6 @@ let user_study_timer_e = document.getElementById('UserStudyTimerLabel');
 let user_study_status_e = document.getElementById('UserStudyStatusLabel');
 let user_study_progress_label_e = document.getElementById('UserStudyProgressLabel');
 let user_study_total_label_e = document.getElementById('UserStudyTotalLabel');
-let env_label_e = document.getElementById('EnvLabel');
 let user_study_env_list_label_e = document.getElementById('UserStudyEnvListLabel');
 
 let user_id_e = document.getElementById('UserIDText');
@@ -1192,7 +1221,6 @@ function update_panel_for_new_robot() {
     body_z2_e.value = robot.body_scales[2];
     num_legs_e.value = robot.num_legs; // num_legs only need auto update here
     resize_select(copy_leg_e, robot.num_legs);
-    env_label_e.innerHTML = robot.env;
 
     update_panel_for_new_target();
 }
