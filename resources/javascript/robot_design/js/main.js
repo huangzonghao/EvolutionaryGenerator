@@ -492,7 +492,7 @@ class UserStudyManager {
     pre_next_test() {
         this.next_ver();
 
-        if (this.in_user_study) {
+        if (this.current_ver != 0) {
             // Set up the test button freezing timer
             let timer_counter = minimum_test_gap;
             let test_btn_interval = setInterval(function f() {
@@ -504,6 +504,9 @@ class UserStudyManager {
                 }
                 return f; // so that this function is called at the beginning of interval
             }(), 1000);
+        } else {
+            test_btn_e.disabled = false;
+            test_btn_e.innerHTML = "Test";
         }
     }
 
