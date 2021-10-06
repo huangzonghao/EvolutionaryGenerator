@@ -340,7 +340,6 @@ class UserStudyManager {
         this.env_string = "";
         this.env_currsor = 0; // the cursor for this.env_ids
 
-        this.meta_dumped = false;
         this.in_training = false;
         this.in_user_study = false;
         this.robot_config_blind_e;
@@ -451,6 +450,8 @@ class UserStudyManager {
             }
         }
         user_study_env_list_label_e.innerHTML = tmp_string;
+
+        this.dump_meta();
     }
 
     stop() {
@@ -478,11 +479,6 @@ class UserStudyManager {
     }
 
     post_test() {
-        if (!this.meta_dumped) {
-            this.dump_meta();
-            this.meta_dumped = true;
-        }
-
         test_btn_e.disabled = true;
         test_btn_e.innerHTML = "Click Canvas";
 
