@@ -336,13 +336,9 @@ class UserStudyManager {
         this.current_ver = 0;
         this.current_id = 0;
         this.total_ver = max_ver;
-        let tmp_array = new Array(mesh_lib.env_names.length - 1);
-        for (let i = 0; i < tmp_array.length; ++i) {
-            tmp_array[i] = i + 1;
-        }
-        this.env_ids = this.shuffle(tmp_array);
-        this.env_currsor = 0; // the cursor for this.env_ids
+        this.env_ids;
         this.env_string = "";
+        this.env_currsor = 0; // the cursor for this.env_ids
 
         this.meta_dumped = false;
         this.in_training = false;
@@ -425,6 +421,11 @@ class UserStudyManager {
         user_study_btn_e.disabled = true;
         reset_robot(true); // full reset
 
+        let tmp_array = new Array(mesh_lib.env_names.length - 1);
+        for (let i = 0; i < tmp_array.length; ++i) {
+            tmp_array[i] = i + 1;
+        }
+        this.env_ids = this.shuffle(tmp_array);
         let tmp_string = '';
         for (let i = 0; i < this.env_ids.length; ++i) {
             tmp_string += mesh_lib.env_names[this.env_ids[i]];
@@ -435,6 +436,7 @@ class UserStudyManager {
         this.env_string = tmp_string;
 
         // init env
+        this.env_currsor = 0;
         canvas.load_env_by_id(this.env_ids[this.env_currsor]);
         tmp_string = '';
         for (let i = 0; i < this.env_ids.length; ++i) {
