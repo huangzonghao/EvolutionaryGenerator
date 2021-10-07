@@ -379,9 +379,7 @@ class UserStudyManager {
         training_btn_e.innerHTML = "Stop Training";
         user_study_btn_e.disabled = true;
         user_study_label_e.innerHTML = "Training in progress";
-        robot_id_e.disabled = true;
-        ver_e.disabled = true;
-        env_e.disabled = true;
+        robot_meta_panel_e.style.display = "none";
         new_user_btn_e.disabled = true;
         load_user_btn_e.disabled = true;
 
@@ -427,9 +425,7 @@ class UserStudyManager {
         user_study_total_label_e.innerHTML = this.updates_per_robot + 1;
         user_study_status_e.style.visibility = "visible";
         save_btn_e.disabled = true;
-        robot_id_e.disabled = true;
-        ver_e.disabled = true;
-        env_e.disabled = true;
+        robot_meta_panel_e.style.display = "none";
         new_user_btn_e.disabled = true;
         load_user_btn_e.disabled = true;
         training_btn_e.disabled = true;
@@ -469,9 +465,7 @@ class UserStudyManager {
         user_study_label_e.style.color = "black";
         user_study_status_e.style.visibility = "hidden";
         save_btn_e.disabled = false;
-        robot_id_e.disabled = false;
-        ver_e.disabled = false;
-        env_e.disabled = false;
+        robot_meta_panel_e.style.display = "block";
         // Disable need to remove user id
         this.user_id = this.init_user_id;
         user_id_e.innerHTML = this.user_id;
@@ -892,6 +886,7 @@ let user_study_env_list_label_e = document.getElementById('UserStudyEnvListLabel
 let user_id_e = document.getElementById('UserIDText');
 
 // Robot Config
+let robot_meta_panel_e = document.getElementById('RobotMetaPanel');
 let env_e = document.getElementById('EnvSelect');
 env_e.addEventListener('change', onEnvSelectChange);
 function onEnvSelectChange(event) {
