@@ -41,6 +41,21 @@ const unselect_mat = new THREE.MeshPhongMaterial( { color: 0x8796aa, shininess: 
 const select_mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
 ////////////////////////////////////////////////////////////////////////
+//                           Console Tools                            //
+////////////////////////////////////////////////////////////////////////
+
+let admin_is_on = false;
+function admin() {
+    if (admin_is_on) {
+        user_study.admin_off();
+        admin_is_on = false;
+    } else {
+        user_study.admin_on();
+        admin_is_on = true;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
 //                               Class                                //
 ////////////////////////////////////////////////////////////////////////
 
@@ -339,7 +354,7 @@ class UserStudyManager {
         this.robots_per_env = g_robots_per_env;
         this.env_ids;
         this.env_string = "";
-        this.env_currsor = 0; // the cursor for this.env_ids
+        this.env_cursor = 0; // the cursor for this.env_ids
 
         this.in_training = false;
         this.in_user_study = false;
@@ -403,7 +418,7 @@ class UserStudyManager {
         alert("Training done\nProceed to user study next");
     }
 
-    start_user_study() {
+    init_user_study() {
         this.in_user_study = true;
         this.unfreeze_robot_config();
         user_study_label_e.innerHTML = "User Study in Progress";
@@ -419,7 +434,11 @@ class UserStudyManager {
         load_user_btn_e.disabled = true;
         training_btn_e.disabled = true;
         user_study_btn_e.disabled = true;
+    }
+
+    start_new_user_study() {
         reset_robot(true); // full reset
+        this.init_user_study();
 
         let tmp_array = new Array(mesh_lib.env_names.length - 1);
         for (let i = 0; i < tmp_array.length; ++i) {
@@ -436,21 +455,8 @@ class UserStudyManager {
         this.env_string = tmp_string;
 
         // init env
-        this.env_currsor = 0;
-        canvas.load_env_by_id(this.env_ids[this.env_currsor]);
-        tmp_string = '';
-        for (let i = 0; i < this.env_ids.length; ++i) {
-            if (i == this.env_currsor) {
-                tmp_string += "<strong>" + mesh_lib.env_names[this.env_ids[i]] + "</strong>";
-            } else {
-                tmp_string += mesh_lib.env_names[this.env_ids[i]].fontcolor("grey");
-            }
-
-            if (i != this.env_ids.length - 1) {
-                tmp_string += ", ";
-            }
-        }
-        user_study_env_list_label_e.innerHTML = tmp_string;
+        this.env_cursor = 0;
+        this.load_env();
 
         this.dump_meta();
     }
@@ -477,6 +483,59 @@ class UserStudyManager {
         training_btn_e.innerHTML = "Start Training";
         user_study_btn_e.disabled = true;
         user_study_btn_e.innerHTML = "Start User Study";
+    }
+
+    load_setup(json_dict) {
+        this.user_id = json_dict.user_id;
+        user_id_e.innerHTML = this.user_id;
+        this.env_ids = json_dict.env_ids;
+        this.updates_per_robot = json_dict.updates_per_robot;
+        this.robots_per_env = json_dict.robots_per_env;
+
+        user_study_label_e.innerHTML = "User Study Setup Loaded<br>Load a progress file to resume"
+    }
+
+    load_progress(json_dict) {
+        if (this.user_id != json_dict.user_id) {
+            alert("The loaded user id (" + this.user_id +
+                  ") doesn't match in user id in file (" + json_dict.user_id +
+                  ")\nLoading aborted");
+            return;
+        }
+
+        robot.id = json_dict.id;
+        robot.ver = json_dict.ver;
+        this.current_ver = robot.ver;
+        user_study_progress_label_e.innerHTML = this.current_ver;
+        robot.parse_dv(json_dict.gene);
+        update_panel_for_new_robot();
+        canvas.update_drawing();
+
+        this.init_user_study();
+
+        // load environment -- find the value for env cursor
+        for(this.env_cursor = 0; this.env_cursor < this.env_ids.length; ++this.env_cursor) {
+            if (mesh_lib.env_names[this.env_ids[this.env_cursor]] == json_dict.environment)
+                break;
+        }
+        if (mesh_lib.env_names[this.env_ids[this.env_cursor]] != json_dict.environment) {
+            alert("Unkown environment in the progress file: " + json_dict.environment);
+            return;
+        }
+        this.load_env();
+
+        // jump to next ver since we are already done with the current ver
+        this.next_ver();
+    }
+
+    // Turn on admin mode
+    admin_on() {
+        admin_panel_e.style.visibility = "visible";
+    }
+
+    // Turn off admin mode
+    admin_off() {
+        admin_panel_e.style.visibility = "hidden";
     }
 
     post_test() {
@@ -607,20 +666,25 @@ class UserStudyManager {
     }
 
     next_env() {
-        if (this.env_currsor == this.env_ids.length - 1) {
+        if (this.env_cursor == this.env_ids.length - 1) {
             alert("Thank you! You have finished the user study!");
             this.stop();
             return;
         }
         let curr_env = robot.env;
-        this.env_currsor += 1;
-        robot.env = mesh_lib.env_names[this.env_ids[this.env_currsor]]; // TODO: currently useless, as canvas.load_env_by_id also sets robot.env
+        this.env_cursor += 1;
+        robot.env = mesh_lib.env_names[this.env_ids[this.env_cursor]]; // TODO: currently useless, as canvas.load_env_by_id also sets robot.env
         alert("You have finished for environment " + curr_env +
               ", now move to next environment " + robot.env);
-        canvas.load_env_by_id(this.env_ids[this.env_currsor]);
+
+        this.load_env();
+    }
+
+    load_env() {
+        canvas.load_env_by_id(this.env_ids[this.env_cursor]);
         let tmp_string = '';
         for (let i = 0; i < this.env_ids.length; ++i) {
-            if (i == this.env_currsor) {
+            if (i == this.env_cursor) {
                 tmp_string += "<strong>" + mesh_lib.env_names[this.env_ids[i]] + "</strong>";
             } else {
                 tmp_string += mesh_lib.env_names[this.env_ids[i]].fontcolor("grey");
@@ -1039,7 +1103,7 @@ function onTrainingButtonClick(event) {
 }
 
 let user_study_btn_e = document.getElementById('UserStudyButton');
-user_study_btn_e.addEventListener('click', e => { user_study.start_user_study(); });
+user_study_btn_e.addEventListener('click', e => { user_study.start_new_user_study(); });
 
 let tg_env_btn_e = document.getElementById('ToggleEnvButton');
 tg_env_btn_e.addEventListener('click', onToggleEnvButtonClick);
@@ -1116,6 +1180,45 @@ function onLoadButtonClick(event) {
     input.click();
 }
 
+// Admin Panel
+let admin_panel_e = document.getElementById('AdminPanel');
+
+// TODO: move env and robot id & ver to admin panel
+let load_setup_btn_e = document.getElementById('AdminLoadUserStudySetupButton');
+load_setup_btn_e.addEventListener('click', function(e) {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+        reader.onload = readerEvent => {
+            let json_str = readerEvent.target.result;
+            let json_dict = JSON.parse(json_str);
+            user_study.load_setup(json_dict);
+        }
+    }
+    input.click();
+
+});
+
+let load_progress_btn_e = document.getElementById('AdminLoadUserStudyProgressButton');
+load_progress_btn_e.addEventListener('click', function(e) {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+        reader.onload = readerEvent => {
+            let json_str = readerEvent.target.result;
+            let json_dict = JSON.parse(json_str);
+            user_study.load_progress(json_dict);
+        }
+    }
+    input.click();
+
+});
 ////////////////////////////////////////////////////////////////////////
 //                            Subfunctions                            //
 ////////////////////////////////////////////////////////////////////////
