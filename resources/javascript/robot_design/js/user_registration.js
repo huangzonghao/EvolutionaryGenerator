@@ -76,6 +76,7 @@ save_user_btn_e.addEventListener('click', onSaveUserButtonClick);
 function onSaveUserButtonClick(event) {
     write_user();
     copy_to_clipboard(meta_info.user_id);
+    setTimeout(function() { window.close() }, 500); // close window automatically
 }
 
 ////////////////////////////////////////////////////////////////////////
