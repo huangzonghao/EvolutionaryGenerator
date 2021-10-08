@@ -363,13 +363,16 @@ class UserStudyManager {
         this.stop();
     }
 
-    load_user(new_user_id) {
-        this.user_id = new_user_id;
-        user_id_e.innerHTML = new_user_id;
+    enable() {
         if (this.user_id != 0) {
             training_btn_e.disabled = false;
             user_study_btn_e.disabled = false;
         }
+    }
+
+    load_user(new_user_id) {
+        this.user_id = new_user_id;
+        user_id_e.innerHTML = new_user_id;
     }
 
     start_training() {
@@ -1082,6 +1085,7 @@ function onLoadUserButtonClick(event) {
             let json_str = readerEvent.target.result;
             let json_dict = JSON.parse(json_str);
             user_study.load_user(json_dict.user_id);
+            user_study.enable();
         }
     }
     input.click();
