@@ -396,7 +396,7 @@ class UserStudyManager {
             let ns = (((interval_sec - diff) / 1000) >> 0);
             let m = (ns / 60) >> 0
             let s = ns - m * 60;
-            user_study_timer_e.textContent = m + ':' + ((''+s).length > 1 ? '' : '0') + s;
+            user_study_timer_e.innerHTML = "&emsp;" + m + ':' + ((''+s).length > 1 ? '' : '0') + s;
             if(diff > interval_sec) {
                 clearInterval(training_interval);
                 self_class.stop_training();
