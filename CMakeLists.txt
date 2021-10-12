@@ -411,6 +411,37 @@ if(MSVC)
         $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
 endif()
 
+#########################
+#  Process User Inputs  #
+#########################
+set(CURRENT_TARGET_NAME Process_User_Inputs)
+set(Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/MeshInfo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/RobotRepresentation.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h
+    ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
+)
+set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/MeshInfo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobotRepresentation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/SimulatorParams.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/process_user_inputs_main.cpp
+)
+add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
+target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator rapidjson)
+target_include_directories(${CURRENT_TARGET_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
+set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES FOLDER Tools)
+if(MSVC)
+    source_group("Header Files" FILES ${Headers})
+    source_group("Source Files" FILES ${Sources})
+    target_compile_options(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>: /W3; /MD; /MP; /JMC; /sdl;>
+        $<$<CONFIG:Release>: /MP;>
+    )
+    target_compile_definitions(${CURRENT_TARGET_NAME} PRIVATE
+        $<$<CONFIG:Debug>:  _CRT_SECURE_NO_WARNINGS;>)
+endif()
+
 ############################
 #  Generate_Javascript_UI  #
 ############################
