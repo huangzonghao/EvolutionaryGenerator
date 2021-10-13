@@ -67,7 +67,6 @@ void eval_kernel(const std::vector<std::filesystem::path>& design_files,
 
         phen_t phen(jsobj["gene"], evo_params.phen_data_min(), evo_params.phen_data_max());
         phen.develop();
-        const auto& robot = phen.get_robot();
 
         sim_params.SetEnv(jsobj["environment"]);
         sm.SetEnv(sim_params.GetEnv(),
@@ -75,19 +74,10 @@ void eval_kernel(const std::vector<std::filesystem::path>& design_files,
                   sim_params.env_dim[1],
                   sim_params.env_dim[2]);
 
-        sm.RemoveAllMotors();
-        for (int i = 0; i < robot.num_legs(); ++i) {
-            sm.AddEvoGenMotor("chassis_leg_" + std::to_string(i) + "-0", i, 0);
-            for (int j = 1; j < robot.legs[i].num_links; ++j) {
-                sm.AddEvoGenMotor("leg_" + std::to_string(i) + "-" + std::to_string(j - 1) +
-                                  "_leg_" + std::to_string(i) + "-" + std::to_string(j), i, j);
-            }
-        }
+        auto& fit = phen.fit();
+        fit.eval(phen, sm);
 
-        sm.LoadUrdfString(robot.get_urdf_string());
-        sm.RunSimulation();
-
-        report.fitness = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY());
+        report.fitness = fit.value();
     }
 
 }

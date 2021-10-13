@@ -51,7 +51,6 @@ int main(int argc, char **argv) {
     evo_params.Load(EvoGen_Params_Dir + "/evo_params.xml");
     phen_t phen(gene, evo_params.phen_data_min(), evo_params.phen_data_max());
     phen.develop();
-    const auto& robot = phen.get_robot();
 
     SimulatorParams sim_params;
     sim_params.Load(EvoGen_Params_Dir + "/sim_params.xml");
@@ -78,24 +77,16 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[2],
                  sim_params.env_rot[3]);
 
-    for (int i = 0; i < robot.num_legs(); ++i) {
-        sm.AddEvoGenMotor("chassis_leg_" + std::to_string(i) + "-0", i, 0);
-        for (int j = 1; j < robot.legs[i].num_links; ++j) {
-            sm.AddEvoGenMotor("leg_" + std::to_string(i) + "-" + std::to_string(j - 1) +
-                              "_leg_" + std::to_string(i) + "-" + std::to_string(j), i, j);
-        }
-    }
-
     sm.EnableEarlyTermination();
     sm.SetVisualization(true);
     // sm.SetRealTime(true);
 
-    sm.LoadUrdfString(robot.get_urdf_string());
-    sm.RunSimulation();
+    auto& fit = phen.fit();
+    fit.eval(phen, sm);
 
     std::cout << std::endl << std::endl
               << "=========================================================" << std::endl
-              << "The score of this robot: " << sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY()) << std::endl
+              << "The score of this robot: " << fit.value() << std::endl
               << "=========================================================" << std::endl;
 
     debug_pause();
