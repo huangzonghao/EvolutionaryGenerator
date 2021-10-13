@@ -24,6 +24,7 @@ typedef sferes::phen::EvoGenPhen<sferes::gen::EvoGenFloat, fit_t> phen_t;
 // probably implement a nlohmann_json parser for it
 class EvalReport {
   public:
+    std::vector<double> feature = {0.0, 0.0};
     double fitness = 0;
 };
 
@@ -78,16 +79,20 @@ void eval_kernel(const std::vector<std::filesystem::path>& design_files,
         fit.eval(phen, sm);
 
         report.fitness = fit.value();
+        report.feature = fit.desc();
     }
 
 }
 void process_user_inputs(const std::filesystem::path& dir_path) {
     std::cout << "Processing " << dir_path.stem().string() << std::endl;
 
+    std::filesystem::path meta_file;
     std::vector<std::filesystem::path> design_files;
     for (const auto& entry : std::filesystem::directory_iterator(dir_path)) {
         if (entry.path().filename().string().find("evogen_") != std::string::npos) {
             design_files.push_back(entry);
+        } else if (entry.path().filename().string().find("UserStudy_") != std::string::npos) {
+            meta_file = entry.path();
         }
     }
     std::vector<EvalReport> reports(design_files.size());
@@ -119,16 +124,21 @@ void process_user_inputs(const std::filesystem::path& dir_path) {
     for (auto& thread : threads)
         thread->join();
 
+    std::ifstream ifs(meta_file);
+    json meta_jsobj = json::parse(ifs);
     json output_jsobj;
 
     // Add meta info
     output_jsobj["user_id"] = jsobjs[0]["user_id"];
+    output_jsobj["env_string"] = meta_jsobj["env_string"];
+    output_jsobj["feature_description"] = {std::string(fit_t::descriptor_name[0]), std::string(fit_t::descriptor_name[1])};
 
     for (int i = 0; i < design_files.size(); ++i) {
         auto& jsobj = jsobjs[i];
         auto& tmp_jsobj = output_jsobj["designs"][jsobj["environment"].get<std::string>()][std::to_string(jsobj["ver"].get<int>())];
         tmp_jsobj["gene"] = jsobj["gene"];
         tmp_jsobj["fitness"] = reports[i].fitness;
+        tmp_jsobj["feature"] = reports[i].feature;
     }
 
     std::ofstream ofs(User_Input_Dir + "/" + dir_path.stem().string() + ".json");
