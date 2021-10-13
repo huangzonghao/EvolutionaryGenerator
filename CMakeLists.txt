@@ -45,6 +45,7 @@ endif()
 if (NOT DEFINED USER_INPUT_DIR)
     set(USER_INPUT_DIR ${PROJECT_WORKSPACE_DIR}/UserInput CACHE PATH "Directory containing the user inputs")
     file(MAKE_DIRECTORY ${USER_INPUT_DIR})
+    file(MAKE_DIRECTORY ${USER_INPUT_DIR}/Raw)
 endif()
 
 if (NOT DEFINED MESH_WORKSPACE_DIR)

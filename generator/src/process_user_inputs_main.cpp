@@ -144,27 +144,39 @@ void process_user_inputs(const std::filesystem::path& dir_path) {
     std::ofstream ofs(User_Input_Dir + "/" + dir_path.stem().string() + ".json");
     ofs << output_jsobj.dump() << std::endl; // the number in json::dump specifies indention
     ofs.close();
+
+    // TODO: for some reason the following code to move dirs doesn't work (only tested on windows)
+    // Move the processed user input to the archive directory
+    // std::string archive_dir = User_Input_Dir + "/Processed";
+    // if (!std::filesystem::exists(archive_dir)) {
+        // std::filesystem::create_directories(archive_dir);
+    // }
+    // std::filesystem::rename(dir_path, archive_dir + "/" + dir_path.stem().string());
 }
 
 int main(int argc, char **argv) {
+    std::string input_dir(User_Input_Dir + "/Raw");
     std::vector<std::filesystem::path> dirs;
-    int counter = 0;
-    for (const auto& entry : std::filesystem::directory_iterator(User_Input_Dir)) {
+    for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
         if (std::filesystem::is_directory(entry)) {
             dirs.push_back(entry);
-            std::cout << counter++ << ")" << entry.path().stem().string() << std::endl;
         }
+    }
+
+    if (dirs.size() == 0) {
+        std::cout << "No user input found" << std::endl
+                  << "Put user inputs into " << input_dir + "/<6-digit-user-id>" << std::endl;
+        return 0;
     }
 
     mesh_info.set_mesh_dir(Robot_Parts_Dir);
     mesh_info.init();
 
-    int user_input = -1;
-    while (user_input < 0 || user_input > dirs.size() - 1) {
-        std::cout << "Select user study dir: ";
-        std::cin >> user_input;
+    for (int i = 0; i < dirs.size(); ++i) {
+        std::cout << i << " / " << dirs.size() << std::endl;
+        process_user_inputs(dirs[i]);
     }
-    process_user_inputs(dirs[user_input]);
+    std::cout << "All user inputs processed. Exit" << std::endl;
 
     return 0;
 }
