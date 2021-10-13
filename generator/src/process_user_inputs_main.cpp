@@ -156,6 +156,10 @@ void process_user_inputs(const std::filesystem::path& dir_path) {
 
 int main(int argc, char **argv) {
     std::string input_dir(User_Input_Dir + "/Raw");
+    if (!std::filesystem::exists(input_dir)) {
+        std::cout << "Error: " << input_dir << " doesn't exist" << std::endl;
+        return -1;
+    }
     std::vector<std::filesystem::path> dirs;
     for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
         if (std::filesystem::is_directory(entry)) {
@@ -173,7 +177,7 @@ int main(int argc, char **argv) {
     mesh_info.init();
 
     for (int i = 0; i < dirs.size(); ++i) {
-        std::cout << i << " / " << dirs.size() << std::endl;
+        std::cout << i + 1 << " / " << dirs.size() << std::endl;
         process_user_inputs(dirs[i]);
     }
     std::cout << "All user inputs processed. Exit" << std::endl;
