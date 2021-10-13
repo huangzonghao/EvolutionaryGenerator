@@ -4,13 +4,15 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
-#include <rapidjson/document.h>
+#include <nlohmann/json.hpp>
 
 #include "SimulatorParams.h"
 #include "EvoParams.h"
 #include "EvoGenerator.h"
 
 #include "evo_paths.h"
+
+using json = nlohmann::json;
 
 void new_training(bool use_user_seeds) {
     EvoGenerator evo_gen;
@@ -78,22 +80,14 @@ void new_training(bool use_user_seeds) {
             std::filesystem::create_directories(seed_dir);
         // load the user seeds and copy them into result_dir
         const int max_num_user_inputs = 30;
-        rapidjson::Document jdoc;
         for (const auto& entry : std::filesystem::directory_iterator(User_Input_Dir)) {
             if (entry.path().extension().string() == ".txt") {
                 if (evo_params.output_enabled())
                     std::filesystem::copy(entry.path(), seed_dir);
 
-                std::ifstream infile(entry.path());
-                std::stringstream ss;
-                ss << infile.rdbuf();
-                jdoc.Parse(ss.str().c_str());
-                const rapidjson::Value& js_gene = jdoc["gene"];
-                std::vector<double> gene(js_gene.Size());
-                for (int i = 0; i < gene.size(); ++i) {
-                    gene[i] = js_gene[i].GetDouble();
-                }
-                user_seeds->push_back(gene);
+                std::ifstream ifs(entry.path());
+                json jsobj = json::parse(ifs);
+                user_seeds->push_back(jsobj["gene"]);
 
                 if (user_seeds->size() >= max_num_user_inputs)
                     break;

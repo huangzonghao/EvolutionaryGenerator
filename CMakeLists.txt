@@ -166,16 +166,6 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 set(JSON_Install OFF CACHE INTERNAL "")
 add_subdirectory(thirdparty/nlohmann_json)
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/.git)
-    execute_process(COMMAND git submodule update --init --depth 1 -- thirdparty/rapidjson
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
-set(rapidjson_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/include)
-if (NOT TARGET rapidjson)
-    add_library(rapidjson INTERFACE IMPORTED)
-    set_target_properties(rapidjson PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${rapidjson_INCLUDE_DIR}")
-endif()
-
 if (ENABLE_ROBOGAMI)
     if(NOT DEFINED ROBOGAMI_DATA_PATH)
         if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data/.git)
@@ -257,7 +247,7 @@ set(Headers
 )
 set(Sources ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/evo_main.cpp)
 add_executable(${PROJECT_NAME} ${Headers} ${Sources})
-target_link_libraries(${PROJECT_NAME} Generator Simulator rapidjson)
+target_link_libraries(${PROJECT_NAME} Generator Simulator nlohmann_json::nlohmann_json)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # TODO: need to add cplex dll in debug config
