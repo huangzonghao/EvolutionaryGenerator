@@ -157,6 +157,14 @@ if (NEED_TO_RETURN)
     return()
 endif()
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/nlohmann_json/.git)
+    execute_process(COMMAND git submodule update --init --depth 1 -- thirdparty/nlohmann_json
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+set(JSON_Install OFF CACHE INTERNAL "")
+add_subdirectory(thirdparty/nlohmann_json)
+
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/.git)
     execute_process(COMMAND git submodule update --init --depth 1 -- thirdparty/rapidjson
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
@@ -386,7 +394,7 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/user_design_simulator_main.cpp
 )
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
-target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator rapidjson)
+target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator)
 target_include_directories(${CURRENT_TARGET_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")
@@ -428,7 +436,7 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/process_user_inputs_main.cpp
 )
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
-target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator rapidjson)
+target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator nlohmann_json::nlohmann_json)
 target_include_directories(${CURRENT_TARGET_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 set_target_properties(${CURRENT_TARGET_NAME} PROPERTIES FOLDER Tools)
 if(MSVC)
