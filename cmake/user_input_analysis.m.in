@@ -1,0 +1,10 @@
+% This is an auto-generated file, do not edit
+% If at any time the paths in this file become invalid,
+% try to rebuild the project.
+
+function user_input_analysis()
+
+addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'user_input_analysis'));
+user_input_analysis_ui('@EVOGEN_EXE_PATH@', '@USER_INPUT_DIR@')
+
+end % function

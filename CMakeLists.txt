@@ -83,6 +83,7 @@ endif()
 configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/robot_design.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/robot_design.m @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/result_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/result_analysis.m @ONLY)
+configure_file(${PROJECT_IN_FILE_DIR}/user_input_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/user_input_analysis.m @ONLY)
 
 # Need to use the filesystem of C++17
 set(CMAKE_CXX_STANDARD 17)
