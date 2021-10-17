@@ -62,9 +62,10 @@ class EvoGenEval {
                      size_t start_idx, size_t end_idx)
     {
         for (size_t i = start_idx; i < end_idx; ++i) {
-            if (pop[i]->develop())
-                ++num_valid;
+            pop[i]->develop();
             pop[i]->fit().eval(*pop[i], *sm);
+            if (!pop[i]->fit().dead())
+                ++num_valid;
         }
     }
 

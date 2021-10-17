@@ -67,6 +67,7 @@ class  SimulationManager {
     const std::string& GetUrdfFileName();
 
     double GetLastSimTime() { return last_sim_time_; }
+    bool CheckRobotSelfCollision() { return robot_self_collided_; }
 
     /** Interface functions **/
     void GetActuatorVels(std::vector<std::pair<double, double>> &vels_vec) const;
@@ -88,6 +89,7 @@ class  SimulationManager {
     SystemType  system_type_;
     double k_friction_;
     double s_friction_;
+    bool robot_self_collided_ = false;
 
     std::vector<std::shared_ptr<SimPayload>> payloads_;
     std::vector<std::shared_ptr<SimMotor>> motors_;

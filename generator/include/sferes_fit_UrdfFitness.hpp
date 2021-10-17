@@ -45,6 +45,10 @@ class UrdfFitness {
 
         sm.LoadUrdfString(robot.get_urdf_string());
         sm.RunSimulation();
+        if (sm.CheckRobotSelfCollision() == true) {
+            _dead = true;
+            return;
+        }
 
         // reward x movement and penalize y movement
         _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY());
@@ -86,6 +90,9 @@ class UrdfFitness {
     }
 
   protected:
+    // A robot is dead if:
+    //     * Gene is invalid (too short)
+    //     * Self-collided at initial pose
     bool _dead = false;
     std::vector<double> _desc = {0.0, 0.0};
     double _novelty = -std::numeric_limits<double>::infinity();

@@ -158,11 +158,19 @@ bool SimulationManager::RunSimulation() {
 
     if (!auxrefs_->empty()) robot_doc_->SetAuxRef(auxrefs_);
 
-    bool add_ok;
+    robot_self_collided_ = false;
+    bool add_ok = false;
     if (!ch_waypoints_.empty())
         add_ok = robot_doc_->AddtoSystem(ch_system_, ch_waypoints_[0]);
     else
         add_ok = robot_doc_->AddtoSystem(ch_system_, ChVector<>(0,0,0));
+
+    // check for robot's self collision
+    ch_system_->ComputeCollisions();
+    if (ch_system_->GetContactContainer()->GetNcontacts() > 0) {
+        robot_self_collided_ = true;
+        return false;
+    }
 
     // Make sure env shows up under the robot
     if (load_map_) load_map();

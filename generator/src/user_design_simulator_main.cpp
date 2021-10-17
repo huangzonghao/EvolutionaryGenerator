@@ -84,10 +84,14 @@ int main(int argc, char **argv) {
     auto& fit = phen.fit();
     fit.eval(phen, sm);
 
-    std::cout << std::endl << std::endl
-              << "=========================================================" << std::endl
-              << "The score of this robot: " << fit.value() << std::endl
-              << "=========================================================" << std::endl;
+    if (fit.dead()) {
+        std::cout << "Robot is invalid, no score reported" << std::endl;
+    } else {
+        std::cout << std::endl << std::endl
+                  << "=========================================================" << std::endl
+                  << "The score of this robot: " << fit.value() << std::endl
+                  << "=========================================================" << std::endl;
+    }
 
     debug_pause();
     return 0;
