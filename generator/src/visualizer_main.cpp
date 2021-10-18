@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[2],
                  sim_params.env_rot[3]);
 
+    sm.EnableEarlyTermination();
     sm.SetVisualization(true);
     // sm.SetRealTime(true);
 
@@ -86,6 +87,5 @@ int main(int argc, char **argv) {
                   << "=========================================================" << std::endl;
     }
 
-    debug_pause();
     return 0;
 }
