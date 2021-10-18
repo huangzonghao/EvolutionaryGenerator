@@ -47,7 +47,7 @@ class ChUrdfDoc : public ChRobot {
                                                const std::shared_ptr<ChBody>& ch_child_body);
     void convert_materials();
     bool check_inertial_pose_set(const urdf::LinkConstSharedPtr& u_link);
-    void update_pos_extrema(const ChVector<>& new_pos);
+    void update_pos_extrema(const ChVector<>& new_pos, const ChVector<>& aabb = ChVector<>(0, 0, 0));
     // concatenates the urdf flie path and the relative path to the urdf file
     urdf::ModelInterfaceSharedPtr urdf_robot_;
     urdf::LinkConstSharedPtr u_root_link_;

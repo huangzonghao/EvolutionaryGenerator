@@ -124,7 +124,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
             ChVector<> vis_in_child (u_visual->origin.position.x,
                                      u_visual->origin.position.y,
                                      u_visual->origin.position.z);
-            update_pos_extrema(vis_in_child >> child_in_world);
+            ChVector<> aabb;
             switch (u_visual->geometry->type){
                 case urdf::Geometry::BOX:
                 {
@@ -133,12 +133,14 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                     std::dynamic_pointer_cast<ChBoxShape>(tmp_viasset)->GetBoxGeometry().SetLengths(ChVector<>(tmp_urdf_box_ptr->dim.x,
                                                                                                                tmp_urdf_box_ptr->dim.y,
                                                                                                                tmp_urdf_box_ptr->dim.z));
+                    aabb = ChVector<>(tmp_urdf_box_ptr->dim.x, tmp_urdf_box_ptr->dim.y, tmp_urdf_box_ptr->dim.z);
                     break;
                 }
                 case urdf::Geometry::SPHERE:
                 {
                     tmp_viasset = chrono_types::make_shared<ChSphereShape>();
                     std::dynamic_pointer_cast<ChSphereShape>(tmp_viasset)->GetSphereGeometry().rad = std::dynamic_pointer_cast<urdf::Sphere>(u_visual->geometry)->radius;
+                    aabb = ChVector<>(std::dynamic_pointer_cast<urdf::Sphere>(u_visual->geometry)->radius);
                     break;
                 }
                 case urdf::Geometry::CYLINDER:
@@ -150,6 +152,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                     tmp_geometry.p1 = ChVector<>(0, 0, -tmp_urdf_cylinder_ptr->length / 2);
                     tmp_geometry.p2 = ChVector<>(0, 0, tmp_urdf_cylinder_ptr->length / 2);
                     tmp_geometry.rad = tmp_urdf_cylinder_ptr->radius;
+                    aabb = ChVector<>(tmp_urdf_cylinder_ptr->radius * 2, tmp_urdf_cylinder_ptr->radius * 2, tmp_urdf_cylinder_ptr->length);
                     break;
                 }
                 case urdf::Geometry::MESH:
@@ -176,6 +179,9 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                        // tmp_urdf_mesh_ptr->scale.y,
                                                        // tmp_urdf_mesh_ptr->scale.z));
                     tmp_viasset = trimesh_shape;
+
+                    // TODO: Update aabb
+                    // aabb = ChVector<>();
                     break;
                 }
             }
@@ -199,6 +205,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                 if (ch_vis_mat.texture) ch_body->AddAsset(ch_vis_mat.texture);
             }
 
+            update_pos_extrema(vis_in_child >> child_in_world, aabb);
             ch_body->AddAsset(tmp_viasset);
         }
     }
@@ -215,7 +222,7 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
             ChVector<> collision_in_child (u_collision->origin.position.x,
                                            u_collision->origin.position.y,
                                            u_collision->origin.position.z);
-            update_pos_extrema(collision_in_child >> child_in_world);
+            ChVector<> aabb;
             switch (u_collision->geometry->type){
                 case urdf::Geometry::BOX:
                 {
@@ -229,22 +236,26 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                                                      u_collision->origin.rotation.x,
                                                                                      u_collision->origin.rotation.y,
                                                                                      u_collision->origin.rotation.z)));
+                    aabb = ChVector<>(tmp_urdf_box_ptr->dim.x, tmp_urdf_box_ptr->dim.y, tmp_urdf_box_ptr->dim.z);
                     break;
                 }
                 case urdf::Geometry::SPHERE:
                 {
+                    double radius = std::dynamic_pointer_cast<urdf::Sphere>(u_collision->geometry)->radius;
                     ch_body->GetCollisionModel()->AddSphere(collision_material_,
-                                                            std::dynamic_pointer_cast<urdf::Sphere>(u_collision->geometry)->radius,
+                                                            radius,
                                                             collision_in_child);
+                    aabb = ChVector<>(radius * 2);
                     break;
                 }
                 case urdf::Geometry::CYLINDER:
                 {
                     urdf::CylinderSharedPtr tmp_urdf_cylinder_ptr = std::dynamic_pointer_cast<urdf::Cylinder>(u_collision->geometry);
+                    double radius = tmp_urdf_cylinder_ptr->radius;
                     // Chrono defaults cylinders to y axis, so we need to first rotate it to z axis (urdf default) then apply the rotation stored in urdf
                     ch_body->GetCollisionModel()->AddCylinder(collision_material_,
-                                                              tmp_urdf_cylinder_ptr->radius,
-                                                              tmp_urdf_cylinder_ptr->radius,
+                                                              radius,
+                                                              radius,
                                                               tmp_urdf_cylinder_ptr->length / 2,
                                                               collision_in_child,
                                                               ChMatrix33<>(Q_ROTATE_Y_TO_Z >>
@@ -252,6 +263,8 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                                                           u_collision->origin.rotation.x,
                                                                                           u_collision->origin.rotation.y,
                                                                                           u_collision->origin.rotation.z)));
+                    // Note now the cylinder is z-up
+                    aabb = ChVector<>(radius * 2, radius * 2, tmp_urdf_cylinder_ptr->length);
                     break;
                 }
                 case urdf::Geometry::MESH:
@@ -292,9 +305,13 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                                                                   u_collision->origin.rotation.z)),
                                                                       0.1); // sphereswept_thickness
                     }
+                    // TODO: Update aabb
+                    // aabb = ChVector<>();
                     break;
                 }
             }
+            // Update the pos extrema for every collision shape
+            update_pos_extrema(collision_in_child >> child_in_world, aabb);
         }
         ch_body->GetCollisionModel()->BuildModel();
         ch_body->SetCollide(true);
@@ -484,18 +501,17 @@ bool ChUrdfDoc::AddtoSystem(const std::shared_ptr<ChSystem>& sys, const ChCoords
     return true;
 }
 
-// TODO: right now this function is only designed to take into account the pos of ChBody,
-//          disregarding the actual size of the visual shape. Only works tiny ChBody where
-//          the ChBody pos is roughly the same as the boundry pos. And only works for
-//          min_pos_z capturing.
-void ChUrdfDoc::update_pos_extrema(const ChVector<>& new_pos) {
+// TODO: right now this function is only designed to take into account the pos of ChBody
+//           and the size of AABB, disregarding the orientation of ChBody. Result will be
+//           wrong if ChBody has non-zero orientation
+void ChUrdfDoc::update_pos_extrema(const ChVector<>& new_pos, const ChVector<>& aabb) {
     for (int i = 0; i < 3; ++i) {
-        if (new_pos[i] > max_pos_[i])
-            max_pos_[i] = new_pos[i];
+        if (new_pos[i] + aabb[i] / 2 > max_pos_[i])
+            max_pos_[i] = new_pos[i] + aabb[i] / 2;
     }
     for (int i = 0; i < 3; ++i) {
-        if (new_pos[i] < min_pos_[i])
-            min_pos_[i] = new_pos[i];
+        if (new_pos[i] - aabb[i] / 2 < min_pos_[i])
+            min_pos_[i] = new_pos[i] - aabb[i] / 2;
     }
 }
 
