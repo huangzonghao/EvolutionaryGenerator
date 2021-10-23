@@ -16,8 +16,8 @@ function user_id = load_result_file(app, input_file)
 
     % Result Structure
     % env : the order of environments
-    % fitness : num_env x num_ver (env in order of app.defalut_env_order)
-    % feature : num_env x 2 x num_ver (env in order of app.defalut_env_order)
+    % fitness : num_env x num_ver (env in order of app.default_env_order)
+    % feature : num_env x 2 x num_ver (env in order of app.default_env_order)
     % feature_description : string array containing the feature descriptions
     user_id = jsobj.user_id;
     tmp_result.user_id = user_id;
@@ -38,9 +38,9 @@ function user_id = load_result_file(app, input_file)
         tmp_result.envs(i) = env;
     end
 
-    % Store the data in the order of app.defalut_env_order
-    for i = 1 : length(app.defalut_env_order)
-        env_alt_name = strrep(app.defalut_env_order(i), '.', '_');
+    % Store the data in the order of app.default_env_order
+    for i = 1 : length(app.default_env_order)
+        env_alt_name = strrep(app.default_env_order(i), '.', '_');
         if ~isfield(jsobj.designs, env_alt_name)
             fprintf('Missing env %s in %s\n', env_alt_name, user_id);
             continue

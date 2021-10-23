@@ -44,7 +44,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         map_stat % one archive_map stat per env
         results_enabled = [] % a num_user x num_env matrix representing which result is enabled to show
         result_to_compare string
-        defalut_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
+        default_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
     end
 
     % private helper functions
@@ -79,7 +79,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
 
             % init params
             app.archive_map = zeros(app.map_dim_0, app.map_dim_1);
-            app.map_stat = zeros(app.map_dim_0, app.map_dim_1, length(app.defalut_env_order));
+            app.map_stat = zeros(app.map_dim_0, app.map_dim_1, length(app.default_env_order));
         end
 
         % Button pushed function: OpenFolderButton
