@@ -3,6 +3,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         UserInputAnalysisUIFigure  matlab.ui.Figure
+        VerOrderCheckBox           matlab.ui.control.CheckBox
         AllButton                  matlab.ui.control.Button
         ClearButton                matlab.ui.control.Button
         valleyButton               matlab.ui.control.Button
@@ -198,20 +199,20 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.SimulateRobotButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [32 212 72 22];
+            app.SimulateRobotButton.Position = [24 90 72 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.UserInputAnalysisUIFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [28 239 39 22];
+            app.RobotIDXField.Position = [20 117 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.UserInputAnalysisUIFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [68 239 39 22];
+            app.RobotIDYField.Position = [60 117 39 22];
 
             % Create OpenFolderButton
             app.OpenFolderButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
@@ -248,7 +249,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create VerPlotButton
             app.VerPlotButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
             app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
-            app.VerPlotButton.Position = [32 278 58 22];
+            app.VerPlotButton.Position = [24 265 58 22];
             app.VerPlotButton.Text = 'VerPlot';
 
             % Create RefreshListButton
@@ -286,6 +287,12 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.AllButton.ButtonPushedFcn = createCallbackFcn(app, @AllButtonPushed, true);
             app.AllButton.Position = [36 414 57 22];
             app.AllButton.Text = 'All';
+
+            % Create VerOrderCheckBox
+            app.VerOrderCheckBox = uicheckbox(app.UserInputAnalysisUIFigure);
+            app.VerOrderCheckBox.Text = 'default order';
+            app.VerOrderCheckBox.Position = [28 243 89 22];
+            app.VerOrderCheckBox.Value = true;
 
             % Show the figure after all components are created
             app.UserInputAnalysisUIFigure.Visible = 'on';
