@@ -10,5 +10,5 @@ function load_new(app)
     load_result_file(app, filename);
 
     % Bring main UI figure back
-    figure(app.UserInputAnalysisUIFigure);
+    figure(app.MainFigure);
 end

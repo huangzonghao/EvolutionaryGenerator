@@ -2,25 +2,25 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        UserInputAnalysisUIFigure  matlab.ui.Figure
-        VerOrderCheckBox           matlab.ui.control.CheckBox
-        AllButton                  matlab.ui.control.Button
-        ClearButton                matlab.ui.control.Button
-        valleyButton               matlab.ui.control.Button
-        sineButton                 matlab.ui.control.Button
-        groundButton               matlab.ui.control.Button
-        RefreshListButton          matlab.ui.control.Button
-        VerPlotButton              matlab.ui.control.Button
-        RefreshPlotButton          matlab.ui.control.Button
-        PopVarButton               matlab.ui.control.Button
-        ClearPlotButton            matlab.ui.control.Button
-        ListBox                    matlab.ui.control.ListBox
-        OpenFolderButton           matlab.ui.control.Button
-        RobotIDYField              matlab.ui.control.EditField
-        RobotIDXField              matlab.ui.control.EditField
-        SimulateRobotButton        matlab.ui.control.Button
-        MapStatViewerAxes          matlab.ui.control.UIAxes
-        MapViewerAxes              matlab.ui.control.UIAxes
+        MainFigure           matlab.ui.Figure
+        VerOrderCheckBox     matlab.ui.control.CheckBox
+        AllButton            matlab.ui.control.Button
+        ClearButton          matlab.ui.control.Button
+        valleyButton         matlab.ui.control.Button
+        sineButton           matlab.ui.control.Button
+        groundButton         matlab.ui.control.Button
+        RefreshListButton    matlab.ui.control.Button
+        VerPlotButton        matlab.ui.control.Button
+        RefreshPlotButton    matlab.ui.control.Button
+        PopVarButton         matlab.ui.control.Button
+        ClearPlotButton      matlab.ui.control.Button
+        ListBox              matlab.ui.control.ListBox
+        OpenFolderButton     matlab.ui.control.Button
+        RobotIDYField        matlab.ui.control.EditField
+        RobotIDXField        matlab.ui.control.EditField
+        SimulateRobotButton  matlab.ui.control.Button
+        MapStatViewerAxes    matlab.ui.control.UIAxes
+        MapViewerAxes        matlab.ui.control.UIAxes
     end
 
     properties (Access = public)
@@ -176,126 +176,126 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Create UIFigure and components
         function createComponents(app)
 
-            % Create UserInputAnalysisUIFigure and hide until all components are created
-            app.UserInputAnalysisUIFigure = uifigure('Visible', 'off');
-            app.UserInputAnalysisUIFigure.Position = [100 100 1420 578];
-            app.UserInputAnalysisUIFigure.Name = 'Evolutionary Robogami User Input Viewer';
+            % Create MainFigure and hide until all components are created
+            app.MainFigure = uifigure('Visible', 'off');
+            app.MainFigure.Position = [100 100 1420 578];
+            app.MainFigure.Name = 'Evolutionary Robogami User Input Viewer';
 
             % Create MapViewerAxes
-            app.MapViewerAxes = uiaxes(app.UserInputAnalysisUIFigure);
+            app.MapViewerAxes = uiaxes(app.MainFigure);
             app.MapViewerAxes.XTick = [];
             app.MapViewerAxes.YTick = [];
             app.MapViewerAxes.Tag = 'MapViewer';
             app.MapViewerAxes.Position = [269 20 550 550];
 
             % Create MapStatViewerAxes
-            app.MapStatViewerAxes = uiaxes(app.UserInputAnalysisUIFigure);
+            app.MapStatViewerAxes = uiaxes(app.MainFigure);
             app.MapStatViewerAxes.XTick = [];
             app.MapStatViewerAxes.YTick = [];
             app.MapStatViewerAxes.Tag = 'MapViewer';
             app.MapStatViewerAxes.Position = [861 20 550 550];
 
             % Create SimulateRobotButton
-            app.SimulateRobotButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
             app.SimulateRobotButton.Position = [24 90 72 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create RobotIDXField
-            app.RobotIDXField = uieditfield(app.UserInputAnalysisUIFigure, 'text');
+            app.RobotIDXField = uieditfield(app.MainFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
             app.RobotIDXField.Position = [20 117 39 22];
 
             % Create RobotIDYField
-            app.RobotIDYField = uieditfield(app.UserInputAnalysisUIFigure, 'text');
+            app.RobotIDYField = uieditfield(app.MainFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
             app.RobotIDYField.Position = [60 117 39 22];
 
             % Create OpenFolderButton
-            app.OpenFolderButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.OpenFolderButton = uibutton(app.MainFigure, 'push');
             app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
             app.OpenFolderButton.Tag = 'loadresult';
             app.OpenFolderButton.Position = [10 20 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
 
             % Create ListBox
-            app.ListBox = uilistbox(app.UserInputAnalysisUIFigure);
+            app.ListBox = uilistbox(app.MainFigure);
             app.ListBox.Items = {};
             app.ListBox.Multiselect = 'on';
             app.ListBox.Position = [133 20 112 543];
             app.ListBox.Value = {};
 
             % Create ClearPlotButton
-            app.ClearPlotButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.ClearPlotButton = uibutton(app.MainFigure, 'push');
             app.ClearPlotButton.ButtonPushedFcn = createCallbackFcn(app, @ClearPlotButtonPushed, true);
             app.ClearPlotButton.Position = [28 307 73 22];
             app.ClearPlotButton.Text = 'ClearPlot';
 
             % Create PopVarButton
-            app.PopVarButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.PopVarButton = uibutton(app.MainFigure, 'push');
             app.PopVarButton.ButtonPushedFcn = createCallbackFcn(app, @PopVarButtonPushed, true);
             app.PopVarButton.Position = [10 49 73 22];
             app.PopVarButton.Text = 'Pop Var';
 
             % Create RefreshPlotButton
-            app.RefreshPlotButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.RefreshPlotButton = uibutton(app.MainFigure, 'push');
             app.RefreshPlotButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshPlotButtonPushed, true);
             app.RefreshPlotButton.Position = [20 334 85 40];
             app.RefreshPlotButton.Text = 'RefreshPlot';
 
             % Create VerPlotButton
-            app.VerPlotButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.VerPlotButton = uibutton(app.MainFigure, 'push');
             app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
             app.VerPlotButton.Position = [24 265 58 22];
             app.VerPlotButton.Text = 'VerPlot';
 
             % Create RefreshListButton
-            app.RefreshListButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.RefreshListButton = uibutton(app.MainFigure, 'push');
             app.RefreshListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshListButtonPushed, true);
             app.RefreshListButton.Position = [20 526 86 36];
             app.RefreshListButton.Text = 'RefreshList';
 
             % Create groundButton
-            app.groundButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.groundButton = uibutton(app.MainFigure, 'push');
             app.groundButton.ButtonPushedFcn = createCallbackFcn(app, @groundButtonPushed, true);
             app.groundButton.Position = [36 493 57 22];
             app.groundButton.Text = 'ground';
 
             % Create sineButton
-            app.sineButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.sineButton = uibutton(app.MainFigure, 'push');
             app.sineButton.ButtonPushedFcn = createCallbackFcn(app, @sineButtonPushed, true);
             app.sineButton.Position = [36 469 57 22];
             app.sineButton.Text = 'sine';
 
             % Create valleyButton
-            app.valleyButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.valleyButton = uibutton(app.MainFigure, 'push');
             app.valleyButton.ButtonPushedFcn = createCallbackFcn(app, @valleyButtonPushed, true);
             app.valleyButton.Position = [36 445 57 22];
             app.valleyButton.Text = 'valley';
 
             % Create ClearButton
-            app.ClearButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.ClearButton = uibutton(app.MainFigure, 'push');
             app.ClearButton.ButtonPushedFcn = createCallbackFcn(app, @ClearButtonPushed, true);
             app.ClearButton.Position = [36 391 57 22];
             app.ClearButton.Text = 'Clear';
 
             % Create AllButton
-            app.AllButton = uibutton(app.UserInputAnalysisUIFigure, 'push');
+            app.AllButton = uibutton(app.MainFigure, 'push');
             app.AllButton.ButtonPushedFcn = createCallbackFcn(app, @AllButtonPushed, true);
             app.AllButton.Position = [36 414 57 22];
             app.AllButton.Text = 'All';
 
             % Create VerOrderCheckBox
-            app.VerOrderCheckBox = uicheckbox(app.UserInputAnalysisUIFigure);
+            app.VerOrderCheckBox = uicheckbox(app.MainFigure);
             app.VerOrderCheckBox.Text = 'default order';
             app.VerOrderCheckBox.Position = [28 243 89 22];
             app.VerOrderCheckBox.Value = true;
 
             % Show the figure after all components are created
-            app.UserInputAnalysisUIFigure.Visible = 'on';
+            app.MainFigure.Visible = 'on';
         end
     end
 
@@ -314,14 +314,14 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
                 createComponents(app)
 
                 % Register the app with App Designer
-                registerApp(app, app.UserInputAnalysisUIFigure)
+                registerApp(app, app.MainFigure)
 
                 % Execute the startup function
                 runStartupFcn(app, @(app)startupFcn(app, varargin{:}))
             else
 
                 % Focus the running singleton app
-                figure(runningApp.UserInputAnalysisUIFigure)
+                figure(runningApp.MainFigure)
 
                 app = runningApp;
             end
@@ -335,7 +335,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         function delete(app)
 
             % Delete UIFigure when app is deleted
-            delete(app.UserInputAnalysisUIFigure)
+            delete(app.MainFigure)
         end
     end
 end

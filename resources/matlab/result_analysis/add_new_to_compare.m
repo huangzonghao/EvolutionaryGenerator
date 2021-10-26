@@ -1,6 +1,6 @@
 function add_new_to_compare(app)
     tmp_result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
-    figure(app.EvolutionaryRobogamiResultViewerUIFigure);
+    figure(app.MainFigure);
     if (tmp_result_path == 0) % User pressed cancel button
         return;
     end

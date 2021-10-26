@@ -2,7 +2,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        EvolutionaryRobogamiResultViewerUIFigure  matlab.ui.Figure
+        MainFigure           matlab.ui.Figure
         NickNameField        matlab.ui.control.EditField
         NickNameSaveButton   matlab.ui.control.Button
         RemoveCompareButton  matlab.ui.control.Button
@@ -70,7 +70,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % private helper functions
     methods (Access = private)
         function bring_figure_back(app)
-            figure(app.EvolutionaryRobogamiResultViewerUIFigure);
+            figure(app.MainFigure);
         end
     end
 
@@ -243,78 +243,78 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Create UIFigure and components
         function createComponents(app)
 
-            % Create EvolutionaryRobogamiResultViewerUIFigure and hide until all components are created
-            app.EvolutionaryRobogamiResultViewerUIFigure = uifigure('Visible', 'off');
-            app.EvolutionaryRobogamiResultViewerUIFigure.Position = [100 100 642 577];
-            app.EvolutionaryRobogamiResultViewerUIFigure.Name = 'Evolutionary Robogami Result Viewer';
+            % Create MainFigure and hide until all components are created
+            app.MainFigure = uifigure('Visible', 'off');
+            app.MainFigure.Position = [100 100 642 577];
+            app.MainFigure.Name = 'Evolutionary Robogami Result Viewer';
 
             % Create MapViewerAxes
-            app.MapViewerAxes = uiaxes(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.MapViewerAxes = uiaxes(app.MainFigure);
             app.MapViewerAxes.XTick = [];
             app.MapViewerAxes.YTick = [];
             app.MapViewerAxes.Tag = 'MapViewer';
             app.MapViewerAxes.Position = [191 49 450 450];
 
             % Create LoadResultButton
-            app.LoadResultButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadResultButton = uibutton(app.MainFigure, 'push');
             app.LoadResultButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultButtonPushed, true);
             app.LoadResultButton.Tag = 'loadresult';
             app.LoadResultButton.Position = [39 507 100 22];
             app.LoadResultButton.Text = 'Load Result';
 
             % Create GenIDField
-            app.GenIDField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.GenIDField = uieditfield(app.MainFigure, 'text');
             app.GenIDField.ValueChangedFcn = createCallbackFcn(app, @GenIDFieldValueChanged, true);
             app.GenIDField.HorizontalAlignment = 'center';
             app.GenIDField.Position = [68 477 58 22];
 
             % Create LoadNextButton
-            app.LoadNextButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadNextButton = uibutton(app.MainFigure, 'push');
             app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
             app.LoadNextButton.Position = [86 448 25 22];
             app.LoadNextButton.Text = '>';
 
             % Create LoadPrevButton
-            app.LoadPrevButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadPrevButton = uibutton(app.MainFigure, 'push');
             app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
             app.LoadPrevButton.Position = [61 448 25 22];
             app.LoadPrevButton.Text = '<';
 
             % Create LoadNextStepButton
-            app.LoadNextStepButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadNextStepButton = uibutton(app.MainFigure, 'push');
             app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
             app.LoadNextStepButton.Position = [108 427 30 22];
             app.LoadNextStepButton.Text = '+';
 
             % Create LoadPrevStepButton
-            app.LoadPrevStepButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadPrevStepButton = uibutton(app.MainFigure, 'push');
             app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
             app.LoadPrevStepButton.Position = [37 427 30 22];
             app.LoadPrevStepButton.Text = '-';
 
             % Create SimulateRobotButton
-            app.SimulateRobotButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
             app.SimulateRobotButton.Position = [326 11 72 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create GenLabel
-            app.GenLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.GenLabel = uilabel(app.MainFigure);
             app.GenLabel.FontSize = 13;
             app.GenLabel.FontWeight = 'bold';
             app.GenLabel.Position = [35 477 35 22];
             app.GenLabel.Text = 'Gen:';
 
             % Create ResultInfoLabel
-            app.ResultInfoLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.ResultInfoLabel = uilabel(app.MainFigure);
             app.ResultInfoLabel.FontSize = 13;
             app.ResultInfoLabel.FontWeight = 'bold';
             app.ResultInfoLabel.Position = [4 237 77 22];
             app.ResultInfoLabel.Text = 'Result Info:';
 
             % Create ResultNameLabel
-            app.ResultNameLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.ResultNameLabel = uilabel(app.MainFigure);
             app.ResultNameLabel.HorizontalAlignment = 'center';
             app.ResultNameLabel.FontSize = 16;
             app.ResultNameLabel.FontWeight = 'bold';
@@ -322,13 +322,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ResultNameLabel.Text = 'Load a result to view';
 
             % Create ResultInfoTextLabel
-            app.ResultInfoTextLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.ResultInfoTextLabel = uilabel(app.MainFigure);
             app.ResultInfoTextLabel.VerticalAlignment = 'top';
             app.ResultInfoTextLabel.Position = [23 118 185 120];
             app.ResultInfoTextLabel.Text = '';
 
             % Create GenInfoLabel
-            app.GenInfoLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.GenInfoLabel = uilabel(app.MainFigure);
             app.GenInfoLabel.HorizontalAlignment = 'center';
             app.GenInfoLabel.FontSize = 13;
             app.GenInfoLabel.FontWeight = 'bold';
@@ -336,129 +336,129 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.GenInfoLabel.Text = '';
 
             % Create BuildStatButton
-            app.BuildStatButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.BuildStatButton = uibutton(app.MainFigure, 'push');
             app.BuildStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildStatButtonPushed, true);
             app.BuildStatButton.Position = [558 12 73 22];
             app.BuildStatButton.Text = 'BuildStat';
 
             % Create RobotIDXField
-            app.RobotIDXField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.RobotIDXField = uieditfield(app.MainFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
             app.RobotIDXField.Position = [239 11 39 22];
 
             % Create RobotIDYField
-            app.RobotIDYField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.RobotIDYField = uieditfield(app.MainFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
             app.RobotIDYField.Position = [283 11 39 22];
 
             % Create RobotInfoLabel
-            app.RobotInfoLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.RobotInfoLabel = uilabel(app.MainFigure);
             app.RobotInfoLabel.Position = [14 11 217 22];
             app.RobotInfoLabel.Text = '';
 
             % Create StatPlotButton
-            app.StatPlotButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.StatPlotButton = uibutton(app.MainFigure, 'push');
             app.StatPlotButton.ButtonPushedFcn = createCallbackFcn(app, @StatPlotButtonPushed, true);
             app.StatPlotButton.Position = [39 366 57 22];
             app.StatPlotButton.Text = 'StatPlot';
 
             % Create StatStartGenField
-            app.StatStartGenField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.StatStartGenField = uieditfield(app.MainFigure, 'text');
             app.StatStartGenField.ValueChangedFcn = createCallbackFcn(app, @StatStartGenFieldValueChanged, true);
             app.StatStartGenField.HorizontalAlignment = 'center';
             app.StatStartGenField.Position = [55 391 41 22];
 
             % Create StatEndGenField
-            app.StatEndGenField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.StatEndGenField = uieditfield(app.MainFigure, 'text');
             app.StatEndGenField.ValueChangedFcn = createCallbackFcn(app, @StatEndGenFieldValueChanged, true);
             app.StatEndGenField.HorizontalAlignment = 'center';
             app.StatEndGenField.Position = [122 391 62 22];
 
             % Create FromLabel
-            app.FromLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.FromLabel = uilabel(app.MainFigure);
             app.FromLabel.FontSize = 13;
             app.FromLabel.FontWeight = 'bold';
             app.FromLabel.Position = [15 391 41 22];
             app.FromLabel.Text = 'From:';
 
             % Create ToLabel
-            app.ToLabel = uilabel(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.ToLabel = uilabel(app.MainFigure);
             app.ToLabel.FontSize = 13;
             app.ToLabel.FontWeight = 'bold';
             app.ToLabel.Position = [101 391 25 22];
             app.ToLabel.Text = 'To:';
 
             % Create OpenFolderButton
-            app.OpenFolderButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.OpenFolderButton = uibutton(app.MainFigure, 'push');
             app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
             app.OpenFolderButton.Tag = 'loadresult';
             app.OpenFolderButton.Position = [476 12 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
 
             % Create ResumeButton
-            app.ResumeButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.ResumeButton = uibutton(app.MainFigure, 'push');
             app.ResumeButton.ButtonPushedFcn = createCallbackFcn(app, @ResumeButtonPushed, true);
             app.ResumeButton.Position = [402 12 73 22];
             app.ResumeButton.Text = 'Resume';
 
             % Create LoadLastButton
-            app.LoadLastButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadLastButton = uibutton(app.MainFigure, 'push');
             app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
             app.LoadLastButton.Position = [111 448 25 22];
             app.LoadLastButton.Text = '>>';
 
             % Create LoadFirstButton
-            app.LoadFirstButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.LoadFirstButton = uibutton(app.MainFigure, 'push');
             app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
             app.LoadFirstButton.Position = [36 448 25 22];
             app.LoadFirstButton.Text = '<<';
 
             % Create GenStepField
-            app.GenStepField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.GenStepField = uieditfield(app.MainFigure, 'text');
             app.GenStepField.ValueChangedFcn = createCallbackFcn(app, @GenStepFieldValueChanged, true);
             app.GenStepField.HorizontalAlignment = 'center';
             app.GenStepField.Position = [68 427 39 22];
 
             % Create CompareListBox
-            app.CompareListBox = uilistbox(app.EvolutionaryRobogamiResultViewerUIFigure);
+            app.CompareListBox = uilistbox(app.MainFigure);
             app.CompareListBox.Items = {};
             app.CompareListBox.Position = [47 261 146 98];
             app.CompareListBox.Value = {};
 
             % Create ComparePlotButton
-            app.ComparePlotButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.ComparePlotButton = uibutton(app.MainFigure, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
             app.ComparePlotButton.Position = [98 366 86 22];
             app.ComparePlotButton.Text = 'ComparePlot';
 
             % Create AddCompareButton
-            app.AddCompareButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.AddCompareButton = uibutton(app.MainFigure, 'push');
             app.AddCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddCompareButtonPushed, true);
             app.AddCompareButton.Position = [5 337 37 22];
             app.AddCompareButton.Text = 'Add';
 
             % Create RemoveCompareButton
-            app.RemoveCompareButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.RemoveCompareButton = uibutton(app.MainFigure, 'push');
             app.RemoveCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveCompareButtonPushed, true);
             app.RemoveCompareButton.Position = [5 315 37 22];
             app.RemoveCompareButton.Text = 'Del';
 
             % Create NickNameSaveButton
-            app.NickNameSaveButton = uibutton(app.EvolutionaryRobogamiResultViewerUIFigure, 'push');
+            app.NickNameSaveButton = uibutton(app.MainFigure, 'push');
             app.NickNameSaveButton.ButtonPushedFcn = createCallbackFcn(app, @NickNameSaveButtonPushed, true);
             app.NickNameSaveButton.Tag = 'loadresult';
             app.NickNameSaveButton.Position = [138 88 50 22];
             app.NickNameSaveButton.Text = 'Save';
 
             % Create NickNameField
-            app.NickNameField = uieditfield(app.EvolutionaryRobogamiResultViewerUIFigure, 'text');
+            app.NickNameField = uieditfield(app.MainFigure, 'text');
             app.NickNameField.HorizontalAlignment = 'center';
             app.NickNameField.Position = [5 88 134 22];
 
             % Show the figure after all components are created
-            app.EvolutionaryRobogamiResultViewerUIFigure.Visible = 'on';
+            app.MainFigure.Visible = 'on';
         end
     end
 
@@ -477,14 +477,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
                 createComponents(app)
 
                 % Register the app with App Designer
-                registerApp(app, app.EvolutionaryRobogamiResultViewerUIFigure)
+                registerApp(app, app.MainFigure)
 
                 % Execute the startup function
                 runStartupFcn(app, @(app)startupFcn(app, varargin{:}))
             else
 
                 % Focus the running singleton app
-                figure(runningApp.EvolutionaryRobogamiResultViewerUIFigure)
+                figure(runningApp.MainFigure)
 
                 app = runningApp;
             end
@@ -498,7 +498,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function delete(app)
 
             % Delete UIFigure when app is deleted
-            delete(app.EvolutionaryRobogamiResultViewerUIFigure)
+            delete(app.MainFigure)
         end
     end
 end
