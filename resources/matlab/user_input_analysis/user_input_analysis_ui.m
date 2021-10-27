@@ -49,19 +49,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
 
         % Code that executes after component creation
         function startupFcn(app, evogen_exe_path, evogen_user_input_path, evogen_results_path)
-            if (ispc)
-                app.simulator_name = strcat(app.simulator_basename, '.exe');
-            else
-                app.simulator_name = app.simulator_basename;
-            end
-
-            app.user_input_dir = evogen_user_input_path;
-            app.training_results_dir = evogen_results_path;
-            app.evogen_exe_path = evogen_exe_path;
-
-            % init params
-            app.archive_map = zeros(app.map_dim_0, app.map_dim_1);
-            app.map_stat = zeros(app.map_dim_0, app.map_dim_1, length(app.default_env_order));
+            user_input_analysis_init(app, evogen_exe_path, evogen_user_input_path, evogen_results_path);
         end
 
         % Button pushed function: OpenFolderButton
