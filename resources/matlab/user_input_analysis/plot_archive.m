@@ -15,16 +15,30 @@ function plot_archive(app)
         end
     end
 
-    surf(app.MapViewerAxes, app.archive_map);
-    title(app.MapViewerAxes, 'Archive Map');
-    xlabel(app.MapViewerAxes, app.default_feature_description(2)); % x, y flipped in plot
-    ylabel(app.MapViewerAxes, app.default_feature_description(1));
-    zlabel(app.MapViewerAxes, 'Fitness');
+    app.map_surf.select();
+    surf(app.archive_map);
+    title('Archive Map');
+    xlabel(app.default_feature_description(2)); % x, y flipped in plot
+    ylabel(app.default_feature_description(1));
+    zlabel('Fitness');
+
+    app.map_heat.select();
+    heatmap(app.archive_map);
+    title('Archive Map');
+    xlabel(app.default_feature_description(2)); % x, y flipped in plot
+    ylabel(app.default_feature_description(1));
 
     % bar3(app.MapStatViewerAxes, app.map_stat, 1, 'b');
-    stacked_bar3(app.MapStatViewerAxes, app.map_stat);
-    title(app.MapStatViewerAxes, 'Updates per Bin');
-    xlabel(app.MapStatViewerAxes, app.default_feature_description(2)); % x, y flipped in plot
-    ylabel(app.MapStatViewerAxes, app.default_feature_description(1));
-    zlabel(app.MapStatViewerAxes, 'Number of robots');
+    app.stat_bar.select();
+    stacked_bar3(app.stat_bar.axis, app.map_stat);
+    title('Updates per Bin');
+    xlabel(app.default_feature_description(2)); % x, y flipped in plot
+    ylabel(app.default_feature_description(1));
+    zlabel('Number of robots');
+
+    app.stat_heat.select();
+    heatmap(sum(app.map_stat, 3));
+    title('Updates per Bin');
+    xlabel(app.default_feature_description(2)); % x, y flipped in plot
+    ylabel(app.default_feature_description(1));
 end

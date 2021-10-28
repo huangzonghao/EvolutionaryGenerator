@@ -7,9 +7,9 @@ function load_and_plot_ref(app, name)
     end
 
     if name == "left"
-        plot_gen(app.RefLeftAxes, training_result, 0);
+        plot_gen({app.left_surf, app.left_heat}, training_result, 0);
     elseif name == "right"
-        plot_gen(app.RefRightAxes, training_result, training_result.nb_gen);
+        plot_gen({app.right_surf, app.right_heat}, training_result, training_result.nb_gen);
     end
 end
 
@@ -53,8 +53,20 @@ function plot_gen(target_axes, training_result, gen_to_plot)
     x = round(x * double(training_result.griddim_0 - 1)) + 1;
     y = round(y * double(training_result.griddim_1 - 1)) + 1;
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
-    surf(target_axes, archive_map);
-    xlabel(target_axes, training_result.feature_description2); % x, y flipped in plot
-    ylabel(target_axes, training_result.feature_description1);
-    title(target_axes, ['Gen ', num2str(gen_to_plot)]);
+
+    target_axes{1}.select();
+    surf(archive_map);
+    xlabel(training_result.feature_description2); % x, y flipped in plot
+    ylabel(training_result.feature_description1);
+    title(['Gen ', num2str(gen_to_plot)]);
+
+    if length(target_axes) == 1
+        return
+    end
+
+    target_axes{2}.select();
+    heatmap(archive_map);
+    xlabel(training_result.feature_description2); % x, y flipped in plot
+    ylabel(training_result.feature_description1);
+    title(['Gen ', num2str(gen_to_plot)]);
 end
