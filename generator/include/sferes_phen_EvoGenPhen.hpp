@@ -119,6 +119,7 @@ class EvoGenPhen {
     Fit& fit() { return _fit; }
     const Fit& fit() const { return _fit; }
 
+    void set_grid_id(int g0, int g1) { _grid_id[0] = g0; _grid_id[1] = g1; }
     const std::array<int, 2>& grid_id() { return _grid_id; }
 
     Genome& gen()  { return _gene; }
@@ -229,6 +230,8 @@ class EvoGenPhen {
         ar & BOOST_SERIALIZATION_NVP(_id);
         ar & BOOST_SERIALIZATION_NVP(_gene);
         ar & BOOST_SERIALIZATION_NVP(_fit);
+        ar & BOOST_SERIALIZATION_NVP(_grid_id[0]);
+        ar & BOOST_SERIALIZATION_NVP(_grid_id[1]);
     }
 
   protected:
@@ -239,6 +242,7 @@ class EvoGenPhen {
     double _max_p;
     bool _valid = false;
     const double pos[3] = {0.01, 0.25, 0.49};
+    std::array<int, 2> _grid_id = {-1, -1}; // meaning this phen has not been added to archive map
     RobotRepresentation _robot;
 };
 

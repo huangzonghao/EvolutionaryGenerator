@@ -52,6 +52,7 @@ class EvoGenStat {
             ofs << (*it)->id().gen << "," << (*it)->id().id << ","
                 << (*it)->id().p1_gen << "," << (*it)->id().p1_id << ","
                 << (*it)->id().p2_gen << "," << (*it)->id().p2_id << ","
+                << (*it)->grid_id()[0] << "," << (*it)->grid_id()[1] << ","
                 << (*it)->fit().desc()[0] << "," << (*it)->fit().desc()[1] << ","
                 << (*it)->fit().value();
 

@@ -90,6 +90,7 @@ class Grid {
         return false;
 
       add_to_container:
+        i1->set_grid_id(behav_pos[0], behav_pos[1]);
         _array(behav_pos) = i1;
         return true;
     }
