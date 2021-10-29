@@ -11,10 +11,9 @@ function user_input_analysis_init(app, evogen_exe_path, evogen_user_input_path, 
 
     open_plot(app);
 
-    % camera_link = linkprop([app.MapViewerAxes, app.MapStatViewerAxes, app.RefLeftAxes, app.RefRightAxes], {'CameraUpVector', 'CameraPosition', 'CameraTarget'});
+    % TODO: Sync view among surf plots
+    % camera_link = linkprop([app.map_surf.axis, app.stat_bar.axis, app.left_surf.axis, app.right_surf.axis], {'CameraUpVector', 'CameraPosition', 'CameraTarget'});
     % setappdata(app.MainFigure, 'StoreTheLink', camera_link);
-    lim_link = linkprop([app.map_surf.axis, app.left_surf.axis, app.right_surf.axis], {'ZLim'});
-    setappdata(app.MainFigure, 'StoreTheLink', lim_link);
 
     % init params
     app.archive_map = zeros(app.map_dim_0, app.map_dim_1);

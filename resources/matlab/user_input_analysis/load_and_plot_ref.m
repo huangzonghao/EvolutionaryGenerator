@@ -7,10 +7,13 @@ function load_and_plot_ref(app, name)
     end
 
     if name == "left"
-        plot_gen({app.left_surf, app.left_heat}, training_result, 0);
+        % TODO: too dirty -- somehow heatmap destroies the original axis
+        [app.heat_axes.left_heat, fitness] = plot_gen(app, {app.left_surf, app.left_heat}, training_result, 0);
     elseif name == "right"
-        plot_gen({app.right_surf, app.right_heat}, training_result, training_result.nb_gen);
+        [app.heat_axes.right_heat, fitness] = plot_gen(app, {app.right_surf, app.right_heat}, training_result, training_result.nb_gen);
     end
+
+    update_plots_range(app, min(fitness(:)), max(fitness(:)));
 end
 
 function training_result = load_training_result(app)
@@ -39,7 +42,7 @@ function training_result = load_training_result(app)
     training_result.loaded = true;
 end
 
-function plot_gen(target_axes, training_result, gen_to_plot)
+function [heat_axis, fitness] = plot_gen(app, target_axes, training_result, gen_to_plot)
 
     archive_file = fullfile(training_result.result_path, ...
                             ['/archives/archive_', num2str(gen_to_plot), '.csv']);
@@ -60,12 +63,8 @@ function plot_gen(target_axes, training_result, gen_to_plot)
     ylabel(training_result.feature_description1);
     title(['Gen ', num2str(gen_to_plot)]);
 
-    if length(target_axes) == 1
-        return
-    end
-
     target_axes{2}.select();
-    heatmap(archive_map);
+    heat_axis = heatmap(archive_map);
     xlabel(training_result.feature_description2); % x, y flipped in plot
     ylabel(training_result.feature_description1);
     title(['Gen ', num2str(gen_to_plot)]);

@@ -29,6 +29,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
 
     properties (Access = public)
         plot_fig
+        heat_axes
         panel
         map_surf
         map_heat
@@ -39,6 +40,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         right_surf
         right_heat
         results = {}
+        fitness_range = [Inf, -Inf];
         evo_params % parameters of an evolutionary generation process
         user_input_dir
         training_results_dir

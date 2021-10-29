@@ -23,7 +23,8 @@ function plot_archive(app)
     zlabel('Fitness');
 
     app.map_heat.select();
-    heatmap(app.archive_map);
+    % TODO: too dirty -- somehow heatmap destroies the original axis
+    app.heat_axes.map_heat = heatmap(app.archive_map);
     title('Archive Map');
     xlabel(app.default_feature_description(2)); % x, y flipped in plot
     ylabel(app.default_feature_description(1));
@@ -37,8 +38,11 @@ function plot_archive(app)
     zlabel('Number of robots');
 
     app.stat_heat.select();
-    heatmap(sum(app.map_stat, 3));
+    % TODO: too dirty -- somehow heatmap destroies the original axis
+    app.heat_axes.map_stat = heatmap(sum(app.map_stat, 3));
     title('Updates per Bin');
     xlabel(app.default_feature_description(2)); % x, y flipped in plot
     ylabel(app.default_feature_description(1));
+
+    update_plots_range(app, min(app.archive_map(:)), max(app.archive_map(:)));
 end
