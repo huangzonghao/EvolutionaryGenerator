@@ -67,20 +67,12 @@ class EvoGenStat {
     void _write_archive(const EA& ea) const {
         std::string fname = ea.res_dir() + "/archives/archive_" +
                             std::to_string(ea.gen() + 1) + ".csv";
-
         std::ofstream ofs(fname);
-
         ofs.precision(5);
         for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it) {
-            const auto& desc_size = (*it)->fit().desc().size();
-            ofs << desc_size << ",";
-            for (size_t dim = 0; dim < desc_size; ++dim)
-                ofs << (*it)->fit().desc()[dim] << ",";
-            ofs << (*it)->fit().value();
-
-            for (size_t dim = 0; dim < (*it)->size(); ++dim)
-                ofs << "," << (*it)->data(dim);
-            ofs << std::endl;
+            ofs << (*it)->id().gen << "," << (*it)->id().id << ","
+                << (*it)->grid_id()[0] << "," << (*it)->grid_id()[1] << ","
+                << (*it)->fit().value() << std::endl;
         }
         ofs.close();
     }
