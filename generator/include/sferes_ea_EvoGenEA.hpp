@@ -62,6 +62,9 @@ class EvoGenEA : public stc::Any<Exact> {
         init_pop();
         _dump_state();
         update_stats_init();
+        // TODO: update the _gen definitiation so that _gen = 0 is the init_seeds
+        //           and the training start with _gen = 1. Otherwise I have to
+        //           add 1 to _gen everywhere I use the number.
         for (_gen = 0; _gen < _nb_gen; ++_gen)
             _iter();
     }

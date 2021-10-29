@@ -36,31 +36,28 @@ class EvoGenStat {
 
     template <typename EA>
     void _write_init_pop(const EA& ea) const {
-        std::ofstream ofs(ea.res_dir() + "/all_robots/0.csv");
-        size_t idx = 0;
-        ofs.precision(5);
-        for (auto it = ea.init_pop().begin(); it != ea.init_pop().end(); ++it) {
-            ofs << idx << "," << (*it)->fit().value();
-            for (size_t dim = 0; dim < (*it)->size(); ++dim)
-                ofs << "," << (*it)->data(dim);
-            ofs << std::endl;
-            ++idx;
-        }
-        ofs.close();
+        _write_robots_kernel(ea.get_init_pop(), ea.res_dir() + "/all_robots/0.csv");
     }
 
     template <typename EA>
     void _write_offspring(const EA& ea) const {
-        std::string fname = ea.res_dir() + "/all_robots/" + std::to_string(ea.gen() + 1) + ".csv";
-        std::ofstream ofs(fname);
-        size_t idx = 0;
+        _write_robots_kernel(ea.offspring(), ea.res_dir() + "/all_robots/" + std::to_string(ea.gen() + 1) + ".csv");
+    }
+
+    template <typename Pop>
+    void _write_robots_kernel(const Pop& pop, std::string& output_filename) const {
+        std::ofstream ofs(output_filename);
         ofs.precision(5);
-        for (auto it = ea.offspring().begin(); it != ea.offspring().end(); ++it) {
-            ofs << idx << "," << (*it)->fit().value();
-            for (size_t dim = 0; dim < (*it)->size(); ++dim)
-                ofs << "," << (*it)->data(dim);
+        for (auto it = pop.begin(); it != pop.end(); ++it) {
+            ofs << (*it)->id().gen << "," << (*it)->id().id << ","
+                << (*it)->id().p1_gen << "," << (*it)->id().p1_id << ","
+                << (*it)->id().p2_gen << "," << (*it)->id().p2_id << ","
+                << (*it)->fit().desc()[0] << "," << (*it)->fit().desc()[1] << ","
+                << (*it)->fit().value();
+
+            for (size_t i = 0; i < (*it)->size(); ++i)
+                ofs << "," << (*it)->data(i);
             ofs << std::endl;
-            ++idx;
         }
         ofs.close();
     }

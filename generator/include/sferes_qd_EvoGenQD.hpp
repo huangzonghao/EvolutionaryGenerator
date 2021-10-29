@@ -51,7 +51,7 @@ class EvoGenQD
         // Random pop to fill in the blanks
         for (int i = _init_pop.size(); i < _init_size; ++i) {
             _init_pop.emplace_back(std::make_shared<Phen>(this->_evo_params));
-            _init_pop.back()->random();
+            _init_pop.back()->random(0, i);
         }
 
         this->_eval_pop(_init_pop);
@@ -71,6 +71,8 @@ class EvoGenQD
         for (size_t i = 0; i < _parents.size(); i += 2) {
             std::shared_ptr<Phen> i1, i2;
             _parents[ids[i]]->cross(_parents[ids[i + 1]], i1, i2);
+            i1->set_id(_gen + 1, i);
+            i2->set_id(_gen + 1, i + 1);
             i1->mutate();
             i2->mutate();
             _offspring[ids[i]] = i1;
@@ -90,7 +92,7 @@ class EvoGenQD
     pop_t& offspring() { return _offspring; }
     const pop_t& parents() const { return _parents; }
     pop_t& parents() { return _parents; }
-    const pop_t& init_pop() const { return _init_pop; }
+    const pop_t& get_init_pop() const { return _init_pop; }
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
     const double last_epoch_time() const { return  this->_last_epoch_time; }
