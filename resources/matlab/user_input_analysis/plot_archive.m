@@ -4,6 +4,10 @@ function plot_archive(app)
         return
     end
 
+    if sum(app.results_enabled(:)) == 0
+        return
+    end
+
     app.archive_map(:) = 0;
     app.map_stat(:) = 0;
 
