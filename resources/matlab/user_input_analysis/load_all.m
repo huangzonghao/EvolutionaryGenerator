@@ -6,7 +6,7 @@ function loda_all(app)
     dirs = dir(app.user_input_dir);
     counter = 1;
     for i = 1 : length(dirs)
-        if (dirs(i).isdir && ~contains(dirs(i).name, digitsPattern(6) + '.json'))
+        if (dirs(i).isdir || ~contains(dirs(i).name, digitsPattern(6) + '.json'))
             continue;
         end
         user_id = load_result_file(app, dirs(i).name);

@@ -5,6 +5,8 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         MainFigure           matlab.ui.Figure
         CloseFigButton       matlab.ui.control.Button
         OpenFigButton        matlab.ui.control.Button
+        ScreenshotNameField  matlab.ui.control.EditField
+        ScreenShotButton     matlab.ui.control.Button
         RefRightButton       matlab.ui.control.Button
         RefLeftButton        matlab.ui.control.Button
         VerOrderCheckBox     matlab.ui.control.CheckBox
@@ -156,6 +158,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             load_and_plot_ref(app, 'right');
         end
 
+        % Button pushed function: ScreenShotButton
+        function ScreenShotButtonPushed(app, event)
+            take_screenshot(app);
+        end
+
         % Button pushed function: OpenFigButton
         function OpenFigButtonPushed(app, event)
             open_plot(app);
@@ -295,6 +302,16 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.RefRightButton.ButtonPushedFcn = createCallbackFcn(app, @RefRightButtonPushed, true);
             app.RefRightButton.Position = [70 331 57 40];
             app.RefRightButton.Text = 'RefRight';
+
+            % Create ScreenShotButton
+            app.ScreenShotButton = uibutton(app.MainFigure, 'push');
+            app.ScreenShotButton.ButtonPushedFcn = createCallbackFcn(app, @ScreenShotButtonPushed, true);
+            app.ScreenShotButton.Position = [30 289 78 22];
+            app.ScreenShotButton.Text = 'ScreenShot';
+
+            % Create ScreenshotNameField
+            app.ScreenshotNameField = uieditfield(app.MainFigure, 'text');
+            app.ScreenshotNameField.Position = [22 258 100 22];
 
             % Create OpenFigButton
             app.OpenFigButton = uibutton(app.MainFigure, 'push');
