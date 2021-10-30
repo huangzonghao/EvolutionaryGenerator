@@ -11,9 +11,9 @@ namespace stat {
 class EvoGenStat {
   public:
     template <typename E> void make_stat_dir(const E& ea) {
-        std::filesystem::create_directory(ea.res_dir() + "/archives");
+        std::filesystem::create_directory(ea.res_dir() + "/gridmaps");
         if (output_all_robots_)
-            std::filesystem::create_directory(ea.res_dir() + "/all_robots");
+            std::filesystem::create_directory(ea.res_dir() + "/robots");
     }
 
     template <typename E> void init(const E& ea) {
@@ -36,12 +36,12 @@ class EvoGenStat {
 
     template <typename EA>
     void _write_init_pop(const EA& ea) const {
-        _write_robots_kernel(ea.get_init_pop(), ea.res_dir() + "/all_robots/0.csv");
+        _write_robots_kernel(ea.get_init_pop(), ea.res_dir() + "/robots/0.csv");
     }
 
     template <typename EA>
     void _write_offspring(const EA& ea) const {
-        _write_robots_kernel(ea.offspring(), ea.res_dir() + "/all_robots/" + std::to_string(ea.gen() + 1) + ".csv");
+        _write_robots_kernel(ea.offspring(), ea.res_dir() + "/robots/" + std::to_string(ea.gen() + 1) + ".csv");
     }
 
     template <typename Pop>
@@ -65,7 +65,7 @@ class EvoGenStat {
 
     template <typename EA>
     void _write_archive(const EA& ea) const {
-        std::string fname = ea.res_dir() + "/archives/archive_" +
+        std::string fname = ea.res_dir() + "/gridmaps/" +
                             std::to_string(ea.gen() + 1) + ".csv";
         std::ofstream ofs(fname);
         ofs.precision(5);
