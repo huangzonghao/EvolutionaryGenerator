@@ -29,11 +29,12 @@ class Grid {
     typedef typename pop_t::iterator it_t;
     typedef typename std::vector<std::vector<indiv_t>> front_t;
 
-    typedef boost::multi_array<indiv_t, dim> array_t;
-    typedef typename array_t::multi_array_base::index_range index_range_t;
+    typedef boost::multi_array<indiv_t, dim> map_t;
+    typedef boost::multi_array<int, dim> stat_t;
+    typedef typename map_t::multi_array_base::index_range index_range_t;
     typedef boost::detail::multi_array::index_gen<dim, dim> index_gen_t;
-    typedef typename array_t::template const_array_view<dim>::type view_t;
-    typedef boost::array<typename array_t::index, dim> behav_index_t;
+    typedef typename map_t::template const_array_view<dim>::type view_t;
+    typedef boost::array<typename map_t::index, dim> behav_index_t;
     typedef boost::array<double, dim> point_t;
 
     behav_index_t grid_shape = {20, 20};
@@ -41,12 +42,24 @@ class Grid {
     Grid() {
         // allocate space for _array and _array_parents
         _array.resize(grid_shape);
+        _stat.resize(grid_shape);
+        reset_stat();
+    }
+
+    void reset_stat() {
+        // TODO: how to do this faster
+        for (int i = 0; i < grid_shape[0]; ++i) {
+            for (int j = 0; j < grid_shape[1]; ++j) {
+                _stat[i][j] = 0;
+            }
+        }
     }
 
     void set_params(const EvoParams& evo_params) {
         for (int i = 0; i < evo_params.grid_shape().size(); ++i)
             grid_shape[i] = evo_params.grid_shape()[i];
         _array.resize(grid_shape);
+        _stat.resize(grid_shape);
     }
 
     template <typename I> behav_index_t get_index(const I& indiv) const {
@@ -92,6 +105,7 @@ class Grid {
       add_to_container:
         i1->set_grid_id(behav_pos[0], behav_pos[1]);
         _array(behav_pos) = i1;
+        _stat(behav_pos) += 1;
         return true;
     }
 
@@ -103,15 +117,19 @@ class Grid {
             _update_indiv(parents[i]);
     }
 
-    const array_t& archive() const { return _array; }
+    const map_t& archive() const { return _array; }
+    const stat_t& stat() const { return _stat; }
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
         ar & BOOST_SERIALIZATION_NVP(_num_filled);
         ar & BOOST_SERIALIZATION_NVP(_array);
+        ar & BOOST_SERIALIZATION_NVP(_stat);
     }
 
   protected:
+    // TODO: the way it converts double to int seems to be different from what
+    //           I have been using
     // Converts the descriptor into a Point_t
     // Ignoring the rest of data in descriptor
     template <typename I> point_t get_point(const I& indiv) const {
@@ -208,7 +226,8 @@ class Grid {
         return ngbh;
     }
 
-    array_t _array;
+    map_t _array;
+    stat_t _stat;
     size_t _num_filled = 0;
 };
 

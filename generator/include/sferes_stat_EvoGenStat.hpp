@@ -12,6 +12,7 @@ class EvoGenStat {
   public:
     template <typename E> void make_stat_dir(const E& ea) {
         std::filesystem::create_directory(ea.res_dir() + "/gridmaps");
+        std::filesystem::create_directory(ea.res_dir() + "/gridstats");
         if (output_all_robots_)
             std::filesystem::create_directory(ea.res_dir() + "/robots");
     }
@@ -65,9 +66,7 @@ class EvoGenStat {
 
     template <typename EA>
     void _write_archive(const EA& ea) const {
-        std::string fname = ea.res_dir() + "/gridmaps/" +
-                            std::to_string(ea.gen() + 1) + ".csv";
-        std::ofstream ofs(fname);
+        std::ofstream ofs(ea.res_dir() + "/gridmaps/" + std::to_string(ea.gen() + 1) + ".csv");
         ofs.precision(5);
         for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it) {
             ofs << (*it)->id().gen << "," << (*it)->id().id << ","
@@ -75,6 +74,16 @@ class EvoGenStat {
                 << (*it)->fit().value() << std::endl;
         }
         ofs.close();
+
+        std::ofstream ofs2(ea.res_dir() + "/gridstats/" + std::to_string(ea.gen() + 1) + ".csv");
+        const auto& map_stat = ea.container().stat();
+        for (int i = 0; i < ea.container().grid_shape[0]; ++i) {
+            for (int j = 0; j < ea.container().grid_shape[1]; ++j) {
+                ofs2 << map_stat[i][j] << ",";
+            }
+            ofs2 << std::endl;
+        }
+        ofs2.close();
     }
 
     template <typename EA>

@@ -235,6 +235,7 @@ class EvoGenEA : public stc::Any<Exact> {
         stc::exact(this)->_load_state_extra(ia);
     }
     void _load_state_extra(boost::archive::binary_iarchive& ia) {}
+    // TODO: this populate_params thing seems so weird, needs to be removed
     void _populate_params() {
         _nb_gen = _evo_params.nb_gen();
         if (_evo_params.output_enabled())

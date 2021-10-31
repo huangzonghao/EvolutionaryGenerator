@@ -103,6 +103,7 @@ class EvoGenQD
     // container and both of the sub population (offspring and parents)
     void _add(pop_t& pop_off, std::vector<bool>& added, pop_t& pop_parents)
     {
+        _container.reset_stat();
         added.resize(pop_off.size());
         for (size_t i = 0; i < pop_off.size(); ++i)
             added[i] = _add_to_container(pop_off[i], pop_parents[i]);
@@ -112,6 +113,7 @@ class EvoGenQD
     // Same function, but without the need of parent.
     void _add(pop_t& pop_off, std::vector<bool>& added)
     {
+        _container.reset_stat();
         added.resize(pop_off.size());
         for (size_t i = 0; i < pop_off.size(); ++i)
             added[i] = _container.add(pop_off[i]);
