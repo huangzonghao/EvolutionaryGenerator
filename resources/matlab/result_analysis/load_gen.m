@@ -4,7 +4,7 @@ function load_gen(app, gen_to_load)
         return
     end
     app.current_gen = gen_to_load;
-    app.current_gen_archive = readmatrix(fullfile(app.result_path, strcat(app.archive_prefix, num2str(app.current_gen), app.archive_subfix)));
+    app.current_gen_archive = readmatrix(fullfile(app.result_path, strcat('/gridmaps/', num2str(app.current_gen), '.csv')));
     app.GenIDField.Value = num2str(app.current_gen);
     plot_heatmap(app);
 end

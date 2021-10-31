@@ -50,20 +50,19 @@ classdef result_analysis_ui < matlab.apps.AppBase
         evogen_exe_path
         current_gen = -1
         current_gen_archive
-        current_gen_x_idx
-        current_gen_y_idx
+        robots_buffer
+        robots_gen = -1
         gen_step = 500
         % TODO: should read the following constant values from somewhere
         %     especially the simulator name, which is system dependent
         params_filename = 'evo_params.xml'
         sim_params_filename = 'sim_params.xml'
-        archive_prefix = '/archives/archive_'
-        archive_subfix = '.csv'
         simulator_basename = 'Genotype_Visualizer'
         simulator_name
         generator_basename = 'Evolutionary_Generator'
         generator_name
         archive_map
+        archive_ids
         result_to_compare string
     end
 
