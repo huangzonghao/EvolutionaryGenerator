@@ -45,16 +45,14 @@ end
 function [heat_axis, fitness] = plot_gen(app, target_axes, training_result, gen_to_plot)
 
     archive_file = fullfile(training_result.result_path, ...
-                            ['/archives/archive_', num2str(gen_to_plot), '.csv']);
+                            ['/gridmaps/', num2str(gen_to_plot), '.csv']);
     archive_data = readmatrix(archive_file);
 
     % plot heatmap
     archive_map = zeros(training_result.griddim_0, training_result.griddim_1);
-    x = archive_data(:, 2);
-    y = archive_data(:, 3);
-    fitness = archive_data(:, 4);
-    x = round(x * double(training_result.griddim_0 - 1)) + 1;
-    y = round(y * double(training_result.griddim_1 - 1)) + 1;
+    x = archive_data(:, 3) + 1;
+    y = archive_data(:, 4) + 1;
+    fitness = archive_data(:, 5);
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
 
     target_axes{1}.select();
