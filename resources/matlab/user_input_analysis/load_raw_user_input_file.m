@@ -1,4 +1,4 @@
-function user_id = load_result_file(app, input_file)
+function user_id = load_raw_user_input_file(app, input_file)
     %% Input file : the stem file name
 
     % First check if the file has been loaded before
@@ -19,6 +19,7 @@ function user_id = load_result_file(app, input_file)
     % fitness : num_env x num_ver (env in order of app.default_env_order)
     % feature : num_env x 2 x num_ver (env in order of app.default_env_order)
     % feature_description : string array containing the feature descriptions
+    tmp_result.internal_id = length(app.results) + 1;
     user_id = jsobj.user_id;
     tmp_result.user_id = user_id;
     for i = 1 : length(jsobj.feature_description)
@@ -51,6 +52,7 @@ function user_id = load_result_file(app, input_file)
             tmp_result.fitness(i, j) = jsobj.designs.(env_alt_name).(ver_name).fitness;
             tmp_result.feature(i, j, 1) = jsobj.designs.(env_alt_name).(ver_name).feature(1);
             tmp_result.feature(i, j, 2) = jsobj.designs.(env_alt_name).(ver_name).feature(2);
+            tmp_result.gene{i,j} = jsobj.designs.(env_alt_name).(ver_name).gene;
         end
     end
 

@@ -7,7 +7,7 @@ function load_new(app)
     if filename == 0 % User pressed cancel button
         return
     end
-    load_result_file(app, filename);
+    load_raw_user_input_file(app, filename);
 
     % Bring main UI figure back
     figure(app.MainFigure);
