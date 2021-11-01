@@ -6,6 +6,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         stat.elite_archive_fits = []; % mean fitness of top 10% indivs of archive after each generation
         stat.population_fits = [];
         stat.coverage = [];
+        stat.map_stat = zeros(evo_params.griddim_0, evo_params.griddim_1);
     end
 
     i_start = length(stat.archive_fits);
@@ -28,6 +29,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         pop_fitness = current_gen_pop(:, 11);
         stat.population_fits(i + 1) = mean(pop_fitness);
         stat.coverage(i + 1) = length(fitness) / (evo_params.griddim_0 * evo_params.griddim_1);
+        stat.map_stat = stat.map_stat + readmatrix(fullfile(result_path, strcat('/gridstats/', num2str(i), '.csv')));
     end
     close(wb);
     save(stat_file, 'stat');

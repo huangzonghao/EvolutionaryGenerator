@@ -3,6 +3,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure           matlab.ui.Figure
+        BinUpdatesButton     matlab.ui.control.Button
+        ParentageButton      matlab.ui.control.Button
         NickNameField        matlab.ui.control.EditField
         NickNameSaveButton   matlab.ui.control.Button
         RemoveCompareButton  matlab.ui.control.Button
@@ -12,7 +14,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GenStepField         matlab.ui.control.EditField
         LoadFirstButton      matlab.ui.control.Button
         LoadLastButton       matlab.ui.control.Button
-        ResumeButton         matlab.ui.control.Button
         OpenFolderButton     matlab.ui.control.Button
         ToLabel              matlab.ui.control.Label
         FromLabel            matlab.ui.control.Label
@@ -185,13 +186,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
             winopen(app.result_path);
         end
 
-        % Button pushed function: ResumeButton
-        function ResumeButtonPushed(app, event)
-            cmd_str = fullfile(app.evogen_exe_path, app.generator_name) + ...
-                      " resume " + app.result_basename;
-            system(cmd_str);
-        end
-
         % Button pushed function: SimulateRobotButton
         function SimulateRobotButtonPushed(app, event)
             run_simulation(app);
@@ -233,6 +227,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
             if (app.result_loaded && str2double(app.StatEndGenField.Value) > app.evo_params.nb_gen)
                 app.StatEndGenField.Value = num2str(app.evo_params.nb_gen);
             end
+        end
+
+        % Button pushed function: ParentageButton
+        function ParentageButtonPushed(app, event)
+            plot_parentage(app);
+        end
+
+        % Button pushed function: BinUpdatesButton
+        function BinUpdatesButtonPushed(app, event)
+            plot_bin_updates(app);
         end
     end
 
@@ -295,7 +299,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [326 11 72 22];
+            app.SimulateRobotButton.Position = [245 13 55 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create GenLabel
@@ -344,17 +348,17 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.RobotIDXField = uieditfield(app.MainFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [239 11 39 22];
+            app.RobotIDXField.Position = [305 13 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.MainFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [283 11 39 22];
+            app.RobotIDYField.Position = [349 13 39 22];
 
             % Create RobotInfoLabel
             app.RobotInfoLabel = uilabel(app.MainFigure);
-            app.RobotInfoLabel.Position = [14 11 217 22];
+            app.RobotInfoLabel.Position = [5 58 194 22];
             app.RobotInfoLabel.Text = '';
 
             % Create StatPlotButton
@@ -395,12 +399,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.OpenFolderButton.Tag = 'loadresult';
             app.OpenFolderButton.Position = [476 12 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
-
-            % Create ResumeButton
-            app.ResumeButton = uibutton(app.MainFigure, 'push');
-            app.ResumeButton.ButtonPushedFcn = createCallbackFcn(app, @ResumeButtonPushed, true);
-            app.ResumeButton.Position = [402 12 73 22];
-            app.ResumeButton.Text = 'Resume';
 
             % Create LoadLastButton
             app.LoadLastButton = uibutton(app.MainFigure, 'push');
@@ -455,6 +453,20 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.NickNameField = uieditfield(app.MainFigure, 'text');
             app.NickNameField.HorizontalAlignment = 'center';
             app.NickNameField.Position = [5 88 134 22];
+
+            % Create ParentageButton
+            app.ParentageButton = uibutton(app.MainFigure, 'push');
+            app.ParentageButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageButtonPushed, true);
+            app.ParentageButton.Tag = 'loadresult';
+            app.ParentageButton.Position = [173 13 70 22];
+            app.ParentageButton.Text = 'Parentage';
+
+            % Create BinUpdatesButton
+            app.BinUpdatesButton = uibutton(app.MainFigure, 'push');
+            app.BinUpdatesButton.ButtonPushedFcn = createCallbackFcn(app, @BinUpdatesButtonPushed, true);
+            app.BinUpdatesButton.Tag = 'loadresult';
+            app.BinUpdatesButton.Position = [395 12 78 22];
+            app.BinUpdatesButton.Text = 'BinUpdates';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
