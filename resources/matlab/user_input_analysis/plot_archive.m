@@ -8,6 +8,8 @@ function plot_archive(app)
         return
     end
 
+    open_plot(app);
+
     app.archive_map(:) = 0;
     app.map_stat(:) = 0;
 

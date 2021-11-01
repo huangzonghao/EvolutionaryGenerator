@@ -9,8 +9,6 @@ function user_input_analysis_init(app, evogen_exe_path, evogen_user_input_path, 
     app.training_results_dir = evogen_results_path;
     app.evogen_exe_path = evogen_exe_path;
 
-    open_plot(app);
-
     % TODO: Sync view among surf plots
     % camera_link = linkprop([app.map_surf.axis, app.stat_bar.axis, app.left_surf.axis, app.right_surf.axis], {'CameraUpVector', 'CameraPosition', 'CameraTarget'});
     % setappdata(app.MainFigure, 'StoreTheLink', camera_link);
