@@ -43,7 +43,9 @@ class EvoGenQD
 
         // Feed in user seeds if exist
         if (_init_seeds) {
-            int num_seeds_to_load = std::min(_init_size, _init_seeds->size());
+            // Allowing overfill of user seeds
+            // int num_seeds_to_load = std::min(_init_size, _init_seeds->size());
+            int num_seeds_to_load = _init_seeds->size();
             for (int i = 0; i < num_seeds_to_load; ++i)
                 _init_pop.emplace_back(std::make_shared<Phen>(_init_seeds->at(i), this->_evo_params));
         }

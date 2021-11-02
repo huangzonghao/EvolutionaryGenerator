@@ -14,7 +14,7 @@
 
 using json = nlohmann::json;
 
-void new_training(bool use_user_seeds) {
+void new_training(const std::string& bagfile_basename) {
     EvoGenerator evo_gen;
     EvoParams evo_params;
     SimulatorParams sim_params;
@@ -73,26 +73,26 @@ void new_training(bool use_user_seeds) {
         std::filesystem::copy(EvoGen_Workspace_Dir + "/git_commit_hash.txt", log_dir);
     }
 
-    if (use_user_seeds) {
-        auto user_seeds = std::make_shared<std::vector<std::vector<double>>>();
-        std::string seed_dir(log_dir + "/user_inputs");
-        if (evo_params.output_enabled())
-            std::filesystem::create_directories(seed_dir);
-        // load the user seeds and copy them into result_dir
-        const int max_num_user_inputs = 30;
-        for (const auto& entry : std::filesystem::directory_iterator(User_Input_Dir)) {
-            if (entry.path().extension().string() == ".txt") {
-                if (evo_params.output_enabled())
-                    std::filesystem::copy(entry.path(), seed_dir);
-
-                std::ifstream ifs(entry.path());
-                json jsobj = json::parse(ifs);
-                user_seeds->push_back(jsobj["gene"]);
-
-                if (user_seeds->size() >= max_num_user_inputs)
-                    break;
-            }
+    if (bagfile_basename != "") {
+        // Inject user seeds
+        std::string bagfile_fullpath(User_Input_Dir + "/Bags/" + bagfile_basename + ".json");
+        if (!std::filesystem::exists(bagfile_fullpath)) {
+            std::cout << "evo_main Error: " << bagfile_fullpath << " doesn't exist" << std::endl;
+            return;
         }
+
+        auto user_seeds = std::make_shared<std::vector<std::vector<double>>>();
+        if (evo_params.output_enabled())
+            std::filesystem::copy(bagfile_fullpath, log_dir + "/" + bagfile_basename + ".json");
+
+        std::ifstream ifs(bagfile_fullpath);
+        json jsobj = json::parse(ifs);
+
+        std::cout << "Training with bag file " << bagfile_basename << ", total seed count " << jsobj["total_count"] << std::endl;
+
+        for (int i = 1; i < jsobj["total_count"] + 1; ++i)
+            user_seeds->push_back(jsobj["x" + std::to_string(i)]["gene"]);
+
         evo_gen.set_user_seeds(user_seeds);
     }
 
@@ -126,13 +126,13 @@ int main(int argc, char **argv) {
         const auto& exe_name = std::filesystem::path(std::string(argv[0])).filename().string();
         std::cout << "Usage:"  << std::endl;
         std::cout << "    1) To start new training with random seeds: " << exe_name << " new"  << std::endl;
-        std::cout << "    2) To start new training with user seeds: " << exe_name << " new user"  << std::endl;
+        std::cout << "    2) To start new training with user seeds: " << exe_name << " new user <bag_file_basename>"  << std::endl;
         std::cout << "    3) To resume an existing training: " << exe_name << " resume <result_dir_basename>"  << std::endl;
         return 0;
     }
     std::string mode(argv[1]);
     if (mode == "new") {
-        new_training(argc > 2 && std::string(argv[2]) == "user");
+        new_training(argc > 2 && std::string(argv[2]) == "user" ? std::string(argv[3]) : std::string());
     } else if (mode == "resume") {
         resume_training(std::string(argv[2]));
     } else {
