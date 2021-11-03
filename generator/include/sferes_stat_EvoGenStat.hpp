@@ -46,7 +46,7 @@ class EvoGenStat {
     }
 
     template <typename Pop>
-    void _write_robots_kernel(const Pop& pop, std::string& output_filename) const {
+    void _write_robots_kernel(const Pop& pop, const std::string& output_filename) const {
         std::ofstream ofs(output_filename);
         ofs.precision(5);
         for (auto it = pop.begin(); it != pop.end(); ++it) {

@@ -42,7 +42,7 @@ struct PhenID {
         id = new_id;
     }
 
-    void set_parent(const PhenID& p1 = PhenID(), const PhenID& p2 = PhenID()) {
+    void set_parent(const PhenID& p1, const PhenID& p2) {
         p1_gen = p1.gen;
         p1_id = p1.id;
         p2_gen = p2.gen;
@@ -124,6 +124,8 @@ class EvoGenPhen {
 
     Genome& gen()  { return _gene; }
     const Genome& gen() const { return _gene; }
+    const RobotRepresentation& robot() { return _robot; }
+
     void mutate() { _gene.mutate(); }
     // actually the random inits are guaranteed to be valid
     void random(int gen_id = 0, int id = 0) {
@@ -248,7 +250,7 @@ class EvoGenPhen {
 
 template<typename G, typename F>
 std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e) {
-    output << _robot;
+    output << e.robot();
     return output;
 }
 

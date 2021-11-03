@@ -1,6 +1,7 @@
 #ifndef EVOGEN_GENERATOR_EVOGENERATOR_H_
 #define EVOGEN_GENERATOR_EVOGENERATOR_H_
 
+#include <memory>
 #include <string>
 #include "SimulatorParams.h"
 #include "EvoParams.h"

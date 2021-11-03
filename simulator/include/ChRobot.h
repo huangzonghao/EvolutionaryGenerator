@@ -45,7 +45,7 @@ class ChRobot {
     // TODO: only min_pos_z and footprint of feet are captured correctly for now
     const chrono::ChVector<>& GetMaxPos() const {return max_pos_;}
     const chrono::ChVector<>& GetMinPos() const {return min_pos_;}
-    const chrono::ChVector<>& GetBBoxSize() const {return max_pos_ - min_pos_;}
+    chrono::ChVector<> GetBBoxSize() const {return max_pos_ - min_pos_;}
 
 
   protected:

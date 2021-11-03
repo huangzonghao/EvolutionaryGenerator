@@ -90,7 +90,7 @@ void new_training(const std::string& bagfile_basename) {
 
         std::cout << "Training with bag file " << bagfile_basename << ", total seed count " << jsobj["total_count"] << std::endl;
 
-        for (int i = 1; i < jsobj["total_count"] + 1; ++i)
+        for (int i = 1; i < jsobj["total_count"].get<int>() + 1; ++i)
             user_seeds->push_back(jsobj["x" + std::to_string(i)]["gene"]);
 
         evo_gen.set_user_seeds(user_seeds);

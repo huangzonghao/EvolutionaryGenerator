@@ -73,8 +73,8 @@ class EvoGenQD
         for (size_t i = 0; i < _parents.size(); i += 2) {
             std::shared_ptr<Phen> i1, i2;
             _parents[ids[i]]->cross(_parents[ids[i + 1]], i1, i2);
-            i1->set_id(_gen + 1, i);
-            i2->set_id(_gen + 1, i + 1);
+            i1->set_id(this->_gen + 1, i);
+            i2->set_id(this->_gen + 1, i + 1);
             i1->mutate();
             i2->mutate();
             _offspring[ids[i]] = i1;
@@ -145,8 +145,8 @@ class EvoGenQD
         std::filesystem::path res_path(evo_params_fname);
         _sim_params.Load(res_path.parent_path().string() + "/sim_params.xml");
         // TODO: the following load should be handled from outside -- probably in evo_main
-        _sim_params.env_dir = _res_dir;
-        _sim_params.parts_dir = _res_dir + "/robot_parts";
+        _sim_params.env_dir = this->_res_dir;
+        _sim_params.parts_dir = this->_res_dir + "/robot_parts";
         this->_eval.set_sim_params(_sim_params);
     }
 

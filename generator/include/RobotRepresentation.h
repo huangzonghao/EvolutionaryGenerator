@@ -29,7 +29,7 @@ class RobotRepresentation {
         double length() const;
         bool operator<(const Leg& other) const;
 
-        static double RobotRepresentation::Leg::get_pos(int myid, int total_legs, int alt = 0) {
+        static double get_pos(int myid, int total_legs, int alt = 0) {
             // the position here determines which controller each leg gets
             const double preset_legpos2[2] = {0.25, 0.75};
             const double preset_legpos3[3] = {0.01, 0.75, 0.49};
