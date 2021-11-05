@@ -209,6 +209,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             clear_added_robots_list(app);
         end
 
+        % Button pushed function: RemoveButton
+        function RemoveButtonPushed(app, event)
+            remove_added(app);
+        end
+
         % Button pushed function: SaveButton
         function SaveButtonPushed(app, event)
             save_bag(app);
@@ -388,6 +393,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
 
             % Create RemoveButton
             app.RemoveButton = uibutton(app.MainFigure, 'push');
+            app.RemoveButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveButtonPushed, true);
             app.RemoveButton.Position = [676 618 60 22];
             app.RemoveButton.Text = 'Remove';
 

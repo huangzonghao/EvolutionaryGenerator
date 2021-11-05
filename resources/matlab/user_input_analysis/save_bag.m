@@ -3,6 +3,10 @@ function save_bag(app)
     if length(idxs) == 0
         return
     end
+    if app.OutputBagNameField.Value == ""
+        msgbox("Specify a bag name");
+        return
+    end
     for i = 1 : length(idxs)
         robot_info = app.user_inputs_selected(idxs(i), :);
         result = app.results{robot_info(1)};
@@ -26,4 +30,5 @@ function save_bag(app)
     fprintf(new_file_spec, jsonencode(jsobj));
     fclose(new_file_spec);
     msgbox(['Bag file saved to ', filename]);
+    app.OutputBagNameField.Value = "output_filename";
 end
