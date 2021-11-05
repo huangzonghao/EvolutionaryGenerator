@@ -3,6 +3,9 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        ScreenshotNameField            matlab.ui.control.EditField
+        PicFileLabel                   matlab.ui.control.Label
+        ClearAllButton                 matlab.ui.control.Button
         CommentTextArea                matlab.ui.control.TextArea
         CommentsLabel                  matlab.ui.control.Label
         OutputBagNameField             matlab.ui.control.EditField
@@ -16,7 +19,6 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         SelectedRobotsListBox          matlab.ui.control.ListBox
         CloseFigButton                 matlab.ui.control.Button
         OpenFigButton                  matlab.ui.control.Button
-        ScreenshotNameField            matlab.ui.control.EditField
         ScreenShotButton               matlab.ui.control.Button
         RefRightButton                 matlab.ui.control.Button
         RefLeftButton                  matlab.ui.control.Button
@@ -163,6 +165,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             update_results_enabled(app, -1);
         end
 
+        % Button pushed function: ClearAllButton
+        function ClearAllButtonPushed(app, event)
+            update_results_enabled(app, -2);
+        end
+
         % Button pushed function: RefLeftButton
         function RefLeftButtonPushed(app, event)
             load_and_plot_ref(app, 'left');
@@ -268,7 +275,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create ClearPlotButton
             app.ClearPlotButton = uibutton(app.MainFigure, 'push');
             app.ClearPlotButton.ButtonPushedFcn = createCallbackFcn(app, @ClearPlotButtonPushed, true);
-            app.ClearPlotButton.Position = [30 392 73 22];
+            app.ClearPlotButton.Position = [30 347 73 22];
             app.ClearPlotButton.Text = 'ClearPlot';
 
             % Create PopVarButton
@@ -280,13 +287,13 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create RefreshPlotButton
             app.RefreshPlotButton = uibutton(app.MainFigure, 'push');
             app.RefreshPlotButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshPlotButtonPushed, true);
-            app.RefreshPlotButton.Position = [22 419 85 40];
+            app.RefreshPlotButton.Position = [22 374 85 40];
             app.RefreshPlotButton.Text = 'RefreshPlot';
 
             % Create VerPlotButton
             app.VerPlotButton = uibutton(app.MainFigure, 'push');
             app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
-            app.VerPlotButton.Position = [23 182 58 22];
+            app.VerPlotButton.Position = [23 157 104 33];
             app.VerPlotButton.Text = 'VerPlot';
 
             % Create RefreshRawUserInputListButton
@@ -298,71 +305,67 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create groundButton
             app.groundButton = uibutton(app.MainFigure, 'push');
             app.groundButton.ButtonPushedFcn = createCallbackFcn(app, @groundButtonPushed, true);
-            app.groundButton.Position = [38 578 57 22];
+            app.groundButton.Position = [38 529 57 22];
             app.groundButton.Text = 'ground';
 
             % Create sineButton
             app.sineButton = uibutton(app.MainFigure, 'push');
             app.sineButton.ButtonPushedFcn = createCallbackFcn(app, @sineButtonPushed, true);
-            app.sineButton.Position = [38 554 57 22];
+            app.sineButton.Position = [38 505 57 22];
             app.sineButton.Text = 'sine';
 
             % Create valleyButton
             app.valleyButton = uibutton(app.MainFigure, 'push');
             app.valleyButton.ButtonPushedFcn = createCallbackFcn(app, @valleyButtonPushed, true);
-            app.valleyButton.Position = [38 530 57 22];
+            app.valleyButton.Position = [38 481 57 22];
             app.valleyButton.Text = 'valley';
 
             % Create ClearButton
             app.ClearButton = uibutton(app.MainFigure, 'push');
             app.ClearButton.ButtonPushedFcn = createCallbackFcn(app, @ClearButtonPushed, true);
-            app.ClearButton.Position = [38 476 57 22];
+            app.ClearButton.Position = [38 427 57 22];
             app.ClearButton.Text = 'Clear';
 
             % Create AllButton
             app.AllButton = uibutton(app.MainFigure, 'push');
             app.AllButton.ButtonPushedFcn = createCallbackFcn(app, @AllButtonPushed, true);
-            app.AllButton.Position = [38 499 57 22];
+            app.AllButton.Position = [38 450 57 22];
             app.AllButton.Text = 'All';
 
             % Create VerOrderCheckBox
             app.VerOrderCheckBox = uicheckbox(app.MainFigure);
             app.VerOrderCheckBox.Text = 'default order';
-            app.VerOrderCheckBox.Position = [27 160 89 22];
+            app.VerOrderCheckBox.Position = [27 135 89 22];
             app.VerOrderCheckBox.Value = true;
 
             % Create RefLeftButton
             app.RefLeftButton = uibutton(app.MainFigure, 'push');
             app.RefLeftButton.ButtonPushedFcn = createCallbackFcn(app, @RefLeftButtonPushed, true);
-            app.RefLeftButton.Position = [12 336 50 40];
+            app.RefLeftButton.Position = [12 291 50 40];
             app.RefLeftButton.Text = 'RefLeft';
 
             % Create RefRightButton
             app.RefRightButton = uibutton(app.MainFigure, 'push');
             app.RefRightButton.ButtonPushedFcn = createCallbackFcn(app, @RefRightButtonPushed, true);
-            app.RefRightButton.Position = [70 336 57 40];
+            app.RefRightButton.Position = [70 291 57 40];
             app.RefRightButton.Text = 'RefRight';
 
             % Create ScreenShotButton
             app.ScreenShotButton = uibutton(app.MainFigure, 'push');
             app.ScreenShotButton.ButtonPushedFcn = createCallbackFcn(app, @ScreenShotButtonPushed, true);
-            app.ScreenShotButton.Position = [30 294 78 22];
+            app.ScreenShotButton.Position = [34 263 78 22];
             app.ScreenShotButton.Text = 'ScreenShot';
-
-            % Create ScreenshotNameField
-            app.ScreenshotNameField = uieditfield(app.MainFigure, 'text');
-            app.ScreenshotNameField.Position = [22 263 100 22];
 
             % Create OpenFigButton
             app.OpenFigButton = uibutton(app.MainFigure, 'push');
             app.OpenFigButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFigButtonPushed, true);
-            app.OpenFigButton.Position = [18 216 54 22];
+            app.OpenFigButton.Position = [18 205 54 22];
             app.OpenFigButton.Text = 'OpenFig';
 
             % Create CloseFigButton
             app.CloseFigButton = uibutton(app.MainFigure, 'push');
             app.CloseFigButton.ButtonPushedFcn = createCallbackFcn(app, @CloseFigButtonPushed, true);
-            app.CloseFigButton.Position = [80 216 56 22];
+            app.CloseFigButton.Position = [80 205 56 22];
             app.CloseFigButton.Text = 'CloseFig';
 
             % Create SelectedRobotsListBox
@@ -388,7 +391,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create AddFromSelectedtoAddedButton
             app.AddFromSelectedtoAddedButton = uibutton(app.MainFigure, 'push');
             app.AddFromSelectedtoAddedButton.ButtonPushedFcn = createCallbackFcn(app, @AddFromSelectedtoAddedButtonPushed, true);
-            app.AddFromSelectedtoAddedButton.Position = [271 590 58 22];
+            app.AddFromSelectedtoAddedButton.Position = [272 427 58 22];
             app.AddFromSelectedtoAddedButton.Text = 'Add';
 
             % Create RemoveButton
@@ -406,7 +409,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create ClearAddedListBoxButton
             app.ClearAddedListBoxButton = uibutton(app.MainFigure, 'push');
             app.ClearAddedListBoxButton.ButtonPushedFcn = createCallbackFcn(app, @ClearAddedListBoxButtonPushed, true);
-            app.ClearAddedListBoxButton.Position = [677 593 60 22];
+            app.ClearAddedListBoxButton.Position = [677 40 60 22];
             app.ClearAddedListBoxButton.Text = 'Clear';
 
             % Create BagNameLabel
@@ -427,6 +430,22 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create CommentTextArea
             app.CommentTextArea = uitextarea(app.MainFigure);
             app.CommentTextArea.Position = [666 413 102 100];
+
+            % Create ClearAllButton
+            app.ClearAllButton = uibutton(app.MainFigure, 'push');
+            app.ClearAllButton.ButtonPushedFcn = createCallbackFcn(app, @ClearAllButtonPushed, true);
+            app.ClearAllButton.Position = [32 558 72 31];
+            app.ClearAllButton.Text = 'ClearAll';
+
+            % Create PicFileLabel
+            app.PicFileLabel = uilabel(app.MainFigure);
+            app.PicFileLabel.HorizontalAlignment = 'right';
+            app.PicFileLabel.Position = [2 232 46 22];
+            app.PicFileLabel.Text = 'Pic File';
+
+            % Create ScreenshotNameField
+            app.ScreenshotNameField = uieditfield(app.MainFigure, 'text');
+            app.ScreenshotNameField.Position = [55 232 95 23];
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
