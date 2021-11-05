@@ -3,6 +3,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        TotalAddedCountLabel           matlab.ui.control.Label
         ScreenshotNameField            matlab.ui.control.EditField
         PicFileLabel                   matlab.ui.control.Label
         ClearAllButton                 matlab.ui.control.Button
@@ -446,6 +447,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create ScreenshotNameField
             app.ScreenshotNameField = uieditfield(app.MainFigure, 'text');
             app.ScreenshotNameField.Position = [55 232 95 23];
+
+            % Create TotalAddedCountLabel
+            app.TotalAddedCountLabel = uilabel(app.MainFigure);
+            app.TotalAddedCountLabel.Position = [661 81 100 22];
+            app.TotalAddedCountLabel.Text = '';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
