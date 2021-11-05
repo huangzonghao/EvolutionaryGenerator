@@ -22,7 +22,7 @@ function refresh_selected_robots_list(app)
                         tmp_str = [tmp_str, 'v'];
                     end
 
-                    tmp_str = [tmp_str, '-', num2str(k), '-' num2str(result.fitness(j,k))];
+                    tmp_str = [tmp_str, '-', num2str(k), '-(' num2str(result.fitness(j,k)), ')'];
 
                     app.SelectedRobotsListBox.Items{end+1} = tmp_str;
                     app.SelectedRobotsListBox.ItemsData(end+1) = size(app.user_inputs_selected, 1);
