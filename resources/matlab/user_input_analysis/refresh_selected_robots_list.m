@@ -1,6 +1,7 @@
 function refresh_selected_robots_list(app)
 % List all robots selected by the results_enabled matrix in the ListBox
 % Display format: user_id-env-ver-fitness
+    % TODO: probably can initialize the user_inputs_selected matrix to the right size
     app.user_inputs_selected = [];
     app.SelectedRobotsListBox.Items = {};
     app.SelectedRobotsListBox.ItemsData = [];
@@ -9,8 +10,8 @@ function refresh_selected_robots_list(app)
         for j = 1 : size(app.results_enabled, 2) % env_id
             result = app.results{i};
             if app.results_enabled(i,j) == 1
-                for k = 1 : length(result.fitness(j,:))
-                    app.user_inputs_selected(end+1, :) = [result.internal_id, j, k];
+                for k = 1 : length(result.fitness(j,:)) % ver id
+                    app.user_inputs_selected(end+1, :) = [result.internal_id, j, k, result.fitness(j, k)];
 
                     tmp_str = [result.user_id, '-'];
                     % TODO: hard coded env here

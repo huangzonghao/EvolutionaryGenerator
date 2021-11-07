@@ -3,6 +3,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        SortFitnessButton              matlab.ui.control.Button
         TotalAddedCountLabel           matlab.ui.control.Label
         ScreenshotNameField            matlab.ui.control.EditField
         PicFileLabel                   matlab.ui.control.Label
@@ -206,6 +207,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: RefreshRobotsListButton
         function RefreshRobotsListButtonPushed(app, event)
             refresh_selected_robots_list(app);
+        end
+
+        % Button pushed function: SortFitnessButton
+        function SortFitnessButtonPushed(app, event)
+            sort_selected_robots_list_by_fitness(app);
         end
 
         % Button pushed function: AddFromSelectedtoAddedButton
@@ -453,6 +459,12 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.TotalAddedCountLabel = uilabel(app.MainFigure);
             app.TotalAddedCountLabel.Position = [661 81 100 22];
             app.TotalAddedCountLabel.Text = '';
+
+            % Create SortFitnessButton
+            app.SortFitnessButton = uibutton(app.MainFigure, 'push');
+            app.SortFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortFitnessButtonPushed, true);
+            app.SortFitnessButton.Position = [279 590 44 22];
+            app.SortFitnessButton.Text = 'SortFit';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
