@@ -11,7 +11,9 @@ function save_bag(app)
         result = app.results{robot_info(1)};
         tmp_obj.user_id = result.user_id;
         tmp_obj.env = app.default_env_order(robot_info(2));
+        tmp_obj.ver = robot_info(3);
         tmp_obj.gene = result.gene{robot_info(2), robot_info(3)};
+        tmp_obj.fitness_reference = robot_info(4);
         jsobj.(['x', num2str(i)]) = tmp_obj;
     end
 
