@@ -1,14 +1,13 @@
 function save_bag(app)
-    idxs = app.AddedRobotsListBox.ItemsData;
-    if length(idxs) == 0
+    if size(app.user_inputs_added, 1) == 0
         return
     end
     if app.OutputBagNameField.Value == ""
         msgbox("Specify a bag name");
         return
     end
-    for i = 1 : length(idxs)
-        robot_info = app.user_inputs_selected(idxs(i), :);
+    for i = 1 : size(app.user_inputs_added, 1)
+        robot_info = app.user_inputs_added(i, :);
         result = app.results{robot_info(1)};
         tmp_obj.user_id = result.user_id;
         tmp_obj.env = app.default_env_order(robot_info(2));
@@ -19,7 +18,7 @@ function save_bag(app)
     % Add timestamp and comments
     jsobj.timestamp = datestr(now,'yyyy-mm-dd HH:MM:SS');
     jsobj.comments = string(app.CommentTextArea.Value);
-    jsobj.total_count = length(idxs);
+    jsobj.total_count = size(app.user_inputs_added, 1);
 
     dirname = fullfile(app.user_input_dir, 'Bags');
     if ~exist(dirname, 'dir')

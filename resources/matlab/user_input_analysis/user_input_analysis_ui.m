@@ -69,6 +69,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         results_enabled = [] % a num_user x num_env matrix representing which result is enabled to show
         user_inputs_selected = [] % a n x 3 matrix storing the n selected user inputs to be saved to output bag, one for each row
                                   % format: [user_internal_id, env_id, ver_id]
+        user_inputs_added = [] % same as above
         default_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
     end
 
