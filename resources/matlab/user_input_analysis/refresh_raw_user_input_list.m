@@ -16,4 +16,6 @@ function refresh_raw_user_input_list(app)
     end
 
     update_listbox_text(app);
+
+    app.auto_refresh_selected_list_on_next_enabled_update = true;
 end

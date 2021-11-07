@@ -73,6 +73,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
                                   % format: [user_internal_id, env_id, ver_id]
         user_inputs_added = [] % same as above
         default_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
+        auto_refresh_selected_list_on_next_enabled_update = true % controls if next update on results_enabled matrix would trigger an automatic update of the selected_robots_list
     end
 
     % Callbacks that handle component events

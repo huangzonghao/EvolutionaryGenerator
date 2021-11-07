@@ -7,6 +7,7 @@ function update_results_enabled(app, env_id)
 
     if env_id == -2
         app.results_enabled(:, :) = 0;
+        app.auto_refresh_selected_list_on_next_enabled_update = true;
     else
         ids = app.ListBox.Value;
         if isempty(ids)
@@ -23,6 +24,11 @@ function update_results_enabled(app, env_id)
             else
                 app.results_enabled(ids, env_id) = 1;
             end
+        end
+
+        if (app.auto_refresh_selected_list_on_next_enabled_update)
+            refresh_selected_robots_list(app);
+            app.auto_refresh_selected_list_on_next_enabled_update = false;
         end
     end
 
