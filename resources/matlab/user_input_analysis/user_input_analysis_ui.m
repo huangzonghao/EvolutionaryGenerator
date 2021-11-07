@@ -3,7 +3,8 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
-        SortFitnessButton              matlab.ui.control.Button
+        SortAddedFitnessButton         matlab.ui.control.Button
+        SortSelectedFitnessButton      matlab.ui.control.Button
         TotalAddedCountLabel           matlab.ui.control.Label
         ScreenshotNameField            matlab.ui.control.EditField
         PicFileLabel                   matlab.ui.control.Label
@@ -209,8 +210,8 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             refresh_selected_robots_list(app);
         end
 
-        % Button pushed function: SortFitnessButton
-        function SortFitnessButtonPushed(app, event)
+        % Button pushed function: SortSelectedFitnessButton
+        function SortSelectedFitnessButtonPushed(app, event)
             sort_selected_robots_list_by_fitness(app);
         end
 
@@ -232,6 +233,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: SaveButton
         function SaveButtonPushed(app, event)
             save_bag(app);
+        end
+
+        % Button pushed function: SortAddedFitnessButton
+        function SortAddedFitnessButtonPushed(app, event)
+            sort_added_robots_list_by_fitness(app);
         end
     end
 
@@ -411,7 +417,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create SaveButton
             app.SaveButton = uibutton(app.MainFigure, 'push');
             app.SaveButton.ButtonPushedFcn = createCallbackFcn(app, @SaveButtonPushed, true);
-            app.SaveButton.Position = [676 388 60 22];
+            app.SaveButton.Position = [676 319 60 22];
             app.SaveButton.Text = 'Save';
 
             % Create ClearAddedListBoxButton
@@ -432,12 +438,12 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
 
             % Create CommentsLabel
             app.CommentsLabel = uilabel(app.MainFigure);
-            app.CommentsLabel.Position = [660 513 67 22];
+            app.CommentsLabel.Position = [654 513 67 22];
             app.CommentsLabel.Text = 'Comments:';
 
             % Create CommentTextArea
             app.CommentTextArea = uitextarea(app.MainFigure);
-            app.CommentTextArea.Position = [666 413 102 100];
+            app.CommentTextArea.Position = [661 347 107 166];
 
             % Create ClearAllButton
             app.ClearAllButton = uibutton(app.MainFigure, 'push');
@@ -460,11 +466,17 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.TotalAddedCountLabel.Position = [661 81 100 22];
             app.TotalAddedCountLabel.Text = '';
 
-            % Create SortFitnessButton
-            app.SortFitnessButton = uibutton(app.MainFigure, 'push');
-            app.SortFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortFitnessButtonPushed, true);
-            app.SortFitnessButton.Position = [279 590 44 22];
-            app.SortFitnessButton.Text = 'SortFit';
+            % Create SortSelectedFitnessButton
+            app.SortSelectedFitnessButton = uibutton(app.MainFigure, 'push');
+            app.SortSelectedFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortSelectedFitnessButtonPushed, true);
+            app.SortSelectedFitnessButton.Position = [279 590 44 22];
+            app.SortSelectedFitnessButton.Text = 'SortFit';
+
+            % Create SortAddedFitnessButton
+            app.SortAddedFitnessButton = uibutton(app.MainFigure, 'push');
+            app.SortAddedFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortAddedFitnessButtonPushed, true);
+            app.SortAddedFitnessButton.Position = [684 592 44 22];
+            app.SortAddedFitnessButton.Text = 'SortFit';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
