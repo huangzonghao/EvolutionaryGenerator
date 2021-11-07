@@ -161,12 +161,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: RemoveCompareButton
         function RemoveCompareButtonPushed(app, event)
-            if isempty(app.CompareListBox.Value)
-                return;
-            end
-            tmp_value = app.CompareListBox.Value;
-            app.CompareListBox.Items(app.result_to_compare == tmp_value) = [];
-            app.result_to_compare(app.result_to_compare == tmp_value) = [];
+            delete_from_compare_list(app);
         end
 
         % Button pushed function: NickNameSaveButton
@@ -421,6 +416,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create CompareListBox
             app.CompareListBox = uilistbox(app.MainFigure);
             app.CompareListBox.Items = {};
+            app.CompareListBox.Multiselect = 'on';
             app.CompareListBox.Position = [47 261 146 98];
             app.CompareListBox.Value = {};
 

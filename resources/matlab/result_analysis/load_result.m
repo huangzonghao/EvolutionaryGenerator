@@ -42,17 +42,20 @@ function load_result(app)
 
     app.StatStartGenField.Value = num2str(0);
     app.StatEndGenField.Value = num2str(app.evo_params.nb_gen);
-    app.result_to_compare = app.result_basename;
+    app.result_to_compare = [];
+    app.CompareListBox.Items = {};
+    app.result_to_compare(end + 1) = app.result_basename;
     [nickname, nickname_loaded] = load_nickname(tmp_result_path);
     if nickname_loaded
         app.NickNameSaveButton.Text = 'ReSave';
         app.result_displayname = [nickname, ' - (', app.result_basename, ')'];
-        app.CompareListBox.Items = {nickname};
+        app.CompareListBox.Items{end + 1} = nickname;
     else
         app.NickNameSaveButton.Text = 'Save';
         app.result_displayname = app.result_basename;
-        app.CompareListBox.Items = {app.result_basename};
+        app.CompareListBox.Items{end + 1} = nickname;
     end
+    app.CompareListBox.ItemsData(end + 1) = length(app.result_to_compare);
     app.NickNameField.Value = nickname;
     app.ResultNameLabel.Text = app.result_displayname;
 
