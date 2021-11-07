@@ -31,4 +31,6 @@ function refresh_selected_robots_list(app)
             end
         end
     end
+
+    sort_selected_robots_list_by_fitness(app);
 end
