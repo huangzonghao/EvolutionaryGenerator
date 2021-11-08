@@ -1,14 +1,22 @@
-function compare_plot(result_dirs, parent_path)
+function compare_plot(result_dirs, parent_path, do_clean_plot)
     num_subplots = 3;
     figure('units','normalized','outerposition',[.05 .05 .9 .9]);
     p1 = subplot(num_subplots, 1, 1);
     hold on;
-    title('Fitness');
+    if do_clean_plot
+        title('Clean Fitness');
+    else
+        title('Fitness');
+    end
     xlabel('generation');
     ylabel('fitness');
     p2 = subplot(num_subplots, 1, 2);
     hold on;
-    title('Elite Fitness');
+    if do_clean_plot
+        title('Clean Elite Fitness');
+    else
+        title('Elite Fitness');
+    end
     xlabel('generation');
     ylabel('fitness');
     p3 = subplot(num_subplots, 1, 3);
@@ -34,8 +42,13 @@ function compare_plot(result_dirs, parent_path)
                 legend_name = result_dirs(i);
             end
             plot_color = plot_colors(i);
-            plot(p1, stat.archive_fits, 'DisplayName', legend_name);
-            plot(p2, stat.elite_archive_fits, 'DisplayName', legend_name);
+            if do_clean_plot
+                plot(p1, stat.clean_archive_fits, 'DisplayName', legend_name);
+                plot(p2, stat.clean_elite_archive_fits, 'DisplayName', legend_name);
+            else
+                plot(p1, stat.archive_fits, 'DisplayName', legend_name);
+                plot(p2, stat.elite_archive_fits, 'DisplayName', legend_name);
+            end
             plot(p3, stat.coverage, 'DisplayName', legend_name);
         end
     end

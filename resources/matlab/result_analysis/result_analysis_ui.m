@@ -3,6 +3,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure           matlab.ui.Figure
+        CleanCompareButton   matlab.ui.control.Button
         BinUpdatesButton     matlab.ui.control.Button
         ParentageButton      matlab.ui.control.Button
         NickNameField        matlab.ui.control.EditField
@@ -150,7 +151,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: ComparePlotButton
         function ComparePlotButtonPushed(app, event)
             if (app.result_to_compare.length > 1)
-                compare_plot(app.result_to_compare, app.evogen_results_path);
+                compare_plot(app.result_to_compare, app.evogen_results_path, false);
+            end
+        end
+
+        % Button pushed function: CleanCompareButton
+        function CleanCompareButtonPushed(app, event)
+            if (app.result_to_compare.length > 1)
+                compare_plot(app.result_to_compare, app.evogen_results_path, true);
             end
         end
 
@@ -359,33 +367,33 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create StatPlotButton
             app.StatPlotButton = uibutton(app.MainFigure, 'push');
             app.StatPlotButton.ButtonPushedFcn = createCallbackFcn(app, @StatPlotButtonPushed, true);
-            app.StatPlotButton.Position = [39 366 57 22];
+            app.StatPlotButton.Position = [4 386 57 22];
             app.StatPlotButton.Text = 'StatPlot';
 
             % Create StatStartGenField
             app.StatStartGenField = uieditfield(app.MainFigure, 'text');
             app.StatStartGenField.ValueChangedFcn = createCallbackFcn(app, @StatStartGenFieldValueChanged, true);
             app.StatStartGenField.HorizontalAlignment = 'center';
-            app.StatStartGenField.Position = [55 391 41 22];
+            app.StatStartGenField.Position = [55 411 41 22];
 
             % Create StatEndGenField
             app.StatEndGenField = uieditfield(app.MainFigure, 'text');
             app.StatEndGenField.ValueChangedFcn = createCallbackFcn(app, @StatEndGenFieldValueChanged, true);
             app.StatEndGenField.HorizontalAlignment = 'center';
-            app.StatEndGenField.Position = [122 391 62 22];
+            app.StatEndGenField.Position = [122 411 62 22];
 
             % Create FromLabel
             app.FromLabel = uilabel(app.MainFigure);
             app.FromLabel.FontSize = 13;
             app.FromLabel.FontWeight = 'bold';
-            app.FromLabel.Position = [15 391 41 22];
+            app.FromLabel.Position = [15 411 41 22];
             app.FromLabel.Text = 'From:';
 
             % Create ToLabel
             app.ToLabel = uilabel(app.MainFigure);
             app.ToLabel.FontSize = 13;
             app.ToLabel.FontWeight = 'bold';
-            app.ToLabel.Position = [101 391 25 22];
+            app.ToLabel.Position = [101 411 25 22];
             app.ToLabel.Text = 'To:';
 
             % Create OpenFolderButton
@@ -423,8 +431,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create ComparePlotButton
             app.ComparePlotButton = uibutton(app.MainFigure, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
-            app.ComparePlotButton.Position = [98 366 86 22];
-            app.ComparePlotButton.Text = 'ComparePlot';
+            app.ComparePlotButton.Position = [63 386 60 22];
+            app.ComparePlotButton.Text = 'Compare';
 
             % Create AddCompareButton
             app.AddCompareButton = uibutton(app.MainFigure, 'push');
@@ -463,6 +471,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BinUpdatesButton.Tag = 'loadresult';
             app.BinUpdatesButton.Position = [395 12 78 22];
             app.BinUpdatesButton.Text = 'BinUpdates';
+
+            % Create CleanCompareButton
+            app.CleanCompareButton = uibutton(app.MainFigure, 'push');
+            app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
+            app.CleanCompareButton.Position = [125 386 83 22];
+            app.CleanCompareButton.Text = 'Clean Comp';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
