@@ -4,9 +4,10 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure           matlab.ui.Figure
         CleanCompareButton   matlab.ui.control.Button
+        NickNameField        matlab.ui.control.EditField
+        Label                matlab.ui.control.Label
         BinUpdatesButton     matlab.ui.control.Button
         ParentageButton      matlab.ui.control.Button
-        NickNameField        matlab.ui.control.EditField
         NickNameSaveButton   matlab.ui.control.Button
         RemoveCompareButton  matlab.ui.control.Button
         AddCompareButton     matlab.ui.control.Button
@@ -453,11 +454,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.NickNameSaveButton.Position = [138 88 50 22];
             app.NickNameSaveButton.Text = 'Save';
 
-            % Create NickNameField
-            app.NickNameField = uieditfield(app.MainFigure, 'text');
-            app.NickNameField.HorizontalAlignment = 'center';
-            app.NickNameField.Position = [5 88 134 22];
-
             % Create ParentageButton
             app.ParentageButton = uibutton(app.MainFigure, 'push');
             app.ParentageButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageButtonPushed, true);
@@ -471,6 +467,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BinUpdatesButton.Tag = 'loadresult';
             app.BinUpdatesButton.Position = [395 12 78 22];
             app.BinUpdatesButton.Text = 'BinUpdates';
+
+            % Create Label
+            app.Label = uilabel(app.MainFigure);
+            app.Label.HorizontalAlignment = 'right';
+            app.Label.Position = [5 108 42 22];
+            app.Label.Text = 'Label: ';
+
+            % Create NickNameField
+            app.NickNameField = uieditfield(app.MainFigure, 'text');
+            app.NickNameField.Position = [47 108 86 22];
 
             % Create CleanCompareButton
             app.CleanCompareButton = uibutton(app.MainFigure, 'push');
