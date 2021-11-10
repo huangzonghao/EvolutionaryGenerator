@@ -18,4 +18,5 @@ function user_input_analysis_init(app, evogen_exe_path, evogen_user_input_path, 
     app.map_stat = zeros(app.map_dim_0, app.map_dim_1, length(app.default_env_order));
     app.ScreenshotNameField.Value = "Screenshot.png";
     app.OutputBagNameField.Value = "output_filename";
+    app.NumRandomField.Value = "0";
 end

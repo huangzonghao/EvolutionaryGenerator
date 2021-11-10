@@ -3,6 +3,9 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        AddRandomtoAddedButton         matlab.ui.control.Button
+        NumRandomField                 matlab.ui.control.EditField
+        NumEditFieldLabel              matlab.ui.control.Label
         SortAddedFitnessButton         matlab.ui.control.Button
         SortSelectedFitnessButton      matlab.ui.control.Button
         TotalAddedCountLabel           matlab.ui.control.Label
@@ -72,6 +75,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         user_inputs_selected = [] % a n x 3 matrix storing the n selected user inputs to be saved to output bag, one for each row
                                   % format: [user_internal_id, env_id, ver_id]
         user_inputs_added = [] % same as above
+        random_robots = [] % a [n x max_gene_length] matrix containing gene for randomly generated robots
         default_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
         auto_refresh_selected_list_on_next_enabled_update = true % controls if next update on results_enabled matrix would trigger an automatic update of the selected_robots_list
     end
@@ -239,6 +243,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: SortAddedFitnessButton
         function SortAddedFitnessButtonPushed(app, event)
             sort_added_robots_list_by_fitness(app);
+        end
+
+        % Button pushed function: AddRandomtoAddedButton
+        function AddRandomtoAddedButtonPushed(app, event)
+            add_random_robots_to_bag(app);
         end
     end
 
@@ -478,6 +487,22 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.SortAddedFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortAddedFitnessButtonPushed, true);
             app.SortAddedFitnessButton.Position = [684 592 44 22];
             app.SortAddedFitnessButton.Text = 'SortFit';
+
+            % Create NumEditFieldLabel
+            app.NumEditFieldLabel = uilabel(app.MainFigure);
+            app.NumEditFieldLabel.Position = [278 392 34 22];
+            app.NumEditFieldLabel.Text = 'Num:';
+
+            % Create NumRandomField
+            app.NumRandomField = uieditfield(app.MainFigure, 'text');
+            app.NumRandomField.Position = [283 365 41 22];
+
+            % Create AddRandomtoAddedButton
+            app.AddRandomtoAddedButton = uibutton(app.MainFigure, 'push');
+            app.AddRandomtoAddedButton.ButtonPushedFcn = createCallbackFcn(app, @AddRandomtoAddedButtonPushed, true);
+            app.AddRandomtoAddedButton.WordWrap = 'on';
+            app.AddRandomtoAddedButton.Position = [268 310 65 49];
+            app.AddRandomtoAddedButton.Text = 'Add Random';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
