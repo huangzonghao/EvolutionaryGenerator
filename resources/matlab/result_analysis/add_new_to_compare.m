@@ -1,11 +1,7 @@
 function add_new_to_compare(app)
-    tmp_result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
-    figure(app.MainFigure);
-    if (tmp_result_path == 0) % User pressed cancel button
-        return
-    end
+    tmp_result_path = app.result_paths(app.ResultsListBox.Value);
     [~, result_name, ~] = fileparts(tmp_result_path);
-    % return if the result has already been aded
+    % return if the result has already been added
     if sum(app.result_to_compare == result_name) > 0
         return
     end

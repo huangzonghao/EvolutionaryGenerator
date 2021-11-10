@@ -2,46 +2,51 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MainFigure           matlab.ui.Figure
-        CleanCompareButton   matlab.ui.control.Button
-        NickNameField        matlab.ui.control.EditField
-        Label                matlab.ui.control.Label
-        BinUpdatesButton     matlab.ui.control.Button
-        ParentageButton      matlab.ui.control.Button
-        NickNameSaveButton   matlab.ui.control.Button
-        RemoveCompareButton  matlab.ui.control.Button
-        AddCompareButton     matlab.ui.control.Button
-        ComparePlotButton    matlab.ui.control.Button
-        CompareListBox       matlab.ui.control.ListBox
-        GenStepField         matlab.ui.control.EditField
-        LoadFirstButton      matlab.ui.control.Button
-        LoadLastButton       matlab.ui.control.Button
-        OpenFolderButton     matlab.ui.control.Button
-        ToLabel              matlab.ui.control.Label
-        FromLabel            matlab.ui.control.Label
-        StatEndGenField      matlab.ui.control.EditField
-        StatStartGenField    matlab.ui.control.EditField
-        StatPlotButton       matlab.ui.control.Button
-        RobotInfoLabel       matlab.ui.control.Label
-        RobotIDYField        matlab.ui.control.EditField
-        RobotIDXField        matlab.ui.control.EditField
-        BuildStatButton      matlab.ui.control.Button
-        GenInfoLabel         matlab.ui.control.Label
-        ResultInfoTextLabel  matlab.ui.control.Label
-        ResultNameLabel      matlab.ui.control.Label
-        ResultInfoLabel      matlab.ui.control.Label
-        GenLabel             matlab.ui.control.Label
-        SimulateRobotButton  matlab.ui.control.Button
-        LoadPrevStepButton   matlab.ui.control.Button
-        LoadNextStepButton   matlab.ui.control.Button
-        LoadPrevButton       matlab.ui.control.Button
-        LoadNextButton       matlab.ui.control.Button
-        GenIDField           matlab.ui.control.EditField
-        LoadResultButton     matlab.ui.control.Button
-        MapViewerAxes        matlab.ui.control.UIAxes
+        MainFigure               matlab.ui.Figure
+        RefreshResultListButton  matlab.ui.control.Button
+        ResultsListBox           matlab.ui.control.ListBox
+        ResultsLabel             matlab.ui.control.Label
+        CleanCompareButton       matlab.ui.control.Button
+        NickNameField            matlab.ui.control.EditField
+        Label                    matlab.ui.control.Label
+        BinUpdatesButton         matlab.ui.control.Button
+        ParentageButton          matlab.ui.control.Button
+        NickNameSaveButton       matlab.ui.control.Button
+        RemoveCompareButton      matlab.ui.control.Button
+        AddCompareButton         matlab.ui.control.Button
+        ComparePlotButton        matlab.ui.control.Button
+        CompareListBox           matlab.ui.control.ListBox
+        GenStepField             matlab.ui.control.EditField
+        LoadFirstButton          matlab.ui.control.Button
+        LoadLastButton           matlab.ui.control.Button
+        OpenFolderButton         matlab.ui.control.Button
+        ToLabel                  matlab.ui.control.Label
+        FromLabel                matlab.ui.control.Label
+        StatEndGenField          matlab.ui.control.EditField
+        StatStartGenField        matlab.ui.control.EditField
+        StatPlotButton           matlab.ui.control.Button
+        RobotInfoLabel           matlab.ui.control.Label
+        RobotIDYField            matlab.ui.control.EditField
+        RobotIDXField            matlab.ui.control.EditField
+        BuildStatButton          matlab.ui.control.Button
+        GenInfoLabel             matlab.ui.control.Label
+        ResultInfoTextLabel      matlab.ui.control.Label
+        ResultInfoLabel          matlab.ui.control.Label
+        GenLabel                 matlab.ui.control.Label
+        SimulateRobotButton      matlab.ui.control.Button
+        LoadPrevStepButton       matlab.ui.control.Button
+        LoadNextStepButton       matlab.ui.control.Button
+        LoadPrevButton           matlab.ui.control.Button
+        LoadNextButton           matlab.ui.control.Button
+        GenIDField               matlab.ui.control.EditField
+        LoadResultButton         matlab.ui.control.Button
+        ResultNameLabel          matlab.ui.control.Label
+        MapViewerAxes            matlab.ui.control.UIAxes
     end
 
     properties (Access = public)
+        result_paths = string.empty % array containing the paths to the results
+        results % array containing the cache of the loaded results
         result_loaded = false
         result_path = ""
         result_basename = ""
@@ -94,8 +99,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % init ui assets
             app.GenStepField.Value = num2str(app.gen_step);
-
-            load_result(app);
         end
 
         % Button pushed function: LoadResultButton
@@ -242,6 +245,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function BinUpdatesButtonPushed(app, event)
             plot_bin_updates(app);
         end
+
+        % Button pushed function: RefreshResultListButton
+        function RefreshResultListButtonPushed(app, event)
+            refresh_result_list(app);
+        end
     end
 
     % Component initialization
@@ -252,7 +260,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % Create MainFigure and hide until all components are created
             app.MainFigure = uifigure('Visible', 'off');
-            app.MainFigure.Position = [100 100 642 577];
+            app.MainFigure.Position = [100 100 930 580];
             app.MainFigure.Name = 'Evolutionary Robogami Result Viewer';
 
             % Create MapViewerAxes
@@ -260,78 +268,78 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MapViewerAxes.XTick = [];
             app.MapViewerAxes.YTick = [];
             app.MapViewerAxes.Tag = 'MapViewer';
-            app.MapViewerAxes.Position = [191 49 450 450];
-
-            % Create LoadResultButton
-            app.LoadResultButton = uibutton(app.MainFigure, 'push');
-            app.LoadResultButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultButtonPushed, true);
-            app.LoadResultButton.Tag = 'loadresult';
-            app.LoadResultButton.Position = [39 507 100 22];
-            app.LoadResultButton.Text = 'Load Result';
-
-            % Create GenIDField
-            app.GenIDField = uieditfield(app.MainFigure, 'text');
-            app.GenIDField.ValueChangedFcn = createCallbackFcn(app, @GenIDFieldValueChanged, true);
-            app.GenIDField.HorizontalAlignment = 'center';
-            app.GenIDField.Position = [68 477 58 22];
-
-            % Create LoadNextButton
-            app.LoadNextButton = uibutton(app.MainFigure, 'push');
-            app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
-            app.LoadNextButton.Position = [86 448 25 22];
-            app.LoadNextButton.Text = '>';
-
-            % Create LoadPrevButton
-            app.LoadPrevButton = uibutton(app.MainFigure, 'push');
-            app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
-            app.LoadPrevButton.Position = [61 448 25 22];
-            app.LoadPrevButton.Text = '<';
-
-            % Create LoadNextStepButton
-            app.LoadNextStepButton = uibutton(app.MainFigure, 'push');
-            app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
-            app.LoadNextStepButton.Position = [108 427 30 22];
-            app.LoadNextStepButton.Text = '+';
-
-            % Create LoadPrevStepButton
-            app.LoadPrevStepButton = uibutton(app.MainFigure, 'push');
-            app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
-            app.LoadPrevStepButton.Position = [37 427 30 22];
-            app.LoadPrevStepButton.Text = '-';
-
-            % Create SimulateRobotButton
-            app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
-            app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
-            app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [245 13 55 22];
-            app.SimulateRobotButton.Text = 'Simulate';
-
-            % Create GenLabel
-            app.GenLabel = uilabel(app.MainFigure);
-            app.GenLabel.FontSize = 13;
-            app.GenLabel.FontWeight = 'bold';
-            app.GenLabel.Position = [35 477 35 22];
-            app.GenLabel.Text = 'Gen:';
-
-            % Create ResultInfoLabel
-            app.ResultInfoLabel = uilabel(app.MainFigure);
-            app.ResultInfoLabel.FontSize = 13;
-            app.ResultInfoLabel.FontWeight = 'bold';
-            app.ResultInfoLabel.Position = [4 237 77 22];
-            app.ResultInfoLabel.Text = 'Result Info:';
+            app.MapViewerAxes.Position = [461 52 450 450];
 
             % Create ResultNameLabel
             app.ResultNameLabel = uilabel(app.MainFigure);
             app.ResultNameLabel.HorizontalAlignment = 'center';
             app.ResultNameLabel.FontSize = 16;
             app.ResultNameLabel.FontWeight = 'bold';
-            app.ResultNameLabel.Position = [23 548 596 30];
+            app.ResultNameLabel.Position = [421 542 485 30];
             app.ResultNameLabel.Text = 'Load a result to view';
+
+            % Create LoadResultButton
+            app.LoadResultButton = uibutton(app.MainFigure, 'push');
+            app.LoadResultButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultButtonPushed, true);
+            app.LoadResultButton.Tag = 'loadresult';
+            app.LoadResultButton.Position = [299 550 100 22];
+            app.LoadResultButton.Text = 'Load Result';
+
+            % Create GenIDField
+            app.GenIDField = uieditfield(app.MainFigure, 'text');
+            app.GenIDField.ValueChangedFcn = createCallbackFcn(app, @GenIDFieldValueChanged, true);
+            app.GenIDField.HorizontalAlignment = 'center';
+            app.GenIDField.Position = [326 521 58 22];
+
+            % Create LoadNextButton
+            app.LoadNextButton = uibutton(app.MainFigure, 'push');
+            app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
+            app.LoadNextButton.Position = [344 492 25 22];
+            app.LoadNextButton.Text = '>';
+
+            % Create LoadPrevButton
+            app.LoadPrevButton = uibutton(app.MainFigure, 'push');
+            app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
+            app.LoadPrevButton.Position = [319 492 25 22];
+            app.LoadPrevButton.Text = '<';
+
+            % Create LoadNextStepButton
+            app.LoadNextStepButton = uibutton(app.MainFigure, 'push');
+            app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
+            app.LoadNextStepButton.Position = [366 471 30 22];
+            app.LoadNextStepButton.Text = '+';
+
+            % Create LoadPrevStepButton
+            app.LoadPrevStepButton = uibutton(app.MainFigure, 'push');
+            app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
+            app.LoadPrevStepButton.Position = [295 471 30 22];
+            app.LoadPrevStepButton.Text = '-';
+
+            % Create SimulateRobotButton
+            app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
+            app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
+            app.SimulateRobotButton.Tag = 'loadresult';
+            app.SimulateRobotButton.Position = [586 16 55 22];
+            app.SimulateRobotButton.Text = 'Simulate';
+
+            % Create GenLabel
+            app.GenLabel = uilabel(app.MainFigure);
+            app.GenLabel.FontSize = 13;
+            app.GenLabel.FontWeight = 'bold';
+            app.GenLabel.Position = [293 521 35 22];
+            app.GenLabel.Text = 'Gen:';
+
+            % Create ResultInfoLabel
+            app.ResultInfoLabel = uilabel(app.MainFigure);
+            app.ResultInfoLabel.FontSize = 13;
+            app.ResultInfoLabel.FontWeight = 'bold';
+            app.ResultInfoLabel.Position = [250 226 77 22];
+            app.ResultInfoLabel.Text = 'Result Info:';
 
             % Create ResultInfoTextLabel
             app.ResultInfoTextLabel = uilabel(app.MainFigure);
             app.ResultInfoTextLabel.VerticalAlignment = 'top';
-            app.ResultInfoTextLabel.Position = [23 118 185 120];
+            app.ResultInfoTextLabel.Position = [293 121 172 105];
             app.ResultInfoTextLabel.Text = '';
 
             % Create GenInfoLabel
@@ -339,150 +347,169 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.GenInfoLabel.HorizontalAlignment = 'center';
             app.GenInfoLabel.FontSize = 13;
             app.GenInfoLabel.FontWeight = 'bold';
-            app.GenInfoLabel.Position = [207 507 434 22];
+            app.GenInfoLabel.Position = [464 510 434 22];
             app.GenInfoLabel.Text = '';
 
             % Create BuildStatButton
             app.BuildStatButton = uibutton(app.MainFigure, 'push');
             app.BuildStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildStatButtonPushed, true);
-            app.BuildStatButton.Position = [558 12 73 22];
+            app.BuildStatButton.Position = [815 15 73 22];
             app.BuildStatButton.Text = 'BuildStat';
 
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.MainFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [305 13 39 22];
+            app.RobotIDXField.Position = [646 16 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.MainFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [349 13 39 22];
+            app.RobotIDYField.Position = [690 16 39 22];
 
             % Create RobotInfoLabel
             app.RobotInfoLabel = uilabel(app.MainFigure);
-            app.RobotInfoLabel.Position = [5 58 194 22];
+            app.RobotInfoLabel.Position = [262 61 194 22];
             app.RobotInfoLabel.Text = '';
 
             % Create StatPlotButton
             app.StatPlotButton = uibutton(app.MainFigure, 'push');
             app.StatPlotButton.ButtonPushedFcn = createCallbackFcn(app, @StatPlotButtonPushed, true);
-            app.StatPlotButton.Position = [4 386 57 22];
+            app.StatPlotButton.Position = [324 407 57 22];
             app.StatPlotButton.Text = 'StatPlot';
 
             % Create StatStartGenField
             app.StatStartGenField = uieditfield(app.MainFigure, 'text');
             app.StatStartGenField.ValueChangedFcn = createCallbackFcn(app, @StatStartGenFieldValueChanged, true);
             app.StatStartGenField.HorizontalAlignment = 'center';
-            app.StatStartGenField.Position = [55 411 41 22];
+            app.StatStartGenField.Position = [299 439 41 22];
 
             % Create StatEndGenField
             app.StatEndGenField = uieditfield(app.MainFigure, 'text');
             app.StatEndGenField.ValueChangedFcn = createCallbackFcn(app, @StatEndGenFieldValueChanged, true);
             app.StatEndGenField.HorizontalAlignment = 'center';
-            app.StatEndGenField.Position = [122 411 62 22];
+            app.StatEndGenField.Position = [366 439 62 22];
 
             % Create FromLabel
             app.FromLabel = uilabel(app.MainFigure);
             app.FromLabel.FontSize = 13;
             app.FromLabel.FontWeight = 'bold';
-            app.FromLabel.Position = [15 411 41 22];
+            app.FromLabel.Position = [259 439 41 22];
             app.FromLabel.Text = 'From:';
 
             % Create ToLabel
             app.ToLabel = uilabel(app.MainFigure);
             app.ToLabel.FontSize = 13;
             app.ToLabel.FontWeight = 'bold';
-            app.ToLabel.Position = [101 411 25 22];
+            app.ToLabel.Position = [345 439 25 22];
             app.ToLabel.Text = 'To:';
 
             % Create OpenFolderButton
             app.OpenFolderButton = uibutton(app.MainFigure, 'push');
             app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
             app.OpenFolderButton.Tag = 'loadresult';
-            app.OpenFolderButton.Position = [476 12 82 22];
+            app.OpenFolderButton.Position = [733 15 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
 
             % Create LoadLastButton
             app.LoadLastButton = uibutton(app.MainFigure, 'push');
             app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
-            app.LoadLastButton.Position = [111 448 25 22];
+            app.LoadLastButton.Position = [369 492 25 22];
             app.LoadLastButton.Text = '>>';
 
             % Create LoadFirstButton
             app.LoadFirstButton = uibutton(app.MainFigure, 'push');
             app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
-            app.LoadFirstButton.Position = [36 448 25 22];
+            app.LoadFirstButton.Position = [294 492 25 22];
             app.LoadFirstButton.Text = '<<';
 
             % Create GenStepField
             app.GenStepField = uieditfield(app.MainFigure, 'text');
             app.GenStepField.ValueChangedFcn = createCallbackFcn(app, @GenStepFieldValueChanged, true);
             app.GenStepField.HorizontalAlignment = 'center';
-            app.GenStepField.Position = [68 427 39 22];
+            app.GenStepField.Position = [326 471 39 22];
 
             % Create CompareListBox
             app.CompareListBox = uilistbox(app.MainFigure);
             app.CompareListBox.Items = {};
             app.CompareListBox.Multiselect = 'on';
-            app.CompareListBox.Position = [47 261 146 98];
+            app.CompareListBox.Position = [304 247 146 115];
             app.CompareListBox.Value = {};
 
             % Create ComparePlotButton
             app.ComparePlotButton = uibutton(app.MainFigure, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
-            app.ComparePlotButton.Position = [63 386 60 22];
-            app.ComparePlotButton.Text = 'Compare';
+            app.ComparePlotButton.Position = [255 377 89 22];
+            app.ComparePlotButton.Text = 'Compare Plot';
 
             % Create AddCompareButton
             app.AddCompareButton = uibutton(app.MainFigure, 'push');
             app.AddCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddCompareButtonPushed, true);
-            app.AddCompareButton.Position = [5 337 37 22];
+            app.AddCompareButton.Position = [262 340 37 22];
             app.AddCompareButton.Text = 'Add';
 
             % Create RemoveCompareButton
             app.RemoveCompareButton = uibutton(app.MainFigure, 'push');
             app.RemoveCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveCompareButtonPushed, true);
-            app.RemoveCompareButton.Position = [5 315 37 22];
+            app.RemoveCompareButton.Position = [262 318 37 22];
             app.RemoveCompareButton.Text = 'Del';
 
             % Create NickNameSaveButton
             app.NickNameSaveButton = uibutton(app.MainFigure, 'push');
             app.NickNameSaveButton.ButtonPushedFcn = createCallbackFcn(app, @NickNameSaveButtonPushed, true);
             app.NickNameSaveButton.Tag = 'loadresult';
-            app.NickNameSaveButton.Position = [138 88 50 22];
+            app.NickNameSaveButton.Position = [395 91 50 22];
             app.NickNameSaveButton.Text = 'Save';
 
             % Create ParentageButton
             app.ParentageButton = uibutton(app.MainFigure, 'push');
             app.ParentageButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageButtonPushed, true);
             app.ParentageButton.Tag = 'loadresult';
-            app.ParentageButton.Position = [173 13 70 22];
+            app.ParentageButton.Position = [514 16 70 22];
             app.ParentageButton.Text = 'Parentage';
 
             % Create BinUpdatesButton
             app.BinUpdatesButton = uibutton(app.MainFigure, 'push');
             app.BinUpdatesButton.ButtonPushedFcn = createCallbackFcn(app, @BinUpdatesButtonPushed, true);
             app.BinUpdatesButton.Tag = 'loadresult';
-            app.BinUpdatesButton.Position = [395 12 78 22];
+            app.BinUpdatesButton.Position = [268 31 78 22];
             app.BinUpdatesButton.Text = 'BinUpdates';
 
             % Create Label
             app.Label = uilabel(app.MainFigure);
             app.Label.HorizontalAlignment = 'right';
-            app.Label.Position = [5 108 42 22];
+            app.Label.Position = [262 91 42 22];
             app.Label.Text = 'Label: ';
 
             % Create NickNameField
             app.NickNameField = uieditfield(app.MainFigure, 'text');
-            app.NickNameField.Position = [47 108 86 22];
+            app.NickNameField.Position = [304 91 86 22];
 
             % Create CleanCompareButton
             app.CleanCompareButton = uibutton(app.MainFigure, 'push');
             app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
-            app.CleanCompareButton.Position = [125 386 83 22];
-            app.CleanCompareButton.Text = 'Clean Comp';
+            app.CleanCompareButton.Position = [346 377 100 22];
+            app.CleanCompareButton.Text = 'Clean Compare';
+
+            % Create ResultsLabel
+            app.ResultsLabel = uilabel(app.MainFigure);
+            app.ResultsLabel.FontWeight = 'bold';
+            app.ResultsLabel.Position = [2 550 53 22];
+            app.ResultsLabel.Text = 'Results:';
+
+            % Create ResultsListBox
+            app.ResultsListBox = uilistbox(app.MainFigure);
+            app.ResultsListBox.Items = {};
+            app.ResultsListBox.Position = [0 0 250 550];
+            app.ResultsListBox.Value = {};
+
+            % Create RefreshResultListButton
+            app.RefreshResultListButton = uibutton(app.MainFigure, 'push');
+            app.RefreshResultListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshResultListButtonPushed, true);
+            app.RefreshResultListButton.Tag = 'loadresult';
+            app.RefreshResultListButton.Position = [88 554 84 22];
+            app.RefreshResultListButton.Text = 'Refresh';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

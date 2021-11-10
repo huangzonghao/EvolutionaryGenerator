@@ -1,9 +1,8 @@
 function load_result(app)
-    tmp_result_path = uigetdir(app.evogen_results_path, 'EvoGen Result Dir');
-    figure(app.MainFigure);
-    if (tmp_result_path == 0) % User pressed cancel button
-        return;
+    if length(app.result_paths) == 0
+        return
     end
+    tmp_result_path = app.result_paths(app.ResultsListBox.Value);
 
     evo_xml = xml2struct(fullfile(tmp_result_path, app.params_filename));
 
@@ -45,14 +44,13 @@ function load_result(app)
     app.result_to_compare = [];
     app.CompareListBox.Items = {};
     app.result_to_compare(end + 1) = app.result_basename;
+    app.result_displayname = app.result_basename;
     [nickname, nickname_loaded] = load_nickname(tmp_result_path);
     if nickname_loaded
         app.NickNameSaveButton.Text = 'ReSave';
-        app.result_displayname = [nickname, ' - (', app.result_basename, ')'];
         app.CompareListBox.Items{end + 1} = nickname;
     else
         app.NickNameSaveButton.Text = 'Save';
-        app.result_displayname = app.result_basename;
         app.CompareListBox.Items{end + 1} = nickname;
     end
     app.CompareListBox.ItemsData(end + 1) = length(app.result_to_compare);
