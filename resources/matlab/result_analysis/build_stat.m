@@ -1,4 +1,6 @@
 function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, orig_stat_loaded)
+    [~, result_basename, ~] = fileparts(result_path);
+    nb_gen = evo_params.nb_gen;
     if (orig_stat_loaded)
         stat = orig_stat;
     else
@@ -6,7 +8,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         stat.elite_archive_fits = []; % mean fitness of top 10% indivs of archive after each generation
         stat.population_fits = [];
         stat.coverage = [];
-        stat.map_stat = zeros(evo_params.griddim_0, evo_params.griddim_1);
+        stat.map_stat = zeros(evo_params.griddim_0, evo_params.griddim_1, nb_gen);
 
         stat.clean_archive_fits = [];
         stat.clean_elite_archive_fits = []; % mean fitness of top 10% indivs of archive after each generation
@@ -17,8 +19,6 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
 
     stat_file = fullfile(result_path, 'stat.mat');
 
-    [~, result_basename, ~] = fileparts(result_path);
-    nb_gen = evo_params.nb_gen;
     wb = waitbar(double(i_start + 1) / double(nb_gen + 1), ['Processing 1 / ', num2str(nb_gen + 1)], 'Name', result_basename);
     for i = i_start : nb_gen
         if mod(i, 10) == 0
@@ -37,7 +37,12 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         pop_fitness = current_gen_pop(:, 11);
         stat.population_fits(i + 1) = mean(pop_fitness);
         stat.coverage(i + 1) = length(fitness) / (evo_params.griddim_0 * evo_params.griddim_1);
-        stat.map_stat = stat.map_stat + readmatrix(fullfile(result_path, strcat('/gridstats/', num2str(i), '.csv')));
+
+        if i == 0
+            stat.map_stat(:,:,i + 1) = readmatrix(fullfile(result_path, strcat('/gridstats/', num2str(i), '.csv')));
+        else
+            stat.map_stat(:,:,i + 1) = stat.map_stat(:,:,i) + readmatrix(fullfile(result_path, strcat('/gridstats/', num2str(i), '.csv')));
+        end
     end
     close(wb);
     save(stat_file, 'stat');
