@@ -1,20 +1,22 @@
 function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, orig_stat_loaded)
     [~, result_basename, ~] = fileparts(result_path);
     nb_gen = evo_params.nb_gen;
+    archive_size = evo_params.griddim_0 * evo_params.griddim_1;
+    % TODO: how to resume from loaded stat with the new changes -- set i_start smartly
     if (orig_stat_loaded)
         stat = orig_stat;
     else
-        stat.archive_fits = [];
-        stat.elite_archive_fits = []; % mean fitness of top 10% indivs of archive after each generation
-        stat.population_fits = [];
-        stat.coverage = [];
-        stat.map_stat = zeros(evo_params.griddim_0, evo_params.griddim_1, nb_gen);
+        stat.archive_fits = zeros(1, nb_gen + 1);
+        stat.elite_archive_fits = zeros(1, nb_gen + 1); % mean fitness of top 10% indivs of archive after each generation
+        stat.population_fits = zeros(1, nb_gen + 1);
+        stat.coverage = zeros(1, nb_gen + 1);
+        stat.map_stat = zeros(evo_params.griddim_0, evo_params.griddim_1, nb_gen + 1);
 
-        stat.clean_archive_fits = [];
-        stat.clean_elite_archive_fits = []; % mean fitness of top 10% indivs of archive after each generation
+        stat.clean_archive_fits = zeros(1, nb_gen + 1);
+        stat.clean_elite_archive_fits = zeros(1, nb_gen + 1); % mean fitness of top 10% indivs of archive after each generation
     end
 
-    i_start = length(stat.archive_fits);
+    i_start = 0;
     stat_loaded = orig_stat_loaded;
 
     stat_file = fullfile(result_path, 'stat.mat');
@@ -36,7 +38,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         current_gen_pop = readmatrix(fullfile(result_path, strcat('/robots/', num2str(i), '.csv')));
         pop_fitness = current_gen_pop(:, 11);
         stat.population_fits(i + 1) = mean(pop_fitness);
-        stat.coverage(i + 1) = length(fitness) / (evo_params.griddim_0 * evo_params.griddim_1);
+        stat.coverage(i + 1) = length(fitness) / archive_size;
 
         if i == 0
             stat.map_stat(:,:,i + 1) = readmatrix(fullfile(result_path, strcat('/gridstats/', num2str(i), '.csv')));
