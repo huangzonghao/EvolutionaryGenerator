@@ -2,46 +2,47 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MainFigure               matlab.ui.Figure
-        RefreshResultListButton  matlab.ui.control.Button
-        ResultsListBox           matlab.ui.control.ListBox
-        ResultsLabel             matlab.ui.control.Label
-        CleanCompareButton       matlab.ui.control.Button
-        NickNameField            matlab.ui.control.EditField
-        Label                    matlab.ui.control.Label
-        BinUpdatesButton         matlab.ui.control.Button
-        ParentageButton          matlab.ui.control.Button
-        NickNameSaveButton       matlab.ui.control.Button
-        RemoveCompareButton      matlab.ui.control.Button
-        AddCompareButton         matlab.ui.control.Button
-        ComparePlotButton        matlab.ui.control.Button
-        CompareListBox           matlab.ui.control.ListBox
-        GenStepField             matlab.ui.control.EditField
-        LoadFirstButton          matlab.ui.control.Button
-        LoadLastButton           matlab.ui.control.Button
-        OpenFolderButton         matlab.ui.control.Button
-        ToLabel                  matlab.ui.control.Label
-        FromLabel                matlab.ui.control.Label
-        StatEndGenField          matlab.ui.control.EditField
-        StatStartGenField        matlab.ui.control.EditField
-        StatPlotButton           matlab.ui.control.Button
-        RobotInfoLabel           matlab.ui.control.Label
-        RobotIDYField            matlab.ui.control.EditField
-        RobotIDXField            matlab.ui.control.EditField
-        BuildStatButton          matlab.ui.control.Button
-        GenInfoLabel             matlab.ui.control.Label
-        ResultInfoTextLabel      matlab.ui.control.Label
-        ResultInfoLabel          matlab.ui.control.Label
-        GenLabel                 matlab.ui.control.Label
-        SimulateRobotButton      matlab.ui.control.Button
-        LoadPrevStepButton       matlab.ui.control.Button
-        LoadNextStepButton       matlab.ui.control.Button
-        LoadPrevButton           matlab.ui.control.Button
-        LoadNextButton           matlab.ui.control.Button
-        GenIDField               matlab.ui.control.EditField
-        LoadResultButton         matlab.ui.control.Button
-        ResultNameLabel          matlab.ui.control.Label
-        MapViewerAxes            matlab.ui.control.UIAxes
+        MainFigure                matlab.ui.Figure
+        BuildAllResultStatButton  matlab.ui.control.Button
+        RefreshResultListButton   matlab.ui.control.Button
+        ResultsListBox            matlab.ui.control.ListBox
+        ResultsLabel              matlab.ui.control.Label
+        CleanCompareButton        matlab.ui.control.Button
+        NickNameField             matlab.ui.control.EditField
+        Label                     matlab.ui.control.Label
+        BinUpdatesButton          matlab.ui.control.Button
+        ParentageButton           matlab.ui.control.Button
+        NickNameSaveButton        matlab.ui.control.Button
+        RemoveCompareButton       matlab.ui.control.Button
+        AddCompareButton          matlab.ui.control.Button
+        ComparePlotButton         matlab.ui.control.Button
+        CompareListBox            matlab.ui.control.ListBox
+        GenStepField              matlab.ui.control.EditField
+        LoadFirstButton           matlab.ui.control.Button
+        LoadLastButton            matlab.ui.control.Button
+        OpenFolderButton          matlab.ui.control.Button
+        ToLabel                   matlab.ui.control.Label
+        FromLabel                 matlab.ui.control.Label
+        StatEndGenField           matlab.ui.control.EditField
+        StatStartGenField         matlab.ui.control.EditField
+        StatPlotButton            matlab.ui.control.Button
+        RobotInfoLabel            matlab.ui.control.Label
+        RobotIDYField             matlab.ui.control.EditField
+        RobotIDXField             matlab.ui.control.EditField
+        BuildStatButton           matlab.ui.control.Button
+        GenInfoLabel              matlab.ui.control.Label
+        ResultInfoTextLabel       matlab.ui.control.Label
+        ResultInfoLabel           matlab.ui.control.Label
+        GenLabel                  matlab.ui.control.Label
+        SimulateRobotButton       matlab.ui.control.Button
+        LoadPrevStepButton        matlab.ui.control.Button
+        LoadNextStepButton        matlab.ui.control.Button
+        LoadPrevButton            matlab.ui.control.Button
+        LoadNextButton            matlab.ui.control.Button
+        GenIDField                matlab.ui.control.EditField
+        LoadResultButton          matlab.ui.control.Button
+        ResultNameLabel           matlab.ui.control.Label
+        MapViewerAxes             matlab.ui.control.UIAxes
     end
 
     properties (Access = public)
@@ -63,7 +64,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
         gen_step = 500
         % TODO: should read the following constant values from somewhere
         %     especially the simulator name, which is system dependent
-        params_filename = 'evo_params.xml'
         sim_params_filename = 'sim_params.xml'
         simulator_basename = 'Genotype_Visualizer'
         simulator_name
@@ -249,6 +249,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: RefreshResultListButton
         function RefreshResultListButtonPushed(app, event)
             refresh_result_list(app);
+        end
+
+        % Button pushed function: BuildAllResultStatButton
+        function BuildAllResultStatButtonPushed(app, event)
+            build_all_stat(app);
         end
     end
 
@@ -495,21 +500,28 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create ResultsLabel
             app.ResultsLabel = uilabel(app.MainFigure);
             app.ResultsLabel.FontWeight = 'bold';
-            app.ResultsLabel.Position = [2 550 53 22];
+            app.ResultsLabel.Position = [2 554 53 22];
             app.ResultsLabel.Text = 'Results:';
 
             % Create ResultsListBox
             app.ResultsListBox = uilistbox(app.MainFigure);
             app.ResultsListBox.Items = {};
-            app.ResultsListBox.Position = [0 0 250 550];
+            app.ResultsListBox.Position = [0 0 250 554];
             app.ResultsListBox.Value = {};
 
             % Create RefreshResultListButton
             app.RefreshResultListButton = uibutton(app.MainFigure, 'push');
             app.RefreshResultListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshResultListButtonPushed, true);
             app.RefreshResultListButton.Tag = 'loadresult';
-            app.RefreshResultListButton.Position = [88 554 84 22];
+            app.RefreshResultListButton.Position = [54 556 60 22];
             app.RefreshResultListButton.Text = 'Refresh';
+
+            % Create BuildAllResultStatButton
+            app.BuildAllResultStatButton = uibutton(app.MainFigure, 'push');
+            app.BuildAllResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildAllResultStatButtonPushed, true);
+            app.BuildAllResultStatButton.Tag = 'loadresult';
+            app.BuildAllResultStatButton.Position = [117 556 56 22];
+            app.BuildAllResultStatButton.Text = 'BuildAll';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

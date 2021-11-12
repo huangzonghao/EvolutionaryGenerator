@@ -1,7 +1,7 @@
 function refresh_result_list(app)
     app.ResultsListBox.Items = {};
     app.ResultsListBox.ItemsData = [];
-    app.result_paths = "";
+    app.result_paths = string.empty;
 
     dirs = dir(app.evogen_results_path);
     counter = 1;
@@ -17,15 +17,20 @@ function refresh_result_list(app)
 end
 
 function ret_str = get_result_list_string(app, result_idx)
-    ret_str = "";
+    ret_str = '';
     result_path = app.result_paths(result_idx);
+    % first check if the statistics has been built
+    if ~isfile(fullfile(result_path, 'stat.mat'));
+        ret_str = "* ";
+    end
     [nickname, nickname_loaded] = load_nickname(result_path);
     if nickname_loaded
-        ret_str = nickname;
+        ret_str = strcat(ret_str, nickname);
     else
         [~, basename, ~] = fileparts(result_path);
-        ret_str = basename;
+        ret_str = strcat(ret_str, basename);
     end
+    ret_str = convertStringsToChars(ret_str);
 end
 
 function result_is_valid = verify_result_dir(dir_path)

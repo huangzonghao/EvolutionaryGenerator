@@ -17,8 +17,9 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
 
     stat_file = fullfile(result_path, 'stat.mat');
 
+    [~, result_basename, ~] = fileparts(result_path);
     nb_gen = evo_params.nb_gen;
-    wb = waitbar(double(i_start + 1) / double(nb_gen + 1), ['Processing 1 / ', num2str(nb_gen + 1)], 'Name', 'Building Statistics ...');
+    wb = waitbar(double(i_start + 1) / double(nb_gen + 1), ['Processing 1 / ', num2str(nb_gen + 1)], 'Name', result_basename);
     for i = i_start : nb_gen
         if mod(i, 10) == 0
             waitbar(double(i + 1) / double(nb_gen + 1), wb, ['Processing ', num2str(i + 1), ' / ', num2str(nb_gen + 1)]);
