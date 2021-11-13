@@ -79,8 +79,8 @@ class EvoGenQD
             i2->set_id(this->_gen + 1, i + 1);
             i1->mutate();
             i2->mutate();
-            _offspring[ids[i]] = i1;
-            _offspring[ids[i + 1]] = i2;
+            _offspring[i] = i1;
+            _offspring[i + 1] = i2;
         }
 
         // Evaluation of the offspring
