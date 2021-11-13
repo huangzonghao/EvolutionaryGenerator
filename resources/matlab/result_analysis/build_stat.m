@@ -22,9 +22,14 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     stat_file = fullfile(result_path, 'stat.mat');
 
     wb = waitbar(double(i_start + 1) / double(nb_gen + 1), ['Processing 1 / ', num2str(nb_gen + 1)], 'Name', result_basename);
+    t_start = tic;
     for i = i_start : nb_gen
         if mod(i, 10) == 0
-            waitbar(double(i + 1) / double(nb_gen + 1), wb, ['Processing ', num2str(i + 1), ' / ', num2str(nb_gen + 1)]);
+            t_passed = toc(t_start);
+            t_left = t_passed / double(i - i_start) * (nb_gen - i);
+            t_passed = round(t_passed);
+            t_left = round(t_left);
+            waitbar(double(i + 1) / double(nb_gen + 1), wb, sprintf("Processing %d / %d, %d:%d used, %d:%d left", i + 1, nb_gen + 1, floor(t_passed / 60), rem((t_passed), 60), floor(t_left / 60), rem(t_left, 60)));
         end
         curr_gen_archive = readmatrix(fullfile(result_path, strcat('/gridmaps/', num2str(i), '.csv')));
         fitness = curr_gen_archive(:, 5);
