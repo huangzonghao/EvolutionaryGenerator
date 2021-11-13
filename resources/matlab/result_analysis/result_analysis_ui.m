@@ -3,6 +3,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                matlab.ui.Figure
+        ParentageDistButton       matlab.ui.control.Button
         BuildAllResultStatButton  matlab.ui.control.Button
         RefreshResultListButton   matlab.ui.control.Button
         ResultsListBox            matlab.ui.control.ListBox
@@ -254,6 +255,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: BuildAllResultStatButton
         function BuildAllResultStatButtonPushed(app, event)
             build_all_stat(app);
+        end
+
+        % Button pushed function: ParentageDistButton
+        function ParentageDistButtonPushed(app, event)
+            plot_parentage_distribution(app);
         end
     end
 
@@ -522,6 +528,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BuildAllResultStatButton.Tag = 'loadresult';
             app.BuildAllResultStatButton.Position = [117 556 56 22];
             app.BuildAllResultStatButton.Text = 'BuildAll';
+
+            % Create ParentageDistButton
+            app.ParentageDistButton = uibutton(app.MainFigure, 'push');
+            app.ParentageDistButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageDistButtonPushed, true);
+            app.ParentageDistButton.Tag = 'loadresult';
+            app.ParentageDistButton.Position = [420 16 95 22];
+            app.ParentageDistButton.Text = 'Parentage Dist';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
