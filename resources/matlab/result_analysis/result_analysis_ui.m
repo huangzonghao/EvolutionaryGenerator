@@ -100,6 +100,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % init ui assets
             app.GenStepField.Value = num2str(app.gen_step);
+
+            refresh_result_list(app);
         end
 
         % Button pushed function: LoadResultButton
