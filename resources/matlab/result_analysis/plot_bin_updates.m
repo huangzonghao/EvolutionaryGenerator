@@ -4,7 +4,7 @@ function plot_bin_updates(app)
     else
         map_stat = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
         for i = 0 : app.current_gen
-            map_stat = map_stat + readmatrix(fullfile(app.result_path, strcat('/gridstats/', num2str(i), '.csv')));
+            map_stat = map_stat + readmatrix(fullfile(app.result_path, strcat('/gridstats/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
         end
     end
     h = figure('units','normalized','outerposition',[0.05 0 0.6 0.5]);

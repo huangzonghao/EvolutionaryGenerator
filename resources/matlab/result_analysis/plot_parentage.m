@@ -45,7 +45,7 @@ end
 
 function load_new_robots_gen(app, gen_id)
     if app.robots_gen ~= gen_id
-        app.robots_buffer = readmatrix(fullfile(app.result_path, strcat('/robots/', num2str(gen_id), '.csv')));
+        app.robots_buffer = readmatrix(fullfile(app.result_path, strcat('/robots/', num2str(gen_id), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
         app.robots_gen = gen_id;
     end
 end

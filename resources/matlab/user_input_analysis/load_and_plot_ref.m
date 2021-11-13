@@ -46,7 +46,7 @@ function [heat_axis, fitness] = plot_gen(app, target_axes, training_result, gen_
 
     archive_file = fullfile(training_result.result_path, ...
                             ['/gridmaps/', num2str(gen_to_plot), '.csv']);
-    archive_data = readmatrix(archive_file);
+    archive_data = readmatrix(archive_file, delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
 
     % plot heatmap
     archive_map = zeros(training_result.griddim_0, training_result.griddim_1);

@@ -12,7 +12,7 @@ function run_simulation(app)
     gen_id = app.current_gen_archive(id_in_archive, 1);
     id = app.current_gen_archive(id_in_archive, 2);
     if app.robots_gen ~= gen_id
-        app.robots_buffer = readmatrix(fullfile(app.result_path, strcat('/robots/', num2str(gen_id), '.csv')));
+        app.robots_buffer = readmatrix(fullfile(app.result_path, strcat('/robots/', num2str(gen_id), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
         app.robots_gen = gen_id;
     end
     robot_data = app.robots_buffer(app.robots_buffer(:, 2)==id, :);
