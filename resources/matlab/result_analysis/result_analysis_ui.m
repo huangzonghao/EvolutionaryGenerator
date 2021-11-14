@@ -3,6 +3,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                matlab.ui.Figure
+        ParentageStatButton       matlab.ui.control.Button
         ParentageDistButton       matlab.ui.control.Button
         BuildAllResultStatButton  matlab.ui.control.Button
         RefreshResultListButton   matlab.ui.control.Button
@@ -263,6 +264,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function ParentageDistButtonPushed(app, event)
             plot_parentage_distribution(app);
         end
+
+        % Button pushed function: ParentageStatButton
+        function ParentageStatButtonPushed(app, event)
+            plot_parentage_stat(app);
+        end
     end
 
     % Component initialization
@@ -486,7 +492,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BinUpdatesButton = uibutton(app.MainFigure, 'push');
             app.BinUpdatesButton.ButtonPushedFcn = createCallbackFcn(app, @BinUpdatesButtonPushed, true);
             app.BinUpdatesButton.Tag = 'loadresult';
-            app.BinUpdatesButton.Position = [268 31 78 22];
+            app.BinUpdatesButton.Position = [254 31 78 22];
             app.BinUpdatesButton.Text = 'BinUpdates';
 
             % Create Label
@@ -535,8 +541,15 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageDistButton = uibutton(app.MainFigure, 'push');
             app.ParentageDistButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageDistButtonPushed, true);
             app.ParentageDistButton.Tag = 'loadresult';
-            app.ParentageDistButton.Position = [420 16 95 22];
+            app.ParentageDistButton.Position = [427 16 88 22];
             app.ParentageDistButton.Text = 'Parentage Dist';
+
+            % Create ParentageStatButton
+            app.ParentageStatButton = uibutton(app.MainFigure, 'push');
+            app.ParentageStatButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageStatButtonPushed, true);
+            app.ParentageStatButton.Tag = 'loadresult';
+            app.ParentageStatButton.Position = [338 16 89 22];
+            app.ParentageStatButton.Text = 'Parentage Stat';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
