@@ -41,7 +41,7 @@ function compare_plot(result_dirs, parent_path, do_clean_plot)
             else
                 legend_name = result_dirs(i);
             end
-            plot_color = plot_colors(i);
+            plot_color = plot_colors(rem(i, length(plot_colors)) + 1);
             if do_clean_plot
                 plot(p1, stat.clean_archive_fits, 'DisplayName', legend_name);
                 plot(p2, stat.clean_elite_archive_fits, 'DisplayName', legend_name);
