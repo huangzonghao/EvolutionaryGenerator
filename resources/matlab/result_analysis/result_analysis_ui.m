@@ -3,6 +3,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                matlab.ui.Figure
+        RebuildResultStatButton   matlab.ui.control.Button
         ParentageStatButton       matlab.ui.control.Button
         ParentageDistButton       matlab.ui.control.Button
         BuildAllResultStatButton  matlab.ui.control.Button
@@ -268,6 +269,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: ParentageStatButton
         function ParentageStatButtonPushed(app, event)
             plot_parentage_stat(app);
+        end
+
+        % Button pushed function: RebuildResultStatButton
+        function RebuildResultStatButtonPushed(app, event)
+            build_selected_stat(app);
         end
     end
 
@@ -535,7 +541,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BuildAllResultStatButton = uibutton(app.MainFigure, 'push');
             app.BuildAllResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildAllResultStatButtonPushed, true);
             app.BuildAllResultStatButton.Tag = 'loadresult';
-            app.BuildAllResultStatButton.Position = [117 556 56 22];
+            app.BuildAllResultStatButton.Position = [169 556 56 22];
             app.BuildAllResultStatButton.Text = 'BuildAll';
 
             % Create ParentageDistButton
@@ -551,6 +557,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageStatButton.Tag = 'loadresult';
             app.ParentageStatButton.Position = [338 16 89 22];
             app.ParentageStatButton.Text = 'Parentage Stat';
+
+            % Create RebuildResultStatButton
+            app.RebuildResultStatButton = uibutton(app.MainFigure, 'push');
+            app.RebuildResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @RebuildResultStatButtonPushed, true);
+            app.RebuildResultStatButton.Tag = 'loadresult';
+            app.RebuildResultStatButton.Position = [112 556 58 22];
+            app.RebuildResultStatButton.Text = 'ReBuild';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
