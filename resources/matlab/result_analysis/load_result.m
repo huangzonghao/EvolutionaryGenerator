@@ -38,7 +38,7 @@ function load_result(app)
         app.CompareListBox.Items{end + 1} = nickname;
     else
         app.NickNameSaveButton.Text = 'Save';
-        app.CompareListBox.Items{end + 1} = nickname;
+        app.CompareListBox.Items{end + 1} = convertStringsToChars(app.result_basename);
     end
     app.CompareListBox.ItemsData(end + 1) = length(app.result_to_compare);
     app.NickNameField.Value = nickname;

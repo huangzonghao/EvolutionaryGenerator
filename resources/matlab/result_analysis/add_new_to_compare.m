@@ -12,7 +12,7 @@ function add_new_to_compare(app)
         if nickname_loaded
             app.CompareListBox.Items{end + 1} = nickname;
         else
-            app.CompareListBox.Items{end + 1} = result_name;
+            app.CompareListBox.Items{end + 1} = convertStringsToChars(result_name);
         end
         app.CompareListBox.ItemsData(end + 1) = length(app.result_to_compare);
     end
