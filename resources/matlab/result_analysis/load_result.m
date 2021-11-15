@@ -2,7 +2,7 @@ function load_result(app)
     if length(app.result_paths) == 0
         return
     end
-    tmp_result_path = app.result_paths(app.ResultsListBox.Value);
+    tmp_result_path = app.result_paths(app.ResultsListBox.Value{1});
 
     [~, app.result_basename, ~] = fileparts(tmp_result_path);
     app.result_path = tmp_result_path;

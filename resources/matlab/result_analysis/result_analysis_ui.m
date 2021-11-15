@@ -520,6 +520,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create ResultsListBox
             app.ResultsListBox = uilistbox(app.MainFigure);
             app.ResultsListBox.Items = {};
+            app.ResultsListBox.Multiselect = 'on';
             app.ResultsListBox.Position = [0 0 250 554];
             app.ResultsListBox.Value = {};
 
