@@ -62,7 +62,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
             t_left = t_passed / double(i - i_start) * (nb_gen - i);
             t_passed = round(t_passed);
             t_left = round(t_left);
-            waitbar(double(i + 1) / double(nb_gen + 1), wb, sprintf("Processing %d / %d, %d:%d used, %d:%d left", i + 1, nb_gen + 1, floor(t_passed / 60), rem((t_passed), 60), floor(t_left / 60), rem(t_left, 60)));
+            waitbar(double(i + 1) / double(nb_gen + 1), wb, sprintf("Processing %d / %d, %02d:%02d used, %02d:%02d left", i + 1, nb_gen + 1, floor(t_passed / 60), rem((t_passed), 60), floor(t_left / 60), rem(t_left, 60)));
         end
 
         % Load gridmaps
