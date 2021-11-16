@@ -151,25 +151,17 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: StatPlotButton
         function StatPlotButtonPushed(app, event)
-            if (~app.stat_loaded)
-                msgbox('Build Stat first');
-                return;
-            end
-            stat_plot(app.stat, app.result_displayname, str2double(app.StatStartGenField.Value), str2double(app.StatEndGenField.Value));
+            plot_result_stat(app);
         end
 
         % Button pushed function: ComparePlotButton
         function ComparePlotButtonPushed(app, event)
-            if (app.result_to_compare.length > 1)
-                compare_plot(app.result_to_compare, app.evogen_results_path, false);
-            end
+            plot_result_compares(app, false);
         end
 
         % Button pushed function: CleanCompareButton
         function CleanCompareButtonPushed(app, event)
-            if (app.result_to_compare.length > 1)
-                compare_plot(app.result_to_compare, app.evogen_results_path, true);
-            end
+            plot_result_compares(app, true);
         end
 
         % Button pushed function: AddCompareButton

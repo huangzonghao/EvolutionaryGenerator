@@ -1,4 +1,4 @@
-function plot_heatmap(app)
+function plot_archive_map(app)
     app.archive_map = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
     app.archive_ids = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
     x = app.current_gen_archive(:, 3) + 1; % remember matlab index starts from 1

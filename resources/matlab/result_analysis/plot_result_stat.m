@@ -1,4 +1,13 @@
-function stat_plot(stat, result_displayname, start_gen, end_gen)
+function plot_result_stat(app)
+    if (~app.stat_loaded)
+        msgbox('Build Stat first');
+        return;
+    end
+    stat = app.stat;
+    result_displayname = app.result_displayname;
+    start_gen = str2double(app.StatStartGenField.Value);
+    end_gen = str2double(app.StatEndGenField.Value);
+
     num_subplots = 4;
 
     start_gen = max(start_gen, 0);
