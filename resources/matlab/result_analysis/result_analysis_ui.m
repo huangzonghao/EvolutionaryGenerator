@@ -10,6 +10,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         RefreshResultListButton   matlab.ui.control.Button
         ResultsListBox            matlab.ui.control.ListBox
         ResultsLabel              matlab.ui.control.Label
+        AgeofBinsButton           matlab.ui.control.Button
         CleanCompareButton        matlab.ui.control.Button
         NickNameField             matlab.ui.control.EditField
         Label                     matlab.ui.control.Label
@@ -249,6 +250,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: BinUpdatesButton
         function BinUpdatesButtonPushed(app, event)
             plot_bin_updates(app);
+        end
+
+        % Button pushed function: AgeofBinsButton
+        function AgeofBinsButtonPushed(app, event)
+            plot_age_of_bins(app);
         end
 
         % Button pushed function: RefreshResultListButton
@@ -516,6 +522,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
             app.CleanCompareButton.Position = [346 377 100 22];
             app.CleanCompareButton.Text = 'Clean Compare';
+
+            % Create AgeofBinsButton
+            app.AgeofBinsButton = uibutton(app.MainFigure, 'push');
+            app.AgeofBinsButton.ButtonPushedFcn = createCallbackFcn(app, @AgeofBinsButtonPushed, true);
+            app.AgeofBinsButton.Tag = 'loadresult';
+            app.AgeofBinsButton.Position = [254 10 78 22];
+            app.AgeofBinsButton.Text = 'Age of Bins';
 
             % Create ResultsLabel
             app.ResultsLabel = uilabel(app.MainFigure);
