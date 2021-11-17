@@ -10,8 +10,16 @@ function refresh_selected_robots_list(app)
         for j = 1 : size(app.results_enabled, 2) % env_id
             result = app.results{i};
             if app.results_enabled(i,j) == 1
-                for k = 1 : length(result.fitness(j,:)) % ver id
-                    app.user_inputs_selected(end+1, :) = [result.internal_id, j, k, result.fitness(j, k)];
+                % get the internal fitness ranking and also remove the robots with the same fitness
+                % TODO: better way to tell if the robot is a duplicate?
+                % [~, sort_order] = sort(result.fitness(j, :), 'descend'); % descending order of fitness
+                [~, sort_order, ~] = unique(result.fitness(j, :)); % ascending order of fitness
+                sort_order = flip(sort_order);
+
+                rank = 1;
+                for ik = 1 : length(sort_order) % ver id
+                    k = sort_order(ik);
+                    app.user_inputs_selected(end+1, :) = [result.internal_id, j, k, result.fitness(j, k), rank];
 
                     tmp_str = [result.user_id, '-'];
                     % TODO: hard coded env here
@@ -23,10 +31,11 @@ function refresh_selected_robots_list(app)
                         tmp_str = [tmp_str, 'v'];
                     end
 
-                    tmp_str = [tmp_str, '-', num2str(k), '-(' num2str(result.fitness(j,k)), ')'];
+                    tmp_str = [tmp_str, '-', num2str(k), '-(' num2str(result.fitness(j,k)), ')(', num2str(rank), ')'];
 
                     app.SelectedRobotsListBox.Items{end+1} = tmp_str;
                     app.SelectedRobotsListBox.ItemsData(end+1) = size(app.user_inputs_selected, 1);
+                    rank = rank + 1;
                 end
             end
         end

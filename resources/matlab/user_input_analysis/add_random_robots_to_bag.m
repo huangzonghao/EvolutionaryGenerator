@@ -12,7 +12,7 @@ function add_random_robots_to_bag(app)
     app.random_robots = [app.random_robots; new_random_robot];
     for i = num_existing_random_robot + 1 : num_existing_random_robot + num
         app.AddedRobotsListBox.Items{end+1} = strcat('random-', num2str(i));
-        app.user_inputs_added(end+1, :) = [-1, 0, i, -Inf];
+        app.user_inputs_added(end+1, :) = [-1, 0, i, -Inf, 0];
         app.AddedRobotsListBox.ItemsData(end+1) = size(app.user_inputs_added, 1);
 
     end
