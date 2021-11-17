@@ -176,14 +176,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: NickNameSaveButton
         function NickNameSaveButtonPushed(app, event)
-            name = app.NickNameField.Value;
-            if isempty(name)
-                return;
-            end
-            save_nickname(app, name);
-            app.NickNameSaveButton.Text = 'ReSave';
-            app.result_displayname = [name, ' - (', app.result_basename, ')'];
-            app.ResultNameLabel.Text = app.result_displayname;
+            save_nickname(app);
         end
 
         % Button pushed function: OpenFolderButton
