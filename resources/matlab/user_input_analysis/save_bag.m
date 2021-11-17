@@ -44,5 +44,5 @@ function save_bag(app)
     fprintf(new_file_spec, jsonencode(jsobj));
     fclose(new_file_spec);
     msgbox(['Bag file saved to ', filename]);
-    app.OutputBagNameField.Value = "output_filename";
+    app.OutputBagNameField.Value = string.empty;
 end
