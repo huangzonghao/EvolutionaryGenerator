@@ -6,6 +6,8 @@ function save_bag(app)
         msgbox("Specify a bag name");
         return
     end
+
+    random_count = 0;
     for i = 1 : size(app.user_inputs_added, 1)
         robot_info = app.user_inputs_added(i, :);
         if robot_info(1) == -1
@@ -15,6 +17,7 @@ function save_bag(app)
             tmp_obj.ver = num2str(robot_info(3));
             tmp_obj.gene = app.random_robots(robot_info(3), :);
             tmp_obj.fitness_reference = robot_info(4);
+            random_count = random_count + 1;
         else
             result = app.results{robot_info(1)};
             tmp_obj.user_id = result.user_id;
@@ -30,6 +33,7 @@ function save_bag(app)
     jsobj.timestamp = datestr(now,'yyyy-mm-dd HH:MM:SS');
     jsobj.comments = string(app.CommentTextArea.Value);
     jsobj.total_count = size(app.user_inputs_added, 1);
+    jsobj.user_seed_count = jsobj.total_count - random_count;
 
     dirname = fullfile(app.user_input_dir, 'Bags');
     if ~exist(dirname, 'dir')
