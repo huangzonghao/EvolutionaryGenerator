@@ -39,7 +39,7 @@ function save_bag(app)
     if ~exist(dirname, 'dir')
         mkdir(dirname);
     end
-    filename = strcat(fullfile(dirname, strcat('Bag_', app.OutputBagNameField.Value)), '.json');
+    filename = strcat(fullfile(dirname, strcat('Bag_', app.OutputBagNameField.Value, '_', datestr(now, 'yyyymmdd_HHMMSS'))), '.json');
     new_file_spec = fopen(filename, "wt");
     fprintf(new_file_spec, jsonencode(jsobj));
     fclose(new_file_spec);
