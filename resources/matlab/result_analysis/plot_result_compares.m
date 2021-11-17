@@ -58,9 +58,11 @@ function plot_result_compares(app, do_clean_plot)
             plot(p3, stat.coverage, 'DisplayName', legend_name);
         end
     end
-    legend(p1, 'Interpreter', 'none');
-    legend(p2, 'Interpreter', 'none');
-    legend(p3, 'Interpreter', 'none', 'Location', 'SouthEast');
+    if app.result_to_compare.length < 7
+        legend(p1, 'Interpreter', 'none');
+        legend(p2, 'Interpreter', 'none');
+        legend(p3, 'Interpreter', 'none', 'Location', 'SouthEast');
+    end
 
     % then plot
 
