@@ -22,24 +22,28 @@ function plot_gen_all(app)
 
         app.gen_plot.panel(1,2).select();
         app.gen_plot.archive_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.archive_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.archive_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.archive_heat.YLabel = app.evo_params.feature_description1;
         app.gen_plot.archive_heat.Title = 'Archive Map';
 
         app.gen_plot.panel(1,3).select();
         app.gen_plot.parentage_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.parentage_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.parentage_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.parentage_heat.YLabel = app.evo_params.feature_description1;
         app.gen_plot.parentage_heat.Title = 'Percentage of User Input Per Robot';
 
         app.gen_plot.panel(2,2).select();
         app.gen_plot.updates_per_bin_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.updates_per_bin_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.updates_per_bin_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.updates_per_bin_heat.YLabel = app.evo_params.feature_description1;
         app.gen_plot.updates_per_bin_heat.Title = 'Total Updates Per Bin';
 
         app.gen_plot.panel(2,3).select();
         app.gen_plot.bin_age_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.bin_age_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.bin_age_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.bin_age_heat.YLabel = app.evo_params.feature_description1;
         app.gen_plot.bin_age_heat.Title = 'Age of Each Bin';
