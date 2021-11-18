@@ -4,7 +4,6 @@ function plot_result_stat(app)
         return;
     end
     stat = app.stat;
-    result_displayname = app.result_displayname;
     start_gen = str2double(app.StatStartGenField.Value);
     end_gen = str2double(app.StatEndGenField.Value);
 
@@ -14,7 +13,7 @@ function plot_result_stat(app)
     end_gen = min(end_gen, length(stat.archive_fits) - 1); % stat contains gen 0
 
     figure('units','normalized','outerposition',[.05 .05 .9 .9]);
-    sgtitle(result_displayname, 'Interpreter', 'none');
+    sgtitle(app.result_displayname, 'Interpreter', 'none');
 
     % Fitness Plot
     subplot(num_subplots, 1, 1);

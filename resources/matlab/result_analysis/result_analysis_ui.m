@@ -9,7 +9,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
         ResultsToCompareLabel     matlab.ui.control.Label
         RebuildResultStatButton   matlab.ui.control.Button
         ParentageStatButton       matlab.ui.control.Button
-        ParentageDistButton       matlab.ui.control.Button
         BuildAllResultStatButton  matlab.ui.control.Button
         RefreshResultListButton   matlab.ui.control.Button
         ResultsListBox            matlab.ui.control.ListBox
@@ -50,21 +49,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
     end
 
     properties (Access = public)
-        result_group_path = string.empty
-        result_paths = string.empty % array containing the paths to the results
-        results % array containing the cache of the loaded results
-        result_loaded = false
-        result_path = ""
-        gen_plot % struct containing: handle, archive_surf_ax
-        evo_params % parameters of an evolutionary generation process
-        stat % variables containing the stats of the result
-        stat_loaded = false
-        evogen_results_path
+        % Constants
         evogen_exe_path
-        current_gen = -1
-        current_gen_archive
-        robots_buffer
-        robots_gen = -1
+        evogen_results_path
         gen_step = 500
         % TODO: should read the following constant values from somewhere
         %     especially the simulator name, which is system dependent
@@ -73,9 +60,27 @@ classdef result_analysis_ui < matlab.apps.AppBase
         simulator_name
         generator_basename = 'Evolutionary_Generator'
         generator_name
+
+        % Containers
+        result_group_path = string.empty
+        result_paths = string.empty % array containing the paths to the results
+        result_to_compare string
+        results % array containing the cache of the loaded results
+
+        % Properties to cache for the currently loaded result
+        result_loaded = false
+        result_path = ""
+        result_displayname string % the displayname of the result used accross different figs
+        gen_plot % struct containing: handle, archive_surf_ax
+        evo_params % parameters of an evolutionary generation process
+        stat % variables containing the stats of the result
+        stat_loaded = false
+        current_gen = -1
+        current_gen_archive
+        robots_buffer
+        robots_gen = -1
         archive_map
         archive_ids
-        result_to_compare string
     end
 
     % Callbacks that handle component events
@@ -236,11 +241,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: BuildAllResultStatButton
         function BuildAllResultStatButtonPushed(app, event)
             build_all_stat(app);
-        end
-
-        % Button pushed function: ParentageDistButton
-        function ParentageDistButtonPushed(app, event)
-            plot_parentage_distribution(app);
         end
 
         % Button pushed function: ParentageStatButton
@@ -460,7 +460,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BinUpdatesButton = uibutton(app.MainFigure, 'push');
             app.BinUpdatesButton.ButtonPushedFcn = createCallbackFcn(app, @BinUpdatesButtonPushed, true);
             app.BinUpdatesButton.Tag = 'loadresult';
-            app.BinUpdatesButton.Position = [564 212 70 22];
+            app.BinUpdatesButton.Position = [561 212 76 22];
             app.BinUpdatesButton.Text = 'Bin Updates';
 
             % Create NicknameLabel
@@ -514,18 +514,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BuildAllResultStatButton.Position = [169 556 56 22];
             app.BuildAllResultStatButton.Text = 'BuildAll';
 
-            % Create ParentageDistButton
-            app.ParentageDistButton = uibutton(app.MainFigure, 'push');
-            app.ParentageDistButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageDistButtonPushed, true);
-            app.ParentageDistButton.Tag = 'loadresult';
-            app.ParentageDistButton.Position = [656 230 88 22];
-            app.ParentageDistButton.Text = 'Parentage Dist';
-
             % Create ParentageStatButton
             app.ParentageStatButton = uibutton(app.MainFigure, 'push');
             app.ParentageStatButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageStatButtonPushed, true);
             app.ParentageStatButton.Tag = 'loadresult';
-            app.ParentageStatButton.Position = [656 206 89 22];
+            app.ParentageStatButton.Position = [656 229 89 22];
             app.ParentageStatButton.Text = 'Parentage Stat';
 
             % Create RebuildResultStatButton

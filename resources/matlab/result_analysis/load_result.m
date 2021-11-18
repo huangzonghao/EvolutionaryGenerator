@@ -26,19 +26,19 @@ function load_result(app)
     app.result_to_compare = [];
     app.CompareListBox.Items = {};
     app.result_to_compare(end + 1) = result_basename;
-    result_displayname = result_basename;
+    app.result_displayname = result_basename;
     [nickname, nickname_loaded] = load_nickname(tmp_result_path);
     if nickname_loaded
         app.NickNameSaveButton.Text = 'ReSave';
         app.CompareListBox.Items{end + 1} = nickname;
-        result_displayname = nickname;
+        app.result_displayname = nickname;
     else
         app.NickNameSaveButton.Text = 'Save';
         app.CompareListBox.Items{end + 1} = convertStringsToChars(result_basename);
     end
     app.CompareListBox.ItemsData(end + 1) = length(app.result_to_compare);
     app.NickNameField.Value = nickname;
-    app.ResultNameLabel.Text = result_displayname;
+    app.ResultNameLabel.Text = app.result_displayname;
 
     app.current_gen = -1;
     load_gen(app, 0);

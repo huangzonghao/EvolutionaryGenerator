@@ -29,6 +29,7 @@ function plot_gen_all(app)
 
         app.gen_plot.panel(1,3).select();
         app.gen_plot.parentage_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.parentage_heat.ColorLimits = [0, 1];
         app.gen_plot.parentage_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.parentage_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.parentage_heat.YLabel = app.evo_params.feature_description1;

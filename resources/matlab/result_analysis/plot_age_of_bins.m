@@ -1,6 +1,7 @@
 function plot_age_of_bins(app)
-    % plot how many generations since the bin was lastly updated
+    % plot the number of generations since the bin was lastly updated
     if ~isfield(app.stat, 'archive_age')
+        msgbox("Current result doesn't have age information built into stat. Rebuild to plot");
         return
     end
     figure();
@@ -13,5 +14,4 @@ function plot_age_of_bins(app)
     xlabel('Generations');
     ylabel('Age');
     legend('Interpreter', 'none');
-
 end
