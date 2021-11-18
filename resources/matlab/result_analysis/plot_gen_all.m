@@ -40,9 +40,11 @@ function plot_gen_all(app)
     app.archive_ids(sub2ind(size(app.archive_map), x, y)) = [1:length(fitness)];
 
     parentage_map = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
-    if app.stat.has_parentage
+    if isfield(app.stat, 'has_parentage') && app.stat.has_parentage
         parentage_dist = app.stat.robot_parentage(sub2ind(size(app.stat.robot_parentage), app.current_gen_archive(:,2) + 1, app.current_gen_archive(:,1) + 1));
         parentage_map(sub2ind(size(parentage_map), x, y)) = parentage_dist;
+    else
+        parentage_map = -1 * ones(app.evo_params.griddim_0, app.evo_params.griddim_1);
     end
 
     % Generate the plots
