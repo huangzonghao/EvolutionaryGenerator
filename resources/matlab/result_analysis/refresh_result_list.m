@@ -1,9 +1,17 @@
 function refresh_result_list(app)
+    if isempty(app.result_group_path)
+        result_dir = app.evogen_results_path;
+        app.ResultGroupLabel.Text = 'Base';
+    else
+        result_dir = app.result_group_path;
+        [~, app.ResultGroupLabel.Text, ~] = fileparts(app.result_group_path);
+    end
+
     app.ResultsListBox.Items = {};
     app.ResultsListBox.ItemsData = [];
     app.result_paths = string.empty;
 
-    dirs = dir(app.evogen_results_path);
+    dirs = dir(result_dir);
     counter = 1;
     for i = 1 : length(dirs)
         tmp_path = fullfile(dirs(i).folder, dirs(i).name);

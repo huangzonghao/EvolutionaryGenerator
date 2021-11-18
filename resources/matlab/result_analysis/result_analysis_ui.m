@@ -3,6 +3,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                matlab.ui.Figure
+        LoadResultGroupButton     matlab.ui.control.Button
+        ResultGroupLabel          matlab.ui.control.Label
         PlotGenButton             matlab.ui.control.Button
         ResultsToCompareLabel     matlab.ui.control.Label
         RebuildResultStatButton   matlab.ui.control.Button
@@ -48,6 +50,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     end
 
     properties (Access = public)
+        result_group_path = string.empty
         result_paths = string.empty % array containing the paths to the results
         results % array containing the cache of the loaded results
         result_loaded = false
@@ -254,6 +257,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function PlotGenButtonPushed(app, event)
             plot_gen_all(app);
         end
+
+        % Button pushed function: LoadResultGroupButton
+        function LoadResultGroupButtonPushed(app, event)
+            load_group(app);
+        end
     end
 
     % Component initialization
@@ -279,7 +287,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.LoadResultButton = uibutton(app.MainFigure, 'push');
             app.LoadResultButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultButtonPushed, true);
             app.LoadResultButton.Tag = 'loadresult';
-            app.LoadResultButton.Position = [285 532 71 22];
+            app.LoadResultButton.Position = [285 529 71 22];
             app.LoadResultButton.Text = 'Load';
 
             % Create GenIDField
@@ -489,7 +497,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ResultsListBox = uilistbox(app.MainFigure);
             app.ResultsListBox.Items = {};
             app.ResultsListBox.Multiselect = 'on';
-            app.ResultsListBox.Position = [0 0 274 554];
+            app.ResultsListBox.Position = [0 0 274 525];
             app.ResultsListBox.Value = {};
 
             % Create RefreshResultListButton
@@ -538,6 +546,21 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PlotGenButton.ButtonPushedFcn = createCallbackFcn(app, @PlotGenButtonPushed, true);
             app.PlotGenButton.Position = [681 378 64 22];
             app.PlotGenButton.Text = 'Plot Gen';
+
+            % Create ResultGroupLabel
+            app.ResultGroupLabel = uilabel(app.MainFigure);
+            app.ResultGroupLabel.HorizontalAlignment = 'center';
+            app.ResultGroupLabel.FontSize = 14;
+            app.ResultGroupLabel.FontWeight = 'bold';
+            app.ResultGroupLabel.Position = [2 529 182 22];
+            app.ResultGroupLabel.Text = 'Group';
+
+            % Create LoadResultGroupButton
+            app.LoadResultGroupButton = uibutton(app.MainFigure, 'push');
+            app.LoadResultGroupButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultGroupButtonPushed, true);
+            app.LoadResultGroupButton.Tag = 'loadresult';
+            app.LoadResultGroupButton.Position = [204 529 70 22];
+            app.LoadResultGroupButton.Text = 'LoadGroup';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
