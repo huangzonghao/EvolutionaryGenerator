@@ -3,10 +3,10 @@ function plot_gen_all(app)
 
     % Configure panels here
     if ~isfield(app.gen_plot, 'handle') || ~ishandle(app.gen_plot.handle)
-        app.gen_plot.handle = figure('outerposition',[460, 40, 1000, 1000]); % size for 1080p monitor
+        app.gen_plot.handle = figure('outerposition',[180, 40, 1600, 1000]); % size for 1080p monitor
         app.gen_plot.panel = panel(app.gen_plot.handle);
         app.gen_plot.panel.marginright = 20; % so that we have some space for the heatmap colorbar
-        app.gen_plot.panel.pack(2, 2);
+        app.gen_plot.panel.pack(2, 3);
 
         % init all plots
         app.gen_plot.panel(1,1).select();
@@ -20,13 +20,17 @@ function plot_gen_all(app)
         app.gen_plot.archive_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
         app.gen_plot.archive_heat.Title = 'Archive Map';;
 
-        app.gen_plot.panel(2,1).select();
+        app.gen_plot.panel(1,3).select();
+        app.gen_plot.parentage_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.parentage_heat.Title = 'Percentage of User Input Per Robot';
+
+        app.gen_plot.panel(2,2).select();
         app.gen_plot.updates_per_bin_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
         app.gen_plot.updates_per_bin_heat.Title = 'Total Updates Per Bin';
 
-        app.gen_plot.panel(2,2).select();
-        app.gen_plot.parentage_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
-        app.gen_plot.parentage_heat.Title = 'Percentage of User Input Per Robot';
+        app.gen_plot.panel(2,3).select();
+        app.gen_plot.bin_age_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.bin_age_heat.Title = 'Age of Each Bin';
     else
         figure(app.gen_plot.handle);
     end
@@ -47,11 +51,16 @@ function plot_gen_all(app)
         parentage_map = -1 * ones(app.evo_params.griddim_0, app.evo_params.griddim_1);
     end
 
+    ages = app.current_gen_archive(:, 1);
+    age_map = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
+    age_map(sub2ind(size(age_map), x, y)) = double(app.current_gen) * ones(size(ages)) - ages;
+
     % Generate the plots
     app.gen_plot.archive_surf.ZData = app.archive_map;
     app.gen_plot.archive_heat.ColorData = app.archive_map;
     app.gen_plot.updates_per_bin_heat.ColorData = app.stat.map_stat(:, :, app.current_gen + 1);
     app.gen_plot.parentage_heat.ColorData = parentage_map;
+    app.gen_plot.bin_age_heat.ColorData = age_map;
     drawnow;
 
     % app.GenInfoLabel.Text =...
