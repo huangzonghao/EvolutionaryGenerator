@@ -28,21 +28,21 @@ function plot_gen_all(app)
         app.gen_plot.archive_heat.Title = 'Archive Map';
 
         app.gen_plot.panel(1,3).select();
-        app.gen_plot.parentage_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.parentage_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
         app.gen_plot.parentage_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.parentage_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.parentage_heat.YLabel = app.evo_params.feature_description1;
         app.gen_plot.parentage_heat.Title = 'Percentage of User Input Per Robot';
 
         app.gen_plot.panel(2,2).select();
-        app.gen_plot.updates_per_bin_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.updates_per_bin_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
         app.gen_plot.updates_per_bin_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.updates_per_bin_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.updates_per_bin_heat.YLabel = app.evo_params.feature_description1;
         app.gen_plot.updates_per_bin_heat.Title = 'Total Updates Per Bin';
 
         app.gen_plot.panel(2,3).select();
-        app.gen_plot.bin_age_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+        app.gen_plot.bin_age_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
         app.gen_plot.bin_age_heat.NodeChildren(3).YDir='normal';
         app.gen_plot.bin_age_heat.XLabel = app.evo_params.feature_description2;
         app.gen_plot.bin_age_heat.YLabel = app.evo_params.feature_description1;
@@ -59,16 +59,14 @@ function plot_gen_all(app)
     app.archive_map(sub2ind(size(app.archive_map), x, y)) = fitness;
     app.archive_ids(sub2ind(size(app.archive_map), x, y)) = [1:length(fitness)];
 
-    parentage_map = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
+    parentage_map = -1 * ones(app.evo_params.griddim_0, app.evo_params.griddim_1);
     if isfield(app.stat, 'has_parentage') && app.stat.has_parentage
         parentage_dist = app.stat.robot_parentage(sub2ind(size(app.stat.robot_parentage), app.current_gen_archive(:,2) + 1, app.current_gen_archive(:,1) + 1));
         parentage_map(sub2ind(size(parentage_map), x, y)) = parentage_dist;
-    else
-        parentage_map = -1 * ones(app.evo_params.griddim_0, app.evo_params.griddim_1);
     end
 
     ages = app.current_gen_archive(:, 1);
-    age_map = zeros(app.evo_params.griddim_0, app.evo_params.griddim_1);
+    age_map = double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1);
     age_map(sub2ind(size(age_map), x, y)) = double(app.current_gen) * ones(size(ages)) - ages;
 
     % Generate the plots
