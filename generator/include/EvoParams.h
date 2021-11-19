@@ -22,6 +22,7 @@ class EvoParams {
     std::vector<std::string>& feature_description() { return feature_description_; }
 
     void set_nb_gen(size_t nb_gen) { nb_gen_ = nb_gen; }
+    void set_pop_size(size_t pop_size) { pop_size_ = pop_size; }
 
     bool Save(const std::string& filename) const;
     bool Load(const std::string& filename);

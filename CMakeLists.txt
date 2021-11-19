@@ -66,6 +66,11 @@ if (NOT DEFINED JS_UI_OUTPUT_DIR)
     file(MAKE_DIRECTORY ${JS_UI_OUTPUT_DIR})
 endif()
 
+if (NOT DEFINED JOB_FILE_DIR)
+    set(JOB_FILE_DIR ${PROJECT_WORKSPACE_DIR}/Jobs CACHE PATH "Directory containing the job schedule files")
+    file(MAKE_DIRECTORY ${JOB_FILE_DIR})
+endif()
+
 # copy DLLs for Windows
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(DLL_Copy_Command)
@@ -84,6 +89,7 @@ configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DI
 configure_file(${PROJECT_IN_FILE_DIR}/robot_design.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/robot_design.m @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/result_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/result_analysis.m @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/user_input_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/user_input_analysis.m @ONLY)
+configure_file(${PROJECT_IN_FILE_DIR}/task_scheduler.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/task_scheduler.m @ONLY)
 
 # Need to use the filesystem of C++17
 set(CMAKE_CXX_STANDARD 17)
@@ -248,6 +254,7 @@ set_target_properties(Generator Simulator trimesh2 PROPERTIES FOLDER Lib)
 #     make the generated file as source to the main target
 set(Headers
     ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/TrainingConfigs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/EvoParams.h
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/include/SimulatorParams.h

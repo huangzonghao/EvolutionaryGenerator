@@ -34,6 +34,7 @@ function save_bag(app)
     jsobj.comments = string(app.CommentTextArea.Value);
     jsobj.total_count = size(app.user_inputs_added, 1);
     jsobj.user_seed_count = jsobj.total_count - random_count;
+    jsobj.format_ver = '1.0';
 
     dirname = fullfile(app.user_input_dir, 'Bags');
     if ~exist(dirname, 'dir')

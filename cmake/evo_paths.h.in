@@ -30,4 +30,7 @@ const std::string Mesh_Workspace_Dir(MESH_WORKSPACE_PATH);
 #define USER_INPUT_PATH "@USER_INPUT_DIR@"
 const std::string User_Input_Dir(USER_INPUT_PATH);
 
+#define JOB_FILE_PATH "@JOB_FILE_DIR@"
+const std::string Job_File_Dir(JOB_FILE_PATH);
+
 #endif /* end of include guard: EVOGEN_EVO_PATHS_H_ */

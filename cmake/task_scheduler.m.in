@@ -1,0 +1,10 @@
+% This is an auto-generated file, do not edit
+% If at any time the paths in this file become invalid,
+% try to rebuild the project.
+
+function task_scheduler()
+
+addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'task_scheduler'));
+task_scheduler_ui('@PROJECT_WORKSPACE_DIR@')
+
+end % function

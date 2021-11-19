@@ -24,6 +24,7 @@ class SimulatorParams {
     const std::vector<std::vector<double>>& GetWaypoints() const {return waypoints_;}
     void SetCamera(double from_x, double from_y, double from_z,
                    double to_x, double to_y, double to_z);
+    void SetTimeout(double new_time_out) {time_out = new_time_out;}
     friend std::ostream& operator<< (std::ostream &out, const SimulatorParams& sim_params);
     bool Save(const std::string& filename) const;
     bool Load(const std::string& filename);
