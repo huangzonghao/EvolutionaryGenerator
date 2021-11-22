@@ -103,6 +103,9 @@ include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_COMMIT_HASH)
 configure_file(${PROJECT_IN_FILE_DIR}/git_commit_hash.txt.in ${PROJECT_WORKSPACE_DIR}/git_commit_hash.txt @ONLY)
 
+# Trainer
+configure_file(${PROJECT_IN_FILE_DIR}/task_launcher.py.in ${PROJECT_WORKSPACE_DIR}/task_launcher.py @ONLY)
+
 #######################################################################
 #                         Setup Dependencies                          #
 #######################################################################

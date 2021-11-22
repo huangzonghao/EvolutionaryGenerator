@@ -1,0 +1,28 @@
+# This is an auto-generated file, do not edit
+# If at any time the paths in this file become invalid,
+# try to rebuild the project.
+
+# This file launches and stops training exe at given length of period
+
+import sys
+import subprocess
+
+evogen_exe_path = r"@EVOGEN_EXE_PATH@/Evolutionary_Generator.exe"
+
+job_file = sys.argv[1]
+period = 30 # default period is 30 mins
+if len(sys.argv) > 2:
+    period = int(sys.argv[2])
+
+print("EvoGen Python Trainer")
+print("Training with peroid of " + str(period) + " minutes\n\n")
+
+num_class = 0
+while True:
+    print("================= Class " + str(num_class) + " =================")
+    print("Class time: " + str(period) + " mins\n")
+    try:
+        result = subprocess.run([evogen_exe_path, 'job', job_file], timeout = period * 60) # timeout is in seconds
+    except subprocess.TimeoutExpired:
+        print("\n\nClass " + str(num_class) + " finished\n\n")
+    num_class = num_class + 1
