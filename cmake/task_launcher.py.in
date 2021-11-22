@@ -23,6 +23,9 @@ while True:
     print("Class time: " + str(period) + " mins\n")
     try:
         result = subprocess.run([evogen_exe_path, 'job', job_file], timeout = period * 60) # timeout is in seconds
+        # if subprocess finished, all jobs has been done
+        print("All jobs has finished, return from task_launcher")
+        exit()
     except subprocess.TimeoutExpired:
         print("\n\nClass " + str(num_class) + " finished\n\n")
     num_class = num_class + 1
