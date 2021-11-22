@@ -20,7 +20,11 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         fid = fopen(fullfile(bag_file.folder, bag_file.name));
         jsobj = jsondecode(fscanf(fid, '%c', inf));
         fclose(fid);
-        num_seeds = jsobj.total_count;
+        if isfield(jsobj, 'user_seed_count')
+            num_seeds = jsobj.user_seed_count;
+        else
+            num_seeds = jsobj.total_count;
+        end
         if num_seeds > 0 && num_seeds < evo_params.gen_size % otherwise would be meaningless to build parentage
             stat.robot_parentage = zeros(evo_params.gen_size, nb_gen + 1);
             stat.robot_parentage(1 : num_seeds, 1) = 1; % user designed seeds has percentage 100%
