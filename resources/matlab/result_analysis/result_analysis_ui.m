@@ -172,7 +172,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: OpenFolderButton
         function OpenFolderButtonPushed(app, event)
-            winopen(app.result_path);
+            open_folder(app);
         end
 
         % Button pushed function: SimulateRobotButton
