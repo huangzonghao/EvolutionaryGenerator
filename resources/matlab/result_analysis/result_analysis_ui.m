@@ -5,6 +5,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
         MainFigure                matlab.ui.Figure
         CompPlotNameField         matlab.ui.control.EditField
         PlotNameLabel             matlab.ui.control.Label
+        AddGroupCompareButton     matlab.ui.control.Button
+        GroupNameField            matlab.ui.control.EditField
+        GroupNameLabel            matlab.ui.control.Label
         LoadResultGroupButton     matlab.ui.control.Button
         ResultGroupLabel          matlab.ui.control.Label
         PlotGenButton             matlab.ui.control.Button
@@ -66,8 +69,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Containers
         result_group_path = string.empty
         result_paths = string.empty % array containing the paths to the results
-        result_to_compare string
         results % array containing the cache of the loaded results
+        results_to_compare % cell array containing the results to compare
 
         % Properties to cache for the currently loaded result
         result_loaded = false
@@ -159,7 +162,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: AddCompareButton
         function AddCompareButtonPushed(app, event)
-            add_new_to_compare(app);
+            add_new_to_compare(app, false);
+        end
+
+        % Button pushed function: AddGroupCompareButton
+        function AddGroupCompareButtonPushed(app, event)
+            add_new_to_compare(app, true);
         end
 
         % Button pushed function: RemoveCompareButton
@@ -556,6 +564,22 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.LoadResultGroupButton.Tag = 'loadresult';
             app.LoadResultGroupButton.Position = [204 529 70 22];
             app.LoadResultGroupButton.Text = 'LoadGroup';
+
+            % Create GroupNameLabel
+            app.GroupNameLabel = uilabel(app.MainFigure);
+            app.GroupNameLabel.HorizontalAlignment = 'right';
+            app.GroupNameLabel.Position = [272 439 78 22];
+            app.GroupNameLabel.Text = 'Group Name:';
+
+            % Create GroupNameField
+            app.GroupNameField = uieditfield(app.MainFigure, 'text');
+            app.GroupNameField.Position = [282 418 86 22];
+
+            % Create AddGroupCompareButton
+            app.AddGroupCompareButton = uibutton(app.MainFigure, 'push');
+            app.AddGroupCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddGroupCompareButtonPushed, true);
+            app.AddGroupCompareButton.Position = [287 387 74 22];
+            app.AddGroupCompareButton.Text = 'Add Group';
 
             % Create PlotNameLabel
             app.PlotNameLabel = uilabel(app.MainFigure);

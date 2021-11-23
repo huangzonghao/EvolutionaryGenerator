@@ -23,9 +23,9 @@ function load_result(app)
 
     app.StatStartGenField.Value = num2str(0);
     app.StatEndGenField.Value = num2str(app.evo_params.nb_gen);
-    app.result_to_compare = [];
+    app.results_to_compare = [];
     app.CompareListBox.Items = {};
-    app.result_to_compare(end + 1) = result_basename;
+    app.results_to_compare(end + 1) = result_basename;
     app.result_displayname = result_basename;
     [nickname, nickname_loaded] = load_nickname(tmp_result_path);
     if nickname_loaded
@@ -34,7 +34,7 @@ function load_result(app)
     else
         app.CompareListBox.Items{end + 1} = convertStringsToChars(result_basename);
     end
-    app.CompareListBox.ItemsData(end + 1) = length(app.result_to_compare);
+    app.CompareListBox.ItemsData(end + 1) = length(app.results_to_compare);
     app.NickNameField.Value = nickname;
     app.ResultNameLabel.Text = app.result_displayname;
 
