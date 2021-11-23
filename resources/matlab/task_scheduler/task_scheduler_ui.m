@@ -3,6 +3,8 @@ classdef task_scheduler_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                    matlab.ui.Figure
+        NumRepsEditField              matlab.ui.control.NumericEditField
+        RepsLabel                     matlab.ui.control.Label
         ClearBagSelectionButton       matlab.ui.control.Button
         IgnoreRandomPopInBagCheckBox  matlab.ui.control.CheckBox
         LoadJobButton                 matlab.ui.control.Button
@@ -134,7 +136,7 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create CreateJobButton
             app.CreateJobButton = uibutton(app.MainFigure, 'push');
             app.CreateJobButton.ButtonPushedFcn = createCallbackFcn(app, @CreateJobButtonPushed, true);
-            app.CreateJobButton.Position = [224 61 74 23];
+            app.CreateJobButton.Position = [224 14 74 23];
             app.CreateJobButton.Text = 'Create Job';
 
             % Create EnvLabel
@@ -273,6 +275,21 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             app.ClearBagSelectionButton.ButtonPushedFcn = createCallbackFcn(app, @ClearBagSelectionButtonPushed, true);
             app.ClearBagSelectionButton.Position = [100 459 50 20];
             app.ClearBagSelectionButton.Text = 'Clear';
+
+            % Create RepsLabel
+            app.RepsLabel = uilabel(app.MainFigure);
+            app.RepsLabel.HorizontalAlignment = 'right';
+            app.RepsLabel.Position = [210 42 47 22];
+            app.RepsLabel.Text = '# Reps:';
+
+            % Create NumRepsEditField
+            app.NumRepsEditField = uieditfield(app.MainFigure, 'numeric');
+            app.NumRepsEditField.Limits = [1 Inf];
+            app.NumRepsEditField.RoundFractionalValues = 'on';
+            app.NumRepsEditField.ValueDisplayFormat = '%.0f';
+            app.NumRepsEditField.HorizontalAlignment = 'center';
+            app.NumRepsEditField.Position = [267 42 50 20];
+            app.NumRepsEditField.Value = 1;
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
