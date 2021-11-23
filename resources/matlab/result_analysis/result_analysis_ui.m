@@ -3,6 +3,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                matlab.ui.Figure
+        MoveCompareDownButton     matlab.ui.control.Button
+        MoveCompareUpButton       matlab.ui.control.Button
         RemoveAllCompareButton    matlab.ui.control.Button
         CompPlotNameField         matlab.ui.control.EditField
         PlotNameLabel             matlab.ui.control.Label
@@ -278,6 +280,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function LoadResultGroupButtonPushed(app, event)
             load_group(app);
         end
+
+        % Button pushed function: MoveCompareUpButton
+        function MoveCompareUpButtonPushed(app, event)
+            move_compare_result(app, true);
+        end
+
+        % Button pushed function: MoveCompareDownButton
+        function MoveCompareDownButtonPushed(app, event)
+            move_compare_result(app, false);
+        end
     end
 
     % Component initialization
@@ -442,7 +454,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create ComparePlotButton
             app.ComparePlotButton = uibutton(app.MainFigure, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
-            app.ComparePlotButton.Position = [293 280 63 22];
+            app.ComparePlotButton.Position = [293 258 63 22];
             app.ComparePlotButton.Text = 'Compare';
 
             % Create AddCompareButton
@@ -454,7 +466,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create RemoveCompareButton
             app.RemoveCompareButton = uibutton(app.MainFigure, 'push');
             app.RemoveCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveCompareButtonPushed, true);
-            app.RemoveCompareButton.Position = [330 422 37 22];
+            app.RemoveCompareButton.Position = [330 400 37 22];
             app.RemoveCompareButton.Text = 'Del';
 
             % Create NickNameSaveButton
@@ -493,7 +505,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CleanCompareButton = uibutton(app.MainFigure, 'push');
             app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
             app.CleanCompareButton.WordWrap = 'on';
-            app.CleanCompareButton.Position = [293 229 67 43];
+            app.CleanCompareButton.Position = [293 207 67 43];
             app.CleanCompareButton.Text = 'Clean Compare';
 
             % Create AgeofBinsButton
@@ -547,8 +559,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create ResultsToCompareLabel
             app.ResultsToCompareLabel = uilabel(app.MainFigure);
             app.ResultsToCompareLabel.FontWeight = 'bold';
-            app.ResultsToCompareLabel.Position = [375 556 119 22];
-            app.ResultsToCompareLabel.Text = 'ResultsToCompare:';
+            app.ResultsToCompareLabel.Position = [375 556 125 22];
+            app.ResultsToCompareLabel.Text = 'Results To Compare:';
 
             % Create PlotGenButton
             app.PlotGenButton = uibutton(app.MainFigure, 'push');
@@ -589,18 +601,30 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % Create PlotNameLabel
             app.PlotNameLabel = uilabel(app.MainFigure);
-            app.PlotNameLabel.Position = [277 358 65 22];
+            app.PlotNameLabel.Position = [277 336 65 22];
             app.PlotNameLabel.Text = 'Plot Name:';
 
             % Create CompPlotNameField
             app.CompPlotNameField = uieditfield(app.MainFigure, 'text');
-            app.CompPlotNameField.Position = [283 337 86 22];
+            app.CompPlotNameField.Position = [283 315 86 22];
 
             % Create RemoveAllCompareButton
             app.RemoveAllCompareButton = uibutton(app.MainFigure, 'push');
             app.RemoveAllCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveAllCompareButtonPushed, true);
-            app.RemoveAllCompareButton.Position = [309 395 60 22];
+            app.RemoveAllCompareButton.Position = [309 373 60 22];
             app.RemoveAllCompareButton.Text = 'Clear All';
+
+            % Create MoveCompareUpButton
+            app.MoveCompareUpButton = uibutton(app.MainFigure, 'push');
+            app.MoveCompareUpButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareUpButtonPushed, true);
+            app.MoveCompareUpButton.Position = [289 429 37 22];
+            app.MoveCompareUpButton.Text = 'Up';
+
+            % Create MoveCompareDownButton
+            app.MoveCompareDownButton = uibutton(app.MainFigure, 'push');
+            app.MoveCompareDownButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareDownButtonPushed, true);
+            app.MoveCompareDownButton.Position = [330 429 38 22];
+            app.MoveCompareDownButton.Text = 'Down';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
