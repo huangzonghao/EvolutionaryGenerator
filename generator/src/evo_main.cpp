@@ -227,6 +227,7 @@ void process_job_file(const std::string& job_file_basename) {
                     ofs.close();
                 }
 
+                strftime(time_buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&t));
                 job["start_time"] = time_buffer;
                 start_new_job = true;
             }
@@ -257,7 +258,7 @@ void process_job_file(const std::string& job_file_basename) {
 
             // if returned from training, update group_status and write to file
             t = time(0);
-            strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
+            strftime(time_buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&t));
             job["finish_time"] = time_buffer;
 
             ofs.open(job["result_dir"].get<std::string>() + "/job_report.txt");
