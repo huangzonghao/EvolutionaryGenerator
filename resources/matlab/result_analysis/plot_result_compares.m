@@ -1,10 +1,4 @@
 function plot_result_compares(app, do_clean_plot)
-    if app.result_to_compare.length < 2
-        return
-    end
-
-    result_dirs = app.result_to_compare;
-    parent_path = app.evogen_results_path;
     num_subplots = 3;
     figure('units','normalized','outerposition',[.05 .05 .9 .9]);
     p1 = subplot(num_subplots, 1, 1);
