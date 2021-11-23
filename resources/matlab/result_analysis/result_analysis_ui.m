@@ -3,6 +3,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                matlab.ui.Figure
+        CompPlotNameField         matlab.ui.control.EditField
+        PlotNameLabel             matlab.ui.control.Label
         LoadResultGroupButton     matlab.ui.control.Button
         ResultGroupLabel          matlab.ui.control.Label
         PlotGenButton             matlab.ui.control.Button
@@ -426,7 +428,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create ComparePlotButton
             app.ComparePlotButton = uibutton(app.MainFigure, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
-            app.ComparePlotButton.Position = [293 436 63 22];
+            app.ComparePlotButton.Position = [293 280 63 22];
             app.ComparePlotButton.Text = 'Compare';
 
             % Create AddCompareButton
@@ -477,7 +479,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CleanCompareButton = uibutton(app.MainFigure, 'push');
             app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
             app.CleanCompareButton.WordWrap = 'on';
-            app.CleanCompareButton.Position = [293 385 67 43];
+            app.CleanCompareButton.Position = [293 229 67 43];
             app.CleanCompareButton.Text = 'Clean Compare';
 
             % Create AgeofBinsButton
@@ -554,6 +556,15 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.LoadResultGroupButton.Tag = 'loadresult';
             app.LoadResultGroupButton.Position = [204 529 70 22];
             app.LoadResultGroupButton.Text = 'LoadGroup';
+
+            % Create PlotNameLabel
+            app.PlotNameLabel = uilabel(app.MainFigure);
+            app.PlotNameLabel.Position = [277 358 65 22];
+            app.PlotNameLabel.Text = 'Plot Name:';
+
+            % Create CompPlotNameField
+            app.CompPlotNameField = uieditfield(app.MainFigure, 'text');
+            app.CompPlotNameField.Position = [283 337 86 22];
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

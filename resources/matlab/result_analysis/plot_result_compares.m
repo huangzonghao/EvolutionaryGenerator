@@ -1,6 +1,13 @@
 function plot_result_compares(app, do_clean_plot)
     num_subplots = 3;
     figure('units','normalized','outerposition',[.05 .05 .9 .9]);
+    if ~isempty(app.CompPlotNameField.Value)
+        tmp_title = app.CompPlotNameField.Value;
+        if do_clean_plot
+            tmp_title = strcat(tmp_title, '_Clean');
+        end
+        sgtitle(tmp_title, 'Interpreter', 'none');
+    end
     p1 = subplot(num_subplots, 1, 1);
     hold on;
     if do_clean_plot
