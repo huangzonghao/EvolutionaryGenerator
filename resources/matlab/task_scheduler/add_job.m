@@ -1,5 +1,9 @@
 function add_job(app)
-    new_job.bagfile = app.BagFilesListBox.Items{app.BagFilesListBox.Value};
+    if isempty(app.BagFilesListBox.Value)
+        new_job.bagfile = "";
+    else
+        new_job.bagfile = app.BagFilesListBox.Items{app.BagFilesListBox.Value};
+    end
     new_job.env = app.EnvDropDown.Value;
     new_job.num_gen = app.NumGenEditField.Value;
     new_job.pop_size = app.PopSizeEditField.Value;

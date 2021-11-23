@@ -1,6 +1,7 @@
 function load_selected_job(app)
     job = app.jobs{app.JobsListBox.Value(1)};
 
+    app.BagFilesListBox.Value = {};
     for i = 1 : length(app.BagFilesListBox.Items)
         if strcmp(app.BagFilesListBox.Items{i}, job.bagfile)
             app.BagFilesListBox.Value = i;

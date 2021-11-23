@@ -3,6 +3,7 @@ classdef task_scheduler_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                    matlab.ui.Figure
+        ClearBagSelectionButton       matlab.ui.control.Button
         IgnoreRandomPopInBagCheckBox  matlab.ui.control.CheckBox
         LoadJobButton                 matlab.ui.control.Button
         OpenFolderButton              matlab.ui.control.Button
@@ -78,6 +79,11 @@ classdef task_scheduler_ui < matlab.apps.AppBase
         function LoadJobButtonPushed(app, event)
             load_selected_job(app);
         end
+
+        % Button pushed function: ClearBagSelectionButton
+        function ClearBagSelectionButtonPushed(app, event)
+            clear_bag_selection(app);
+        end
     end
 
     % Component initialization
@@ -89,7 +95,7 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create MainFigure and hide until all components are created
             app.MainFigure = uifigure('Visible', 'off');
             app.MainFigure.Position = [100 100 671 480];
-            app.MainFigure.Name = 'MATLAB App';
+            app.MainFigure.Name = 'EvoGen Task Scheduler';
 
             % Create BagFilesLabel
             app.BagFilesLabel = uilabel(app.MainFigure);
@@ -261,6 +267,12 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             app.IgnoreRandomPopInBagCheckBox.WordWrap = 'on';
             app.IgnoreRandomPopInBagCheckBox.Position = [214 295 103 36];
             app.IgnoreRandomPopInBagCheckBox.Value = true;
+
+            % Create ClearBagSelectionButton
+            app.ClearBagSelectionButton = uibutton(app.MainFigure, 'push');
+            app.ClearBagSelectionButton.ButtonPushedFcn = createCallbackFcn(app, @ClearBagSelectionButtonPushed, true);
+            app.ClearBagSelectionButton.Position = [100 459 50 20];
+            app.ClearBagSelectionButton.Text = 'Clear';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
