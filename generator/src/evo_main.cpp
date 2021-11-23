@@ -244,7 +244,9 @@ void process_job_file(const std::string& job_file_basename) {
                 training_configs.set_sim_time(job["sim_time"]);
                 training_configs.set_output_dir(job["result_dir"]);
                 std::string bagfile_basename = job["bagfile"];
-                bagfile_basename.erase(bagfile_basename.find(".json"), 5);
+                if (bagfile_basename != "") {
+                    bagfile_basename.erase(bagfile_basename.find(".json"), 5);
+                }
 
                 std::cout << "Launching new job " << job["result_dir"] << std::endl;
                 new_training_from_job(training_configs, bagfile_basename);
