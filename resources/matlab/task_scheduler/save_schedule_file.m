@@ -9,7 +9,7 @@ function save_schedule_file(app)
         jsobj.(['j', num2str(i)]) = app.jobs{i};
     end
 
-    jsobj.format_ver = '1.0';
+    jsobj.format_ver = '1.1';
 
     middlename = '';
     if ~isempty(app.OutputFileNameEditField.Value)

@@ -6,6 +6,7 @@ function add_job(app)
     new_job.sim_time = app.SimTimeEditField.Value;
     new_job.nickname = app.NicknameEditField.Value;
     new_job.comments = string(app.JobCommentsTextArea.Value);
+    new_job.ignore_random_pop_in_bag = app.IgnoreRandomPopInBagCheckBox.Value;
 
     % functional fields
     new_job.num_runs = 0;

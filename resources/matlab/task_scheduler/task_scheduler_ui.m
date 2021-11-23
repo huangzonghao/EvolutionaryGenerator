@@ -2,36 +2,37 @@ classdef task_scheduler_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MainFigure                  matlab.ui.Figure
-        LoadJobButton               matlab.ui.control.Button
-        OpenFolderButton            matlab.ui.control.Button
-        RefreshButton               matlab.ui.control.Button
-        JobCountLabel               matlab.ui.control.Label
-        GroupCommentsTextArea       matlab.ui.control.TextArea
-        GroupCommentsTextAreaLabel  matlab.ui.control.Label
-        JobCommentsTextArea         matlab.ui.control.TextArea
-        JobCommentsTextAreaLabel    matlab.ui.control.Label
-        GroupNameEditField          matlab.ui.control.EditField
-        GroupNameLabel              matlab.ui.control.Label
-        NicknameEditField           matlab.ui.control.EditField
-        NicknameEditFieldLabel      matlab.ui.control.Label
-        SaveButton                  matlab.ui.control.Button
-        RemoveButton                matlab.ui.control.Button
-        SimTimeEditField            matlab.ui.control.NumericEditField
-        SimTimeLabel                matlab.ui.control.Label
-        PopSizeEditField            matlab.ui.control.NumericEditField
-        PopSizeLabel                matlab.ui.control.Label
-        NumGenEditField             matlab.ui.control.NumericEditField
-        GenEditFieldLabel           matlab.ui.control.Label
-        EnvDropDown                 matlab.ui.control.DropDown
-        EnvLabel                    matlab.ui.control.Label
-        CreateJobButton             matlab.ui.control.Button
-        OutputFileNameEditField     matlab.ui.control.EditField
-        OutputFileNameLabel         matlab.ui.control.Label
-        JobsListBox                 matlab.ui.control.ListBox
-        CreatedJobsListBoxLabel     matlab.ui.control.Label
-        BagFilesListBox             matlab.ui.control.ListBox
-        BagFilesLabel               matlab.ui.control.Label
+        MainFigure                    matlab.ui.Figure
+        IgnoreRandomPopInBagCheckBox  matlab.ui.control.CheckBox
+        LoadJobButton                 matlab.ui.control.Button
+        OpenFolderButton              matlab.ui.control.Button
+        RefreshButton                 matlab.ui.control.Button
+        JobCountLabel                 matlab.ui.control.Label
+        GroupCommentsTextArea         matlab.ui.control.TextArea
+        GroupCommentsTextAreaLabel    matlab.ui.control.Label
+        JobCommentsTextArea           matlab.ui.control.TextArea
+        JobCommentsTextAreaLabel      matlab.ui.control.Label
+        GroupNameEditField            matlab.ui.control.EditField
+        GroupNameLabel                matlab.ui.control.Label
+        NicknameEditField             matlab.ui.control.EditField
+        NicknameEditFieldLabel        matlab.ui.control.Label
+        SaveButton                    matlab.ui.control.Button
+        RemoveButton                  matlab.ui.control.Button
+        SimTimeEditField              matlab.ui.control.NumericEditField
+        SimTimeLabel                  matlab.ui.control.Label
+        PopSizeEditField              matlab.ui.control.NumericEditField
+        PopSizeLabel                  matlab.ui.control.Label
+        NumGenEditField               matlab.ui.control.NumericEditField
+        GenEditFieldLabel             matlab.ui.control.Label
+        EnvDropDown                   matlab.ui.control.DropDown
+        EnvLabel                      matlab.ui.control.Label
+        CreateJobButton               matlab.ui.control.Button
+        OutputFileNameEditField       matlab.ui.control.EditField
+        OutputFileNameLabel           matlab.ui.control.Label
+        JobsListBox                   matlab.ui.control.ListBox
+        CreatedJobsListBoxLabel       matlab.ui.control.Label
+        BagFilesListBox               matlab.ui.control.ListBox
+        BagFilesLabel                 matlab.ui.control.Label
     end
 
     properties (Access = public)
@@ -127,7 +128,7 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create CreateJobButton
             app.CreateJobButton = uibutton(app.MainFigure, 'push');
             app.CreateJobButton.ButtonPushedFcn = createCallbackFcn(app, @CreateJobButtonPushed, true);
-            app.CreateJobButton.Position = [224 107 74 23];
+            app.CreateJobButton.Position = [224 61 74 23];
             app.CreateJobButton.Text = 'Create Job';
 
             % Create EnvLabel
@@ -193,13 +194,13 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create NicknameEditFieldLabel
             app.NicknameEditFieldLabel = uilabel(app.MainFigure);
             app.NicknameEditFieldLabel.HorizontalAlignment = 'right';
-            app.NicknameEditFieldLabel.Position = [203 315 62 22];
+            app.NicknameEditFieldLabel.Position = [203 269 62 22];
             app.NicknameEditFieldLabel.Text = 'Nickname:';
 
             % Create NicknameEditField
             app.NicknameEditField = uieditfield(app.MainFigure, 'text');
             app.NicknameEditField.HorizontalAlignment = 'center';
-            app.NicknameEditField.Position = [224 296 95 20];
+            app.NicknameEditField.Position = [224 250 95 20];
 
             % Create GroupNameLabel
             app.GroupNameLabel = uilabel(app.MainFigure);
@@ -215,12 +216,12 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create JobCommentsTextAreaLabel
             app.JobCommentsTextAreaLabel = uilabel(app.MainFigure);
             app.JobCommentsTextAreaLabel.HorizontalAlignment = 'right';
-            app.JobCommentsTextAreaLabel.Position = [201 271 90 22];
+            app.JobCommentsTextAreaLabel.Position = [201 225 90 22];
             app.JobCommentsTextAreaLabel.Text = 'Job Comments:';
 
             % Create JobCommentsTextArea
             app.JobCommentsTextArea = uitextarea(app.MainFigure);
-            app.JobCommentsTextArea.Position = [211 149 108 116];
+            app.JobCommentsTextArea.Position = [211 103 108 116];
 
             % Create GroupCommentsTextAreaLabel
             app.GroupCommentsTextAreaLabel = uilabel(app.MainFigure);
@@ -253,6 +254,13 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             app.LoadJobButton.ButtonPushedFcn = createCallbackFcn(app, @LoadJobButtonPushed, true);
             app.LoadJobButton.Position = [543 438 71 23];
             app.LoadJobButton.Text = 'Load';
+
+            % Create IgnoreRandomPopInBagCheckBox
+            app.IgnoreRandomPopInBagCheckBox = uicheckbox(app.MainFigure);
+            app.IgnoreRandomPopInBagCheckBox.Text = 'Ignore Random Pop In Bag';
+            app.IgnoreRandomPopInBagCheckBox.WordWrap = 'on';
+            app.IgnoreRandomPopInBagCheckBox.Position = [214 295 103 36];
+            app.IgnoreRandomPopInBagCheckBox.Value = true;
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
