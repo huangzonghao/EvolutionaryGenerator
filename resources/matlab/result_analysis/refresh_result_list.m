@@ -9,35 +9,45 @@ function refresh_result_list(app)
 
     app.ResultsListBox.Items = {};
     app.ResultsListBox.ItemsData = [];
-    app.result_paths = string.empty;
+    app.results = {};
+    names = string.empty;
 
     dirs = dir(result_dir);
-    counter = 1;
     for i = 1 : length(dirs)
         tmp_path = fullfile(dirs(i).folder, dirs(i).name);
         if (~dirs(i).isdir || ~verify_result_dir(tmp_path))
             continue;
         end
-        app.result_paths(end+1) = tmp_path;
-        app.ResultsListBox.Items{end+1} = get_result_list_string(app, length(app.result_paths));
-        app.ResultsListBox.ItemsData{end+1} = length(app.result_paths);
+        [~, basename, ~] = fileparts(tmp_path);
+        new_result.basename = basename;
+        new_result.name = basename;
+        [nickname, nickname_loaded] = load_nickname(tmp_path);
+        if nickname_loaded
+            new_result.name = nickname;
+        end
+        new_result.path = tmp_path;
+
+        names(end+1) = string(new_result.name);
+        app.results{end+1} = new_result;
+    end
+
+    [~, sort_order] = sort(names);
+    app.results = app.results(sort_order);
+
+    for i = 1 : length(app.results)
+        app.ResultsListBox.Items{i} = get_result_list_string(app, i);
+        app.ResultsListBox.ItemsData{i} = i;
     end
 end
 
 function ret_str = get_result_list_string(app, result_idx)
+    result = app.results{result_idx};
     ret_str = '';
-    result_path = app.result_paths(result_idx);
     % first check if the statistics has been built
-    if ~isfile(fullfile(result_path, 'stat.mat'));
+    if ~isfile(fullfile(result.path, 'stat.mat'));
         ret_str = "* ";
     end
-    [nickname, nickname_loaded] = load_nickname(result_path);
-    if nickname_loaded
-        ret_str = strcat(ret_str, nickname);
-    else
-        [~, basename, ~] = fileparts(result_path);
-        ret_str = strcat(ret_str, basename);
-    end
+    ret_str = strcat(ret_str, result.name);
     ret_str = convertStringsToChars(ret_str);
 end
 

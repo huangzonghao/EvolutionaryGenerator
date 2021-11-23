@@ -1,8 +1,8 @@
 function load_result(app)
-    if length(app.result_paths) == 0 || length(app.ResultsListBox.Value) == 0
+    if length(app.results) == 0 || length(app.ResultsListBox.Value) == 0
         return
     end
-    tmp_result_path = app.result_paths(app.ResultsListBox.Value{1});
+    tmp_result_path = app.results{app.ResultsListBox.Value{1}}.path;
 
     [~, result_basename, ~] = fileparts(tmp_result_path);
     app.result_path = tmp_result_path;

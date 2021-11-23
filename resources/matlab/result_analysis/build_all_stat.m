@@ -1,10 +1,10 @@
 function build_all_stat(app)
-% go through all results of result_paths and build stats for every unbuilt ones
-    if length(app.result_paths) == 0
+% go through all results and build stats for every unbuilt ones
+    if length(app.results) == 0
         return
     end
-    for i = 1 : length(app.result_paths)
-        result_path = app.result_paths(i);
+    for i = 1 : length(app.results)
+        result_path = app.results{i}.path;
         if isfile(fullfile(result_path, 'stat.mat'));
             continue;
         end

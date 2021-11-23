@@ -1,7 +1,7 @@
 function add_new_to_compare(app, adding_group)
     if ~adding_group
         for i = 1 : length(app.ResultsListBox.Value)
-            tmp_result_path = app.result_paths(app.ResultsListBox.Value{i});
+            tmp_result_path = app.results{app.ResultsListBox.Value{i}}.path;
             [~, result_name, ~] = fileparts(tmp_result_path);
             % return if the result has already been added
             for i = 1 : length(app.results_to_compare)
@@ -36,7 +36,7 @@ function add_new_to_compare(app, adding_group)
         new_group.result_full_paths = string.empty;
 
         for i = 1 : length(app.ResultsListBox.Value)
-            tmp_result_path = app.result_paths(app.ResultsListBox.Value{i});
+            tmp_result_path = app.results{app.ResultsListBox.Value{i}}.path;
             [~, result_name, ~] = fileparts(tmp_result_path);
             new_group.result_names(end + 1) = result_name;
             new_group.result_full_paths(end + 1) = tmp_result_path;

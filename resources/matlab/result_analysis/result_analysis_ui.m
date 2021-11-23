@@ -71,7 +71,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Containers
         result_group_path = string.empty
-        result_paths = string.empty % array containing the paths to the results
         results % array containing the cache of the loaded results
         results_to_compare % cell array containing the results to compare
 

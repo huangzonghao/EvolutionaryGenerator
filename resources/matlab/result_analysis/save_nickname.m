@@ -3,7 +3,7 @@ function save_nickname(app)
         return
     end
     for i = 1 : length(app.ResultsListBox.Value)
-        result_path = app.result_paths(app.ResultsListBox.Value{i});
+        result_path = app.results(app.ResultsListBox.Value{i}).path;
         fid = fopen(fullfile(result_path, 'name.txt'), 'wt');
         fprintf(fid, app.NickNameField.Value);
         fclose(fid);

@@ -1,5 +1,4 @@
 function delete_from_compare_list(app, do_remove_all)
-
     if do_remove_all
         app.results_to_compare = {};
         app.CompareListBox.Items = {};
