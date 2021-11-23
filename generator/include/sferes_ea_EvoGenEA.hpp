@@ -88,7 +88,7 @@ class EvoGenEA : public stc::Any<Exact> {
         time_span = std::chrono::steady_clock::now() - tik;
         _last_epoch_time = time_span.count(); // these two would be booked in stat
         _total_time += _last_epoch_time;
-        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
+        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s" << std::endl;
     }
 
     void epoch() {
@@ -98,7 +98,7 @@ class EvoGenEA : public stc::Any<Exact> {
         time_span = std::chrono::steady_clock::now() - tik;
         _last_epoch_time = time_span.count(); // these two would be booked in stat
         _total_time += _last_epoch_time;
-        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s"  << std::endl;
+        std::cout << "Done in: " <<  _last_epoch_time << "s. Total: " << _total_time << "s" << std::endl;
     }
 
     // override _set_pop if you want to customize / add treatments

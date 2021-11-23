@@ -100,6 +100,8 @@ class EvoGenQD
     const std::vector<bool>& added() const { return _added; }
     std::vector<bool>& added() { return _added; }
     const double last_epoch_time() const { return  this->_last_epoch_time; }
+    const int num_valid_robots_last_batch() const { return _eval.num_valids(); }
+    const int gen_pop_size() const { return _pop_size; }
     void set_init_seeds(const std::shared_ptr<std::vector<std::vector<double>>>& new_seeds) { _init_seeds = new_seeds; }
 
   protected:

@@ -90,8 +90,10 @@ class EvoGenStat {
     void _write_progress(const EA& ea) const {
         std::ofstream ofs(ea.res_dir() + "/progress.txt", std::ofstream::out | std::ofstream::app);
         if (ea.gen() == -1)
-            ofs << "Gen, Map size, Gen Time" << std::endl;
-        ofs << ea.gen() + 1 << ", " << ea.pop().size() << ", " << ea.last_epoch_time() << std::endl;
+            ofs << "Gen, Map size, Num Valid/Total Robots, Gen Time" << std::endl;
+        ofs << ea.gen() + 1 << ", " << ea.pop().size() << ", "
+            << ea.num_valid_robots_last_batch() << "/" << ea.gen_pop_size() << ", "
+            << ea.last_epoch_time() << std::endl;
         ofs.close();
     }
 

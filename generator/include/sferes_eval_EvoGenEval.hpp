@@ -96,20 +96,20 @@ class EvoGenEval {
         for (auto& thread : threads)
             thread.reset();
         _nb_evals += end - begin;
-        std::cout << std::endl << "valid robots of this batch: " << num_valid << "/ " << pop.size() << std::endl;
     }
 
     size_t nb_evals() const { return _nb_evals; }
+    int num_valids() const { return num_valid; }
 
   protected:
     size_t _nb_evals = 0; // for stat to book the total number of phen that has been evaluated
     std::vector<std::shared_ptr<SimulationManager>> sms;
     size_t num_threads;
     std::vector<std::shared_ptr<std::thread>> threads;
-    static int num_valid;
+    static std::atomic<int> num_valid;
 };
 
-int EvoGenEval::num_valid = 0;
+std::atomic<int> EvoGenEval::num_valid = std::atomic<int>(0);
 
 } // namespace eval
 } // namespace sferes
