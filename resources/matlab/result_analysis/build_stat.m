@@ -1,3 +1,5 @@
+% TODO: why not make a stat class so that each different stat would be clear to see
+% TODO: if there is archive.mat, should read it directly and build the stat
 function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, orig_stat_loaded)
     [~, result_basename, ~] = fileparts(result_path);
     nb_gen = evo_params.nb_gen;
@@ -43,16 +45,20 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     else
         stat.robot_longevity = double(-1) * ones(evo_params.gen_size, nb_gen + 1);
         stat.archive_fits = zeros(1, nb_gen + 1);
+        stat.archive_std = zeros(1, nb_gen + 1);
         stat.archive_age = zeros(1, nb_gen + 1);
         stat.elite_archive_fits = zeros(1, nb_gen + 1); % mean fitness of top 10% indivs of archive after each generation
-        stat.elite_archive_age = zeros(1, nb_gen + 1); % mean fitness of top 10% indivs of archive after each generation
+        stat.elite_archive_std = zeros(1, nb_gen + 1);
+        stat.elite_archive_age = zeros(1, nb_gen + 1);
         stat.population_fits = zeros(1, nb_gen + 1);
         stat.coverage = zeros(1, nb_gen + 1);
         stat.map_stat = zeros(evo_params.griddim_0, evo_params.griddim_1, nb_gen + 1);
 
         stat.clean_archive_fits = zeros(1, nb_gen + 1);
+        stat.clean_archive_std = zeros(1, nb_gen + 1);
         stat.clean_archive_age = zeros(1, nb_gen + 1);
         stat.clean_elite_archive_fits = zeros(1, nb_gen + 1); % mean fitness of top 10% indivs of archive after each generation
+        stat.clean_elite_archive_fits = zeros(1, nb_gen + 1);
         stat.clean_elite_archive_age = zeros(1, nb_gen + 1);
     end
 
@@ -81,15 +87,19 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         clean_age = double(i) * ones(size(clean_age)) - clean_age;
 
         stat.archive_fits(i + 1) = mean(fitness);
+        stat.archive_std(i + 1) = std(fitness);
         stat.archive_age(i + 1) = mean(age);
         [max10_fitness, max10_idx] = maxk(fitness, ceil(length(fitness) * 0.1));
         stat.elite_archive_fits(i + 1) = mean(max10_fitness);
+        stat.elite_archive_std(i + 1) = std(max10_fitness);
         stat.elite_archive_age(i + 1) = mean(age(max10_idx));
 
         stat.clean_archive_fits(i + 1) = mean(clean_fitness);
+        stat.clean_archive_std(i + 1) = std(clean_fitness);
         stat.clean_archive_age(i + 1) = mean(age);
         [clean_max10_fitness, clean_max10_idx] = maxk(clean_fitness, ceil(length(clean_fitness) * 0.1));
         stat.clean_elite_archive_fits(i + 1) = mean(clean_max10_fitness);
+        stat.clean_elite_archive_std(i + 1) = std(clean_max10_fitness);
         stat.clean_elite_archive_age(i + 1) = mean(clean_age(clean_max10_idx));
 
         stat.coverage(i + 1) = length(fitness) / archive_size;
