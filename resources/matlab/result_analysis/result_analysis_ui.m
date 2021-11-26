@@ -2,58 +2,60 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MainFigure                matlab.ui.Figure
-        MoveCompareDownButton     matlab.ui.control.Button
-        MoveCompareUpButton       matlab.ui.control.Button
-        RemoveAllCompareButton    matlab.ui.control.Button
-        CompPlotNameField         matlab.ui.control.EditField
-        PlotNameLabel             matlab.ui.control.Label
-        AddGroupCompareButton     matlab.ui.control.Button
-        GroupNameField            matlab.ui.control.EditField
-        GroupNameLabel            matlab.ui.control.Label
-        LoadResultGroupButton     matlab.ui.control.Button
-        ResultGroupLabel          matlab.ui.control.Label
-        PlotGenButton             matlab.ui.control.Button
-        ResultsToCompareLabel     matlab.ui.control.Label
-        RebuildResultStatButton   matlab.ui.control.Button
-        ParentageStatButton       matlab.ui.control.Button
-        BuildAllResultStatButton  matlab.ui.control.Button
-        RefreshResultListButton   matlab.ui.control.Button
-        ResultsListBox            matlab.ui.control.ListBox
-        ResultsLabel              matlab.ui.control.Label
-        AgeofBinsButton           matlab.ui.control.Button
-        CleanCompareButton        matlab.ui.control.Button
-        NickNameField             matlab.ui.control.EditField
-        NicknameLabel             matlab.ui.control.Label
-        BinUpdatesButton          matlab.ui.control.Button
-        ParentageTreeButton       matlab.ui.control.Button
-        NickNameSaveButton        matlab.ui.control.Button
-        RemoveCompareButton       matlab.ui.control.Button
-        AddCompareButton          matlab.ui.control.Button
-        ComparePlotButton         matlab.ui.control.Button
-        CompareListBox            matlab.ui.control.ListBox
-        GenStepField              matlab.ui.control.EditField
-        LoadFirstButton           matlab.ui.control.Button
-        LoadLastButton            matlab.ui.control.Button
-        OpenFolderButton          matlab.ui.control.Button
-        ToLabel                   matlab.ui.control.Label
-        FromLabel                 matlab.ui.control.Label
-        StatEndGenField           matlab.ui.control.EditField
-        StatStartGenField         matlab.ui.control.EditField
-        StatPlotButton            matlab.ui.control.Button
-        RobotIDYField             matlab.ui.control.EditField
-        RobotIDXField             matlab.ui.control.EditField
-        ResultInfoTextLabel       matlab.ui.control.Label
-        ResultInfoLabel           matlab.ui.control.Label
-        GenLabel                  matlab.ui.control.Label
-        SimulateRobotButton       matlab.ui.control.Button
-        LoadPrevStepButton        matlab.ui.control.Button
-        LoadNextStepButton        matlab.ui.control.Button
-        LoadPrevButton            matlab.ui.control.Button
-        LoadNextButton            matlab.ui.control.Button
-        GenIDField                matlab.ui.control.EditField
-        LoadResultButton          matlab.ui.control.Button
-        ResultNameLabel           matlab.ui.control.Label
+        MainFigure                   matlab.ui.Figure
+        LongevityofGenButton         matlab.ui.control.Button
+        ParentageandLongevityButton  matlab.ui.control.Button
+        MoveCompareDownButton        matlab.ui.control.Button
+        MoveCompareUpButton          matlab.ui.control.Button
+        RemoveAllCompareButton       matlab.ui.control.Button
+        CompPlotNameField            matlab.ui.control.EditField
+        PlotNameLabel                matlab.ui.control.Label
+        AddGroupCompareButton        matlab.ui.control.Button
+        GroupNameField               matlab.ui.control.EditField
+        GroupNameLabel               matlab.ui.control.Label
+        LoadResultGroupButton        matlab.ui.control.Button
+        ResultGroupLabel             matlab.ui.control.Label
+        PlotGenButton                matlab.ui.control.Button
+        ResultsToCompareLabel        matlab.ui.control.Label
+        RebuildResultStatButton      matlab.ui.control.Button
+        ParentageStatButton          matlab.ui.control.Button
+        BuildAllResultStatButton     matlab.ui.control.Button
+        RefreshResultListButton      matlab.ui.control.Button
+        ResultsListBox               matlab.ui.control.ListBox
+        ResultsLabel                 matlab.ui.control.Label
+        AvgAgeofMapButton            matlab.ui.control.Button
+        CleanCompareButton           matlab.ui.control.Button
+        NickNameField                matlab.ui.control.EditField
+        NicknameLabel                matlab.ui.control.Label
+        BinUpdatesButton             matlab.ui.control.Button
+        ParentageTreeButton          matlab.ui.control.Button
+        NickNameSaveButton           matlab.ui.control.Button
+        RemoveCompareButton          matlab.ui.control.Button
+        AddCompareButton             matlab.ui.control.Button
+        ComparePlotButton            matlab.ui.control.Button
+        CompareListBox               matlab.ui.control.ListBox
+        GenStepField                 matlab.ui.control.EditField
+        LoadFirstButton              matlab.ui.control.Button
+        LoadLastButton               matlab.ui.control.Button
+        OpenFolderButton             matlab.ui.control.Button
+        ToLabel                      matlab.ui.control.Label
+        FromLabel                    matlab.ui.control.Label
+        StatEndGenField              matlab.ui.control.EditField
+        StatStartGenField            matlab.ui.control.EditField
+        StatPlotButton               matlab.ui.control.Button
+        RobotIDYField                matlab.ui.control.EditField
+        RobotIDXField                matlab.ui.control.EditField
+        ResultInfoTextLabel          matlab.ui.control.Label
+        ResultInfoLabel              matlab.ui.control.Label
+        GenLabel                     matlab.ui.control.Label
+        SimulateRobotButton          matlab.ui.control.Button
+        LoadPrevStepButton           matlab.ui.control.Button
+        LoadNextStepButton           matlab.ui.control.Button
+        LoadPrevButton               matlab.ui.control.Button
+        LoadNextButton               matlab.ui.control.Button
+        GenIDField                   matlab.ui.control.EditField
+        LoadResultButton             matlab.ui.control.Button
+        ResultNameLabel              matlab.ui.control.Label
     end
 
     properties (Access = public)
@@ -245,9 +247,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             plot_bin_updates(app);
         end
 
-        % Button pushed function: AgeofBinsButton
-        function AgeofBinsButtonPushed(app, event)
-            plot_age_of_bins(app);
+        % Button pushed function: AvgAgeofMapButton
+        function AvgAgeofMapButtonPushed(app, event)
+            plot_avg_age_of_map(app);
+        end
+
+        % Button pushed function: LongevityofGenButton
+        function LongevityofGenButtonPushed(app, event)
+            plot_avg_longevity_of_gen(app);
         end
 
         % Button pushed function: RefreshResultListButton
@@ -288,6 +295,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: MoveCompareDownButton
         function MoveCompareDownButtonPushed(app, event)
             move_compare_result(app, false);
+        end
+
+        % Button pushed function: ParentageandLongevityButton
+        function ParentageandLongevityButtonPushed(app, event)
+            plot_parentage_longevity(app);
         end
     end
 
@@ -507,12 +519,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CleanCompareButton.Position = [293 207 67 43];
             app.CleanCompareButton.Text = 'Clean Compare';
 
-            % Create AgeofBinsButton
-            app.AgeofBinsButton = uibutton(app.MainFigure, 'push');
-            app.AgeofBinsButton.ButtonPushedFcn = createCallbackFcn(app, @AgeofBinsButtonPushed, true);
-            app.AgeofBinsButton.Tag = 'loadresult';
-            app.AgeofBinsButton.Position = [563 210 70 22];
-            app.AgeofBinsButton.Text = 'Age of Bins';
+            % Create AvgAgeofMapButton
+            app.AvgAgeofMapButton = uibutton(app.MainFigure, 'push');
+            app.AvgAgeofMapButton.ButtonPushedFcn = createCallbackFcn(app, @AvgAgeofMapButtonPushed, true);
+            app.AvgAgeofMapButton.Tag = 'loadresult';
+            app.AvgAgeofMapButton.Position = [551 210 100 22];
+            app.AvgAgeofMapButton.Text = 'Avg Age of Map';
 
             % Create ResultsLabel
             app.ResultsLabel = uilabel(app.MainFigure);
@@ -624,6 +636,22 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MoveCompareDownButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareDownButtonPushed, true);
             app.MoveCompareDownButton.Position = [330 429 38 22];
             app.MoveCompareDownButton.Text = 'Down';
+
+            % Create ParentageandLongevityButton
+            app.ParentageandLongevityButton = uibutton(app.MainFigure, 'push');
+            app.ParentageandLongevityButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageandLongevityButtonPushed, true);
+            app.ParentageandLongevityButton.Tag = 'loadresult';
+            app.ParentageandLongevityButton.WordWrap = 'on';
+            app.ParentageandLongevityButton.Position = [654 150 95 49];
+            app.ParentageandLongevityButton.Text = 'Parentage and Longevity';
+
+            % Create LongevityofGenButton
+            app.LongevityofGenButton = uibutton(app.MainFigure, 'push');
+            app.LongevityofGenButton.ButtonPushedFcn = createCallbackFcn(app, @LongevityofGenButtonPushed, true);
+            app.LongevityofGenButton.Tag = 'loadresult';
+            app.LongevityofGenButton.WordWrap = 'on';
+            app.LongevityofGenButton.Position = [559 148 82 36];
+            app.LongevityofGenButton.Text = 'Longevity of Gen';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

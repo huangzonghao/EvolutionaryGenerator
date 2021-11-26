@@ -1,5 +1,4 @@
-function plot_age_of_bins(app)
-    % plot the number of generations since the bin was lastly updated
+function plot_avg_age_of_map(app)
     if ~isfield(app.stat, 'archive_age')
         msgbox("Current result doesn't have age information built into stat. Rebuild to plot");
         return

@@ -41,6 +41,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     if (orig_stat_loaded)
         stat = orig_stat;
     else
+        stat.robot_longevity = double(-1) * ones(evo_params.gen_size, nb_gen + 1);
         stat.archive_fits = zeros(1, nb_gen + 1);
         stat.archive_age = zeros(1, nb_gen + 1);
         stat.elite_archive_fits = zeros(1, nb_gen + 1); % mean fitness of top 10% indivs of archive after each generation
@@ -96,9 +97,22 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
 
         % Load gridstats
         stat_mat = readmatrix(fullfile(result_path, strcat('/gridstats/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
-        stat.map_stat(:,:,i + 1) = stat_mat(1 : evo_params.griddim_0, 1 : evo_params.griddim_1); % a lasy way to remove the nan values due to the trailing comma in gridstats
+        stat_mat = stat_mat(1 : evo_params.griddim_0, 1 : evo_params.griddim_1); % a lasy way to remove the nan values due to the trailing comma in gridstats
+        stat.map_stat(:,:,i + 1) = stat_mat;
         if i > 0
             stat.map_stat(:,:,i + 1) = stat.map_stat(:,:,i + 1) + stat.map_stat(:,:,i);
+        end
+
+        % process each indiv's age
+        if i > 0 % TODO: see if we can remove this condition
+            % Note curr_gen_archive and prev_gen_archive may have different size
+            f_ids = curr_gen_archive(age == 0, 3:4);
+            prev_f_ids = prev_gen_archive(:, 3:4);
+            [~, dead_selection] = ismember(f_ids, prev_f_ids, 'rows');
+            dead_selection = dead_selection(dead_selection ~= 0);
+            dead_gen_ids = prev_gen_archive(dead_selection, 1) + 1;
+            dead_ids = prev_gen_archive(dead_selection, 2) + 1;
+            stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i) * ones(size(dead_gen_ids)) - dead_gen_ids;
         end
 
         % Load robots
@@ -135,7 +149,9 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
             stat.archive_parentage(i + 1) = sum(tmp_parentage_map(:)) / size(curr_gen_archive, 1);
             stat.archive_parentage_over_map(i + 1) = sum(tmp_parentage_map(:)) / archive_size;
         end
+
         stat.processed_gen = i;
+        prev_gen_archive = curr_gen_archive;
     end
     close(wb);
     save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
