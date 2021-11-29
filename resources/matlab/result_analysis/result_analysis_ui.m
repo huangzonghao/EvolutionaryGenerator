@@ -364,7 +364,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [567 13 55 22];
+            app.SimulateRobotButton.Position = [582 6 55 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create GenLabel
@@ -391,13 +391,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.RobotIDXField = uieditfield(app.MainFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [669 13 39 22];
+            app.RobotIDXField.Position = [704 20 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.MainFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [627 13 39 22];
+            app.RobotIDYField.Position = [662 20 39 22];
 
             % Create StatPlotButton
             app.StatPlotButton = uibutton(app.MainFigure, 'push');
@@ -493,7 +493,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageTreeButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageTreeButtonPushed, true);
             app.ParentageTreeButton.Tag = 'loadresult';
             app.ParentageTreeButton.WordWrap = 'on';
-            app.ParentageTreeButton.Position = [660 228 78 32];
+            app.ParentageTreeButton.Position = [570 30 78 32];
             app.ParentageTreeButton.Text = 'Parentage Tree';
 
             % Create BinUpdatesButton
@@ -558,7 +558,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageStatButton = uibutton(app.MainFigure, 'push');
             app.ParentageStatButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageStatButtonPushed, true);
             app.ParentageStatButton.Tag = 'loadresult';
-            app.ParentageStatButton.Position = [656 204 89 22];
+            app.ParentageStatButton.Position = [656 233 89 22];
             app.ParentageStatButton.Text = 'Parentage Stat';
 
             % Create RebuildResultStatButton
@@ -643,7 +643,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.LongevityvsParentageButton.ButtonPushedFcn = createCallbackFcn(app, @LongevityvsParentageButtonPushed, true);
             app.LongevityvsParentageButton.Tag = 'loadresult';
             app.LongevityvsParentageButton.WordWrap = 'on';
-            app.LongevityvsParentageButton.Position = [654 150 95 49];
+            app.LongevityvsParentageButton.Position = [654 179 95 49];
             app.LongevityvsParentageButton.Text = 'Longevity vs Parentage';
 
             % Create LongevityofGenButton
