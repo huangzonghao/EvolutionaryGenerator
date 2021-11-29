@@ -279,6 +279,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: PlotGenButton
         function PlotGenButtonPushed(app, event)
+            open_gen_all_plot(app);
             plot_gen_all(app);
         end
 

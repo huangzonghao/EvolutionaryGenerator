@@ -3,51 +3,7 @@ function plot_gen_all(app)
 
     % Configure panels here
     if ~isfield(app.gen_plot, 'handle') || ~ishandle(app.gen_plot.handle)
-        app.gen_plot.handle = figure('outerposition',[180, 40, 1600, 1000]); % size for 1080p monitor
-        app.gen_plot.panel = panel(app.gen_plot.handle);
-        app.gen_plot.panel.marginright = 20; % so that we have some space for the heatmap colorbar
-        app.gen_plot.panel.pack(2, 3);
-        app.gen_plot.panel.de.margintop = 20;
-        app.gen_plot.panel.de.marginbottom = 20;
-        app.gen_plot.panel.de.marginleft = 20;
-        app.gen_plot.panel.de.marginright = 30;
-
-        % init all plots
-        app.gen_plot.panel(1,1).select();
-        app.gen_plot.archive_surf = surf(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
-        xlabel(app.evo_params.feature_description2); % x, y flipped in plot
-        ylabel(app.evo_params.feature_description1);
-        title('Archive Map');
-        axis square;
-
-        app.gen_plot.panel(1,2).select();
-        app.gen_plot.archive_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
-        app.gen_plot.archive_heat.NodeChildren(3).YDir='normal';
-        app.gen_plot.archive_heat.XLabel = app.evo_params.feature_description2;
-        app.gen_plot.archive_heat.YLabel = app.evo_params.feature_description1;
-        app.gen_plot.archive_heat.Title = 'Archive Map';
-
-        app.gen_plot.panel(1,3).select();
-        app.gen_plot.parentage_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
-        app.gen_plot.parentage_heat.ColorLimits = [0, 1];
-        app.gen_plot.parentage_heat.NodeChildren(3).YDir='normal';
-        app.gen_plot.parentage_heat.XLabel = app.evo_params.feature_description2;
-        app.gen_plot.parentage_heat.YLabel = app.evo_params.feature_description1;
-        app.gen_plot.parentage_heat.Title = 'Percentage of User Input Per Robot';
-
-        app.gen_plot.panel(2,2).select();
-        app.gen_plot.updates_per_bin_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
-        app.gen_plot.updates_per_bin_heat.NodeChildren(3).YDir='normal';
-        app.gen_plot.updates_per_bin_heat.XLabel = app.evo_params.feature_description2;
-        app.gen_plot.updates_per_bin_heat.YLabel = app.evo_params.feature_description1;
-        app.gen_plot.updates_per_bin_heat.Title = 'Total Updates Per Bin';
-
-        app.gen_plot.panel(2,3).select();
-        app.gen_plot.bin_age_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
-        app.gen_plot.bin_age_heat.NodeChildren(3).YDir='normal';
-        app.gen_plot.bin_age_heat.XLabel = app.evo_params.feature_description2;
-        app.gen_plot.bin_age_heat.YLabel = app.evo_params.feature_description1;
-        app.gen_plot.bin_age_heat.Title = 'Age of Each Bin';
+        return
     else
         figure(app.gen_plot.handle);
     end
