@@ -1,7 +1,9 @@
 function plot_bin_updates(app)
     map_stat = app.stat.map_stat(:, :, end);
-    h = figure('units','normalized','outerposition',[0.05 0 0.6 0.5]);
+    h = figure('units','normalized','outerposition',[0.2 0.2 0.6 0.6]);
+    sgtitle(sprintf("%s - Number of Updates per Bin", app.result_displayname), 'Interpreter', 'none');
     p = panel(h);
+    p.margintop = 20;
     p.marginright = 20; % for the heatmap color bar
     p.pack('h', {1/2, 1/2});
     p(1).select();

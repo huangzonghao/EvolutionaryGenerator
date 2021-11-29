@@ -2,60 +2,60 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MainFigure                   matlab.ui.Figure
-        LongevityofGenButton         matlab.ui.control.Button
-        ParentageandLongevityButton  matlab.ui.control.Button
-        MoveCompareDownButton        matlab.ui.control.Button
-        MoveCompareUpButton          matlab.ui.control.Button
-        RemoveAllCompareButton       matlab.ui.control.Button
-        CompPlotNameField            matlab.ui.control.EditField
-        PlotNameLabel                matlab.ui.control.Label
-        AddGroupCompareButton        matlab.ui.control.Button
-        GroupNameField               matlab.ui.control.EditField
-        GroupNameLabel               matlab.ui.control.Label
-        LoadResultGroupButton        matlab.ui.control.Button
-        ResultGroupLabel             matlab.ui.control.Label
-        PlotGenButton                matlab.ui.control.Button
-        ResultsToCompareLabel        matlab.ui.control.Label
-        RebuildResultStatButton      matlab.ui.control.Button
-        ParentageStatButton          matlab.ui.control.Button
-        BuildAllResultStatButton     matlab.ui.control.Button
-        RefreshResultListButton      matlab.ui.control.Button
-        ResultsListBox               matlab.ui.control.ListBox
-        ResultsLabel                 matlab.ui.control.Label
-        AvgAgeofMapButton            matlab.ui.control.Button
-        CleanCompareButton           matlab.ui.control.Button
-        NickNameField                matlab.ui.control.EditField
-        NicknameLabel                matlab.ui.control.Label
-        BinUpdatesButton             matlab.ui.control.Button
-        ParentageTreeButton          matlab.ui.control.Button
-        NickNameSaveButton           matlab.ui.control.Button
-        RemoveCompareButton          matlab.ui.control.Button
-        AddCompareButton             matlab.ui.control.Button
-        ComparePlotButton            matlab.ui.control.Button
-        CompareListBox               matlab.ui.control.ListBox
-        GenStepField                 matlab.ui.control.EditField
-        LoadFirstButton              matlab.ui.control.Button
-        LoadLastButton               matlab.ui.control.Button
-        OpenFolderButton             matlab.ui.control.Button
-        ToLabel                      matlab.ui.control.Label
-        FromLabel                    matlab.ui.control.Label
-        StatEndGenField              matlab.ui.control.EditField
-        StatStartGenField            matlab.ui.control.EditField
-        StatPlotButton               matlab.ui.control.Button
-        RobotIDYField                matlab.ui.control.EditField
-        RobotIDXField                matlab.ui.control.EditField
-        ResultInfoTextLabel          matlab.ui.control.Label
-        ResultInfoLabel              matlab.ui.control.Label
-        GenLabel                     matlab.ui.control.Label
-        SimulateRobotButton          matlab.ui.control.Button
-        LoadPrevStepButton           matlab.ui.control.Button
-        LoadNextStepButton           matlab.ui.control.Button
-        LoadPrevButton               matlab.ui.control.Button
-        LoadNextButton               matlab.ui.control.Button
-        GenIDField                   matlab.ui.control.EditField
-        LoadResultButton             matlab.ui.control.Button
-        ResultNameLabel              matlab.ui.control.Label
+        MainFigure                  matlab.ui.Figure
+        LongevityofGenButton        matlab.ui.control.Button
+        LongevityvsParentageButton  matlab.ui.control.Button
+        MoveCompareDownButton       matlab.ui.control.Button
+        MoveCompareUpButton         matlab.ui.control.Button
+        RemoveAllCompareButton      matlab.ui.control.Button
+        CompPlotNameField           matlab.ui.control.EditField
+        PlotNameLabel               matlab.ui.control.Label
+        AddGroupCompareButton       matlab.ui.control.Button
+        GroupNameField              matlab.ui.control.EditField
+        GroupNameLabel              matlab.ui.control.Label
+        LoadResultGroupButton       matlab.ui.control.Button
+        ResultGroupLabel            matlab.ui.control.Label
+        PlotGenButton               matlab.ui.control.Button
+        ResultsToCompareLabel       matlab.ui.control.Label
+        RebuildResultStatButton     matlab.ui.control.Button
+        ParentageStatButton         matlab.ui.control.Button
+        BuildAllResultStatButton    matlab.ui.control.Button
+        RefreshResultListButton     matlab.ui.control.Button
+        ResultsListBox              matlab.ui.control.ListBox
+        ResultsLabel                matlab.ui.control.Label
+        AvgAgeofMapButton           matlab.ui.control.Button
+        CleanCompareButton          matlab.ui.control.Button
+        NickNameField               matlab.ui.control.EditField
+        NicknameLabel               matlab.ui.control.Label
+        BinUpdatesButton            matlab.ui.control.Button
+        ParentageTreeButton         matlab.ui.control.Button
+        NickNameSaveButton          matlab.ui.control.Button
+        RemoveCompareButton         matlab.ui.control.Button
+        AddCompareButton            matlab.ui.control.Button
+        ComparePlotButton           matlab.ui.control.Button
+        CompareListBox              matlab.ui.control.ListBox
+        GenStepField                matlab.ui.control.EditField
+        LoadFirstButton             matlab.ui.control.Button
+        LoadLastButton              matlab.ui.control.Button
+        OpenFolderButton            matlab.ui.control.Button
+        ToLabel                     matlab.ui.control.Label
+        FromLabel                   matlab.ui.control.Label
+        StatEndGenField             matlab.ui.control.EditField
+        StatStartGenField           matlab.ui.control.EditField
+        StatPlotButton              matlab.ui.control.Button
+        RobotIDYField               matlab.ui.control.EditField
+        RobotIDXField               matlab.ui.control.EditField
+        ResultInfoTextLabel         matlab.ui.control.Label
+        ResultInfoLabel             matlab.ui.control.Label
+        GenLabel                    matlab.ui.control.Label
+        SimulateRobotButton         matlab.ui.control.Button
+        LoadPrevStepButton          matlab.ui.control.Button
+        LoadNextStepButton          matlab.ui.control.Button
+        LoadPrevButton              matlab.ui.control.Button
+        LoadNextButton              matlab.ui.control.Button
+        GenIDField                  matlab.ui.control.EditField
+        LoadResultButton            matlab.ui.control.Button
+        ResultNameLabel             matlab.ui.control.Label
     end
 
     properties (Access = public)
@@ -298,9 +298,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
             move_compare_result(app, false);
         end
 
-        % Button pushed function: ParentageandLongevityButton
-        function ParentageandLongevityButtonPushed(app, event)
-            plot_parentage_longevity(app);
+        % Button pushed function: LongevityvsParentageButton
+        function LongevityvsParentageButtonPushed(app, event)
+            plot_longevity_vs_parentage(app);
         end
     end
 
@@ -638,13 +638,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MoveCompareDownButton.Position = [330 429 38 22];
             app.MoveCompareDownButton.Text = 'Down';
 
-            % Create ParentageandLongevityButton
-            app.ParentageandLongevityButton = uibutton(app.MainFigure, 'push');
-            app.ParentageandLongevityButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageandLongevityButtonPushed, true);
-            app.ParentageandLongevityButton.Tag = 'loadresult';
-            app.ParentageandLongevityButton.WordWrap = 'on';
-            app.ParentageandLongevityButton.Position = [654 150 95 49];
-            app.ParentageandLongevityButton.Text = 'Parentage and Longevity';
+            % Create LongevityvsParentageButton
+            app.LongevityvsParentageButton = uibutton(app.MainFigure, 'push');
+            app.LongevityvsParentageButton.ButtonPushedFcn = createCallbackFcn(app, @LongevityvsParentageButtonPushed, true);
+            app.LongevityvsParentageButton.Tag = 'loadresult';
+            app.LongevityvsParentageButton.WordWrap = 'on';
+            app.LongevityvsParentageButton.Position = [654 150 95 49];
+            app.LongevityvsParentageButton.Text = 'Longevity vs Parentage';
 
             % Create LongevityofGenButton
             app.LongevityofGenButton = uibutton(app.MainFigure, 'push');

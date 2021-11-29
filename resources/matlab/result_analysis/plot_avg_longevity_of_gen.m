@@ -5,7 +5,7 @@ function plot_avg_longevity_of_gen(app)
         return
     end
 
-    figure();
+    figure('outerposition',[560, 90, 800, 900]);
     sgtitle(sprintf("%s - Longevity of Generations", app.result_displayname), 'Interpreter', 'none');
     subplot(2,1,1);
     plot(mean(app.stat.robot_longevity), 'DisplayName', 'Avg longevity of generation');

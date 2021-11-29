@@ -21,7 +21,9 @@ function plot_parentage(app)
         id = robot_data(4);
     end
     h = figure('units','normalized','outerposition',[0.25 0 0.5 0.95]);
+    sgtitle(sprintf("%s - Parentage Tree", app.result_displayname), 'Interpreter', 'none');
     p = panel(h);
+    p.margintop = 20; % to allow space for sgtitle
     p.pack({3/4, 1/4});
     p(1).select()
     % subplot(2,1,1);
