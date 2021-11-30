@@ -5,7 +5,7 @@ function add_new_to_compare(app, adding_group)
             [~, result_name, ~] = fileparts(tmp_result_path);
             % return if the result has already been added
             for i = 1 : length(app.results_to_compare)
-                if ~app.results_to_compare{i}.isgroup && app.results_to_compare{i}.name == result_name
+                if ~app.results_to_compare{i}.isgroup || strcmp(app.results_to_compare{i}.name, result_name)
                     continue
                 end
             end
