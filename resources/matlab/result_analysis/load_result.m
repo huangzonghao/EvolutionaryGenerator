@@ -26,10 +26,7 @@ function load_result(app)
     app.result_displayname = result_basename;
     [nickname, nickname_loaded] = load_nickname(tmp_result_path);
     if nickname_loaded
-        app.CompareListBox.Items{end + 1} = nickname;
         app.result_displayname = nickname;
-    else
-        app.CompareListBox.Items{end + 1} = convertStringsToChars(result_basename);
     end
     app.NickNameField.Value = nickname;
     app.ResultNameLabel.Text = app.result_displayname;
