@@ -34,23 +34,32 @@ function plot_result_compares(app, do_clean_plot)
 
     % get each plot a different color
     plot_colors = 'brcmgk';
+    % the default matlab rgb triplet
+    % plot_colors = [0 0.4470 0.7410;
+                   % 0.8500 0.3250 0.0980;
+                   % 0.9290 0.6940 0.1250;
+                   % 0.4940 0.1840 0.5560;
+                   % 0.4660 0.6740 0.1880;
+                   % 0.3010 0.7450 0.9330;
+                   % 0.6350 0.0780 0.1840];
 
     for i = 1 : length(app.results_to_compare)
         stat_loaded = false;
         result = app.results_to_compare{i};
         plot_color = plot_colors(rem(i, length(plot_colors)) + 1);
+        % plot_color = plot_colors(rem(i, size(plot_colors, 1)) + 1, :);
         if ~result.isgroup
             [stat, stat_loaded] = load_stat(result.full_path);
             if stat_loaded
                 legend_name = result.name;
                 if do_clean_plot
-                    plot(p1, stat.clean_archive_fits, plot_color, 'DisplayName', legend_name);
-                    plot(p2, stat.clean_elite_archive_fits, plot_color, 'DisplayName', legend_name);
+                    plot(p1, stat.clean_archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
+                    plot(p2, stat.clean_elite_archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
                 else
-                    plot(p1, stat.archive_fits, plot_color, 'DisplayName', legend_name);
-                    plot(p2, stat.elite_archive_fits, plot_color, 'DisplayName', legend_name);
+                    plot(p1, stat.archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
+                    plot(p2, stat.elite_archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
                 end
-                plot(p3, stat.coverage, plot_color, 'DisplayName', legend_name);
+                plot(p3, stat.coverage, 'Color', plot_color, 'DisplayName', legend_name);
             end
         else % group
             stat.coverage = [];
@@ -71,13 +80,13 @@ function plot_result_compares(app, do_clean_plot)
                 end
             end
             if do_clean_plot
-                shadedErrorBar(p1, [], stat.clean_archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
-                shadedErrorBar(p2, [], stat.clean_elite_archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
+                shadedErrorBar(p1, [], stat.clean_archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
+                shadedErrorBar(p2, [], stat.clean_elite_archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
             else
-                shadedErrorBar(p1, [], stat.archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
-                shadedErrorBar(p2, [], stat.elite_archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
+                shadedErrorBar(p1, [], stat.archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
+                shadedErrorBar(p2, [], stat.elite_archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
             end
-            shadedErrorBar(p3, [], stat.coverage, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
+            shadedErrorBar(p3, [], stat.coverage, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
         end
     end
 

@@ -35,6 +35,8 @@ function varargout = shadedErrorBar(ax, x, y, errBar, varargin)
 %
 % 'DisplayName'- Display name to be used with legend
 %
+% 'Color'- Color porperty of the plot
+%
 % Outputs
 % H - a structure of handles to the generated plot objects.
 %
@@ -76,6 +78,7 @@ params.addParameter('LineProps', '-k', @(x) ischar(x) | iscell(x));
 params.addParameter('Transparent', true, @(x) islogical(x) || x==0 || x==1);
 params.addParameter('PatchSaturation', 0.2, @(x) isnumeric(x) && x>=0 && x<=1);
 params.addParameter('DisplayName', '');
+params.addParameter('Color', '');
 params.parse(varargin{:});
 
 % Extract values from the inputParser
@@ -83,6 +86,7 @@ lineProps =  params.Results.LineProps;
 transparent =  params.Results.Transparent;
 patchSaturation = params.Results.PatchSaturation;
 displayname = params.Results.DisplayName;
+color = params.Results.Color;
 
 if ~iscell(lineProps), lineProps = {lineProps}; end
 
@@ -124,7 +128,7 @@ initialHoldStatus = ishold;
 if ~initialHoldStatus
     hold on
 end
-H = makePlot(ax, x, y, errBar, lineProps, transparent, patchSaturation, displayname);
+H = makePlot(ax, x, y, errBar, lineProps, transparent, patchSaturation, displayname, color);
 if ~initialHoldStatus
     hold off
 end
@@ -135,11 +139,14 @@ end
 
 end % End of shadedErrorBar
 
-function H = makePlot(ax, x, y, errBar, lineProps, transparent, patchSaturation, displayname)
+function H = makePlot(ax, x, y, errBar, lineProps, transparent, patchSaturation, displayname, color)
     % Plot to get the parameters of the line
-    H.mainLine = plot(ax, x, y, lineProps{:});
+    H.mainLine = plot(ax, x, y, lineProps{:}, 'Color', color);
     if ~isempty(displayname)
         H.mainLine.DisplayName = displayname;
+    end
+    if ~isempty(color)
+        H.mainLine.Color = color;
     end
 
     % Tag the line so we can easily access it
