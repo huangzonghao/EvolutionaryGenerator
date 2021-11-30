@@ -38,8 +38,20 @@ function plot_result_compares(app, do_clean_plot)
     for i = 1 : length(app.results_to_compare)
         stat_loaded = false;
         result = app.results_to_compare{i};
+        plot_color = plot_colors(rem(i, length(plot_colors)) + 1);
         if ~result.isgroup
             [stat, stat_loaded] = load_stat(result.full_path);
+            if stat_loaded
+                legend_name = result.name;
+                if do_clean_plot
+                    plot(p1, stat.clean_archive_fits, plot_color, 'DisplayName', legend_name);
+                    plot(p2, stat.clean_elite_archive_fits, plot_color, 'DisplayName', legend_name);
+                else
+                    plot(p1, stat.archive_fits, plot_color, 'DisplayName', legend_name);
+                    plot(p2, stat.elite_archive_fits, plot_color, 'DisplayName', legend_name);
+                end
+                plot(p3, stat.coverage, plot_color, 'DisplayName', legend_name);
+            end
         else % group
             stat.coverage = [];
             stat.archive_fits = [];
@@ -58,28 +70,15 @@ function plot_result_compares(app, do_clean_plot)
                     stat.clean_elite_archive_fits(end + 1, :) = tmp_stat.clean_elite_archive_fits;
                 end
             end
-            stat.coverage = mean(stat.coverage);
-            stat.archive_fits = mean(stat.archive_fits);
-            stat.elite_archive_fits = mean(stat.elite_archive_fits);
-            stat.clean_archive_fits = mean(stat.clean_archive_fits);
-            stat.clean_elite_archive_fits = mean(stat.clean_elite_archive_fits);
+            if do_clean_plot
+                shadedErrorBar(p1, [], stat.clean_archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
+                shadedErrorBar(p2, [], stat.clean_elite_archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
+            else
+                shadedErrorBar(p1, [], stat.archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
+                shadedErrorBar(p2, [], stat.elite_archive_fits, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
+            end
+            shadedErrorBar(p3, [], stat.coverage, {@mean, @std}, 'LineProps', plot_color, 'DisplayName', result.name);
         end
-
-        if (~stat_loaded)
-            continue
-        end
-
-        legend_name = result.name;
-        plot_color = plot_colors(rem(i, length(plot_colors)) + 1);
-        if do_clean_plot
-            plot(p1, stat.clean_archive_fits, 'DisplayName', legend_name);
-            plot(p2, stat.clean_elite_archive_fits, 'DisplayName', legend_name);
-        else
-            plot(p1, stat.archive_fits, 'DisplayName', legend_name);
-            plot(p2, stat.elite_archive_fits, 'DisplayName', legend_name);
-        end
-        plot(p3, stat.coverage, 'DisplayName', legend_name);
-
     end
 
     if length(app.results_to_compare) < 10
@@ -87,6 +86,5 @@ function plot_result_compares(app, do_clean_plot)
         legend(p2, 'Interpreter', 'none');
         legend(p3, 'Interpreter', 'none', 'Location', 'SouthEast');
     end
-
     hold off;
 end
