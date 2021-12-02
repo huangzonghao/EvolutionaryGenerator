@@ -43,6 +43,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     if (orig_stat_loaded)
         stat = orig_stat;
     else
+        stat.robot_fitness = zeros(evo_params.gen_size, nb_gen + 1);
         stat.robot_longevity = double(-1) * ones(evo_params.gen_size, nb_gen + 1);
         stat.archive_fits = zeros(1, nb_gen + 1);
         stat.archive_std = zeros(1, nb_gen + 1);
@@ -134,6 +135,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         robots(:, 1:9, i + 1) = curr_gen_robot(:, 3:11);
         pop_fitness = curr_gen_robot(:, 11);
         stat.population_fits(i + 1) = mean(pop_fitness);
+        stat.robot_fitness(:, i + 1) = pop_fitness;
 
         if stat.has_parentage
             % Update parentage
