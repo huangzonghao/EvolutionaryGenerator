@@ -78,6 +78,16 @@ function plot_parentage_related(app)
     title(p3, "Parentage vs Fitness", 'Interpreter', 'none');
     legend(p3, 'Interpreter', 'none');
 
+    p4 = subplot(num_cols, num_rows, 4, 'NextPlot', 'add');
+    scatter(p4, valid_generation, valid_fitness, 'filled', 'DisplayName', 'all robots');
+    scatter(p4, first_generation, first_fitness, 'filled', 'DisplayName', 'init pop');
+    scatter(p4, mid_generation, mid_fitness, 'filled', 'DisplayName', 'mid pop');
+    scatter(p4, final_generation, final_fitness, 'filled', 'DisplayName', 'final pop');
+    xlabel(p4, 'Generation');
+    ylabel(p4, 'Fitness');
+    title(p4, "Fitness vs Generation", 'Interpreter', 'none');
+    legend(p4, 'Interpreter', 'none', 'Location', 'SouthWest');
+
     % get the final points
     % plot the points int three batches so that we can see how the values transforms
     % longevity of map
