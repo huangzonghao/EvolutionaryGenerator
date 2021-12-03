@@ -5,7 +5,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         MainFigure                     matlab.ui.Figure
         PatchResultStatButton          matlab.ui.control.Button
         LongevityofGenButton           matlab.ui.control.Button
-        LongevityvsParentageButton     matlab.ui.control.Button
+        ParentagePlotsButton           matlab.ui.control.Button
         MoveCompareDownButton          matlab.ui.control.Button
         MoveCompareUpButton            matlab.ui.control.Button
         RemoveAllCompareButton         matlab.ui.control.Button
@@ -304,9 +304,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
             move_compare_result(app, false);
         end
 
-        % Button pushed function: LongevityvsParentageButton
-        function LongevityvsParentageButtonPushed(app, event)
-            plot_longevity_vs_parentage(app);
+        % Button pushed function: ParentagePlotsButton
+        function ParentagePlotsButtonPushed(app, event)
+            plot_parentage_related(app);
         end
     end
 
@@ -644,13 +644,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MoveCompareDownButton.Position = [330 429 38 22];
             app.MoveCompareDownButton.Text = 'Down';
 
-            % Create LongevityvsParentageButton
-            app.LongevityvsParentageButton = uibutton(app.MainFigure, 'push');
-            app.LongevityvsParentageButton.ButtonPushedFcn = createCallbackFcn(app, @LongevityvsParentageButtonPushed, true);
-            app.LongevityvsParentageButton.Tag = 'loadresult';
-            app.LongevityvsParentageButton.WordWrap = 'on';
-            app.LongevityvsParentageButton.Position = [654 179 95 49];
-            app.LongevityvsParentageButton.Text = 'Longevity vs Parentage';
+            % Create ParentagePlotsButton
+            app.ParentagePlotsButton = uibutton(app.MainFigure, 'push');
+            app.ParentagePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @ParentagePlotsButtonPushed, true);
+            app.ParentagePlotsButton.Tag = 'loadresult';
+            app.ParentagePlotsButton.WordWrap = 'on';
+            app.ParentagePlotsButton.Position = [654 187 95 41];
+            app.ParentagePlotsButton.Text = 'Parentage Plots';
 
             % Create LongevityofGenButton
             app.LongevityofGenButton = uibutton(app.MainFigure, 'push');
