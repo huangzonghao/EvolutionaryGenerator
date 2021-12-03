@@ -37,6 +37,28 @@ function patch_stat(result_path)
         need_to_save = true;
     end
 
+    % % Longevity Patch
+    % archive_file = load(fullfile(result_path, 'archive.mat'));
+    % prev_gen_archive = archive_file.archive{1};
+    % for i = 1 : evo_params.nb_gen % can't do the following to gen 0
+        % curr_gen_archive =  archive_file.archive{i + 1};
+        % age = double(i) * ones(size(curr_gen_archive, 1), 1) - curr_gen_archive(:, 1);
+        % f_ids = curr_gen_archive(age == 0, 3:4);
+        % prev_f_ids = prev_gen_archive(:, 3:4);
+        % [~, dead_selection] = ismember(f_ids, prev_f_ids, 'rows');
+        % dead_selection = dead_selection(dead_selection ~= 0);
+        % dead_gen_ids = prev_gen_archive(dead_selection, 1) + 1;
+        % dead_ids = prev_gen_archive(dead_selection, 2) + 1;
+        % stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 1) * ones(size(dead_gen_ids)) - dead_gen_ids;
+        % if i == evo_params.nb_gen
+            % dead_gen_ids = curr_gen_archive(:, 1) + 1;
+            % dead_ids = curr_gen_archive(:, 2) + 1;
+            % stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 2) * ones(size(dead_gen_ids)) - dead_gen_ids;
+        % end
+        % prev_gen_archive = curr_gen_archive;
+    % end
+    % need_to_save = true;
+
     if need_to_save
         save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
     end

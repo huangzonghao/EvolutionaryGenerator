@@ -123,7 +123,18 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
             dead_selection = dead_selection(dead_selection ~= 0);
             dead_gen_ids = prev_gen_archive(dead_selection, 1) + 1;
             dead_ids = prev_gen_archive(dead_selection, 2) + 1;
-            stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i) * ones(size(dead_gen_ids)) - dead_gen_ids;
+
+            % A robot show up in map in gen k and get replaced in gen k + 1 would have a longevity of 1
+            stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 1) * ones(size(dead_gen_ids)) - dead_gen_ids;
+
+            % If this is the final gen, kill all robot in final + 1 gen and calculate longevity again
+            % Note this cannot be merged with the above process, otherwise we would lost tracking of
+            % robots got replaced in the final gen
+            if i == nb_gen
+                dead_gen_ids = curr_gen_archive(:, 1) + 1;
+                dead_ids = curr_gen_archive(:, 2) + 1;
+                stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 2) * ones(size(dead_gen_ids)) - dead_gen_ids;
+            end
         end
 
         % Load robots
