@@ -6,13 +6,12 @@ function plot_parentage_related(app)
         return
     end
     figure();
-    sgtitle(app.result_displayname, 'Interpreter', 'none');
     parentage = app.stat.robot_parentage(:);
     longevity = app.stat.robot_longevity(:);
     generation = repmat(0 : app.evo_params.nb_gen + 1, app.evo_params.gen_size, 1);
     generation = generation(:);
     fitness = app.stat.robot_fitness(:);
-    valid_selection = (longevity ~= 0);
+    valid_selection = (longevity ~= -1);
     valid_parentage = parentage(valid_selection);
     valid_longevity = longevity(valid_selection);
     valid_generation = generation(valid_selection);
@@ -70,4 +69,5 @@ function plot_parentage_related(app)
     % plot the points int three batches so that we can see how the values transforms
     % longevity of map
 
+    sgtitle(sprintf("%s - (%d)", app.result_displayname, sum(valid_selection)), 'Interpreter', 'none');
 end
