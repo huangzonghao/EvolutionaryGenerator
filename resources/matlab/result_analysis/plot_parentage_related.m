@@ -27,6 +27,16 @@ function plot_parentage_related(app)
     first_generation = generation(first_selection);
     first_fitness = fitness(first_selection);
 
+    % get mid gen data
+    load_gen(app, ceil(app.evo_params.nb_gen / 2)); % load the final generation
+    mid_gens = app.current_gen_archive(:, 1) + 1;
+    mid_ids = app.current_gen_archive(:, 2) + 1;
+    mid_selection = sub2ind(size(app.stat.robot_parentage), mid_ids, mid_gens);
+    mid_parentage = parentage(mid_selection);
+    mid_longevity = longevity(mid_selection);
+    mid_generation = generation(mid_selection);
+    mid_fitness = fitness(mid_selection);
+
     % get final gen data
     load_gen(app, app.evo_params.nb_gen); % load the final generation
     final_gens = app.current_gen_archive(:, 1) + 1;
@@ -40,6 +50,7 @@ function plot_parentage_related(app)
     p1 = subplot(num_cols, num_rows, 1, 'NextPlot', 'add');
     scatter(p1, valid_longevity, valid_parentage, 'filled', 'DisplayName', 'all robots');
     scatter(p1, first_longevity, first_parentage, 'filled', 'DisplayName', 'init pop');
+    scatter(p1, mid_longevity, mid_parentage, 'filled', 'DisplayName', 'mid pop');
     scatter(p1, final_longevity, final_parentage, 'filled', 'DisplayName', 'final pop');
     xlim(p1, [-0.5, app.evo_params.nb_gen + 0.5]);
     xlabel(p1, 'Longevity');
@@ -50,6 +61,7 @@ function plot_parentage_related(app)
     p2 = subplot(num_cols, num_rows, 2, 'NextPlot', 'add');
     scatter(p2, valid_generation, valid_parentage, 'filled', 'DisplayName', 'all robots');
     scatter(p2, first_generation, first_parentage, 'filled', 'DisplayName', 'init pop');
+    scatter(p2, mid_generation, mid_parentage, 'filled', 'DisplayName', 'mid pop');
     scatter(p2, final_generation, final_parentage, 'filled', 'DisplayName', 'final pop');
     xlabel(p2, 'Generation');
     ylabel(p2, 'Parentage');
@@ -59,6 +71,7 @@ function plot_parentage_related(app)
     p3 = subplot(num_cols, num_rows, 3, 'NextPlot', 'add');
     scatter(p3, valid_fitness, valid_parentage, 'filled', 'DisplayName', 'all robots');
     scatter(p3, first_fitness, first_parentage, 'filled', 'DisplayName', 'init pop');
+    scatter(p3, mid_fitness, mid_parentage, 'filled', 'DisplayName', 'mid pop');
     scatter(p3, final_fitness, final_parentage, 'filled', 'DisplayName', 'final pop');
     xlabel(p3, 'Fitness');
     ylabel(p3, 'Parentage');
