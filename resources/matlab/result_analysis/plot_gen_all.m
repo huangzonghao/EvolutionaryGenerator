@@ -32,12 +32,11 @@ function plot_gen_all(app)
     app.gen_plot.updates_per_bin_heat.ColorData = app.stat.map_stat(:, :, app.current_gen + 1);
     app.gen_plot.parentage_heat.ColorData = parentage_map;
     app.gen_plot.bin_age_heat.ColorData = age_map;
-    drawnow;
 
-    % app.GenInfoLabel.Text =...
-        % sprintf('Gen: %d/%d, Archive size: %d/%d',...
-        % app.current_gen, app.evo_params.nb_gen, size(x, 1),...
-        % app.evo_params.griddim_0 * app.evo_params.griddim_1);
+    app.gen_plot.info_text.String = sprintf("%s\nGen %d / %d\nCoverage %d / %d", ...
+                                            app.result_displayname, app.current_gen, app.evo_params.nb_gen, ...
+                                            length(fitness), app.evo_params.griddim_0 * app.evo_params.griddim_1);
+    drawnow;
 
     % Note the swapping of x, y here
     app.RobotIDXField.Value = num2str(y(1));

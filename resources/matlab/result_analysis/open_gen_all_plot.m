@@ -10,6 +10,13 @@ function open_gen_all_plot(app)
 
     % init all plots
     app.gen_plot.panel(1,1).select();
+    axis off
+    app.gen_plot.info_text = text(0, 0.8, "Gen Info");
+    app.gen_plot.info_text.FontSize = 16;
+    app.gen_plot.info_text.FontWeight = 'bold';
+    app.gen_plot.info_text.Interpreter = 'none';
+
+    app.gen_plot.panel(2,1).select();
     app.gen_plot.archive_surf = surf(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
     xlabel(app.evo_params.feature_description2); % x, y flipped in plot
     ylabel(app.evo_params.feature_description1);
