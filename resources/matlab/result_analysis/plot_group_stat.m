@@ -1,11 +1,11 @@
 function plot_group_stat(app)
-    if isempty(app.CompareListBox.Value)
+    if isempty(app.VirtualResultsListBox.Value)
         msgbox('Select a group result');
         return
     end
     do_plot = false;
-    for i = 1 : length(app.CompareListBox.Value)
-        result = app.results_to_compare{app.CompareListBox.Value(i)};
+    for i = 1 : length(app.VirtualResultsListBox.Value)
+        result = app.virtual_results{app.VirtualResultsListBox.Value(i)};
         if result.isgroup
             do_plot = true;
             break

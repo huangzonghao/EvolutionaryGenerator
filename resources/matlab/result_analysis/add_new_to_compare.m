@@ -1,11 +1,11 @@
-function add_new_to_compare(app, adding_group)
-    if ~adding_group
+function add_new_to_compare(app, adding_virtual)
+    if ~adding_virtual
         for i = 1 : length(app.ResultsListBox.Value)
             tmp_result_path = app.results{app.ResultsListBox.Value{i}}.path;
             [~, result_name, ~] = fileparts(tmp_result_path);
             % return if the result has already been added
-            for i = 1 : length(app.results_to_compare)
-                if ~app.results_to_compare{i}.isgroup || strcmp(app.results_to_compare{i}.name, result_name)
+            for tmp_i = 1 : length(app.results_to_compare)
+                if ~app.results_to_compare{tmp_i}.isgroup || strcmp(app.results_to_compare{tmp_i}.name, result_name)
                     continue
                 end
             end
@@ -25,24 +25,16 @@ function add_new_to_compare(app, adding_group)
             app.CompareListBox.ItemsData(end + 1) = length(app.results_to_compare);
         end
     else
-        if isempty(app.GroupNameField.Value)
-            msgbox("Specify a group name when adding a group");
-            return
+        for i = 1 : length(app.VirtualResultsListBox.Value)
+            result = app.virtual_results{app.VirtualResultsListBox.Value(i)};
+            for tmp_i = 1 : length(app.results_to_compare)
+                if app.results_to_compare{tmp_i}.isgroup && strcmp(app.results_to_compare{tmp_i}.name, result.name)
+                    continue
+                end
+            end
+            app.results_to_compare{end + 1} = result;
+            app.CompareListBox.Items{end + 1} = result.name;
+            app.CompareListBox.ItemsData(end + 1) = length(app.results_to_compare);
         end
-
-        new_group.isgroup = true;;
-        new_group.name = app.GroupNameField.Value;
-        new_group.result_names = string.empty;
-        new_group.result_full_paths = string.empty;
-
-        for i = 1 : length(app.ResultsListBox.Value)
-            tmp_result_path = app.results{app.ResultsListBox.Value{i}}.path;
-            [~, result_name, ~] = fileparts(tmp_result_path);
-            new_group.result_names(end + 1) = result_name;
-            new_group.result_full_paths(end + 1) = tmp_result_path;
-        end
-        app.CompareListBox.Items{end + 1} = new_group.name;
-        app.results_to_compare{end + 1} = new_group;
-        app.CompareListBox.ItemsData(end + 1) = length(app.results_to_compare);
     end
 end

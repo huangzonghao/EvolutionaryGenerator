@@ -3,6 +3,10 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        AddVirtualToCompareButton      matlab.ui.control.Button
+        DeleteVirtualResultButton      matlab.ui.control.Button
+        ResultsToCompareLabel_2        matlab.ui.control.Label
+        VirtualResultsListBox          matlab.ui.control.ListBox
         RehashButton                   matlab.ui.control.Button
         GroupStatButton                matlab.ui.control.Button
         PatchResultStatButton          matlab.ui.control.Button
@@ -13,8 +17,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
         RemoveAllCompareButton         matlab.ui.control.Button
         CompPlotNameField              matlab.ui.control.EditField
         PlotNameLabel                  matlab.ui.control.Label
-        AddGroupCompareButton          matlab.ui.control.Button
-        GroupNameField                 matlab.ui.control.EditField
+        AddVirtualResultButton         matlab.ui.control.Button
+        VirtualResultNameField         matlab.ui.control.EditField
         GroupNameLabel                 matlab.ui.control.Label
         LoadResultGroupButton          matlab.ui.control.Button
         ResultGroupLabel               matlab.ui.control.Label
@@ -34,7 +38,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         ParentageTreeButton            matlab.ui.control.Button
         NickNameSaveButton             matlab.ui.control.Button
         RemoveCompareButton            matlab.ui.control.Button
-        AddCompareButton               matlab.ui.control.Button
+        AddResultToCompareButton       matlab.ui.control.Button
         ComparePlotButton              matlab.ui.control.Button
         CompareListBox                 matlab.ui.control.ListBox
         GenStepField                   matlab.ui.control.EditField
@@ -76,8 +80,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Containers
         result_group_path = string.empty
-        results % array containing the cache of the loaded results
-        results_to_compare % cell array containing the results to compare
+        results = {} % array containing the cache of the loaded results
+        virtual_results = {} % array containing the cache of virtual results
+        results_to_compare = {} % cell array containing the results to compare
 
         % Properties to cache for the currently loaded result
         result_loaded = false
@@ -167,13 +172,23 @@ classdef result_analysis_ui < matlab.apps.AppBase
             plot_result_compares(app, true);
         end
 
-        % Button pushed function: AddCompareButton
-        function AddCompareButtonPushed(app, event)
+        % Button pushed function: AddVirtualResultButton
+        function AddVirtualResultButtonPushed(app, event)
+            add_virtual_result(app);
+        end
+
+        % Button pushed function: DeleteVirtualResultButton
+        function DeleteVirtualResultButtonPushed(app, event)
+            delete_virtual_result(app);
+        end
+
+        % Button pushed function: AddResultToCompareButton
+        function AddResultToCompareButtonPushed(app, event)
             add_new_to_compare(app, false);
         end
 
-        % Button pushed function: AddGroupCompareButton
-        function AddGroupCompareButtonPushed(app, event)
+        % Button pushed function: AddVirtualToCompareButton
+        function AddVirtualToCompareButtonPushed(app, event)
             add_new_to_compare(app, true);
         end
 
@@ -330,7 +345,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % Create MainFigure and hide until all components are created
             app.MainFigure = uifigure('Visible', 'off');
-            app.MainFigure.Position = [100 100 772 580];
+            app.MainFigure.Position = [100 100 950 580];
             app.MainFigure.Name = 'Evolutionary Robogami Result Viewer';
 
             % Create ResultNameLabel
@@ -338,115 +353,115 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ResultNameLabel.HorizontalAlignment = 'center';
             app.ResultNameLabel.FontSize = 16;
             app.ResultNameLabel.FontWeight = 'bold';
-            app.ResultNameLabel.Position = [559 521 196 30];
+            app.ResultNameLabel.Position = [737 521 196 30];
             app.ResultNameLabel.Text = 'Load a result to view';
 
             % Create LoadResultButton
             app.LoadResultButton = uibutton(app.MainFigure, 'push');
             app.LoadResultButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultButtonPushed, true);
             app.LoadResultButton.Tag = 'loadresult';
-            app.LoadResultButton.Position = [557 554 71 22];
+            app.LoadResultButton.Position = [735 554 71 22];
             app.LoadResultButton.Text = 'Load';
 
             % Create GenIDField
             app.GenIDField = uieditfield(app.MainFigure, 'text');
             app.GenIDField.ValueChangedFcn = createCallbackFcn(app, @GenIDFieldValueChanged, true);
             app.GenIDField.HorizontalAlignment = 'center';
-            app.GenIDField.Position = [615 353 58 22];
+            app.GenIDField.Position = [793 353 58 22];
 
             % Create LoadNextButton
             app.LoadNextButton = uibutton(app.MainFigure, 'push');
             app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
-            app.LoadNextButton.Position = [647 324 25 22];
+            app.LoadNextButton.Position = [825 324 25 22];
             app.LoadNextButton.Text = '>';
 
             % Create LoadPrevButton
             app.LoadPrevButton = uibutton(app.MainFigure, 'push');
             app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
-            app.LoadPrevButton.Position = [622 324 25 22];
+            app.LoadPrevButton.Position = [800 324 25 22];
             app.LoadPrevButton.Text = '<';
 
             % Create LoadNextStepButton
             app.LoadNextStepButton = uibutton(app.MainFigure, 'push');
             app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
-            app.LoadNextStepButton.Position = [669 303 30 22];
+            app.LoadNextStepButton.Position = [847 303 30 22];
             app.LoadNextStepButton.Text = '+';
 
             % Create LoadPrevStepButton
             app.LoadPrevStepButton = uibutton(app.MainFigure, 'push');
             app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
-            app.LoadPrevStepButton.Position = [598 303 30 22];
+            app.LoadPrevStepButton.Position = [776 303 30 22];
             app.LoadPrevStepButton.Text = '-';
 
             % Create SimulateRobotButton
             app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [582 6 55 22];
+            app.SimulateRobotButton.Position = [760 6 55 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create GenLabel
             app.GenLabel = uilabel(app.MainFigure);
             app.GenLabel.FontSize = 13;
             app.GenLabel.FontWeight = 'bold';
-            app.GenLabel.Position = [582 353 35 22];
+            app.GenLabel.Position = [760 353 35 22];
             app.GenLabel.Text = 'Gen:';
 
             % Create ResultInfoLabel
             app.ResultInfoLabel = uilabel(app.MainFigure);
             app.ResultInfoLabel.FontSize = 13;
             app.ResultInfoLabel.FontWeight = 'bold';
-            app.ResultInfoLabel.Position = [563 490 77 22];
+            app.ResultInfoLabel.Position = [741 490 77 22];
             app.ResultInfoLabel.Text = 'Result Info:';
 
             % Create ResultInfoTextLabel
             app.ResultInfoTextLabel = uilabel(app.MainFigure);
             app.ResultInfoTextLabel.VerticalAlignment = 'top';
-            app.ResultInfoTextLabel.Position = [575 385 191 105];
+            app.ResultInfoTextLabel.Position = [753 385 191 105];
             app.ResultInfoTextLabel.Text = '';
 
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.MainFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [704 20 39 22];
+            app.RobotIDXField.Position = [882 20 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.MainFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [662 20 39 22];
+            app.RobotIDYField.Position = [840 20 39 22];
 
             % Create StatPlotButton
             app.StatPlotButton = uibutton(app.MainFigure, 'push');
             app.StatPlotButton.ButtonPushedFcn = createCallbackFcn(app, @StatPlotButtonPushed, true);
-            app.StatPlotButton.Position = [566 233 64 22];
+            app.StatPlotButton.Position = [744 233 64 22];
             app.StatPlotButton.Text = 'Statistics';
 
             % Create StatStartGenField
             app.StatStartGenField = uieditfield(app.MainFigure, 'text');
             app.StatStartGenField.ValueChangedFcn = createCallbackFcn(app, @StatStartGenFieldValueChanged, true);
             app.StatStartGenField.HorizontalAlignment = 'center';
-            app.StatStartGenField.Position = [602 271 41 22];
+            app.StatStartGenField.Position = [780 271 41 22];
 
             % Create StatEndGenField
             app.StatEndGenField = uieditfield(app.MainFigure, 'text');
             app.StatEndGenField.ValueChangedFcn = createCallbackFcn(app, @StatEndGenFieldValueChanged, true);
             app.StatEndGenField.HorizontalAlignment = 'center';
-            app.StatEndGenField.Position = [669 271 62 22];
+            app.StatEndGenField.Position = [847 271 62 22];
 
             % Create FromLabel
             app.FromLabel = uilabel(app.MainFigure);
             app.FromLabel.FontSize = 13;
             app.FromLabel.FontWeight = 'bold';
-            app.FromLabel.Position = [562 271 41 22];
+            app.FromLabel.Position = [740 271 41 22];
             app.FromLabel.Text = 'From:';
 
             % Create ToLabel
             app.ToLabel = uilabel(app.MainFigure);
             app.ToLabel.FontSize = 13;
             app.ToLabel.FontWeight = 'bold';
-            app.ToLabel.Position = [648 271 25 22];
+            app.ToLabel.Position = [826 271 25 22];
             app.ToLabel.Text = 'To:';
 
             % Create OpenFolderButton
@@ -459,26 +474,26 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create LoadLastButton
             app.LoadLastButton = uibutton(app.MainFigure, 'push');
             app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
-            app.LoadLastButton.Position = [672 324 25 22];
+            app.LoadLastButton.Position = [850 324 25 22];
             app.LoadLastButton.Text = '>>';
 
             % Create LoadFirstButton
             app.LoadFirstButton = uibutton(app.MainFigure, 'push');
             app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
-            app.LoadFirstButton.Position = [597 324 25 22];
+            app.LoadFirstButton.Position = [775 324 25 22];
             app.LoadFirstButton.Text = '<<';
 
             % Create GenStepField
             app.GenStepField = uieditfield(app.MainFigure, 'text');
             app.GenStepField.ValueChangedFcn = createCallbackFcn(app, @GenStepFieldValueChanged, true);
             app.GenStepField.HorizontalAlignment = 'center';
-            app.GenStepField.Position = [629 303 39 22];
+            app.GenStepField.Position = [807 303 39 22];
 
             % Create CompareListBox
             app.CompareListBox = uilistbox(app.MainFigure);
             app.CompareListBox.Items = {};
             app.CompareListBox.Multiselect = 'on';
-            app.CompareListBox.Position = [375 1 176 554];
+            app.CompareListBox.Position = [553 1 176 554];
             app.CompareListBox.Value = {};
 
             % Create ComparePlotButton
@@ -487,16 +502,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ComparePlotButton.Position = [293 258 63 22];
             app.ComparePlotButton.Text = 'Compare';
 
-            % Create AddCompareButton
-            app.AddCompareButton = uibutton(app.MainFigure, 'push');
-            app.AddCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddCompareButtonPushed, true);
-            app.AddCompareButton.Position = [330 531 37 22];
-            app.AddCompareButton.Text = 'Add';
+            % Create AddResultToCompareButton
+            app.AddResultToCompareButton = uibutton(app.MainFigure, 'push');
+            app.AddResultToCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddResultToCompareButtonPushed, true);
+            app.AddResultToCompareButton.Position = [278 531 37 22];
+            app.AddResultToCompareButton.Text = 'Add';
 
             % Create RemoveCompareButton
             app.RemoveCompareButton = uibutton(app.MainFigure, 'push');
             app.RemoveCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveCompareButtonPushed, true);
-            app.RemoveCompareButton.Position = [330 400 37 22];
+            app.RemoveCompareButton.Position = [330 372 37 22];
             app.RemoveCompareButton.Text = 'Del';
 
             % Create NickNameSaveButton
@@ -511,14 +526,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageTreeButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageTreeButtonPushed, true);
             app.ParentageTreeButton.Tag = 'loadresult';
             app.ParentageTreeButton.WordWrap = 'on';
-            app.ParentageTreeButton.Position = [570 30 78 32];
+            app.ParentageTreeButton.Position = [748 30 78 32];
             app.ParentageTreeButton.Text = 'Parentage Tree';
 
             % Create BinUpdatesButton
             app.BinUpdatesButton = uibutton(app.MainFigure, 'push');
             app.BinUpdatesButton.ButtonPushedFcn = createCallbackFcn(app, @BinUpdatesButtonPushed, true);
             app.BinUpdatesButton.Tag = 'loadresult';
-            app.BinUpdatesButton.Position = [561 187 76 22];
+            app.BinUpdatesButton.Position = [739 187 76 22];
             app.BinUpdatesButton.Text = 'Bin Updates';
 
             % Create NicknameLabel
@@ -542,7 +557,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AvgAgeofMapButton = uibutton(app.MainFigure, 'push');
             app.AvgAgeofMapButton.ButtonPushedFcn = createCallbackFcn(app, @AvgAgeofMapButtonPushed, true);
             app.AvgAgeofMapButton.Tag = 'loadresult';
-            app.AvgAgeofMapButton.Position = [551 210 100 22];
+            app.AvgAgeofMapButton.Position = [729 210 100 22];
             app.AvgAgeofMapButton.Text = 'Avg Age of Map';
 
             % Create ResultsLabel
@@ -576,7 +591,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageStatButton = uibutton(app.MainFigure, 'push');
             app.ParentageStatButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageStatButtonPushed, true);
             app.ParentageStatButton.Tag = 'loadresult';
-            app.ParentageStatButton.Position = [656 233 89 22];
+            app.ParentageStatButton.Position = [834 233 89 22];
             app.ParentageStatButton.Text = 'Parentage Stat';
 
             % Create BuildSelectedResultStatButton
@@ -589,13 +604,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create ResultsToCompareLabel
             app.ResultsToCompareLabel = uilabel(app.MainFigure);
             app.ResultsToCompareLabel.FontWeight = 'bold';
-            app.ResultsToCompareLabel.Position = [375 556 125 22];
+            app.ResultsToCompareLabel.Position = [553 556 125 22];
             app.ResultsToCompareLabel.Text = 'Results To Compare:';
 
             % Create PlotGenButton
             app.PlotGenButton = uibutton(app.MainFigure, 'push');
             app.PlotGenButton.ButtonPushedFcn = createCallbackFcn(app, @PlotGenButtonPushed, true);
-            app.PlotGenButton.Position = [681 353 64 22];
+            app.PlotGenButton.Position = [859 353 64 22];
             app.PlotGenButton.Text = 'Plot Gen';
 
             % Create ResultGroupLabel
@@ -610,50 +625,50 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.LoadResultGroupButton = uibutton(app.MainFigure, 'push');
             app.LoadResultGroupButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultGroupButtonPushed, true);
             app.LoadResultGroupButton.Tag = 'loadresult';
-            app.LoadResultGroupButton.Position = [204 529 70 22];
-            app.LoadResultGroupButton.Text = 'LoadGroup';
+            app.LoadResultGroupButton.Position = [200 529 73 22];
+            app.LoadResultGroupButton.Text = 'Load Group';
 
             % Create GroupNameLabel
             app.GroupNameLabel = uilabel(app.MainFigure);
             app.GroupNameLabel.HorizontalAlignment = 'right';
             app.GroupNameLabel.Position = [272 509 78 22];
-            app.GroupNameLabel.Text = 'Group Name:';
+            app.GroupNameLabel.Text = 'Virtual Name:';
 
-            % Create GroupNameField
-            app.GroupNameField = uieditfield(app.MainFigure, 'text');
-            app.GroupNameField.Position = [282 488 86 22];
+            % Create VirtualResultNameField
+            app.VirtualResultNameField = uieditfield(app.MainFigure, 'text');
+            app.VirtualResultNameField.Position = [282 488 86 22];
 
-            % Create AddGroupCompareButton
-            app.AddGroupCompareButton = uibutton(app.MainFigure, 'push');
-            app.AddGroupCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddGroupCompareButtonPushed, true);
-            app.AddGroupCompareButton.Position = [287 457 74 22];
-            app.AddGroupCompareButton.Text = 'Add Group';
+            % Create AddVirtualResultButton
+            app.AddVirtualResultButton = uibutton(app.MainFigure, 'push');
+            app.AddVirtualResultButton.ButtonPushedFcn = createCallbackFcn(app, @AddVirtualResultButtonPushed, true);
+            app.AddVirtualResultButton.Position = [287 457 74 22];
+            app.AddVirtualResultButton.Text = 'Add Virtual';
 
             % Create PlotNameLabel
             app.PlotNameLabel = uilabel(app.MainFigure);
-            app.PlotNameLabel.Position = [277 336 65 22];
+            app.PlotNameLabel.Position = [277 308 65 22];
             app.PlotNameLabel.Text = 'Plot Name:';
 
             % Create CompPlotNameField
             app.CompPlotNameField = uieditfield(app.MainFigure, 'text');
-            app.CompPlotNameField.Position = [283 315 86 22];
+            app.CompPlotNameField.Position = [283 287 86 22];
 
             % Create RemoveAllCompareButton
             app.RemoveAllCompareButton = uibutton(app.MainFigure, 'push');
             app.RemoveAllCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveAllCompareButtonPushed, true);
-            app.RemoveAllCompareButton.Position = [309 373 60 22];
+            app.RemoveAllCompareButton.Position = [309 345 60 22];
             app.RemoveAllCompareButton.Text = 'Clear All';
 
             % Create MoveCompareUpButton
             app.MoveCompareUpButton = uibutton(app.MainFigure, 'push');
             app.MoveCompareUpButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareUpButtonPushed, true);
-            app.MoveCompareUpButton.Position = [289 429 37 22];
+            app.MoveCompareUpButton.Position = [289 401 37 22];
             app.MoveCompareUpButton.Text = 'Up';
 
             % Create MoveCompareDownButton
             app.MoveCompareDownButton = uibutton(app.MainFigure, 'push');
             app.MoveCompareDownButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareDownButtonPushed, true);
-            app.MoveCompareDownButton.Position = [330 429 38 22];
+            app.MoveCompareDownButton.Position = [330 401 38 22];
             app.MoveCompareDownButton.Text = 'Down';
 
             % Create ParentagePlotsButton
@@ -661,7 +676,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentagePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @ParentagePlotsButtonPushed, true);
             app.ParentagePlotsButton.Tag = 'loadresult';
             app.ParentagePlotsButton.WordWrap = 'on';
-            app.ParentagePlotsButton.Position = [654 196 95 32];
+            app.ParentagePlotsButton.Position = [832 196 95 32];
             app.ParentagePlotsButton.Text = 'Parentage Plots';
 
             % Create LongevityofGenButton
@@ -669,7 +684,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.LongevityofGenButton.ButtonPushedFcn = createCallbackFcn(app, @LongevityofGenButtonPushed, true);
             app.LongevityofGenButton.Tag = 'loadresult';
             app.LongevityofGenButton.WordWrap = 'on';
-            app.LongevityofGenButton.Position = [559 148 82 36];
+            app.LongevityofGenButton.Position = [737 148 82 36];
             app.LongevityofGenButton.Text = 'Longevity of Gen';
 
             % Create PatchResultStatButton
@@ -692,6 +707,31 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.RehashButton.Tag = 'loadresult';
             app.RehashButton.Position = [275 556 57 22];
             app.RehashButton.Text = 'Rehash';
+
+            % Create VirtualResultsListBox
+            app.VirtualResultsListBox = uilistbox(app.MainFigure);
+            app.VirtualResultsListBox.Items = {};
+            app.VirtualResultsListBox.Multiselect = 'on';
+            app.VirtualResultsListBox.Position = [373 1 176 554];
+            app.VirtualResultsListBox.Value = {};
+
+            % Create ResultsToCompareLabel_2
+            app.ResultsToCompareLabel_2 = uilabel(app.MainFigure);
+            app.ResultsToCompareLabel_2.FontWeight = 'bold';
+            app.ResultsToCompareLabel_2.Position = [373 556 93 22];
+            app.ResultsToCompareLabel_2.Text = 'Virtual Results:';
+
+            % Create DeleteVirtualResultButton
+            app.DeleteVirtualResultButton = uibutton(app.MainFigure, 'push');
+            app.DeleteVirtualResultButton.ButtonPushedFcn = createCallbackFcn(app, @DeleteVirtualResultButtonPushed, true);
+            app.DeleteVirtualResultButton.Position = [287 434 74 22];
+            app.DeleteVirtualResultButton.Text = 'Del Virtual';
+
+            % Create AddVirtualToCompareButton
+            app.AddVirtualToCompareButton = uibutton(app.MainFigure, 'push');
+            app.AddVirtualToCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddVirtualToCompareButtonPushed, true);
+            app.AddVirtualToCompareButton.Position = [332 531 37 22];
+            app.AddVirtualToCompareButton.Text = 'Add';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

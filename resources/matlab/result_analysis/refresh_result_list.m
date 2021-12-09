@@ -1,11 +1,11 @@
 function refresh_result_list(app)
     if isempty(app.result_group_path)
-        result_dir = app.evogen_results_path;
+        app.result_group_path = app.evogen_results_path;
         group_basename = 'Base';
     else
-        result_dir = app.result_group_path;
         [~, group_basename, ~] = fileparts(app.result_group_path);
     end
+        result_dir = app.result_group_path;
 
     app.ResultsListBox.Items = {};
     app.ResultsListBox.ItemsData = [];
@@ -40,6 +40,8 @@ function refresh_result_list(app)
     end
 
     app.ResultGroupLabel.Text = [group_basename, ' (', num2str(length(app.results)), ')'];
+
+    load_virtual_results(app);
 end
 
 function ret_str = get_result_list_string(app, result_idx)
