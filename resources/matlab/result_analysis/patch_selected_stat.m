@@ -74,6 +74,30 @@ function patch_stat(result_path)
     % end
     % need_to_save = true;
 
+    % Elite high parentage fitness and Elite low parentage fitness
+    % if stat.has_parentage
+        % stat.pop_hp_fitness = zeros(1, nb_gen + 1);
+        % stat.pop_lp_fitness = zeros(1, nb_gen + 1);
+        % stat.top15_hp_fitness = zeros(1, nb_gen + 1);
+        % stat.top15_lp_fitness = zeros(1, nb_gen + 1);
+        % hp_selection = stat.robot_parentage >= 0.5;
+        % lp_selection = stat.robot_parentage <= 0.5;
+        % top15_hp = [];
+        % top15_lp = [];
+        % for i = 1 : nb_gen + 1
+            % tmp_hp = stat.robot_fitness(hp_selection(:,i),i); % column vector
+            % tmp_lp = stat.robot_fitness(lp_selection(:,i),i); % column vector
+            % stat.pop_hp_fitness(i) = mean(tmp_hp);
+            % stat.pop_lp_fitness(i) = mean(tmp_lp);
+
+            % top15_hp = maxk([top15_hp; tmp_hp], 15);
+            % top15_lp = maxk([top15_lp; tmp_lp], 15);
+            % stat.top15_hp_fitness(i) = mean(top15_hp);
+            % stat.top15_lp_fitness(i) = mean(top15_lp);
+        % end
+        % need_to_save = true;
+    % end
+
     if need_to_save
         save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
     end

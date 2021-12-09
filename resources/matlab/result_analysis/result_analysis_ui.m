@@ -4,6 +4,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         RehashButton                   matlab.ui.control.Button
+        GroupStatButton                matlab.ui.control.Button
         PatchResultStatButton          matlab.ui.control.Button
         LongevityofGenButton           matlab.ui.control.Button
         ParentagePlotsButton           matlab.ui.control.Button
@@ -308,6 +309,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: ParentagePlotsButton
         function ParentagePlotsButtonPushed(app, event)
             plot_parentage_related(app);
+        end
+
+        % Button pushed function: GroupStatButton
+        function GroupStatButtonPushed(app, event)
+            plot_group_stat(app);
         end
 
         % Button pushed function: RehashButton
@@ -655,7 +661,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentagePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @ParentagePlotsButtonPushed, true);
             app.ParentagePlotsButton.Tag = 'loadresult';
             app.ParentagePlotsButton.WordWrap = 'on';
-            app.ParentagePlotsButton.Position = [654 187 95 41];
+            app.ParentagePlotsButton.Position = [654 196 95 32];
             app.ParentagePlotsButton.Text = 'Parentage Plots';
 
             % Create LongevityofGenButton
@@ -672,6 +678,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PatchResultStatButton.Tag = 'loadresult';
             app.PatchResultStatButton.Position = [220 556 46 22];
             app.PatchResultStatButton.Text = 'Patch';
+
+            % Create GroupStatButton
+            app.GroupStatButton = uibutton(app.MainFigure, 'push');
+            app.GroupStatButton.ButtonPushedFcn = createCallbackFcn(app, @GroupStatButtonPushed, true);
+            app.GroupStatButton.WordWrap = 'on';
+            app.GroupStatButton.Position = [286 174 77 23];
+            app.GroupStatButton.Text = 'Group Stat';
 
             % Create RehashButton
             app.RehashButton = uibutton(app.MainFigure, 'push');

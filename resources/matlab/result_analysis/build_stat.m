@@ -33,8 +33,14 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
             stat.archive_parentage = zeros(1, nb_gen + 1);
             stat.archive_parentage_over_map = zeros(1, nb_gen + 1);
             stat.population_parentage = zeros(1, nb_gen + 1);
+            stat.pop_hp_fitness = zeros(1, nb_gen + 1);
+            stat.pop_lp_fitness = zeros(1, nb_gen + 1);
+            stat.top15_hp_fitness = zeros(1, nb_gen + 1);
+            stat.top15_lp_fitness = zeros(1, nb_gen + 1);
             stat.has_parentage = true;
 
+            top15_hp = [];
+            top15_lp = [];
             tmp_parentage_map = zeros(evo_params.griddim_0, evo_params.griddim_1);
         end
     end
@@ -175,6 +181,17 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
 
             stat.archive_parentage(i + 1) = sum(tmp_parentage_map(:)) / size(curr_gen_archive, 1);
             stat.archive_parentage_over_map(i + 1) = sum(tmp_parentage_map(:)) / archive_size;
+
+            % get hp and lp of current generation
+            tmp_hp = pop_fitness(stat.robot_parentage(:, i + 1) >= 0.5); % colmun vector
+            tmp_lp = pop_fitness(stat.robot_parentage(:, i + 1) <= 0.5); % colmun vector
+            stat.pop_hp_fitness(i + 1) = mean(tmp_hp);
+            stat.pop_lp_fitness(i + 1) = mean(tmp_lp);
+
+            top15_hp = maxk([top15_hp; tmp_hp], 15);
+            top15_lp = maxk([top15_lp; tmp_lp], 15);
+            stat.top15_hp_fitness(i + 1) = mean(top15_hp);
+            stat.top15_lp_fitness(i + 1) = mean(top15_lp);
         end
 
         stat.processed_gen = i;
