@@ -3,6 +3,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        RehashButton                   matlab.ui.control.Button
         PatchResultStatButton          matlab.ui.control.Button
         LongevityofGenButton           matlab.ui.control.Button
         ParentagePlotsButton           matlab.ui.control.Button
@@ -307,6 +308,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: ParentagePlotsButton
         function ParentagePlotsButtonPushed(app, event)
             plot_parentage_related(app);
+        end
+
+        % Button pushed function: RehashButton
+        function RehashButtonPushed(app, event)
+            rehash;
         end
     end
 
@@ -666,6 +672,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PatchResultStatButton.Tag = 'loadresult';
             app.PatchResultStatButton.Position = [220 556 46 22];
             app.PatchResultStatButton.Text = 'Patch';
+
+            % Create RehashButton
+            app.RehashButton = uibutton(app.MainFigure, 'push');
+            app.RehashButton.ButtonPushedFcn = createCallbackFcn(app, @RehashButtonPushed, true);
+            app.RehashButton.Tag = 'loadresult';
+            app.RehashButton.Position = [275 556 57 22];
+            app.RehashButton.Text = 'Rehash';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
