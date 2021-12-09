@@ -43,6 +43,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     if (orig_stat_loaded)
         stat = orig_stat;
     else
+        stat.elite_robot_selection = false(evo_params.gen_size, nb_gen + 1); % entries of value 1 indicate the corresponding robot has made it to 10% of the archive map at some generation
         stat.robot_fitness = zeros(evo_params.gen_size, nb_gen + 1);
         stat.robot_longevity = double(-1) * ones(evo_params.gen_size, nb_gen + 1);
         stat.archive_fits = zeros(1, nb_gen + 1);
@@ -94,6 +95,9 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         stat.elite_archive_fits(i + 1) = mean(max10_fitness);
         stat.elite_archive_std(i + 1) = std(max10_fitness);
         stat.elite_archive_age(i + 1) = mean(age(max10_idx));
+        max10_gen_ids = curr_gen_archive(max10_idx, 1) + 1;
+        max10_ids = curr_gen_archive(max10_idx, 2) + 1;
+        stat.elite_robot_selection(sub2ind(size(stat.elite_robot_selection), max10_ids, max10_gen_ids)) = true;
 
         stat.clean_archive_fits(i + 1) = mean(clean_fitness);
         stat.clean_archive_std(i + 1) = std(clean_fitness);

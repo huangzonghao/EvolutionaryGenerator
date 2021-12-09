@@ -1,6 +1,6 @@
 function plot_parentage_related(app)
     num_rows = 2;
-    num_cols = 2;
+    num_cols = 4;
     if ~isfield(app.stat, 'robot_parentage')
         msgbox('This result has no parentage information available');
         return
@@ -8,14 +8,24 @@ function plot_parentage_related(app)
     figure();
     parentage = app.stat.robot_parentage(:);
     longevity = app.stat.robot_longevity(:);
-    generation = repmat(0 : app.evo_params.nb_gen + 1, app.evo_params.gen_size, 1);
-    generation = generation(:);
+    generation_raw = repmat(0 : app.evo_params.nb_gen + 1, app.evo_params.gen_size, 1);
+    generation = generation_raw(:);
     fitness = app.stat.robot_fitness(:);
     valid_selection = (longevity ~= -1);
     valid_parentage = parentage(valid_selection);
     valid_longevity = longevity(valid_selection);
     valid_generation = generation(valid_selection);
     valid_fitness = fitness(valid_selection);
+
+    elite_selection = app.stat.elite_robot_selection;
+    elite_parentage = app.stat.robot_parentage(elite_selection);
+    elite_longevity = app.stat.robot_longevity(elite_selection);
+    elite_generation = generation_raw(elite_selection);
+    elite_fitness = app.stat.robot_fitness(elite_selection);
+    elite_parentage = elite_parentage(:);
+    elite_longevity = elite_longevity(:);
+    elite_generation = elite_generation(:);
+    elite_fitness = elite_fitness(:);
 
     % get first gen data
     load_gen(app, 0); % load the final generation
@@ -26,6 +36,13 @@ function plot_parentage_related(app)
     first_longevity = longevity(first_selection);
     first_generation = generation(first_selection);
     first_fitness = fitness(first_selection);
+    first_elite_selection = false(size(elite_selection));
+    first_elite_selection(first_selection) = true;
+    first_elite_selection = first_elite_selection & elite_selection;
+    first_elite_parentage = parentage(first_elite_selection);
+    first_elite_longevity = longevity(first_elite_selection);
+    first_elite_generation = generation(first_elite_selection);
+    first_elite_fitness = fitness(first_elite_selection);
 
     % get mid gen data
     load_gen(app, ceil(app.evo_params.nb_gen / 2)); % load the final generation
@@ -36,6 +53,13 @@ function plot_parentage_related(app)
     mid_longevity = longevity(mid_selection);
     mid_generation = generation(mid_selection);
     mid_fitness = fitness(mid_selection);
+    mid_elite_selection = false(size(elite_selection));
+    mid_elite_selection(mid_selection) = true;
+    mid_elite_selection = mid_elite_selection & elite_selection;
+    mid_elite_parentage = parentage(mid_elite_selection);
+    mid_elite_longevity = longevity(mid_elite_selection);
+    mid_elite_generation = generation(mid_elite_selection);
+    mid_elite_fitness = fitness(mid_elite_selection);
 
     % get final gen data
     load_gen(app, app.evo_params.nb_gen); % load the final generation
@@ -46,47 +70,112 @@ function plot_parentage_related(app)
     final_longevity = longevity(final_selection);
     final_generation = generation(final_selection);
     final_fitness = fitness(final_selection);
+    final_elite_selection = false(size(elite_selection));
+    final_elite_selection(final_selection) = true;
+    final_elite_selection = final_elite_selection & elite_selection;
+    final_elite_parentage = parentage(final_elite_selection);
+    final_elite_longevity = longevity(final_elite_selection);
+    final_elite_generation = generation(final_elite_selection);
+    final_elite_fitness = fitness(final_elite_selection);
 
-    p1 = subplot(num_cols, num_rows, 1, 'NextPlot', 'add');
-    scatter(p1, valid_longevity, valid_parentage, 'filled', 'DisplayName', 'all robots');
-    scatter(p1, first_longevity, first_parentage, 'filled', 'DisplayName', 'init pop');
-    scatter(p1, mid_longevity, mid_parentage, 'filled', 'DisplayName', 'mid pop');
-    scatter(p1, final_longevity, final_parentage, 'filled', 'DisplayName', 'final pop');
-    xlim(p1, [-0.5, app.evo_params.nb_gen + 0.5]);
-    xlabel(p1, 'Longevity');
-    ylabel(p1, 'Parentage');
-    title(p1, "Parentage vs Longevity", 'Interpreter', 'none');
-    legend(p1, 'Interpreter', 'none');
+    grid_x = 1; grid_y = 1;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x); % TODO: dirty hack here as subplot's ordering is row first
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, longevity, parentage, 'filled', 'DisplayName', 'all robots');
+    scatter(ph, first_longevity, first_parentage, 'filled', 'DisplayName', 'init archive');
+    scatter(ph, mid_longevity, mid_parentage, 'filled', 'DisplayName', 'mid archive');
+    scatter(ph, final_longevity, final_parentage, 'filled', 'DisplayName', 'final archive');
+    xlim(ph, [-0.5, app.evo_params.nb_gen + 0.5]);
+    xlabel(ph, 'Longevity');
+    ylabel(ph, 'Parentage');
+    title(ph, "Parentage vs Longevity", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none');
 
-    p2 = subplot(num_cols, num_rows, 2, 'NextPlot', 'add');
-    scatter(p2, valid_generation, valid_parentage, 'filled', 'DisplayName', 'all robots');
-    scatter(p2, first_generation, first_parentage, 'filled', 'DisplayName', 'init pop');
-    scatter(p2, mid_generation, mid_parentage, 'filled', 'DisplayName', 'mid pop');
-    scatter(p2, final_generation, final_parentage, 'filled', 'DisplayName', 'final pop');
-    xlabel(p2, 'Generation');
-    ylabel(p2, 'Parentage');
-    title(p2, "Parentage vs Generation", 'Interpreter', 'none');
-    legend(p2, 'Interpreter', 'none');
+    grid_x = 2; grid_y = 1;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x);
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, fitness, parentage, 'filled', 'DisplayName', 'all robots');
+    scatter(ph, first_fitness, first_parentage, 'filled', 'DisplayName', 'init archive');
+    scatter(ph, mid_fitness, mid_parentage, 'filled', 'DisplayName', 'mid archive');
+    scatter(ph, final_fitness, final_parentage, 'filled', 'DisplayName', 'final archive');
+    xlabel(ph, 'Fitness');
+    ylabel(ph, 'Parentage');
+    title(ph, "Parentage vs Fitness", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none');
 
-    p3 = subplot(num_cols, num_rows, 3, 'NextPlot', 'add');
-    scatter(p3, valid_fitness, valid_parentage, 'filled', 'DisplayName', 'all robots');
-    scatter(p3, first_fitness, first_parentage, 'filled', 'DisplayName', 'init pop');
-    scatter(p3, mid_fitness, mid_parentage, 'filled', 'DisplayName', 'mid pop');
-    scatter(p3, final_fitness, final_parentage, 'filled', 'DisplayName', 'final pop');
-    xlabel(p3, 'Fitness');
-    ylabel(p3, 'Parentage');
-    title(p3, "Parentage vs Fitness", 'Interpreter', 'none');
-    legend(p3, 'Interpreter', 'none');
+    grid_x = 1; grid_y = 2;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x);
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, valid_longevity, valid_parentage, 'filled', 'DisplayName', 'archived robots');
+    scatter(ph, first_longevity, first_parentage, 'filled', 'DisplayName', 'init archive');
+    scatter(ph, mid_longevity, mid_parentage, 'filled', 'DisplayName', 'mid archive');
+    scatter(ph, final_longevity, final_parentage, 'filled', 'DisplayName', 'final archive');
+    xlim(ph, [-0.5, app.evo_params.nb_gen + 0.5]);
+    xlabel(ph, 'Longevity');
+    ylabel(ph, 'Parentage');
+    title(ph, "Parentage vs Longevity (Archived)", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none');
 
-    p4 = subplot(num_cols, num_rows, 4, 'NextPlot', 'add');
-    scatter(p4, valid_generation, valid_fitness, 'filled', 'DisplayName', 'all robots');
-    scatter(p4, first_generation, first_fitness, 'filled', 'DisplayName', 'init pop');
-    scatter(p4, mid_generation, mid_fitness, 'filled', 'DisplayName', 'mid pop');
-    scatter(p4, final_generation, final_fitness, 'filled', 'DisplayName', 'final pop');
-    xlabel(p4, 'Generation');
-    ylabel(p4, 'Fitness');
-    title(p4, "Fitness vs Generation", 'Interpreter', 'none');
-    legend(p4, 'Interpreter', 'none', 'Location', 'SouthWest');
+    grid_x = 2; grid_y = 2;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x);
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, valid_fitness, valid_parentage, 'filled', 'DisplayName', 'all robots');
+    scatter(ph, first_fitness, first_parentage, 'filled', 'DisplayName', 'init archive');
+    scatter(ph, mid_fitness, mid_parentage, 'filled', 'DisplayName', 'mid archive');
+    scatter(ph, final_fitness, final_parentage, 'filled', 'DisplayName', 'final archive');
+    xlabel(ph, 'Fitness');
+    ylabel(ph, 'Parentage');
+    title(ph, "Parentage vs Fitness (Archived)", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none');
+
+    grid_x = 1; grid_y = 3;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x); % TODO: dirty hack here as subplot's ordering is row first
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, elite_longevity, elite_parentage, 'filled', 'DisplayName', 'archive elites');
+    scatter(ph, first_elite_longevity, first_elite_parentage, 'filled', 'DisplayName', 'init archive elites');
+    scatter(ph, mid_elite_longevity, mid_elite_parentage, 'filled', 'DisplayName', 'mid archive elites');
+    scatter(ph, final_elite_longevity, final_elite_parentage, 'filled', 'DisplayName', 'final archive elites');
+    xlim(ph, [-0.5, app.evo_params.nb_gen + 0.5]);
+    xlabel(ph, 'Longevity');
+    ylabel(ph, 'Parentage');
+    title(ph, "Parentage vs Longevity (Elites)", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none');
+
+    grid_x = 2; grid_y = 3;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x);
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, elite_fitness, elite_parentage, 'filled', 'DisplayName', 'archive elites');
+    scatter(ph, first_elite_fitness, first_elite_parentage, 'filled', 'DisplayName', 'init archive elites');
+    scatter(ph, mid_elite_fitness, mid_elite_parentage, 'filled', 'DisplayName', 'mid archive elites');
+    scatter(ph, final_elite_fitness, final_elite_parentage, 'filled', 'DisplayName', 'final archive elites');
+    xlabel(ph, 'Fitness');
+    ylabel(ph, 'Parentage');
+    title(ph, "Parentage vs Fitness (Elites)", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none');
+
+    grid_x = 1; grid_y = 4;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x);
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, valid_generation, valid_parentage, 'filled', 'DisplayName', 'all robots');
+    scatter(ph, first_generation, first_parentage, 'filled', 'DisplayName', 'init pop');
+    scatter(ph, mid_generation, mid_parentage, 'filled', 'DisplayName', 'mid pop');
+    scatter(ph, final_generation, final_parentage, 'filled', 'DisplayName', 'final pop');
+    xlabel(ph, 'Generation');
+    ylabel(ph, 'Parentage');
+    title(ph, "Parentage vs Generation", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none');
+
+    grid_x = 2; grid_y = 4;
+    plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x);
+    ph = subplot(num_rows, num_cols, plot_idx, 'NextPlot', 'add');
+    scatter(ph, valid_generation, valid_fitness, 'filled', 'DisplayName', 'all robots');
+    scatter(ph, first_generation, first_fitness, 'filled', 'DisplayName', 'init pop');
+    scatter(ph, mid_generation, mid_fitness, 'filled', 'DisplayName', 'mid pop');
+    scatter(ph, final_generation, final_fitness, 'filled', 'DisplayName', 'final pop');
+    xlabel(ph, 'Generation');
+    ylabel(ph, 'Fitness');
+    title(ph, "Fitness vs Generation", 'Interpreter', 'none');
+    legend(ph, 'Interpreter', 'none', 'Location', 'SouthWest');
 
     % get the final points
     % plot the points int three batches so that we can see how the values transforms
