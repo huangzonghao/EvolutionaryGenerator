@@ -25,7 +25,7 @@ function plot_result_stat(app)
     title('Fitness');
     xlabel('generation');
     ylabel('fitness');
-    legend('archive mean', 'top 10% archive mean', 'pop mean', 'Location', 'NorthWest');
+    legend('archive mean', 'top 10% archive mean', 'pop mean', 'Location', 'best');
 
     % Change in Archive Fitness
     subplot(num_subplots, 1, 2);
@@ -49,9 +49,9 @@ function plot_result_stat(app)
         end
         plot(start_gen + 10 : end_gen, change_to_prev_10gen, 'r');
         hold off;
-        legend('Diff to prev gen', 'Diff to avg of prev 10 gen', 'Location', 'NorthEast');
+        legend('Diff to prev gen', 'Diff to avg of prev 10 gen', 'Location', 'best');
     else
-        legend('Diff to prev gen', 'Location', 'NorthEast');
+        legend('Diff to prev gen', 'Location', 'best');
     end
 
     % Change in Archive Elites Fitness
@@ -76,9 +76,9 @@ function plot_result_stat(app)
         end
         plot(start_gen + 10 : end_gen, change_to_prev_10gen, 'r');
         hold off;
-        legend('Diff to prev gen', 'Diff to avg of prev 10 gen', 'Location', 'NorthEast');
+        legend('Diff to prev gen', 'Diff to avg of prev 10 gen', 'Location', 'best');
     else
-        legend('Diff to prev gen', 'Location', 'NorthEast');
+        legend('Diff to prev gen', 'Location', 'best');
     end
 
     % Coverage Plot

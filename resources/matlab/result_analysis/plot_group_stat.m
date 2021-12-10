@@ -17,6 +17,7 @@ function plot_group_stat(app)
     end
 
     figure();
+    sgtitle([result.name, ' - High Parentage and Low Parentage Fitness'], 'Interpreter', 'none');
     ph = subplot(1,1,1);
 
     pop_hp_fitness = [];

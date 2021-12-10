@@ -18,7 +18,7 @@ function plot_parentage_stat(app)
     plot(ph, app.stat.archive_parentage_over_map, 'DisplayName', 'Avg per bin in archive');
     xlabel(ph, 'Generations');
     ylabel(ph, 'Parentage');
-    legend(ph, 'Interpreter', 'none', 'Location', 'SouthEast');
+    legend(ph, 'Interpreter', 'none', 'Location', 'best');
 
     % Fitness vs Generations
     grid_x = 1; grid_y = 2;
@@ -30,6 +30,6 @@ function plot_parentage_stat(app)
     plot(ph, app.stat.top15_lp_fitness, 'DisplayName', 'top 15 lp of all time');
     xlabel(ph, 'Generations');
     ylabel(ph, 'Fitness');
-    legend(ph, 'Interpreter', 'none', 'Location', 'SouthEast');
+    legend(ph, 'Interpreter', 'none', 'Location', 'best');
 
 end
