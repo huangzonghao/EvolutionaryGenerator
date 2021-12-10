@@ -1,4 +1,4 @@
-function plot_parentage(app)
+function plot_parentage_trace(app)
     id_in_archive = app.archive_ids(str2double(app.RobotIDYField.Value), str2double(app.RobotIDXField.Value));
     if (id_in_archive == 0)
         app.RobotInfoLabel.Text = "Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty";

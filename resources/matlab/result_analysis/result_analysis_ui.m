@@ -4,6 +4,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         SingleResultsPanel             matlab.ui.container.Panel
+        SelectResultButton             matlab.ui.control.Button
         NickNameField                  matlab.ui.control.EditField
         NicknameLabel                  matlab.ui.control.Label
         NickNameSaveButton             matlab.ui.control.Button
@@ -84,20 +85,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
         results = {} % array containing the cache of the loaded results
         virtual_results = {} % array containing the cache of virtual results
         results_to_compare = {} % cell array containing the results to compare
-
-        % Properties to cache for the currently loaded result
-        result_loaded = false
-        result_path = ""
-        result_displayname string % the displayname of the result used accross different figs
-        gen_plot % struct containing: handle, archive_surf_ax
-        evo_params % parameters of an evolutionary generation process
-        stat % variables containing the stats of the result
-        stat_loaded = false
+        current_result = {} % reference to the current seleceted result
         current_gen = -1
-        current_gen_archive
+        gen_plot % containing handles to gen_plot
+
+        % TODO: need to remove the following
         robots_buffer
         robots_gen = -1
-        archive_map
         archive_ids
     end
 
@@ -128,6 +122,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
             load_result(app);
         end
 
+        % Button pushed function: SelectResultButton
+        function SelectResultButtonPushed(app, event)
+            select_result(app);
+        end
+
         % Button pushed function: LoadNextButton
         function LoadNextButtonPushed(app, event)
             load_gen(app, app.current_gen + 1);
@@ -155,7 +154,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: LoadLastButton
         function LoadLastButtonPushed(app, event)
-            load_gen(app, app.evo_params.nb_gen);
+            load_gen(app, app.current_result.evo_params.nb_gen);
         end
 
         % Button pushed function: StatPlotButton
@@ -242,23 +241,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.gen_step = max(str2double(app.GenStepField.Value), 0);
         end
 
-        % Value changed function: StatStartGenField
-        function StatStartGenFieldValueChanged(app, event)
-            if (str2double(app.StatStartGenField.Value) < 0)
-                app.StatStartGenField.Value = num2str(0);
-            end
-        end
-
-        % Value changed function: StatEndGenField
-        function StatEndGenFieldValueChanged(app, event)
-            if (app.result_loaded && str2double(app.StatEndGenField.Value) > app.evo_params.nb_gen)
-                app.StatEndGenField.Value = num2str(app.evo_params.nb_gen);
-            end
-        end
-
         % Button pushed function: ParentageTreeButton
         function ParentageTreeButtonPushed(app, event)
-            plot_parentage(app);
+            plot_parentage_trace(app);
         end
 
         % Button pushed function: BinUpdatesButton
@@ -627,7 +612,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % Create StatStartGenField
             app.StatStartGenField = uieditfield(app.SingleResultsPanel, 'text');
-            app.StatStartGenField.ValueChangedFcn = createCallbackFcn(app, @StatStartGenFieldValueChanged, true);
             app.StatStartGenField.HorizontalAlignment = 'center';
             app.StatStartGenField.Position = [427 249 41 22];
 
@@ -640,7 +624,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % Create StatEndGenField
             app.StatEndGenField = uieditfield(app.SingleResultsPanel, 'text');
-            app.StatEndGenField.ValueChangedFcn = createCallbackFcn(app, @StatEndGenFieldValueChanged, true);
             app.StatEndGenField.HorizontalAlignment = 'center';
             app.StatEndGenField.Position = [494 249 62 22];
 
@@ -744,6 +727,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create NickNameField
             app.NickNameField = uieditfield(app.SingleResultsPanel, 'text');
             app.NickNameField.Position = [287 79 86 22];
+
+            % Create SelectResultButton
+            app.SelectResultButton = uibutton(app.SingleResultsPanel, 'push');
+            app.SelectResultButton.ButtonPushedFcn = createCallbackFcn(app, @SelectResultButtonPushed, true);
+            app.SelectResultButton.Tag = 'loadresult';
+            app.SelectResultButton.Position = [460 532 71 22];
+            app.SelectResultButton.Text = 'Select';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

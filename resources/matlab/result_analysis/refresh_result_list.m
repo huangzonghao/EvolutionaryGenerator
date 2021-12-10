@@ -1,4 +1,10 @@
 function refresh_result_list(app)
+% results field:
+%     id: internal index of the result
+%     path: full path to result dir
+%     basename: basename of result dir
+%     name: nickname or basename (when nickname not available)
+%     loaded: whether the result has been fully loaded
     if isempty(app.result_group_path)
         app.result_group_path = app.evogen_results_path;
         group_basename = 'Base';
@@ -26,6 +32,7 @@ function refresh_result_list(app)
             new_result.name = nickname;
         end
         new_result.path = tmp_path;
+        new_result.loaded = false;
 
         names(end+1) = string(new_result.name);
         app.results{end+1} = new_result;
@@ -35,11 +42,13 @@ function refresh_result_list(app)
     app.results = app.results(sort_order);
 
     for i = 1 : length(app.results)
+        app.results{i}.id = i;
         app.ResultsListBox.Items{i} = get_result_list_string(app, i);
         app.ResultsListBox.ItemsData{i} = i;
     end
 
     app.ResultGroupLabel.Text = [group_basename, ' (', num2str(length(app.results)), ')'];
+    app.current_result = {};
 
     load_virtual_results(app);
 end

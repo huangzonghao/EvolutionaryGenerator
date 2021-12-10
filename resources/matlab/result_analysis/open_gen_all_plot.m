@@ -1,4 +1,9 @@
 function open_gen_all_plot(app)
+    if isempty(app.current_result)
+        return
+    end
+    result = app.current_result;
+
     app.gen_plot.handle = figure('outerposition',[180, 40, 1600, 1000]); % size for 1080p monitor
     app.gen_plot.panel = panel(app.gen_plot.handle);
     app.gen_plot.panel.marginright = 20; % so that we have some space for the heatmap colorbar
@@ -17,38 +22,38 @@ function open_gen_all_plot(app)
     app.gen_plot.info_text.Interpreter = 'none';
 
     app.gen_plot.panel(2,1).select();
-    app.gen_plot.archive_surf = surf(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
-    xlabel(app.evo_params.feature_description2); % x, y flipped in plot
-    ylabel(app.evo_params.feature_description1);
+    app.gen_plot.archive_surf = surf(zeros(result.evo_params.griddim_0, result.evo_params.griddim_1));
+    xlabel(result.evo_params.feature_description2); % x, y flipped in plot
+    ylabel(result.evo_params.feature_description1);
     title('Archive Map');
     axis square;
 
     app.gen_plot.panel(1,2).select();
-    app.gen_plot.archive_heat = heatmap(zeros(app.evo_params.griddim_0, app.evo_params.griddim_1));
+    app.gen_plot.archive_heat = heatmap(zeros(result.evo_params.griddim_0, result.evo_params.griddim_1));
     app.gen_plot.archive_heat.NodeChildren(3).YDir='normal';
-    app.gen_plot.archive_heat.XLabel = app.evo_params.feature_description2;
-    app.gen_plot.archive_heat.YLabel = app.evo_params.feature_description1;
+    app.gen_plot.archive_heat.XLabel = result.evo_params.feature_description2;
+    app.gen_plot.archive_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.archive_heat.Title = 'Archive Map';
 
     app.gen_plot.panel(1,3).select();
-    app.gen_plot.parentage_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
+    app.gen_plot.parentage_heat = heatmap(double(-1) * ones(result.evo_params.griddim_0, result.evo_params.griddim_1));
     app.gen_plot.parentage_heat.ColorLimits = [0, 1];
     app.gen_plot.parentage_heat.NodeChildren(3).YDir='normal';
-    app.gen_plot.parentage_heat.XLabel = app.evo_params.feature_description2;
-    app.gen_plot.parentage_heat.YLabel = app.evo_params.feature_description1;
+    app.gen_plot.parentage_heat.XLabel = result.evo_params.feature_description2;
+    app.gen_plot.parentage_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.parentage_heat.Title = 'Percentage of User Input Per Robot';
 
     app.gen_plot.panel(2,2).select();
-    app.gen_plot.updates_per_bin_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
+    app.gen_plot.updates_per_bin_heat = heatmap(double(-1) * ones(result.evo_params.griddim_0, result.evo_params.griddim_1));
     app.gen_plot.updates_per_bin_heat.NodeChildren(3).YDir='normal';
-    app.gen_plot.updates_per_bin_heat.XLabel = app.evo_params.feature_description2;
-    app.gen_plot.updates_per_bin_heat.YLabel = app.evo_params.feature_description1;
+    app.gen_plot.updates_per_bin_heat.XLabel = result.evo_params.feature_description2;
+    app.gen_plot.updates_per_bin_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.updates_per_bin_heat.Title = 'Total Updates Per Bin';
 
     app.gen_plot.panel(2,3).select();
-    app.gen_plot.bin_age_heat = heatmap(double(-1) * ones(app.evo_params.griddim_0, app.evo_params.griddim_1));
+    app.gen_plot.bin_age_heat = heatmap(double(-1) * ones(result.evo_params.griddim_0, result.evo_params.griddim_1));
     app.gen_plot.bin_age_heat.NodeChildren(3).YDir='normal';
-    app.gen_plot.bin_age_heat.XLabel = app.evo_params.feature_description2;
-    app.gen_plot.bin_age_heat.YLabel = app.evo_params.feature_description1;
+    app.gen_plot.bin_age_heat.XLabel = result.evo_params.feature_description2;
+    app.gen_plot.bin_age_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.bin_age_heat.Title = 'Age of Each Bin';
 end

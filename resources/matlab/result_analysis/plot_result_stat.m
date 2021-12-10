@@ -1,11 +1,24 @@
 function plot_result_stat(app)
-    if (~app.stat_loaded)
-        msgbox('Build Stat first');
-        return;
+    if isempty(app.current_result)
+        return
     end
-    stat = app.stat;
+    result = app.current_result;
+    if isempty(result.stat)
+        msgbox('Build Stat first');
+        return
+    end
+
+    stat = result.stat;
     start_gen = str2double(app.StatStartGenField.Value);
+    if start_gen < 0
+        start_gen = 0;
+        app.StatStartGenField.Value = num2str(0);
+    end
     end_gen = str2double(app.StatEndGenField.Value);
+    if end_gen > result.evo_params.nb_gen
+        end_gen = result.evo_params.nb_gen;
+        app.StatEndGenField.Value = num2str(end_gen);
+    end
 
     num_subplots = 4;
 
@@ -13,7 +26,7 @@ function plot_result_stat(app)
     end_gen = min(end_gen, length(stat.archive_fits) - 1); % stat contains gen 0
 
     figure('units','normalized','outerposition',[.05 .05 .9 .9]);
-    sgtitle(sprintf("%s - Statistics", app.result_displayname), 'Interpreter', 'none');
+    sgtitle(sprintf("%s - Statistics", result.name), 'Interpreter', 'none');
 
     % Fitness Plot
     subplot(num_subplots, 1, 1);
