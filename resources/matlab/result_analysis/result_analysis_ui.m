@@ -53,10 +53,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         DeleteVirtualResultButton      matlab.ui.control.Button
         AddVirtualResultButton         matlab.ui.control.Button
         VirtualResultsListBox          matlab.ui.control.ListBox
+        GroupStatButton                matlab.ui.control.Button
+        GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparePlotsPanel              matlab.ui.container.Panel
         CompPlotNameField              matlab.ui.control.EditField
         PlotNameLabel                  matlab.ui.control.Label
-        GroupStatButton                matlab.ui.control.Button
         CleanCompareButton             matlab.ui.control.Button
         ComparePlotButton              matlab.ui.control.Button
         MoveCompareDownButton          matlab.ui.control.Button
@@ -87,7 +88,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
         results = {} % array containing the cache of the loaded results
         virtual_results = {} % array containing the cache of virtual results
         results_to_compare = {} % cell array containing the results to compare
-        current_result = {} % reference to the current seleceted result
+        current_result = {} % reference to the currently seleceted result
+        current_virtual_result = {} % reference to the currently seleceted virtual result
         current_gen = -1
         gen_plot % containing handles to gen_plot
 
@@ -324,6 +326,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
             generate_all_single_result_plots(app);
         end
 
+        % Button pushed function: GenerateAllVirtualResultPlotsButton
+        function GenerateAllVirtualResultPlotsButtonPushed(app, event)
+            generate_all_virtual_result_plots(app);
+        end
+
         % Button pushed function: RehashButton
         function RehashButtonPushed(app, event)
             rehash;
@@ -417,13 +424,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CleanCompareButton.Position = [185 342 63 43];
             app.CleanCompareButton.Text = 'Clean Compare';
 
-            % Create GroupStatButton
-            app.GroupStatButton = uibutton(app.ComparePlotsPanel, 'push');
-            app.GroupStatButton.ButtonPushedFcn = createCallbackFcn(app, @GroupStatButtonPushed, true);
-            app.GroupStatButton.WordWrap = 'on';
-            app.GroupStatButton.Position = [185 303 63 36];
-            app.GroupStatButton.Text = 'Group Stat';
-
             % Create PlotNameLabel
             app.PlotNameLabel = uilabel(app.ComparePlotsPanel);
             app.PlotNameLabel.Position = [4 531 65 22];
@@ -438,6 +438,21 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.VirtualResultsPanel.Title = 'Virtual Results';
             app.VirtualResultsPanel.FontWeight = 'bold';
             app.VirtualResultsPanel.Position = [598 1 255 580];
+
+            % Create GenerateAllVirtualResultPlotsButton
+            app.GenerateAllVirtualResultPlotsButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.GenerateAllVirtualResultPlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllVirtualResultPlotsButtonPushed, true);
+            app.GenerateAllVirtualResultPlotsButton.WordWrap = 'on';
+            app.GenerateAllVirtualResultPlotsButton.FontSize = 11;
+            app.GenerateAllVirtualResultPlotsButton.Position = [182 331 57 40];
+            app.GenerateAllVirtualResultPlotsButton.Text = 'Generate All Plots';
+
+            % Create GroupStatButton
+            app.GroupStatButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.GroupStatButton.ButtonPushedFcn = createCallbackFcn(app, @GroupStatButtonPushed, true);
+            app.GroupStatButton.WordWrap = 'on';
+            app.GroupStatButton.Position = [182 398 57 36];
+            app.GroupStatButton.Text = 'Group Stat';
 
             % Create VirtualResultsListBox
             app.VirtualResultsListBox = uilistbox(app.VirtualResultsPanel);
