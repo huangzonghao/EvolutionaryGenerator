@@ -65,6 +65,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         RemoveAllCompareButton         matlab.ui.control.Button
         RemoveCompareButton            matlab.ui.control.Button
         CompareListBox                 matlab.ui.control.ListBox
+        GenerateAllComparePlotsButton  matlab.ui.control.Button
         DebugPanel                     matlab.ui.container.Panel
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
@@ -92,6 +93,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         current_virtual_result = {} % reference to the currently seleceted virtual result
         current_gen = -1
         gen_plot % containing handles to gen_plot
+        compare_plot_config % struct containing the config for compare plots
 
         % TODO: need to remove the following
         robots_buffer
@@ -114,6 +116,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             app.evogen_results_path = evogen_results_path;
             app.evogen_exe_path = evogen_exe_path;
+            app.compare_plot_config.plot_to_file = false;
 
             % init ui assets
             app.GenStepField.Value = num2str(app.gen_step);
@@ -331,6 +334,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
             generate_all_virtual_result_plots(app);
         end
 
+        % Button pushed function: GenerateAllComparePlotsButton
+        function GenerateAllComparePlotsButtonPushed(app, event)
+            generate_all_compare_plots(app);
+        end
+
         % Button pushed function: RehashButton
         function RehashButtonPushed(app, event)
             rehash;
@@ -378,6 +386,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ComparePlotsPanel.Title = 'Compare Plots';
             app.ComparePlotsPanel.FontWeight = 'bold';
             app.ComparePlotsPanel.Position = [852 1 280 580];
+
+            % Create GenerateAllComparePlotsButton
+            app.GenerateAllComparePlotsButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.GenerateAllComparePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllComparePlotsButtonPushed, true);
+            app.GenerateAllComparePlotsButton.WordWrap = 'on';
+            app.GenerateAllComparePlotsButton.FontSize = 11;
+            app.GenerateAllComparePlotsButton.Position = [185 27 63 35];
+            app.GenerateAllComparePlotsButton.Text = 'Generate All Plots';
 
             % Create CompareListBox
             app.CompareListBox = uilistbox(app.ComparePlotsPanel);

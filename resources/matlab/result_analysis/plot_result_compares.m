@@ -1,6 +1,14 @@
 function plot_result_compares(app, do_clean_plot)
+    if length(app.results_to_compare) == 0 && ~app.compare_plot_config.plot_to_file
+        msgbox('Add results to compare');
+        return
+    end
+
     num_subplots = 4;
-    figure('units','normalized','outerposition',[.05 .05 .9 .9]);
+    fig = figure('units','normalized','outerposition',[.05 .05 .9 .9]);
+    if app.compare_plot_config.plot_to_file
+        fig.Visible = 'off';
+    end
     if ~isempty(app.CompPlotNameField.Value)
         tmp_title = app.CompPlotNameField.Value;
         if do_clean_plot
@@ -8,6 +16,7 @@ function plot_result_compares(app, do_clean_plot)
         end
         sgtitle(tmp_title, 'Interpreter', 'none');
     end
+
     p1 = subplot(num_subplots, 1, 1, 'NextPlot', 'add');
     if do_clean_plot
         title(p1, 'Clean Fitness');
@@ -110,5 +119,11 @@ function plot_result_compares(app, do_clean_plot)
         legend(p3, 'Interpreter', 'none', 'Location', 'SouthEast');
         legend(p4, 'Interpreter', 'none', 'Location', 'SouthEast');
     end
-    hold off;
+
+   if app.compare_plot_config.plot_to_file
+       for i_format = 1 : length(app.compare_plot_config.plot_format)
+           saveas(fig, fullfile(app.compare_plot_config.plot_dir, [tmp_title, '.', app.compare_plot_config.plot_format{i_format}]));
+       end
+       close(fig);
+   end
 end
