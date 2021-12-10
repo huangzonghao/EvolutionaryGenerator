@@ -392,7 +392,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.GenerateAllComparePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllComparePlotsButtonPushed, true);
             app.GenerateAllComparePlotsButton.WordWrap = 'on';
             app.GenerateAllComparePlotsButton.FontSize = 11;
-            app.GenerateAllComparePlotsButton.Position = [185 27 63 35];
+            app.GenerateAllComparePlotsButton.Position = [185 10 65 45];
             app.GenerateAllComparePlotsButton.Text = 'Generate All Plots';
 
             % Create CompareListBox
@@ -460,14 +460,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.GenerateAllVirtualResultPlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllVirtualResultPlotsButtonPushed, true);
             app.GenerateAllVirtualResultPlotsButton.WordWrap = 'on';
             app.GenerateAllVirtualResultPlotsButton.FontSize = 11;
-            app.GenerateAllVirtualResultPlotsButton.Position = [182 331 57 40];
+            app.GenerateAllVirtualResultPlotsButton.Position = [182 10 65 45];
             app.GenerateAllVirtualResultPlotsButton.Text = 'Generate All Plots';
 
             % Create GroupStatButton
             app.GroupStatButton = uibutton(app.VirtualResultsPanel, 'push');
             app.GroupStatButton.ButtonPushedFcn = createCallbackFcn(app, @GroupStatButtonPushed, true);
             app.GroupStatButton.WordWrap = 'on';
-            app.GroupStatButton.Position = [182 398 57 36];
+            app.GroupStatButton.Position = [182 346 57 36];
             app.GroupStatButton.Text = 'Group Stat';
 
             % Create VirtualResultsListBox
@@ -494,7 +494,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AddVirtualToCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddVirtualToCompareButtonPushed, true);
             app.AddVirtualToCompareButton.WordWrap = 'on';
             app.AddVirtualToCompareButton.FontSize = 11;
-            app.AddVirtualToCompareButton.Position = [182 469 57 35];
+            app.AddVirtualToCompareButton.Position = [182 420 65 45];
             app.AddVirtualToCompareButton.Text = 'Add to Compare';
 
             % Create GroupNameLabel
@@ -568,7 +568,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AddResultToCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddResultToCompareButtonPushed, true);
             app.AddResultToCompareButton.WordWrap = 'on';
             app.AddResultToCompareButton.FontSize = 11;
-            app.AddResultToCompareButton.Position = [280 384 62 38];
+            app.AddResultToCompareButton.Position = [280 372 65 45];
             app.AddResultToCompareButton.Text = 'Add to Compare';
 
             % Create ResultNameLabel
@@ -758,32 +758,32 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.OpenFolderButton = uibutton(app.SingleResultsPanel, 'push');
             app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
             app.OpenFolderButton.Tag = 'loadresult';
-            app.OpenFolderButton.Position = [288 6 82 22];
+            app.OpenFolderButton.Position = [288 67 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
 
             % Create NickNameSaveButton
             app.NickNameSaveButton = uibutton(app.SingleResultsPanel, 'push');
             app.NickNameSaveButton.ButtonPushedFcn = createCallbackFcn(app, @NickNameSaveButtonPushed, true);
             app.NickNameSaveButton.Tag = 'loadresult';
-            app.NickNameSaveButton.Position = [285 50 90 22];
+            app.NickNameSaveButton.Position = [285 111 90 22];
             app.NickNameSaveButton.Text = 'Set Nickname';
 
             % Create NicknameLabel
             app.NicknameLabel = uilabel(app.SingleResultsPanel);
             app.NicknameLabel.HorizontalAlignment = 'right';
-            app.NicknameLabel.Position = [282 100 62 22];
+            app.NicknameLabel.Position = [282 161 62 22];
             app.NicknameLabel.Text = 'Nickname:';
 
             % Create NickNameField
             app.NickNameField = uieditfield(app.SingleResultsPanel, 'text');
-            app.NickNameField.Position = [287 79 86 22];
+            app.NickNameField.Position = [287 140 86 22];
 
             % Create GenerateAllSingleResultPlotsButton
             app.GenerateAllSingleResultPlotsButton = uibutton(app.SingleResultsPanel, 'push');
             app.GenerateAllSingleResultPlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllSingleResultPlotsButtonPushed, true);
             app.GenerateAllSingleResultPlotsButton.WordWrap = 'on';
             app.GenerateAllSingleResultPlotsButton.FontSize = 11;
-            app.GenerateAllSingleResultPlotsButton.Position = [280 331 61 40];
+            app.GenerateAllSingleResultPlotsButton.Position = [280 10 65 45];
             app.GenerateAllSingleResultPlotsButton.Text = 'Generate All Plots';
 
             % Create SelectResultButton
