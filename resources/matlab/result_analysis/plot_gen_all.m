@@ -37,8 +37,9 @@ function plot_gen_all(app)
     app.gen_plot.updates_per_bin_heat.ColorData = result.stat.map_stat(:, :, current_gen + 1);
     app.gen_plot.parentage_heat.ColorData = parentage_map;
     app.gen_plot.bin_age_heat.ColorData = age_map;
+    app.gen_plot.archive_hist.Data = fitness;
     drawnow;
-    app.gen_plot.info_text.String = sprintf("%s\nGen %d / %d\nCoverage %d / %d", ...
+    app.gen_plot.info_text.String = sprintf("%s - Gen %d / %d, Coverage %d / %d", ...
                                             result.name, current_gen, result.evo_params.nb_gen, ...
                                             length(fitness), result.evo_params.griddim_0 * result.evo_params.griddim_1);
 
