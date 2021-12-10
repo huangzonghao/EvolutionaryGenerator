@@ -4,7 +4,9 @@ function plot_result_stat(app)
     end
     result = app.current_result;
     if isempty(result.stat)
-        msgbox('Build Stat first');
+        if ~result.plot_to_file
+            msgbox('Build Stat first');
+        end
         return
     end
 
@@ -25,7 +27,11 @@ function plot_result_stat(app)
     start_gen = max(start_gen, 0);
     end_gen = min(end_gen, length(stat.archive_fits) - 1); % stat contains gen 0
 
-    figure('units','normalized','outerposition',[.05 .05 .9 .9]);
+    fig = figure('units','normalized','outerposition',[.05 .05 .9 .9]);
+    if result.plot_to_file
+        fig.Visible = 'off';
+    end
+
     sgtitle(sprintf("%s - Statistics", result.name), 'Interpreter', 'none');
 
     % Fitness Plot
@@ -101,4 +107,11 @@ function plot_result_stat(app)
     ylim([0 1]);
     xlabel('generation');
     ylabel('coverage');
+
+    if result.plot_to_file
+        for i_format = 1 : length(result.plot_format)
+            saveas(fig, fullfile(result.plot_dir, ['result_stat_', result.name, '.', result.plot_format{i_format}]));
+        end
+        close(fig);
+    end
 end

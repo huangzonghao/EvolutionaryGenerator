@@ -4,12 +4,12 @@ function plot_avg_longevity_of_gen(app)
         return
     end
     result = app.current_result;
-    if ~isfield(result.stat, 'robot_longevity')
-        msgbox("Current result doesn't have longevity information built into stat. Rebuild to plot");
-        return
+
+    fig = figure('outerposition',[560, 90, 800, 900]);
+    if result.plot_to_file
+        fig.Visible = 'off';
     end
 
-    figure('outerposition',[560, 90, 800, 900]);
     sgtitle(sprintf("%s - Longevity of Generations", result.name), 'Interpreter', 'none');
     ph = subplot(2,1,1);
     plot(ph, mean(result.stat.robot_longevity), 'DisplayName', 'Avg longevity of generation');
@@ -22,4 +22,11 @@ function plot_avg_longevity_of_gen(app)
     xlabel(ph, 'Generations');
     ylabel(ph, 'Longetivy');
     legend(ph, 'Interpreter', 'none');
+
+    if result.plot_to_file
+        for i_format = 1 : length(result.plot_format)
+            saveas(fig, fullfile(result.plot_dir, ['avg_longevity_of_gen_', result.name, '.', result.plot_format{i_format}]));
+        end
+        close(fig);
+    end
 end

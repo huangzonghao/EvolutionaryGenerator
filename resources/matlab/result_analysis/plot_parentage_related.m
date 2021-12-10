@@ -4,13 +4,18 @@ function plot_parentage_related(app)
     end
     result = app.current_result;
     if ~result.stat.has_parentage
-        msgbox(sprintf("%s has no parentage information", result.name));
+        if ~result.plot_to_file
+            msgbox(sprintf("%s has no parentage information", result.name));
+        end
         return
     end
 
     num_rows = 2;
     num_cols = 4;
-    figure('units', 'normalized', 'outerposition', [0, 0, 1, 1]);
+    fig = figure('units', 'normalized', 'outerposition', [0, 0, 1, 1]);
+    if result.plot_to_file
+        fig.Visible = 'off';
+    end
     parentage = result.stat.robot_parentage(:);
     longevity = result.stat.robot_longevity(:);
     generation_raw = repmat(0 : result.evo_params.nb_gen + 1, result.evo_params.gen_size, 1);
@@ -192,4 +197,11 @@ function plot_parentage_related(app)
     % legend(ph, 'Interpreter', 'none', 'Location', 'best');
 
     sgtitle(sprintf("%s - Parentage & Longevity Distribution", result.name), 'Interpreter', 'none');
+
+    if result.plot_to_file
+        for i_format = 1 : length(result.plot_format)
+            saveas(fig, fullfile(result.plot_dir, ['parentage_related_', result.name, '.', result.plot_format{i_format}]));
+        end
+        close(fig);
+    end
 end

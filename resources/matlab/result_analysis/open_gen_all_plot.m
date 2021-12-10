@@ -5,6 +5,10 @@ function open_gen_all_plot(app)
     result = app.current_result;
 
     app.gen_plot.handle = figure('outerposition',[180, 40, 1600, 1000]); % size for 1080p monitor
+    if result.plot_to_file
+        app.gen_plot.handle.Visible = 'off';
+    end
+
     app.gen_plot.panel = panel(app.gen_plot.handle);
     app.gen_plot.panel.marginright = 20; % so that we have some space for the heatmap colorbar
     app.gen_plot.panel.pack(2, 3);

@@ -1,4 +1,7 @@
 function select_result(app)
+% extra field in app.current_result
+%     plot_to_file: bool telling if the plots of this result should go to a file
+
     if length(app.ResultsListBox.Value) == 0
         msgbox('Select a result in the result explorer');
         return
@@ -29,6 +32,7 @@ function select_result(app)
     app.ResultNameLabel.Text = result.name;
 
     app.current_result = result;
+    app.current_result.plot_to_file = false;
     app.current_gen = -1;
 
     load_gen(app, 0);

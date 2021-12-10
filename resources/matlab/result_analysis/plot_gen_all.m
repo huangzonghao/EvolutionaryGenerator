@@ -4,7 +4,7 @@ function plot_gen_all(app)
     % Configure panels here
     if ~isfield(app.gen_plot, 'handle') || ~ishandle(app.gen_plot.handle)
         return
-    else
+    elseif ~app.current_result.plot_to_file
         figure(app.gen_plot.handle);
     end
 
@@ -37,13 +37,18 @@ function plot_gen_all(app)
     app.gen_plot.updates_per_bin_heat.ColorData = result.stat.map_stat(:, :, current_gen + 1);
     app.gen_plot.parentage_heat.ColorData = parentage_map;
     app.gen_plot.bin_age_heat.ColorData = age_map;
-
+    drawnow;
     app.gen_plot.info_text.String = sprintf("%s\nGen %d / %d\nCoverage %d / %d", ...
                                             result.name, current_gen, result.evo_params.nb_gen, ...
                                             length(fitness), result.evo_params.griddim_0 * result.evo_params.griddim_1);
-    drawnow;
 
-    % Note the swapping of x, y here
-    app.RobotIDXField.Value = num2str(y(1));
-    app.RobotIDYField.Value = num2str(x(1));
+    if result.plot_to_file
+        for i_format = 1 : length(result.plot_format)
+            saveas(app.gen_plot.handle, fullfile(result.plot_dir, ['gen_all_', result.name, '_gen', num2str(app.current_gen), '.', result.plot_format{i_format}]));
+        end
+    else
+        % Note the swapping of x, y here
+        app.RobotIDXField.Value = num2str(y(1));
+        app.RobotIDYField.Value = num2str(x(1));
+    end
 end

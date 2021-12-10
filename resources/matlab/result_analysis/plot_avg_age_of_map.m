@@ -3,12 +3,12 @@ function plot_avg_age_of_map(app)
         return
     end
     result = app.current_result;
-    if ~isfield(result.stat, 'archive_age')
-        msgbox("Current result doesn't have age information built into stat. Rebuild to plot");
-        return
-    end
     fig = figure();
+    if result.plot_to_file
+        fig.Visible = 'off';
+    end
     fig.Position(2) = 300; % bottom position
+
     ph = axes(fig, 'NextPlot', 'add');
     sgtitle(sprintf("%s - Average Age of Map", result.name), 'Interpreter', 'none');
     plot(ph, result.stat.archive_age, 'DisplayName', 'Avg age of archive');
@@ -18,4 +18,11 @@ function plot_avg_age_of_map(app)
     xlabel(ph, 'Generations');
     ylabel(ph, 'Age');
     legend(ph, 'Interpreter', 'none', 'Location', 'SouthEast');
+
+    if result.plot_to_file
+        for i_format = 1 : length(result.plot_format)
+            saveas(fig, fullfile(result.plot_dir, ['avg_age_of_map_', result.name, '.', result.plot_format{i_format}]));
+        end
+        close(fig);
+    end
 end

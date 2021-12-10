@@ -4,17 +4,22 @@ function plot_parentage_stat(app)
     end
     result = app.current_result;
     if ~result.stat.has_parentage
-        msgbox(sprintf("%s has no parentage information", result.name));
+        if ~result.plot_to_file
+            msgbox(sprintf("%s has no parentage information", result.name));
+        end
         return
     end
 
     num_rows = 1;
     num_cols = 2;
     fig = figure();
-    sgtitle(sprintf("%s - Parentage Statistics", result.name), 'Interpreter', 'none');
+    if result.plot_to_file
+        fig.Visible = 'off';
+    end
     fig.Position(2) = 300; % bottom position
     fig.Position(3) = 800; % width
 
+    sgtitle(sprintf("%s - Parentage Statistics", result.name), 'Interpreter', 'none');
     % Parentage vs Generations
     grid_x = 1; grid_y = 1;
     plot_idx = sub2ind([num_cols, num_rows], grid_y, grid_x);
@@ -37,4 +42,11 @@ function plot_parentage_stat(app)
     xlabel(ph, 'Generations');
     ylabel(ph, 'Fitness');
     legend(ph, 'Interpreter', 'none', 'Location', 'best');
+
+    if result.plot_to_file
+        for i_format = 1 : length(result.plot_format)
+            saveas(fig, fullfile(result.plot_dir, ['parentage_stat_', result.name, '.', result.plot_format{i_format}]));
+        end
+        close(fig);
+    end
 end

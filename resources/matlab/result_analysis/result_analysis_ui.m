@@ -5,6 +5,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         MainFigure                     matlab.ui.Figure
         SingleResultsPanel             matlab.ui.container.Panel
         SelectResultButton             matlab.ui.control.Button
+        GenerateAllSingleResultPlotsButton  matlab.ui.control.Button
         NickNameField                  matlab.ui.control.EditField
         NicknameLabel                  matlab.ui.control.Label
         NickNameSaveButton             matlab.ui.control.Button
@@ -315,6 +316,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: GroupStatButton
         function GroupStatButtonPushed(app, event)
             plot_group_stat(app);
+        end
+
+        % Button pushed function: GenerateAllSingleResultPlotsButton
+        function GenerateAllSingleResultPlotsButtonPushed(app, event)
+            generate_all_single_result_plots(app);
         end
 
         % Button pushed function: RehashButton
@@ -727,6 +733,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create NickNameField
             app.NickNameField = uieditfield(app.SingleResultsPanel, 'text');
             app.NickNameField.Position = [287 79 86 22];
+
+            % Create GenerateAllSingleResultPlotsButton
+            app.GenerateAllSingleResultPlotsButton = uibutton(app.SingleResultsPanel, 'push');
+            app.GenerateAllSingleResultPlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllSingleResultPlotsButtonPushed, true);
+            app.GenerateAllSingleResultPlotsButton.WordWrap = 'on';
+            app.GenerateAllSingleResultPlotsButton.FontSize = 11;
+            app.GenerateAllSingleResultPlotsButton.Position = [280 331 61 40];
+            app.GenerateAllSingleResultPlotsButton.Text = 'Generate All Plots';
 
             % Create SelectResultButton
             app.SelectResultButton = uibutton(app.SingleResultsPanel, 'push');
