@@ -65,6 +65,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         RemoveCompareButton            matlab.ui.control.Button
         CompareListBox                 matlab.ui.control.ListBox
         DebugPanel                     matlab.ui.container.Panel
+        CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
     end
 
@@ -327,6 +328,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function RehashButtonPushed(app, event)
             rehash;
         end
+
+        % Button pushed function: CLCButton
+        function CLCButtonPushed(app, event)
+            clc;
+        end
     end
 
     % Component initialization
@@ -352,6 +358,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.RehashButton.Tag = 'loadresult';
             app.RehashButton.Position = [21 522 57 22];
             app.RehashButton.Text = 'Rehash';
+
+            % Create CLCButton
+            app.CLCButton = uibutton(app.DebugPanel, 'push');
+            app.CLCButton.ButtonPushedFcn = createCallbackFcn(app, @CLCButtonPushed, true);
+            app.CLCButton.Tag = 'loadresult';
+            app.CLCButton.Position = [21 496 57 22];
+            app.CLCButton.Text = 'CLC';
 
             % Create ComparePlotsPanel
             app.ComparePlotsPanel = uipanel(app.MainFigure);
