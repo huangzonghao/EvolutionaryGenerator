@@ -55,7 +55,10 @@ classdef result_analysis_ui < matlab.apps.AppBase
         VirtualResultsListBox          matlab.ui.control.ListBox
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
-        ComparePlotsPanel              matlab.ui.container.Panel
+        ComparePanel                   matlab.ui.container.Panel
+        VarTestButton                  matlab.ui.control.Button
+        ANOVAButton                    matlab.ui.control.Button
+        TTestButton                    matlab.ui.control.Button
         CompPlotNameField              matlab.ui.control.EditField
         PlotNameLabel                  matlab.ui.control.Label
         CleanCompareButton             matlab.ui.control.Button
@@ -348,6 +351,21 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function CLCButtonPushed(app, event)
             clc;
         end
+
+        % Button pushed function: TTestButton
+        function TTestButtonPushed(app, event)
+            run_ttest(app);
+        end
+
+        % Button pushed function: ANOVAButton
+        function ANOVAButtonPushed(app, event)
+            run_anova(app);
+        end
+
+        % Button pushed function: VarTestButton
+        function VarTestButtonPushed(app, event)
+            run_vartest(app);
+        end
     end
 
     % Component initialization
@@ -381,14 +399,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CLCButton.Position = [21 496 57 22];
             app.CLCButton.Text = 'CLC';
 
-            % Create ComparePlotsPanel
-            app.ComparePlotsPanel = uipanel(app.MainFigure);
-            app.ComparePlotsPanel.Title = 'Compare Plots';
-            app.ComparePlotsPanel.FontWeight = 'bold';
-            app.ComparePlotsPanel.Position = [852 1 280 580];
+            % Create ComparePanel
+            app.ComparePanel = uipanel(app.MainFigure);
+            app.ComparePanel.Title = 'Compare';
+            app.ComparePanel.FontWeight = 'bold';
+            app.ComparePanel.Position = [852 1 280 580];
 
             % Create GenerateAllComparePlotsButton
-            app.GenerateAllComparePlotsButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.GenerateAllComparePlotsButton = uibutton(app.ComparePanel, 'push');
             app.GenerateAllComparePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllComparePlotsButtonPushed, true);
             app.GenerateAllComparePlotsButton.WordWrap = 'on';
             app.GenerateAllComparePlotsButton.FontSize = 11;
@@ -396,58 +414,79 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.GenerateAllComparePlotsButton.Text = 'Generate All Plots';
 
             % Create CompareListBox
-            app.CompareListBox = uilistbox(app.ComparePlotsPanel);
+            app.CompareListBox = uilistbox(app.ComparePanel);
             app.CompareListBox.Items = {};
             app.CompareListBox.Multiselect = 'on';
             app.CompareListBox.Position = [1 1 176 524];
             app.CompareListBox.Value = {};
 
             % Create RemoveCompareButton
-            app.RemoveCompareButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.RemoveCompareButton = uibutton(app.ComparePanel, 'push');
             app.RemoveCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveCompareButtonPushed, true);
             app.RemoveCompareButton.Position = [185 446 60 22];
             app.RemoveCompareButton.Text = 'Remove';
 
             % Create RemoveAllCompareButton
-            app.RemoveAllCompareButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.RemoveAllCompareButton = uibutton(app.ComparePanel, 'push');
             app.RemoveAllCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveAllCompareButtonPushed, true);
             app.RemoveAllCompareButton.Position = [185 531 60 22];
             app.RemoveAllCompareButton.Text = 'Clear All';
 
             % Create MoveCompareUpButton
-            app.MoveCompareUpButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.MoveCompareUpButton = uibutton(app.ComparePanel, 'push');
             app.MoveCompareUpButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareUpButtonPushed, true);
             app.MoveCompareUpButton.Position = [185 499 60 22];
             app.MoveCompareUpButton.Text = 'Up';
 
             % Create MoveCompareDownButton
-            app.MoveCompareDownButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.MoveCompareDownButton = uibutton(app.ComparePanel, 'push');
             app.MoveCompareDownButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareDownButtonPushed, true);
             app.MoveCompareDownButton.Position = [185 474 60 22];
             app.MoveCompareDownButton.Text = 'Down';
 
             % Create ComparePlotButton
-            app.ComparePlotButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.ComparePlotButton = uibutton(app.ComparePanel, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
             app.ComparePlotButton.WordWrap = 'on';
             app.ComparePlotButton.Position = [185 390 63 36];
             app.ComparePlotButton.Text = 'Compare Plot';
 
             % Create CleanCompareButton
-            app.CleanCompareButton = uibutton(app.ComparePlotsPanel, 'push');
+            app.CleanCompareButton = uibutton(app.ComparePanel, 'push');
             app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
             app.CleanCompareButton.WordWrap = 'on';
             app.CleanCompareButton.Position = [185 342 63 43];
             app.CleanCompareButton.Text = 'Clean Compare';
 
             % Create PlotNameLabel
-            app.PlotNameLabel = uilabel(app.ComparePlotsPanel);
+            app.PlotNameLabel = uilabel(app.ComparePanel);
             app.PlotNameLabel.Position = [4 531 65 22];
             app.PlotNameLabel.Text = 'Plot Name:';
 
             % Create CompPlotNameField
-            app.CompPlotNameField = uieditfield(app.ComparePlotsPanel, 'text');
+            app.CompPlotNameField = uieditfield(app.ComparePanel, 'text');
             app.CompPlotNameField.Position = [68 532 109 22];
+
+            % Create TTestButton
+            app.TTestButton = uibutton(app.ComparePanel, 'push');
+            app.TTestButton.ButtonPushedFcn = createCallbackFcn(app, @TTestButtonPushed, true);
+            app.TTestButton.WordWrap = 'on';
+            app.TTestButton.Position = [188 302 57 22];
+            app.TTestButton.Text = 'T-Test';
+
+            % Create ANOVAButton
+            app.ANOVAButton = uibutton(app.ComparePanel, 'push');
+            app.ANOVAButton.ButtonPushedFcn = createCallbackFcn(app, @ANOVAButtonPushed, true);
+            app.ANOVAButton.WordWrap = 'on';
+            app.ANOVAButton.Position = [188 270 57 22];
+            app.ANOVAButton.Text = 'ANOVA';
+
+            % Create VarTestButton
+            app.VarTestButton = uibutton(app.ComparePanel, 'push');
+            app.VarTestButton.ButtonPushedFcn = createCallbackFcn(app, @VarTestButtonPushed, true);
+            app.VarTestButton.WordWrap = 'on';
+            app.VarTestButton.Position = [188 240 57 22];
+            app.VarTestButton.Text = 'VarTest';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);

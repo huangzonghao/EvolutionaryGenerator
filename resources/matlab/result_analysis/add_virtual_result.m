@@ -10,6 +10,7 @@ function add_virtual_result(app)
     new_result.result_full_paths = string.empty;
     new_result.num_results = length(app.ResultsListBox.Value);
 
+    % TODO: virtual results should take advantage of the new result container as well
     for i = 1 : length(app.ResultsListBox.Value)
         tmp_result_path = app.results{app.ResultsListBox.Value{i}}.path;
         [~, result_name, ~] = fileparts(tmp_result_path);
