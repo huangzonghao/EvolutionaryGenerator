@@ -1,10 +1,17 @@
-function refresh_result_list(app)
+function refresh_result_list(app, varargin)
 % results field:
 %     id: internal index of the result
 %     path: full path to result dir
 %     basename: basename of result dir
 %     name: nickname or basename (when nickname not available)
 %     loaded: whether the result has been fully loaded
+
+    params = inputParser;
+    params.CaseSensitive = false;
+    params.addParameter('ForceUpdate', false, @(x) islogical(x));
+    params.parse(varargin{:});
+    force_update =  params.Results.ForceUpdate;
+
     if isempty(app.result_group_path)
         app.result_group_path = app.evogen_results_path;
         group_basename = 'Base';
@@ -13,42 +20,60 @@ function refresh_result_list(app)
     end
         result_dir = app.result_group_path;
 
-    app.ResultsListBox.Items = {};
-    app.ResultsListBox.ItemsData = [];
-    app.results = {};
-    names = string.empty;
+    result_list_path = fullfile(app.result_group_path, 'result_list.mat');
+    results = {};
 
-    dirs = dir(result_dir);
-    for i = 1 : length(dirs)
-        tmp_path = fullfile(dirs(i).folder, dirs(i).name);
-        if (~dirs(i).isdir || ~verify_result_dir(tmp_path))
-            continue;
+    if ~force_update && isfile(result_list_path)
+        results_file = load(result_list_path);
+        results = results_file.results;
+        % check the validity of the loaded results file
+        if isempty(results) || ~isdir(results{1}.path)
+            force_update = true;
         end
-        [~, basename, ~] = fileparts(tmp_path);
-        new_result.basename = basename;
-        new_result.name = basename;
-        [nickname, nickname_loaded] = load_nickname(tmp_path);
-        if nickname_loaded
-            new_result.name = nickname;
-        end
-        new_result.path = tmp_path;
-        new_result.loaded = false;
-
-        names(end+1) = string(new_result.name);
-        app.results{end+1} = new_result;
     end
 
-    [~, sort_order] = sort(names);
-    app.results = app.results(sort_order);
+    if force_update % refresh result entries
+        names = string.empty;
+        dirs = dir(result_dir);
+        for i = 1 : length(dirs)
+            tmp_path = fullfile(dirs(i).folder, dirs(i).name);
+            if (~dirs(i).isdir || ~verify_result_dir(tmp_path))
+                continue;
+            end
+            [~, basename, ~] = fileparts(tmp_path);
+            new_result.basename = basename;
+            new_result.name = basename;
+            [nickname, nickname_loaded] = load_nickname(tmp_path);
+            if nickname_loaded
+                new_result.name = nickname;
+            end
+            new_result.path = tmp_path;
+            new_result.loaded = false;
 
-    for i = 1 : length(app.results)
-        app.results{i}.id = i;
+            names(end+1) = string(new_result.name);
+            results{end+1} = new_result;
+        end
+
+        [~, sort_order] = sort(names);
+        results = results(sort_order);
+
+        for i = 1 : length(results)
+            results{i}.id = i;
+        end
+
+        save(result_list_path, 'results', '-v7.3');
+    end
+
+    app.results = results;
+    app.current_result = {};
+
+    app.ResultsListBox.Items = {};
+    app.ResultsListBox.ItemsData = [];
+    for i = 1 : length(results)
         app.ResultsListBox.Items{i} = get_result_list_string(app, i);
         app.ResultsListBox.ItemsData{i} = i;
     end
-
-    app.ResultGroupLabel.Text = [group_basename, ' (', num2str(length(app.results)), ')'];
-    app.current_result = {};
+    app.ResultGroupLabel.Text = [group_basename, ' (', num2str(length(results)), ')'];
 
     load_virtual_results(app);
 end

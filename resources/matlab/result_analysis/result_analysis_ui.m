@@ -273,7 +273,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: RefreshResultListButton
         function RefreshResultListButtonPushed(app, event)
-            refresh_result_list(app);
+            refresh_result_list(app, 'ForceUpdate', true);
         end
 
         % Button pushed function: BuildAllResultStatButton
