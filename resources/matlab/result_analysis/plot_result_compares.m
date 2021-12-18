@@ -56,9 +56,7 @@ function plot_result_compares(app, do_clean_plot)
                    % 0.3010 0.7450 0.9330;
                    % 0.6350 0.0780 0.1840];
 
-    % TODO: stop using the text archive here -- use the built stat!
     for i = 1 : length(app.targets_to_compare)
-        stat_loaded = false;
         if app.targets_to_compare{i}.isgroup
             result = app.virtual_results{app.targets_to_compare{i}.id};
         else
@@ -67,20 +65,20 @@ function plot_result_compares(app, do_clean_plot)
         plot_color = plot_colors(rem(i, length(plot_colors)) + 1);
         % plot_color = plot_colors(rem(i, size(plot_colors, 1)) + 1, :);
         if ~result.isgroup
-            [stat, stat_loaded] = load_stat(result.path);
-            if stat_loaded
-                legend_name = result.name;
-                if do_clean_plot
-                    plot(p1, stat.clean_archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
-                    plot(p2, stat.clean_elite_archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
-                else
-                    plot(p1, stat.archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
-                    plot(p2, stat.elite_archive_fits, 'Color', plot_color, 'DisplayName', legend_name);
-                end
-                plot(p3, stat.coverage, 'Color', plot_color, 'DisplayName', legend_name);
-                if stat.has_parentage
-                    plot(p4, stat.archive_parentage, 'Color', plot_color, 'DisplayName', legend_name);
-                end
+            if ~result.loaded
+                load_result(app, result.id);
+                result = app.results{result.id};
+            end
+            if do_clean_plot
+                plot(p1, result.stat.clean_archive_fits, 'Color', plot_color, 'DisplayName', result.name);
+                plot(p2, result.stat.clean_elite_archive_fits, 'Color', plot_color, 'DisplayName', result.name);
+            else
+                plot(p1, result.stat.archive_fits, 'Color', plot_color, 'DisplayName', result.name);
+                plot(p2, result.stat.elite_archive_fits, 'Color', plot_color, 'DisplayName', result.name);
+            end
+            plot(p3, result.stat.coverage, 'Color', plot_color, 'DisplayName', result.name);
+            if result.stat.has_parentage
+                plot(p4, result.stat.archive_parentage, 'Color', plot_color, 'DisplayName', result.name);
             end
         else % virtual result
             coverage = [];
@@ -92,17 +90,17 @@ function plot_result_compares(app, do_clean_plot)
 
             for i = 1 : result.num_results
                 child_result = app.results{result.ids(i)};
-                [tmp_stat, tmp_stat_loaded] = load_stat(child_result.path);
-                if (tmp_stat_loaded)
-                    stat_loaded = true;
-                    coverage(end + 1, :) = tmp_stat.coverage;
-                    archive_fits(end + 1, :) = tmp_stat.archive_fits;
-                    elite_archive_fits(end + 1, :) = tmp_stat.elite_archive_fits;
-                    clean_archive_fits(end + 1, :) = tmp_stat.clean_archive_fits;
-                    clean_elite_archive_fits(end + 1, :) = tmp_stat.clean_elite_archive_fits;
-                    if tmp_stat.has_parentage
-                        archive_parentage(end + 1, :) = tmp_stat.archive_parentage;
-                    end
+                if ~app.results{child_result.id}.loaded
+                    load_result(app, child_result.id);
+                    child_result = app.results{child_result.id};
+                end
+                coverage(end + 1, :) = child_result.stat.coverage;
+                archive_fits(end + 1, :) = child_result.stat.archive_fits;
+                elite_archive_fits(end + 1, :) = child_result.stat.elite_archive_fits;
+                clean_archive_fits(end + 1, :) = child_result.stat.clean_archive_fits;
+                clean_elite_archive_fits(end + 1, :) = child_result.stat.clean_elite_archive_fits;
+                if child_result.stat.has_parentage
+                    archive_parentage(end + 1, :) = child_result.stat.archive_parentage;
                 end
             end
             if do_clean_plot

@@ -11,13 +11,16 @@ function run_anova(app)
         else
             result = app.results{app.targets_to_compare{i}.id};
         end
-        % TODO: optimize with the loaded archive data
         if result.isgroup % virtual result
             for j = 1 : result.num_results
                 child_result = app.results{result.ids(j)};
+                if ~child_result.loaded
+                    load_result(app, child_result.id);
+                    child_result = app.results{child_result.id};
+                end
                 tmp_fits = [];
                 tmp_elite_fits = [];
-                final_gen_archive = readmatrix(fullfile(child_result.path, strcat('/gridmaps/', num2str(2000), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+                final_gen_archive = child_result.archive{child_result.evo_params.nb_gen};
                 final_fits = final_gen_archive(:, 5);
                 elite_final_fits = maxk(final_fits, ceil(length(final_fits) * 0.1));
                 tmp_fits = [tmp_fits; final_fits];
@@ -26,7 +29,11 @@ function run_anova(app)
             fits = [fits tmp_fits];
             elite_fits = [elite_fits tmp_elite_fits];
         else % single result
-            final_gen_archive = readmatrix(fullfile(result.path, strcat('/gridmaps/', num2str(2000), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+            if ~result.loaded
+                load_result(app, result.id);
+                result = app.results{result.id};
+            end
+            final_gen_archive = result.archive{result.evo_params.nb_gen};
             final_fits = final_gen_archive(:, 5);
             elite_final_fits = maxk(final_fits, ceil(length(final_fits) * 0.1));
             fits = [fits final_fits];

@@ -10,24 +10,30 @@ function run_ttest(app)
     for i = 1 : 2
         sample.fits = [];
         sample.elite_fits = [];
-        stat_loaded = false;
         if app.targets_to_compare{i}.isgroup
             result = app.virtual_results{app.targets_to_compare{i}.id};
         else
             result = app.results{app.targets_to_compare{i}.id};
         end
-        % TODO: optimize with the loaded archive data
         if result.isgroup % virtual result
             for j = 1 : result.num_results
                 child_result = app.results{result.ids(j)};
-                final_gen_archive = readmatrix(fullfile(child_result.path, strcat('/gridmaps/', num2str(2000), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+                if ~app.results{child_result.id}.loaded
+                    load_result(app, child_result.id);
+                    child_result = app.results{child_result.id};
+                end
+                final_gen_archive = child_result.archive{child_result.evo_params.nb_gen};
                 final_fits = final_gen_archive(:, 5);
                 elite_final_fits = maxk(final_fits, ceil(length(final_fits) * 0.1));
                 sample.fits = [sample.fits; final_fits];
                 sample.elite_fits = [sample.elite_fits; elite_final_fits];
             end
         else % single result
-            final_gen_archive = readmatrix(fullfile(result.path, strcat('/gridmaps/', num2str(2000), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+            if ~result.loaded
+                load_result(app, result.id);
+                result = app.results{result.id};
+            end
+            final_gen_archive = result.archive{result.evo_params.nb_gen};
             final_fits = final_gen_archive(:, 5);
             elite_final_fits = maxk(final_fits, ceil(length(final_fits) * 0.1));
             sample.fits = [sample.fits; final_fits];
