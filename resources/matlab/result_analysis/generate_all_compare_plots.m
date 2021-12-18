@@ -3,7 +3,7 @@ function generate_all_compare_plots(app)
         msgbox('Enter a name for the compare plot to continue');
         return
     end
-    if length(app.results_to_compare) == 0
+    if length(app.targets_to_compare) == 0
         msgbox('Add results to compare');
         return
     end

@@ -41,6 +41,7 @@ function refresh_result_list(app, varargin)
                 continue;
             end
             [~, basename, ~] = fileparts(tmp_path);
+            new_result.isgroup = false;
             new_result.basename = basename;
             new_result.name = basename;
             [nickname, nickname_loaded] = load_nickname(tmp_path);

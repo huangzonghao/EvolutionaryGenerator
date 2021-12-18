@@ -91,7 +91,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         result_group_path = string.empty
         results = {} % array containing the cache of the loaded results
         virtual_results = {} % array containing the cache of virtual results
-        results_to_compare = {} % cell array containing the results to compare
+        targets_to_compare = {} % cell array containing the targets (raw result/virtual result) to compare
         current_result = {} % reference to the currently seleceted result
         current_virtual_result = {} % reference to the currently seleceted virtual result
         current_gen = -1
@@ -194,12 +194,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: AddResultToCompareButton
         function AddResultToCompareButtonPushed(app, event)
-            add_new_to_compare(app, false);
+            add_target_to_compare(app, false);
         end
 
         % Button pushed function: AddVirtualToCompareButton
         function AddVirtualToCompareButtonPushed(app, event)
-            add_new_to_compare(app, true);
+            add_target_to_compare(app, true);
         end
 
         % Button pushed function: RemoveCompareButton
@@ -309,12 +309,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: MoveCompareUpButton
         function MoveCompareUpButtonPushed(app, event)
-            move_compare_result(app, true);
+            move_target_in_compare_list(app, true);
         end
 
         % Button pushed function: MoveCompareDownButton
         function MoveCompareDownButtonPushed(app, event)
-            move_compare_result(app, false);
+            move_target_in_compare_list(app, false);
         end
 
         % Button pushed function: ParentagePlotsButton

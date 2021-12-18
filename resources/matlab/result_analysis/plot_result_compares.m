@@ -1,5 +1,5 @@
 function plot_result_compares(app, do_clean_plot)
-    if length(app.results_to_compare) == 0 && ~app.compare_plot_config.plot_to_file
+    if length(app.targets_to_compare) == 0 && ~app.compare_plot_config.plot_to_file
         msgbox('Add results to compare');
         return
     end
@@ -56,13 +56,18 @@ function plot_result_compares(app, do_clean_plot)
                    % 0.3010 0.7450 0.9330;
                    % 0.6350 0.0780 0.1840];
 
-    for i = 1 : length(app.results_to_compare)
+    % TODO: stop using the text archive here -- use the built stat!
+    for i = 1 : length(app.targets_to_compare)
         stat_loaded = false;
-        result = app.results_to_compare{i};
+        if app.targets_to_compare{i}.isgroup
+            result = app.virtual_results{app.targets_to_compare{i}.id};
+        else
+            result = app.results{app.targets_to_compare{i}.id};
+        end
         plot_color = plot_colors(rem(i, length(plot_colors)) + 1);
         % plot_color = plot_colors(rem(i, size(plot_colors, 1)) + 1, :);
         if ~result.isgroup
-            [stat, stat_loaded] = load_stat(result.full_path);
+            [stat, stat_loaded] = load_stat(result.path);
             if stat_loaded
                 legend_name = result.name;
                 if do_clean_plot
@@ -114,7 +119,7 @@ function plot_result_compares(app, do_clean_plot)
         end
     end
 
-    if length(app.results_to_compare) < 10
+    if length(app.targets_to_compare) < 10
         legend(p1, 'Interpreter', 'none');
         legend(p2, 'Interpreter', 'none');
         legend(p3, 'Interpreter', 'none', 'Location', 'SouthEast');
