@@ -14,8 +14,9 @@ function run_ttest(app)
         result = app.results_to_compare{i};
         % TODO: optimize with the loaded archive data
         if result.isgroup % virtual result
-            for j = 1 : length(result.result_full_paths)
-                final_gen_archive = readmatrix(fullfile(result.result_full_paths(j), strcat('/gridmaps/', num2str(2000), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+            for j = 1 : result.num_results
+                child_result = app.results{result.ids(j)};
+                final_gen_archive = readmatrix(fullfile(child_result.path, strcat('/gridmaps/', num2str(2000), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
                 final_fits = final_gen_archive(:, 5);
                 elite_final_fits = maxk(final_fits, ceil(length(final_fits) * 0.1));
                 sample.fits = [sample.fits; final_fits];

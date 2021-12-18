@@ -14,8 +14,10 @@ function plot_group_stat(app)
     pop_lp_fitness = [];
     top15_hp_fitness = [];
     top15_lp_fitness = [];
-    for i = 1 : length(result.result_full_paths)
-        [tmp_stat, tmp_stat_loaded] = load_stat(result.result_full_paths(i));
+    % TODO: stop using the text archive stored on disk
+    for i = 1 : result.num_results
+        child_result = app.results{result.ids(i)};
+        [tmp_stat, tmp_stat_loaded] = load_stat(child_result.path);
         if (tmp_stat_loaded)
             if tmp_stat.has_parentage
                 pop_hp_fitness(end + 1, :) = tmp_stat.pop_hp_fitness;

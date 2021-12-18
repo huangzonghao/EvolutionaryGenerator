@@ -77,7 +77,7 @@ function plot_result_compares(app, do_clean_plot)
                     plot(p4, stat.archive_parentage, 'Color', plot_color, 'DisplayName', legend_name);
                 end
             end
-        else % group
+        else % virtual result
             coverage = [];
             archive_fits = [];
             elite_archive_fits = [];
@@ -85,8 +85,9 @@ function plot_result_compares(app, do_clean_plot)
             clean_elite_archive_fits = [];
             archive_parentage = [];
 
-            for i = 1 : length(result.result_full_paths)
-                [tmp_stat, tmp_stat_loaded] = load_stat(result.result_full_paths(i));
+            for i = 1 : result.num_results
+                child_result = app.results{result.ids(i)};
+                [tmp_stat, tmp_stat_loaded] = load_stat(child_result.path);
                 if (tmp_stat_loaded)
                     stat_loaded = true;
                     coverage(end + 1, :) = tmp_stat.coverage;
