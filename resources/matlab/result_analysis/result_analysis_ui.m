@@ -56,6 +56,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparePanel                   matlab.ui.container.Panel
+        TTestAllButton                 matlab.ui.control.Button
         VarTestButton                  matlab.ui.control.Button
         ANOVAButton                    matlab.ui.control.Button
         TTestButton                    matlab.ui.control.Button
@@ -366,6 +367,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function VarTestButtonPushed(app, event)
             run_vartest(app);
         end
+
+        % Button pushed function: TTestAllButton
+        function TTestAllButtonPushed(app, event)
+            run_ttest_all(app);
+        end
     end
 
     % Component initialization
@@ -487,6 +493,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.VarTestButton.WordWrap = 'on';
             app.VarTestButton.Position = [188 240 57 22];
             app.VarTestButton.Text = 'VarTest';
+
+            % Create TTestAllButton
+            app.TTestAllButton = uibutton(app.ComparePanel, 'push');
+            app.TTestAllButton.ButtonPushedFcn = createCallbackFcn(app, @TTestAllButtonPushed, true);
+            app.TTestAllButton.Position = [185 182 65 22];
+            app.TTestAllButton.Text = 'T-Test All';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
