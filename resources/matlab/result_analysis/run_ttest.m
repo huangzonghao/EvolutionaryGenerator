@@ -4,52 +4,32 @@ function run_ttest(app)
         return
     end
 
-    samples = {};
-    % Only use the first two results
-    % for i = 1 : length(app.targets_to_compare)
-    for i = 1 : 2
-        sample.fits = [];
-        sample.elite_fits = [];
-        if app.targets_to_compare{i}.isgroup
-            result = app.virtual_results{app.targets_to_compare{i}.id};
-        else
-            result = app.results{app.targets_to_compare{i}.id};
-        end
-        if result.isgroup % virtual result
-            for j = 1 : result.num_results
-                child_result = app.results{result.ids(j)};
-                if ~app.results{child_result.id}.loaded
-                    load_result(app, child_result.id);
-                    child_result = app.results{child_result.id};
-                end
-                final_gen_archive = child_result.archive{child_result.evo_params.nb_gen};
-                final_fits = final_gen_archive(:, 5);
-                elite_final_fits = maxk(final_fits, ceil(length(final_fits) * 0.1));
-                sample.fits = [sample.fits; final_fits];
-                sample.elite_fits = [sample.elite_fits; elite_final_fits];
-            end
-        else % single result
-            if ~result.loaded
-                load_result(app, result.id);
-                result = app.results{result.id};
-            end
-            final_gen_archive = result.archive{result.evo_params.nb_gen};
-            final_fits = final_gen_archive(:, 5);
-            elite_final_fits = maxk(final_fits, ceil(length(final_fits) * 0.1));
-            sample.fits = [sample.fits; final_fits];
-            sample.elite_fits = [sample.elite_fits; elite_final_fits];
-        end
-        samples{i} = sample;
+    if app.targets_to_compare{1}.isgroup
+        result1 = app.virtual_results{app.targets_to_compare{1}.id};
+    else
+        result1 = app.results{app.targets_to_compare{1}.id};
+    end
+    if app.targets_to_compare{2}.isgroup
+        result2 = app.virtual_results{app.targets_to_compare{2}.id};
+    else
+        result2 = app.results{app.targets_to_compare{2}.id};
     end
 
-    % TODO: Plot histogram
-    [H1, P1] = ttest2(samples{1}.fits, samples{2}.fits);
-    [H2, P2] = ttest2(samples{1}.elite_fits, samples{2}.elite_fits);
-    [H3, P3] = ttest2(samples{1}.fits, samples{2}.fits, 'tail', 'left');
-    [H4, P4] = ttest2(samples{1}.elite_fits, samples{2}.elite_fits, 'tail', 'left');
-    [H5, P5] = ttest2(samples{1}.fits, samples{2}.fits, 'tail', 'right');
-    [H6, P6] = ttest2(samples{1}.elite_fits, samples{2}.elite_fits, 'tail', 'right');
-    mbox = msgbox(sprintf("Fits are equal\n    All fits: H %d, P %d\n    Elite fits: H %d, P %d\nFirst fits larger than the second\n    All fits: H %d, P %d\n    Elite fits: H %d, P %d\nSecond fits larger than the first\n    All fits: H %d, P %d\n    Elite fits: H %d, P %d", H1, P1, H2, P2, H3, P3, H4, P4, H5, P5, H6, P6));
+    report = ttest_all_archived(app, result1, result2, 2000);
+
+    mbox = msgbox(sprintf(['Fits are equal\n', ...
+                           '    All fits: H %d, P %d\n', ...
+                           '    Elite fits: H %d, P %d\n', ...
+                           'First fits larger than the second\n', ...
+                           '    All fits: H %d, P %d\n', ...
+                           '    Elite fits: H %d, P %d\n', ...
+                           'Second fits larger than the first\n', ...
+                           '    All fits: H %d, P %d\n', ...
+                           '    Elite fits: H %d, P %d'], ...
+                  report.H1, report.P1, report.H2, report.P2, report.H3, report.P3, ...
+                  report.H4, report.P4, report.H5, report.P5, report.H6, report.P6), ...
+                  sprintf('T-Test %s - %s Result', result1.name, result2.name));
+
     mbox.Position(3) = 300;
     mbox.Position(4) = 220;
     txt = findall(mbox, 'Type', 'Text');
