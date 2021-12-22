@@ -56,6 +56,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparePanel                   matlab.ui.container.Panel
+        TTestOptionDropDown            matlab.ui.control.DropDown
+        TTestOptionDropDownLabel       matlab.ui.control.Label
         TTestAllButton                 matlab.ui.control.Button
         VarTestButton                  matlab.ui.control.Button
         ANOVAButton                    matlab.ui.control.Button
@@ -110,22 +112,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Code that executes after component creation
         function startupFcn(app, evogen_exe_path, evogen_results_path)
-            if (ispc)
-                app.simulator_name = strcat(app.simulator_basename, '.exe');
-                app.generator_name = strcat(app.generator_basename, '.exe');
-            else
-                app.simulator_name = app.simulator_basename;
-                app.generator_name = app.generator_basename;
-            end
-
-            app.evogen_results_path = evogen_results_path;
             app.evogen_exe_path = evogen_exe_path;
-            app.compare_plot_config.plot_to_file = false;
-
-            % init ui assets
-            app.GenStepField.Value = num2str(app.gen_step);
-
-            refresh_result_list(app);
+            app.evogen_results_path = evogen_results_path;
+            result_analysis_init(app);
         end
 
         % Button pushed function: LoadResultButton
@@ -477,28 +466,39 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.TTestButton = uibutton(app.ComparePanel, 'push');
             app.TTestButton.ButtonPushedFcn = createCallbackFcn(app, @TTestButtonPushed, true);
             app.TTestButton.WordWrap = 'on';
-            app.TTestButton.Position = [188 302 57 22];
+            app.TTestButton.Position = [188 253 57 22];
             app.TTestButton.Text = 'T-Test';
 
             % Create ANOVAButton
             app.ANOVAButton = uibutton(app.ComparePanel, 'push');
             app.ANOVAButton.ButtonPushedFcn = createCallbackFcn(app, @ANOVAButtonPushed, true);
             app.ANOVAButton.WordWrap = 'on';
-            app.ANOVAButton.Position = [188 270 57 22];
+            app.ANOVAButton.Position = [188 221 57 22];
             app.ANOVAButton.Text = 'ANOVA';
 
             % Create VarTestButton
             app.VarTestButton = uibutton(app.ComparePanel, 'push');
             app.VarTestButton.ButtonPushedFcn = createCallbackFcn(app, @VarTestButtonPushed, true);
             app.VarTestButton.WordWrap = 'on';
-            app.VarTestButton.Position = [188 240 57 22];
+            app.VarTestButton.Position = [188 191 57 22];
             app.VarTestButton.Text = 'VarTest';
 
             % Create TTestAllButton
             app.TTestAllButton = uibutton(app.ComparePanel, 'push');
             app.TTestAllButton.ButtonPushedFcn = createCallbackFcn(app, @TTestAllButtonPushed, true);
-            app.TTestAllButton.Position = [185 182 65 22];
+            app.TTestAllButton.Position = [185 133 65 22];
             app.TTestAllButton.Text = 'T-Test All';
+
+            % Create TTestOptionDropDownLabel
+            app.TTestOptionDropDownLabel = uilabel(app.ComparePanel);
+            app.TTestOptionDropDownLabel.Position = [181 309 73 22];
+            app.TTestOptionDropDownLabel.Text = 'T-Test Option';
+
+            % Create TTestOptionDropDown
+            app.TTestOptionDropDown = uidropdown(app.ComparePanel);
+            app.TTestOptionDropDown.Items = {};
+            app.TTestOptionDropDown.Position = [181 282 92 22];
+            app.TTestOptionDropDown.Value = {};
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
