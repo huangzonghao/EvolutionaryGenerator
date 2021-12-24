@@ -47,6 +47,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         ResultGroupLabel               matlab.ui.control.Label
         ResultsListBox                 matlab.ui.control.ListBox
         VirtualResultsPanel            matlab.ui.container.Panel
+        QQPlotForVirtualButton         matlab.ui.control.Button
         VirtualResultNameField         matlab.ui.control.EditField
         GroupNameLabel                 matlab.ui.control.Label
         AddVirtualToCompareButton      matlab.ui.control.Button
@@ -56,6 +57,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparePanel                   matlab.ui.container.Panel
+        QQPlotForCompareButton         matlab.ui.control.Button
         TTestOptionDropDown            matlab.ui.control.DropDown
         TTestOptionDropDownLabel       matlab.ui.control.Label
         TTestAllButton                 matlab.ui.control.Button
@@ -317,6 +319,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
             plot_group_stat(app);
         end
 
+        % Button pushed function: QQPlotForVirtualButton
+        function QQPlotForVirtualButtonPushed(app, event)
+            plot_qq_for_virtual_result(app);
+        end
+
         % Button pushed function: GenerateAllSingleResultPlotsButton
         function GenerateAllSingleResultPlotsButtonPushed(app, event)
             generate_all_single_result_plots(app);
@@ -360,6 +367,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: TTestAllButton
         function TTestAllButtonPushed(app, event)
             run_ttest_all(app);
+        end
+
+        % Button pushed function: QQPlotForCompareButton
+        function QQPlotForCompareButtonPushed(app, event)
+            plot_qq_for_compare(app);
         end
     end
 
@@ -500,6 +512,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.TTestOptionDropDown.Position = [181 282 92 22];
             app.TTestOptionDropDown.Value = {};
 
+            % Create QQPlotForCompareButton
+            app.QQPlotForCompareButton = uibutton(app.ComparePanel, 'push');
+            app.QQPlotForCompareButton.ButtonPushedFcn = createCallbackFcn(app, @QQPlotForCompareButtonPushed, true);
+            app.QQPlotForCompareButton.WordWrap = 'on';
+            app.QQPlotForCompareButton.Position = [193 101 57 22];
+            app.QQPlotForCompareButton.Text = 'QQ Plot';
+
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
             app.VirtualResultsPanel.Title = 'Virtual Results';
@@ -556,6 +575,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create VirtualResultNameField
             app.VirtualResultNameField = uieditfield(app.VirtualResultsPanel, 'text');
             app.VirtualResultNameField.Position = [72 532 105 22];
+
+            % Create QQPlotForVirtualButton
+            app.QQPlotForVirtualButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.QQPlotForVirtualButton.ButtonPushedFcn = createCallbackFcn(app, @QQPlotForVirtualButtonPushed, true);
+            app.QQPlotForVirtualButton.WordWrap = 'on';
+            app.QQPlotForVirtualButton.Position = [182 309 57 22];
+            app.QQPlotForVirtualButton.Text = 'QQ Plot';
 
             % Create SingleResultsPanel
             app.SingleResultsPanel = uipanel(app.MainFigure);
