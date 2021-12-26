@@ -36,7 +36,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
         LoadNextStepButton             matlab.ui.control.Button
         LoadPrevButton                 matlab.ui.control.Button
         LoadNextButton                 matlab.ui.control.Button
-        LoadResultButton               matlab.ui.control.Button
         ResultNameLabel                matlab.ui.control.Label
         AddResultToCompareButton       matlab.ui.control.Button
         LoadResultGroupButton          matlab.ui.control.Button
@@ -117,11 +116,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.evogen_exe_path = evogen_exe_path;
             app.evogen_results_path = evogen_results_path;
             result_analysis_init(app);
-        end
-
-        % Button pushed function: LoadResultButton
-        function LoadResultButtonPushed(app, event)
-            load_result(app);
         end
 
         % Button pushed function: SelectResultButton
@@ -655,13 +649,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ResultNameLabel.FontWeight = 'bold';
             app.ResultNameLabel.Position = [384 499 196 30];
             app.ResultNameLabel.Text = 'Load a result to view';
-
-            % Create LoadResultButton
-            app.LoadResultButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LoadResultButton.ButtonPushedFcn = createCallbackFcn(app, @LoadResultButtonPushed, true);
-            app.LoadResultButton.Tag = 'loadresult';
-            app.LoadResultButton.Position = [382 532 71 22];
-            app.LoadResultButton.Text = 'Load';
 
             % Create LoadNextButton
             app.LoadNextButton = uibutton(app.SingleResultsPanel, 'push');
