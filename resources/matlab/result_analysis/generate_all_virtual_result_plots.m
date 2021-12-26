@@ -31,6 +31,7 @@ function generate_all_plots_for_this_virtual_result(app, result_idx, root_dir)
 
     % Generating the plots
     plot_group_stat(app);
+    plot_qq_for_virtual_result(app);
 
     app.current_virtual_result = {};
 end
