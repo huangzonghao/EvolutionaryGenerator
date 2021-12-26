@@ -36,19 +36,19 @@ function plot_group_stat(app)
 
         sgtitle([result.name, ' - High Parentage and Low Parentage Fitness'], 'Interpreter', 'none');
         ph = subplot(1,1,1);
-       plot_colors = 'brcmgk';
-       shadedErrorBar(ph, [], pop_hp_fitness, {@mean, @std}, 'Color', plot_colors(1), 'DisplayName', 'pop_hp_fitness');
-       shadedErrorBar(ph, [], pop_lp_fitness, {@mean, @std}, 'Color', plot_colors(2), 'DisplayName', 'pop_lp_fitness');
-       shadedErrorBar(ph, [], top15_hp_fitness, {@mean, @std}, 'Color', plot_colors(3), 'DisplayName', 'top15_hp_fitness');
-       shadedErrorBar(ph, [], top15_lp_fitness, {@mean, @std}, 'Color', plot_colors(4), 'DisplayName', 'top15_lp_fitness');
-       xlabel(ph, 'Generations');
-       ylabel(ph, 'Fitness');
-       legend(ph, 'Interpreter', 'none', 'Location', 'best');
-       if result.plot_to_file
-           for i_format = 1 : length(result.plot_format)
-               saveas(fig, fullfile(result.plot_dir, ['hp_and_lp_fitness_', result.name, '.', result.plot_format{i_format}]));
-           end
-           close(fig);
-       end
+        plot_colors = 'brcmgk';
+        shadedErrorBar(ph, [], pop_hp_fitness, {@mean, @std}, 'Color', plot_colors(1), 'DisplayName', 'pop_hp_fitness');
+        shadedErrorBar(ph, [], pop_lp_fitness, {@mean, @std}, 'Color', plot_colors(2), 'DisplayName', 'pop_lp_fitness');
+        shadedErrorBar(ph, [], top15_hp_fitness, {@mean, @std}, 'Color', plot_colors(3), 'DisplayName', 'top15_hp_fitness');
+        shadedErrorBar(ph, [], top15_lp_fitness, {@mean, @std}, 'Color', plot_colors(4), 'DisplayName', 'top15_lp_fitness');
+        xlabel(ph, 'Generations');
+        ylabel(ph, 'Fitness');
+        legend(ph, 'Interpreter', 'none', 'Location', 'best');
+        if result.plot_to_file
+            for i_format = 1 : length(result.plot_format)
+                saveas(fig, fullfile(result.plot_dir, ['hp_and_lp_fitness_', result.name, '.', result.plot_format{i_format}]));
+            end
+            close(fig);
+        end
     end
 end
