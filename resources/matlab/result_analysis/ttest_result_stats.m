@@ -25,7 +25,7 @@ function sample = sample_result(app, result, gen)
     sample.elite_fits = [];
     for i = 1 : result.num_results
         child_result = load_target_result(app, false, result.ids(i));
-        sample.fits(i) = child_result.stat.archive_fits(end);
-        sample.elite_fits(i) = child_result.stat.elite_archive_fits(end);
+        sample.fits(i) = child_result.stat.archive_fits(gen + 1);
+        sample.elite_fits(i) = child_result.stat.elite_archive_fits(gen + 1);
     end
 end
