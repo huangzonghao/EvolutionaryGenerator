@@ -46,6 +46,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
         ResultGroupLabel               matlab.ui.control.Label
         ResultsListBox                 matlab.ui.control.ListBox
         VirtualResultsPanel            matlab.ui.container.Panel
+        MannWhitneyTestAllButton       matlab.ui.control.Button
+        mwwGenEditField                matlab.ui.control.NumericEditField
+        mwwGenEditFieldLabel           matlab.ui.control.Label
         QQPlotForVirtualButton         matlab.ui.control.Button
         VirtualResultNameField         matlab.ui.control.EditField
         GroupNameLabel                 matlab.ui.control.Label
@@ -56,6 +59,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparePanel                   matlab.ui.container.Panel
+        MannWhitneyTestButton          matlab.ui.control.Button
         QQPlotForCompareButton         matlab.ui.control.Button
         TTestOptionDropDown            matlab.ui.control.DropDown
         TTestOptionDropDownLabel       matlab.ui.control.Label
@@ -367,6 +371,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function QQPlotForCompareButtonPushed(app, event)
             plot_qq_for_compare(app);
         end
+
+        % Button pushed function: MannWhitneyTestButton
+        function MannWhitneyTestButtonPushed(app, event)
+            run_mwwtest(app);
+        end
+
+        % Button pushed function: MannWhitneyTestAllButton
+        function MannWhitneyTestAllButtonPushed(app, event)
+            run_mwwtest_all(app);
+        end
     end
 
     % Component initialization
@@ -472,27 +486,27 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.TTestButton = uibutton(app.ComparePanel, 'push');
             app.TTestButton.ButtonPushedFcn = createCallbackFcn(app, @TTestButtonPushed, true);
             app.TTestButton.WordWrap = 'on';
-            app.TTestButton.Position = [188 253 57 22];
+            app.TTestButton.Position = [188 258 57 22];
             app.TTestButton.Text = 'T-Test';
 
             % Create ANOVAButton
             app.ANOVAButton = uibutton(app.ComparePanel, 'push');
             app.ANOVAButton.ButtonPushedFcn = createCallbackFcn(app, @ANOVAButtonPushed, true);
             app.ANOVAButton.WordWrap = 'on';
-            app.ANOVAButton.Position = [188 221 57 22];
+            app.ANOVAButton.Position = [188 234 57 22];
             app.ANOVAButton.Text = 'ANOVA';
 
             % Create VarTestButton
             app.VarTestButton = uibutton(app.ComparePanel, 'push');
             app.VarTestButton.ButtonPushedFcn = createCallbackFcn(app, @VarTestButtonPushed, true);
             app.VarTestButton.WordWrap = 'on';
-            app.VarTestButton.Position = [188 191 57 22];
+            app.VarTestButton.Position = [188 211 57 22];
             app.VarTestButton.Text = 'VarTest';
 
             % Create TTestAllButton
             app.TTestAllButton = uibutton(app.ComparePanel, 'push');
             app.TTestAllButton.ButtonPushedFcn = createCallbackFcn(app, @TTestAllButtonPushed, true);
-            app.TTestAllButton.Position = [185 133 65 22];
+            app.TTestAllButton.Position = [185 187 65 22];
             app.TTestAllButton.Text = 'T-Test All';
 
             % Create TTestOptionDropDownLabel
@@ -510,8 +524,15 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.QQPlotForCompareButton = uibutton(app.ComparePanel, 'push');
             app.QQPlotForCompareButton.ButtonPushedFcn = createCallbackFcn(app, @QQPlotForCompareButtonPushed, true);
             app.QQPlotForCompareButton.WordWrap = 'on';
-            app.QQPlotForCompareButton.Position = [193 101 57 22];
+            app.QQPlotForCompareButton.Position = [190 164 57 22];
             app.QQPlotForCompareButton.Text = 'QQ Plot';
+
+            % Create MannWhitneyTestButton
+            app.MannWhitneyTestButton = uibutton(app.ComparePanel, 'push');
+            app.MannWhitneyTestButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestButtonPushed, true);
+            app.MannWhitneyTestButton.WordWrap = 'on';
+            app.MannWhitneyTestButton.Position = [187 83 57 22];
+            app.MannWhitneyTestButton.Text = 'mwwtest';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
@@ -576,6 +597,23 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.QQPlotForVirtualButton.WordWrap = 'on';
             app.QQPlotForVirtualButton.Position = [182 309 57 22];
             app.QQPlotForVirtualButton.Text = 'QQ Plot';
+
+            % Create mwwGenEditFieldLabel
+            app.mwwGenEditFieldLabel = uilabel(app.VirtualResultsPanel);
+            app.mwwGenEditFieldLabel.WordWrap = 'on';
+            app.mwwGenEditFieldLabel.Position = [182 279 57 17];
+            app.mwwGenEditFieldLabel.Text = 'mww Gen:';
+
+            % Create mwwGenEditField
+            app.mwwGenEditField = uieditfield(app.VirtualResultsPanel, 'numeric');
+            app.mwwGenEditField.Position = [182 252 65 22];
+
+            % Create MannWhitneyTestAllButton
+            app.MannWhitneyTestAllButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.MannWhitneyTestAllButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestAllButtonPushed, true);
+            app.MannWhitneyTestAllButton.WordWrap = 'on';
+            app.MannWhitneyTestAllButton.Position = [184 213 60 36];
+            app.MannWhitneyTestAllButton.Text = 'mwwtest all';
 
             % Create SingleResultsPanel
             app.SingleResultsPanel = uipanel(app.MainFigure);
