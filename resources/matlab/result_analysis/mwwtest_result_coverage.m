@@ -15,7 +15,6 @@ function report = mwwtest_result_coverage(app, result1, result2, coverage_percen
     samples{1} = sample_result(app, result1, coverage_percent);
     samples{2} = sample_result(app, result2, coverage_percent);
     report.raw = samples;
-
     [report.P1, report.H1] = ranksum(samples{1}.cov_gen, samples{2}.cov_gen);
 end
 

@@ -12,6 +12,7 @@ function report = mwwtest_result_stats(app, result1, result2, gen)
     samples{1} = sample_result(app, result1, gen);
     samples{2} = sample_result(app, result2, gen);
 
+    report.raw = samples;
     [report.P1, report.H1] = ranksum(samples{1}.fits, samples{2}.fits);
     [report.P2, report.H2] = ranksum(samples{1}.elite_fits, samples{2}.elite_fits);
 end
@@ -26,4 +27,6 @@ function sample = sample_result(app, result, gen)
         sample.fits(i) = child_result.stat.clean_archive_fits(gen + 1);
         sample.elite_fits(i) = child_result.stat.clean_elite_archive_fits(gen + 1);
     end
+    sample.fits_mean = mean(sample.fits);
+    sample.elite_fits_mean = mean(sample.elite_fits);
 end
