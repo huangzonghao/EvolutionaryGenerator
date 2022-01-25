@@ -46,6 +46,10 @@ classdef result_analysis_ui < matlab.apps.AppBase
         ResultGroupLabel               matlab.ui.control.Label
         ResultsListBox                 matlab.ui.control.ListBox
         VirtualResultsPanel            matlab.ui.container.Panel
+        MannWhitneyTestCoverageAllButton  matlab.ui.control.Button
+        mwwPercentEditField            matlab.ui.control.NumericEditField
+        mwwLabel                       matlab.ui.control.Label
+        MannWhitneyTestPercentAllButton  matlab.ui.control.Button
         MannWhitneyTestAllButton       matlab.ui.control.Button
         mwwGenEditField                matlab.ui.control.NumericEditField
         mwwGenEditFieldLabel           matlab.ui.control.Label
@@ -381,6 +385,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function MannWhitneyTestAllButtonPushed(app, event)
             run_mwwtest_all(app);
         end
+
+        % Button pushed function: MannWhitneyTestPercentAllButton
+        function MannWhitneyTestPercentAllButtonPushed(app, event)
+            run_mwwtest_percent_all(app);
+        end
+
+        % Button pushed function: MannWhitneyTestCoverageAllButton
+        function MannWhitneyTestCoverageAllButtonPushed(app, event)
+            run_mwwtest_coverage_all(app);
+        end
     end
 
     % Component initialization
@@ -614,6 +628,30 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MannWhitneyTestAllButton.WordWrap = 'on';
             app.MannWhitneyTestAllButton.Position = [184 213 60 36];
             app.MannWhitneyTestAllButton.Text = 'mwwtest all';
+
+            % Create MannWhitneyTestPercentAllButton
+            app.MannWhitneyTestPercentAllButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.MannWhitneyTestPercentAllButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestPercentAllButtonPushed, true);
+            app.MannWhitneyTestPercentAllButton.WordWrap = 'on';
+            app.MannWhitneyTestPercentAllButton.Position = [186 108 60 50];
+            app.MannWhitneyTestPercentAllButton.Text = 'mwwtest percent all';
+
+            % Create mwwLabel
+            app.mwwLabel = uilabel(app.VirtualResultsPanel);
+            app.mwwLabel.WordWrap = 'on';
+            app.mwwLabel.Position = [184 183 57 22];
+            app.mwwLabel.Text = 'mww %:';
+
+            % Create mwwPercentEditField
+            app.mwwPercentEditField = uieditfield(app.VirtualResultsPanel, 'numeric');
+            app.mwwPercentEditField.Position = [184 161 65 22];
+
+            % Create MannWhitneyTestCoverageAllButton
+            app.MannWhitneyTestCoverageAllButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.MannWhitneyTestCoverageAllButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestCoverageAllButtonPushed, true);
+            app.MannWhitneyTestCoverageAllButton.WordWrap = 'on';
+            app.MannWhitneyTestCoverageAllButton.Position = [186 58 60 50];
+            app.MannWhitneyTestCoverageAllButton.Text = 'mwwtest coverage all';
 
             % Create SingleResultsPanel
             app.SingleResultsPanel = uipanel(app.MainFigure);
