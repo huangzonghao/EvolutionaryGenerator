@@ -15,7 +15,8 @@ function run_mwwtest(app)
         result2 = app.results{app.targets_to_compare{2}.id};
     end
 
-    report = mwwtest_result_stats(app, result1, result2, 2000);
+    mwwtest_gen = app.mwwGenEditField.Value;
+    report = mwwtest_result_stats(app, result1, result2, mwwtest_gen);
 
     mbox = msgbox(sprintf(['All fits: H %d, P %d\n', ...
                            'Elite fits: H %d, P %d\n', ...
