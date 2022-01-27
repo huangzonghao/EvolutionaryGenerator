@@ -40,16 +40,19 @@ function sample = sample_result(app, result, performance_percent)
     for i = 1 : result.num_results
         child_result = load_target_result(app, false, result.ids(i));
 
-        fit_gen = find(child_result.stat.archive_fits > fit_thresh, 1);
+        % omitting the first 24 generations (as there is an init fitness drop at the beginning)
+        fit_gen = find(child_result.stat.archive_fits(26:end) > fit_thresh, 1);
         if isempty(fit_gen)
-            fit_gen = length(child_result.stat.archive_fits);
+            fit_gen = length(child_result.stat.archive_fits) - 1;
+        else
+            fit_gen = fit_gen + 24;
         end
-        elite_fit_gen = find(child_result.stat.elite_archive_fits > elite_fit_thresh, 1);
+        elite_fit_gen = find(child_result.stat.elite_archive_fits(26:end) > elite_fit_thresh, 1);
         if isempty(elite_fit_gen)
-            elite_fit_gen = length(child_result.stat.elite_archive_fits);
+            elite_fit_gen = length(child_result.stat.elite_archive_fits) - 1;
+        else
+            elite_fit_gen = elite_fit_gen + 24;
         end
-        fit_gen = fit_gen - 1;
-        elite_fit_gen = elite_fit_gen - 1;
 
         sample.fit_gen(i) = fit_gen;
         sample.elite_fit_gen(i) = elite_fit_gen;
