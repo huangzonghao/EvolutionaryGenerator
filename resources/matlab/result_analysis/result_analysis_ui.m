@@ -4,6 +4,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         SingleResultsPanel             matlab.ui.container.Panel
+        SimTimeEditField               matlab.ui.control.NumericEditField
+        SimTimeEditFieldLabel          matlab.ui.control.Label
         SelectResultButton             matlab.ui.control.Button
         GenerateAllSingleResultPlotsButton  matlab.ui.control.Button
         NickNameField                  matlab.ui.control.EditField
@@ -857,25 +859,25 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.SimulateRobotButton = uibutton(app.SingleResultsPanel, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [412 6 55 22];
+            app.SimulateRobotButton.Position = [413 21 55 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.SingleResultsPanel, 'text');
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [534 20 39 22];
+            app.RobotIDXField.Position = [534 11 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.SingleResultsPanel, 'text');
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [492 20 39 22];
+            app.RobotIDYField.Position = [492 11 39 22];
 
             % Create ParentageTreeButton
             app.ParentageTreeButton = uibutton(app.SingleResultsPanel, 'push');
             app.ParentageTreeButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageTreeButtonPushed, true);
             app.ParentageTreeButton.Tag = 'loadresult';
             app.ParentageTreeButton.WordWrap = 'on';
-            app.ParentageTreeButton.Position = [400 30 78 32];
+            app.ParentageTreeButton.Position = [400 58 78 32];
             app.ParentageTreeButton.Text = 'Parentage Tree';
 
             % Create OpenFolderButton
@@ -916,6 +918,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.SelectResultButton.Tag = 'loadresult';
             app.SelectResultButton.Position = [460 532 71 22];
             app.SelectResultButton.Text = 'Select';
+
+            % Create SimTimeEditFieldLabel
+            app.SimTimeEditFieldLabel = uilabel(app.SingleResultsPanel);
+            app.SimTimeEditFieldLabel.HorizontalAlignment = 'right';
+            app.SimTimeEditFieldLabel.Position = [484 40 55 22];
+            app.SimTimeEditFieldLabel.Text = 'Sim Time:';
+
+            % Create SimTimeEditField
+            app.SimTimeEditField = uieditfield(app.SingleResultsPanel, 'numeric');
+            app.SimTimeEditField.Position = [542 40 40 22];
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

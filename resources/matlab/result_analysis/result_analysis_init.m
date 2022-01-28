@@ -18,5 +18,7 @@ function result_analysis_init(app)
     end
     app.TTestOptionDropDown.Value = 1;
 
+    app.SimTimeEditField.Value = 30;
+
     refresh_result_list(app);
 end

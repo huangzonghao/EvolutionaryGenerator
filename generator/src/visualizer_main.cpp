@@ -20,7 +20,7 @@ void debug_pause() {
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        std::cout << "Input format: <RobotType: primitive/mesh> <path/to/sim_params.xml> <Design Vector>" << std::endl;
+        std::cout << "Input format: <RobotType: primitive/mesh> <path/to/sim_params.xml> <Simulation Time> <Design Vector>" << std::endl;
         return 0;
     }
 
@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
     int arg_cursor = 1;
     std::string robot_type(argv[arg_cursor++]);
     std::string sim_filename(argv[arg_cursor++]);
+    double time_out = std::atof(argv[arg_cursor++]);
     std::vector<double> gene;
     for (int i = arg_cursor; i < argc; ++i)
         gene.push_back(std::atof(argv[arg_cursor++]));
@@ -52,7 +53,7 @@ int main(int argc, char **argv) {
     sim_params.env_dir = result_dir;
 
     SimulationManager sm;
-    sm.SetTimeout(sim_params.time_out);
+    sm.SetTimeout(time_out);
     sm.SetCamera(sim_params.camera_pos[0],
                  sim_params.camera_pos[1],
                  sim_params.camera_pos[2],

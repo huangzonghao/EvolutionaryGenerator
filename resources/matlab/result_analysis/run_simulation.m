@@ -22,8 +22,12 @@ function run_simulation(app)
     robot_file_buffer = readmatrix(fullfile(result.path, strcat('/robots/', num2str(gen_id), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
     dv = robot_file_buffer(robot_file_buffer(:, 2)==id, 12:end);
     dv = dv(~isnan(dv));
+    time_out = app.SimTimeEditField.Value;
+    if time_out < 0
+        msgbox("Error: negative simulation time");
+    end
     cmd_str = fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " + ...
-              fullfile(result.path, app.sim_params_filename) + " " + ...
+              fullfile(result.path, app.sim_params_filename) + " " + num2str(time_out) + " " + ...
               num2str(dv);
     system(cmd_str);
 end
