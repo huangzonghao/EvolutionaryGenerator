@@ -4,8 +4,9 @@ function run_simulation(app)
 
     result = app.current_result;
 
-    fid_y = str2double(app.RobotIDXField.Value);
-    fid_x = str2double(app.RobotIDYField.Value);
+    % Note the XY has been flipped already in gui layout
+    fid_x = str2double(app.RobotIDXField.Value);
+    fid_y = str2double(app.RobotIDYField.Value);
     if fid_x <= 0 || fid_x > result.evo_params.griddim_0 || fid_y <=0 || fid_y > result.evo_params.griddim_1
         msgbox(sprintf("Error: Invalid robot coord (%d, %d)", fid_y, fid_x));
     end
