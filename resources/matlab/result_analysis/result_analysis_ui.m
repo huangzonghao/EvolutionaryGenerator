@@ -226,20 +226,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
             load_gen(app, str2double(app.GenIDField.Value));
         end
 
-        % Value changed function: RobotIDXField
-        function RobotIDXFieldValueChanged(app, event)
-            value = str2double(app.RobotIDXField.Value);
-            value = min(max(value, 1), app.evo_params.griddim_1); % note X corresponds to column index of matrix here
-            app.RobotIDXField.Value = num2str(value);
-        end
-
-        % Value changed function: RobotIDYField
-        function RobotIDYFieldValueChanged(app, event)
-            value = str2double(app.RobotIDYField.Value);
-            value = min(max(value, 1), app.evo_params.griddim_0); % note y corresponds to row index of matrix here
-            app.RobotIDYField.Value = num2str(value);
-        end
-
         % Value changed function: GenStepField
         function GenStepFieldValueChanged(app, event)
             app.gen_step = max(str2double(app.GenStepField.Value), 0);
@@ -876,13 +862,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.SingleResultsPanel, 'text');
-            app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
             app.RobotIDXField.Position = [534 20 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.SingleResultsPanel, 'text');
-            app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
             app.RobotIDYField.Position = [492 20 39 22];
 
