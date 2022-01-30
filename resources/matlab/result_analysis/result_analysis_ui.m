@@ -4,6 +4,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         SingleResultsPanel             matlab.ui.container.Panel
+        ExportGroupButton              matlab.ui.control.Button
         SimTimeEditField               matlab.ui.control.NumericEditField
         SimTimeEditFieldLabel          matlab.ui.control.Label
         SelectResultButton             matlab.ui.control.Button
@@ -186,6 +187,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: DeleteVirtualResultButton
         function DeleteVirtualResultButtonPushed(app, event)
             delete_virtual_result(app);
+        end
+
+        % Button pushed function: ExportGroupButton
+        function ExportGroupButtonPushed(app, event)
+            export_group(app);
         end
 
         % Button pushed function: AddResultToCompareButton
@@ -928,6 +934,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create SimTimeEditField
             app.SimTimeEditField = uieditfield(app.SingleResultsPanel, 'numeric');
             app.SimTimeEditField.Position = [542 40 40 22];
+
+            % Create ExportGroupButton
+            app.ExportGroupButton = uibutton(app.SingleResultsPanel, 'push');
+            app.ExportGroupButton.ButtonPushedFcn = createCallbackFcn(app, @ExportGroupButtonPushed, true);
+            app.ExportGroupButton.WordWrap = 'on';
+            app.ExportGroupButton.FontSize = 11;
+            app.ExportGroupButton.Position = [280 182 65 33];
+            app.ExportGroupButton.Text = 'Export Group';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
