@@ -38,6 +38,8 @@ function export_group(app)
         copyfile(fullfile(source_result_dir, 'robots.mat'), dest_result_dir);
         copyfile(fullfile(source_result_dir, 'stat.mat'), dest_result_dir);
         copyfile(fullfile(source_result_dir, 'name.txt'), dest_result_dir);
+        copyfile(fullfile(source_result_dir, 'evo_params.xml'), dest_result_dir);
+        copyfile(fullfile(source_result_dir, 'status.txt'), dest_result_dir);
     end
     close(wb);
     figure(app.MainFigure);

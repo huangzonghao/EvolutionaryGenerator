@@ -10,7 +10,7 @@ function refresh_result_list(app, varargin)
     params.CaseSensitive = false;
     params.addParameter('ForceUpdate', false, @(x) islogical(x));
     params.parse(varargin{:});
-    force_update =  params.Results.ForceUpdate;
+    force_update = params.Results.ForceUpdate;
 
     if isempty(app.result_group_path)
         app.result_group_path = app.evogen_results_path;
@@ -27,8 +27,17 @@ function refresh_result_list(app, varargin)
         results_file = load(result_list_path);
         results = results_file.results;
         % check the validity of the loaded results file
-        if isempty(results) || ~isdir(results{1}.path)
+        if isempty(results)
             force_update = true;
+        elseif ~isdir(results{1}.path)
+            % Try to open a valid result group on another computer may also trigger
+            % the path invalid error
+            if ~update_result_paths(results, app.result_group_path)
+                force_update = true;
+            else
+                results_file = load(result_list_path);
+                results = results_file.results;
+            end
         end
     end
 
@@ -100,4 +109,27 @@ function result_is_valid = verify_result_dir(dir_path)
 
         result_is_valid = true;
     end
+end
+
+function result_is_valid = verify_exported_result_dir(dir_path)
+    result_is_valid = false;
+    if isfile(fullfile(dir_path, 'stat.mat')) && ...
+       isfile(fullfile(dir_path, 'archive.mat')) && ...
+       isfile(fullfile(dir_path, 'robots.mat'))
+
+        result_is_valid = true;
+    end
+end
+
+function update_success = update_result_paths(results, result_group_path)
+    update_success = true;
+    for i = 1 : length(results)
+        new_path = fullfile(result_group_path, results{i}.basename);
+        if ~isdir(new_path) || ~verify_exported_result_dir(new_path)
+            update_success = false;
+            return
+        end
+        results{i}.path = new_path;
+    end
+    save(fullfile(result_group_path, 'result_list.mat'), 'results', '-v7.3');
 end
