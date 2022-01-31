@@ -4,6 +4,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         SingleResultsPanel             matlab.ui.container.Panel
+        ExportRobotButton              matlab.ui.control.Button
         ExportGroupButton              matlab.ui.control.Button
         SimTimeEditField               matlab.ui.control.NumericEditField
         SimTimeEditFieldLabel          matlab.ui.control.Label
@@ -222,6 +223,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: OpenFolderButton
         function OpenFolderButtonPushed(app, event)
             open_folder(app);
+        end
+
+        % Button pushed function: ExportRobotButton
+        function ExportRobotButtonPushed(app, event)
+            export_robot(app);
         end
 
         % Button pushed function: SimulateRobotButton
@@ -865,7 +871,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.SimulateRobotButton = uibutton(app.SingleResultsPanel, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [413 21 55 22];
+            app.SimulateRobotButton.Position = [413 8 55 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create RobotIDXField
@@ -883,7 +889,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageTreeButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageTreeButtonPushed, true);
             app.ParentageTreeButton.Tag = 'loadresult';
             app.ParentageTreeButton.WordWrap = 'on';
-            app.ParentageTreeButton.Position = [400 58 78 32];
+            app.ParentageTreeButton.Position = [400 71 78 34];
             app.ParentageTreeButton.Text = 'Parentage Tree';
 
             % Create OpenFolderButton
@@ -942,6 +948,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ExportGroupButton.FontSize = 11;
             app.ExportGroupButton.Position = [280 182 65 33];
             app.ExportGroupButton.Text = 'Export Group';
+
+            % Create ExportRobotButton
+            app.ExportRobotButton = uibutton(app.SingleResultsPanel, 'push');
+            app.ExportRobotButton.ButtonPushedFcn = createCallbackFcn(app, @ExportRobotButtonPushed, true);
+            app.ExportRobotButton.WordWrap = 'on';
+            app.ExportRobotButton.FontSize = 11;
+            app.ExportRobotButton.Position = [406 33 65 33];
+            app.ExportRobotButton.Text = 'Export Robot';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
