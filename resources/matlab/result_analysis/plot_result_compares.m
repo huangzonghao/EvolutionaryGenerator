@@ -56,14 +56,14 @@ function plot_result_compares(app, do_clean_plot)
                    % 0.3010 0.7450 0.9330;
                    % 0.6350 0.0780 0.1840];
 
-    for i = 1 : length(app.targets_to_compare)
-        if app.targets_to_compare{i}.isgroup
-            result = app.virtual_results{app.targets_to_compare{i}.id};
+    for i_target_to_compare = 1 : length(app.targets_to_compare)
+        if app.targets_to_compare{i_target_to_compare}.isgroup
+            result = app.virtual_results{app.targets_to_compare{i_target_to_compare}.id};
         else
-            result = app.results{app.targets_to_compare{i}.id};
+            result = app.results{app.targets_to_compare{i_target_to_compare}.id};
         end
-        plot_color = plot_colors(rem(i, length(plot_colors)) + 1);
-        % plot_color = plot_colors(rem(i, size(plot_colors, 1)) + 1, :);
+        plot_color = plot_colors(rem(i_target_to_compare, length(plot_colors)) + 1);
+        % plot_color = plot_colors(rem(i_target_to_compare, size(plot_colors, 1)) + 1, :);
         if ~result.isgroup
             if ~result.loaded
                 load_result(app, result.id);
@@ -88,8 +88,8 @@ function plot_result_compares(app, do_clean_plot)
             clean_elite_archive_fits = [];
             archive_parentage = [];
 
-            for i = 1 : result.num_results
-                child_result = app.results{result.ids(i)};
+            for i_virtual_result = 1 : result.num_results
+                child_result = app.results{result.ids(i_virtual_result)};
                 if ~app.results{child_result.id}.loaded
                     load_result(app, child_result.id);
                     child_result = app.results{child_result.id};
