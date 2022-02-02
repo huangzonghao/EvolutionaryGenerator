@@ -67,6 +67,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparePanel                   matlab.ui.container.Panel
+        ExportComparePlotDataButton    matlab.ui.control.Button
         MannWhitneyTestButton          matlab.ui.control.Button
         QQPlotForCompareButton         matlab.ui.control.Button
         TTestOptionDropDown            matlab.ui.control.DropDown
@@ -173,6 +174,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: ComparePlotButton
         function ComparePlotButtonPushed(app, event)
             plot_result_compares(app, false);
+        end
+
+        % Button pushed function: ExportComparePlotDataButton
+        function ExportComparePlotDataButtonPushed(app, event)
+            export_compare_plot_data(app);
         end
 
         % Button pushed function: CleanCompareButton
@@ -477,14 +483,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ComparePlotButton = uibutton(app.ComparePanel, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
             app.ComparePlotButton.WordWrap = 'on';
-            app.ComparePlotButton.Position = [185 390 63 36];
+            app.ComparePlotButton.Position = [185 397 63 36];
             app.ComparePlotButton.Text = 'Compare Plot';
 
             % Create CleanCompareButton
             app.CleanCompareButton = uibutton(app.ComparePanel, 'push');
             app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
             app.CleanCompareButton.WordWrap = 'on';
-            app.CleanCompareButton.Position = [185 342 63 43];
+            app.CleanCompareButton.Position = [185 303 63 43];
             app.CleanCompareButton.Text = 'Clean Compare';
 
             % Create PlotNameLabel
@@ -500,45 +506,45 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.TTestButton = uibutton(app.ComparePanel, 'push');
             app.TTestButton.ButtonPushedFcn = createCallbackFcn(app, @TTestButtonPushed, true);
             app.TTestButton.WordWrap = 'on';
-            app.TTestButton.Position = [188 258 57 22];
+            app.TTestButton.Position = [188 219 57 22];
             app.TTestButton.Text = 'T-Test';
 
             % Create ANOVAButton
             app.ANOVAButton = uibutton(app.ComparePanel, 'push');
             app.ANOVAButton.ButtonPushedFcn = createCallbackFcn(app, @ANOVAButtonPushed, true);
             app.ANOVAButton.WordWrap = 'on';
-            app.ANOVAButton.Position = [188 234 57 22];
+            app.ANOVAButton.Position = [188 195 57 22];
             app.ANOVAButton.Text = 'ANOVA';
 
             % Create VarTestButton
             app.VarTestButton = uibutton(app.ComparePanel, 'push');
             app.VarTestButton.ButtonPushedFcn = createCallbackFcn(app, @VarTestButtonPushed, true);
             app.VarTestButton.WordWrap = 'on';
-            app.VarTestButton.Position = [188 211 57 22];
+            app.VarTestButton.Position = [188 172 57 22];
             app.VarTestButton.Text = 'VarTest';
 
             % Create TTestAllButton
             app.TTestAllButton = uibutton(app.ComparePanel, 'push');
             app.TTestAllButton.ButtonPushedFcn = createCallbackFcn(app, @TTestAllButtonPushed, true);
-            app.TTestAllButton.Position = [185 187 65 22];
+            app.TTestAllButton.Position = [185 148 65 22];
             app.TTestAllButton.Text = 'T-Test All';
 
             % Create TTestOptionDropDownLabel
             app.TTestOptionDropDownLabel = uilabel(app.ComparePanel);
-            app.TTestOptionDropDownLabel.Position = [181 309 73 22];
+            app.TTestOptionDropDownLabel.Position = [181 270 73 22];
             app.TTestOptionDropDownLabel.Text = 'T-Test Option';
 
             % Create TTestOptionDropDown
             app.TTestOptionDropDown = uidropdown(app.ComparePanel);
             app.TTestOptionDropDown.Items = {};
-            app.TTestOptionDropDown.Position = [181 282 92 22];
+            app.TTestOptionDropDown.Position = [181 243 92 22];
             app.TTestOptionDropDown.Value = {};
 
             % Create QQPlotForCompareButton
             app.QQPlotForCompareButton = uibutton(app.ComparePanel, 'push');
             app.QQPlotForCompareButton.ButtonPushedFcn = createCallbackFcn(app, @QQPlotForCompareButtonPushed, true);
             app.QQPlotForCompareButton.WordWrap = 'on';
-            app.QQPlotForCompareButton.Position = [190 164 57 22];
+            app.QQPlotForCompareButton.Position = [190 125 57 22];
             app.QQPlotForCompareButton.Text = 'QQ Plot';
 
             % Create MannWhitneyTestButton
@@ -547,6 +553,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MannWhitneyTestButton.WordWrap = 'on';
             app.MannWhitneyTestButton.Position = [187 83 57 22];
             app.MannWhitneyTestButton.Text = 'mwwtest';
+
+            % Create ExportComparePlotDataButton
+            app.ExportComparePlotDataButton = uibutton(app.ComparePanel, 'push');
+            app.ExportComparePlotDataButton.ButtonPushedFcn = createCallbackFcn(app, @ExportComparePlotDataButtonPushed, true);
+            app.ExportComparePlotDataButton.WordWrap = 'on';
+            app.ExportComparePlotDataButton.Position = [186 359 63 36];
+            app.ExportComparePlotDataButton.Text = 'Compare Plot Data';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
