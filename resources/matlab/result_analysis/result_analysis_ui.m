@@ -89,6 +89,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         CompareListBox                 matlab.ui.control.ListBox
         GenerateAllComparePlotsButton  matlab.ui.control.Button
         DebugPanel                     matlab.ui.container.Panel
+        PaperPlotButton                matlab.ui.control.Button
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
     end
@@ -408,6 +409,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function MannWhitneyTestCoverageAllButtonPushed(app, event)
             run_mwwtest_coverage_all(app);
         end
+
+        % Button pushed function: PaperPlotButton
+        function PaperPlotButtonPushed(app, event)
+            generate_paper_plot(app);
+        end
     end
 
     % Component initialization
@@ -440,6 +446,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CLCButton.Tag = 'loadresult';
             app.CLCButton.Position = [21 496 57 22];
             app.CLCButton.Text = 'CLC';
+
+            % Create PaperPlotButton
+            app.PaperPlotButton = uibutton(app.DebugPanel, 'push');
+            app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
+            app.PaperPlotButton.Tag = 'loadresult';
+            app.PaperPlotButton.Position = [14 264 72 22];
+            app.PaperPlotButton.Text = 'Paper Plot';
 
             % Create ComparePanel
             app.ComparePanel = uipanel(app.MainFigure);
