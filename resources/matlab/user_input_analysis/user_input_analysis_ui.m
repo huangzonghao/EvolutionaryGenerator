@@ -3,6 +3,9 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        SavePaperPlotButton            matlab.ui.control.Button
+        RehashButton                   matlab.ui.control.Button
+        PaperPlotButton                matlab.ui.control.Button
         AddRandomtoAddedButton         matlab.ui.control.Button
         NumRandomField                 matlab.ui.control.EditField
         NumEditFieldLabel              matlab.ui.control.Label
@@ -47,6 +50,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     end
 
     properties (Access = public)
+        paper_fig
         plot_fig
         heat_axes
         panel
@@ -248,6 +252,21 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: AddRandomtoAddedButton
         function AddRandomtoAddedButtonPushed(app, event)
             add_random_robots_to_bag(app);
+        end
+
+        % Button pushed function: PaperPlotButton
+        function PaperPlotButtonPushed(app, event)
+            generate_paper_plot(app);
+        end
+
+        % Button pushed function: SavePaperPlotButton
+        function SavePaperPlotButtonPushed(app, event)
+            save_paper_plot(app);
+        end
+
+        % Button pushed function: RehashButton
+        function RehashButtonPushed(app, event)
+            rehash;
         end
     end
 
@@ -503,6 +522,25 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.AddRandomtoAddedButton.WordWrap = 'on';
             app.AddRandomtoAddedButton.Position = [268 310 65 49];
             app.AddRandomtoAddedButton.Text = 'Add Random';
+
+            % Create PaperPlotButton
+            app.PaperPlotButton = uibutton(app.MainFigure, 'push');
+            app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
+            app.PaperPlotButton.Position = [670 242 84 22];
+            app.PaperPlotButton.Text = 'Paper Plot';
+
+            % Create RehashButton
+            app.RehashButton = uibutton(app.MainFigure, 'push');
+            app.RehashButton.ButtonPushedFcn = createCallbackFcn(app, @RehashButtonPushed, true);
+            app.RehashButton.Position = [671 87 84 22];
+            app.RehashButton.Text = 'Rehash';
+
+            % Create SavePaperPlotButton
+            app.SavePaperPlotButton = uibutton(app.MainFigure, 'push');
+            app.SavePaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @SavePaperPlotButtonPushed, true);
+            app.SavePaperPlotButton.WordWrap = 'on';
+            app.SavePaperPlotButton.Position = [674 199 75 34];
+            app.SavePaperPlotButton.Text = 'Save Paper Plot';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
