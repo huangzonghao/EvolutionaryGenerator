@@ -4,6 +4,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         SingleResultsPanel             matlab.ui.container.Panel
+        SanitizeArchiveCheckBox        matlab.ui.control.CheckBox
         ExportRobotButton              matlab.ui.control.Button
         ExportGroupButton              matlab.ui.control.Button
         SimTimeEditField               matlab.ui.control.NumericEditField
@@ -969,6 +970,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ExportRobotButton.FontSize = 11;
             app.ExportRobotButton.Position = [406 33 65 33];
             app.ExportRobotButton.Text = 'Export Robot';
+
+            % Create SanitizeArchiveCheckBox
+            app.SanitizeArchiveCheckBox = uicheckbox(app.SingleResultsPanel);
+            app.SanitizeArchiveCheckBox.Text = 'Sanitize Archive';
+            app.SanitizeArchiveCheckBox.Position = [487 157 107 22];
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

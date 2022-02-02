@@ -7,6 +7,7 @@ function result_analysis_init(app)
         app.generator_name = app.generator_basename;
     end
 
+    app.SanitizeArchiveCheckBox.Value = false;
     app.compare_plot_config.plot_to_file = false;
 
     % init ui assets
