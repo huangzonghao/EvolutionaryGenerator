@@ -25,6 +25,7 @@ function plot_gen_all(app)
     end
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     app.archive_ids(sub2ind(size(archive_map), x, y)) = [1:length(fitness)];
+    app.current_result.current_archive_map = archive_map;
 
     parentage_map = -1 * ones(griddim);
     if isfield(result.stat, 'has_parentage') && result.stat.has_parentage

@@ -4,6 +4,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         SingleResultsPanel             matlab.ui.container.Panel
+        ExportArchiveMapButton         matlab.ui.control.Button
         SanitizeArchiveCheckBox        matlab.ui.control.CheckBox
         ExportRobotButton              matlab.ui.control.Button
         ExportGroupButton              matlab.ui.control.Button
@@ -170,6 +171,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: StatPlotButton
         function StatPlotButtonPushed(app, event)
             plot_result_stat(app);
+        end
+
+        % Button pushed function: ExportArchiveMapButton
+        function ExportArchiveMapButtonPushed(app, event)
+            export_archive_map(app);
         end
 
         % Button pushed function: ComparePlotButton
@@ -975,6 +981,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.SanitizeArchiveCheckBox = uicheckbox(app.SingleResultsPanel);
             app.SanitizeArchiveCheckBox.Text = 'Sanitize Archive';
             app.SanitizeArchiveCheckBox.Position = [487 157 107 22];
+
+            % Create ExportArchiveMapButton
+            app.ExportArchiveMapButton = uibutton(app.SingleResultsPanel, 'push');
+            app.ExportArchiveMapButton.ButtonPushedFcn = createCallbackFcn(app, @ExportArchiveMapButtonPushed, true);
+            app.ExportArchiveMapButton.Tag = 'loadresult';
+            app.ExportArchiveMapButton.WordWrap = 'on';
+            app.ExportArchiveMapButton.Position = [494 115 82 36];
+            app.ExportArchiveMapButton.Text = 'Export Archive Map';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
