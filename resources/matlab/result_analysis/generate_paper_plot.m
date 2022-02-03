@@ -12,15 +12,20 @@ function generate_paper_plot(app)
     feature_description1 = 'Body Length';
 
     paper_fig = figure('Position', [100, 100, 800, 800]);
+    paper_fig.PaperSize = [8.5, 8.5];
     fig_panel = panel(paper_fig);
     fig_panel.pack(2, 2);
+    fig_panel.margintop = 10;
+    fig_panel.marginbottom = 20;
+    fig_panel.marginleft = 20; % so that we have some space for the heatmap colorbar
     fig_panel.marginright = 20; % so that we have some space for the heatmap colorbar
-    fig_panel.de.marginright = 30;
+    fig_panel.de.marginright = 25;
+    fig_panel.de.marginleft = 30;
     fig_panel.de.margintop = 20;
-
-    archive_map = zeros([20, 20]);
+    fig_panel.de.marginbottom = 20;
 
     % Result 1
+    archive_map = nan([20, 20]);
     result = load_target_result(app, false, app.targets_to_compare{1}.id);
     griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
     % Gen 0
@@ -37,9 +42,13 @@ function generate_paper_plot(app)
     hm1.NodeChildren(3).YDir='normal';
     hm1.XLabel = feature_description2;
     hm1.YLabel = feature_description1;
-    hm1.Title = 'Gen 0';
+    hm1.Title = 'H0 - Gen 0';
+    hm1.FontColor = [0, 0, 0];
+    hm1.FontSize = 15;
+    hm1.MissingDataLabel = 'Nan';
 
     % Gen 2000
+    archive_map = nan([20, 20]);
     current_gen = 2000;
     current_gen_archive = result.archive{current_gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
@@ -53,9 +62,13 @@ function generate_paper_plot(app)
     hm2.NodeChildren(3).YDir='normal';
     hm2.XLabel = feature_description2;
     hm2.YLabel = feature_description1;
-    hm2.Title = 'Gen 2000';
+    hm2.Title = 'H0 - Gen 2000';
+    hm2.FontColor = [0, 0, 0];
+    hm2.FontSize = 15;
+    hm2.MissingDataLabel = 'Nan';
 
     % Result 2
+    archive_map = nan([20, 20]);
     result = load_target_result(app, false, app.targets_to_compare{2}.id);
     griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
     % Gen 0
@@ -72,9 +85,13 @@ function generate_paper_plot(app)
     hm3.NodeChildren(3).YDir='normal';
     hm3.XLabel = feature_description2;
     hm3.YLabel = feature_description1;
-    hm3.Title = 'Gen 0';
+    hm3.Title = 'H25 - Gen 0';
+    hm3.FontColor = [0, 0, 0];
+    hm3.FontSize = 15;
+    hm3.MissingDataLabel = 'Nan';
 
     % Gen 2000
+    archive_map = nan([20, 20]);
     current_gen = 2000;
     current_gen_archive = result.archive{current_gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
@@ -88,7 +105,10 @@ function generate_paper_plot(app)
     hm4.NodeChildren(3).YDir='normal';
     hm4.XLabel = feature_description2;
     hm4.YLabel = feature_description1;
-    hm4.Title = 'Gen 2000';
+    hm4.Title = 'H25 - Gen 2000';
+    hm4.FontColor = [0, 0, 0];
+    hm4.FontSize = 15;
+    hm4.MissingDataLabel = 'Nan';
 
     % Finally adjust the color limits of plots
     c_min = min([hm1.ColorLimits(1), hm2.ColorLimits(1), hm3.ColorLimits(1), hm4.ColorLimits(1)]);
@@ -97,4 +117,28 @@ function generate_paper_plot(app)
     hm2.ColorLimits = [c_min, c_max];
     hm3.ColorLimits = [c_min, c_max];
     hm4.ColorLimits = [c_min, c_max];
+    hm1.MissingDataColor = [1, 1, 1];
+    hm3.MissingDataColor = [1, 1, 1];
+
+    assignin('base', 'hm1', hm1);
+    assignin('base', 'hm2', hm2);
+
+    % Remove the excess axis labels
+    for i = 2 : 20
+        if mod(i, 5) ~= 0
+            hm1.XDisplayLabels{i} = nan;
+            hm1.YDisplayLabels{i} = nan;
+            hm2.XDisplayLabels{i} = nan;
+            hm2.YDisplayLabels{i} = nan;
+            hm3.XDisplayLabels{i} = nan;
+            hm3.YDisplayLabels{i} = nan;
+            hm4.XDisplayLabels{i} = nan;
+            hm4.YDisplayLabels{i} = nan;
+        end
+    end
+    hm1.XLabel = '';
+    hm3.XLabel = '';
+    hm3.YLabel = '';
+    hm4.YLabel = '';
+    colormap(paper_fig, 'jet');
 end
