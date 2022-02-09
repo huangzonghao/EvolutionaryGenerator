@@ -286,10 +286,10 @@ if(MSVC)
 endif()
 
 ##############################
-#  Export_Robotgami_Library  #
+#  Export_Robogami_Library  #
 ##############################
 if (ENABLE_ROBOGAMI)
-    set(CURRENT_TARGET_NAME Export_Robotgami_Library)
+    set(CURRENT_TARGET_NAME Export_Robogami_Library)
     set(Sources
         ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/RobogamiLibrary.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/export_robogami_library.cpp
