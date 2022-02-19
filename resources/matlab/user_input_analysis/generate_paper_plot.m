@@ -39,7 +39,7 @@ function generate_paper_plot(app)
     ground_hm.FontColor = [0, 0, 0];
     ground_hm.FontSize = 15;
     ground_hm.MissingDataLabel = 'Nan';
-    title('(a) Ground');
+    title('(i) Ground');
     xlabel(feature_description2); % x, y flipped in plot
     ylabel(feature_description1);
 
@@ -62,7 +62,7 @@ function generate_paper_plot(app)
     sine_hm.FontColor = [0, 0, 0];
     sine_hm.FontSize = 15;
     sine_hm.MissingDataLabel = 'Nan';
-    title('(b) Sine');
+    title('(ii) Sine');
     xlabel(feature_description2); % x, y flipped in plot
     ylabel(feature_description1);
 
@@ -85,7 +85,7 @@ function generate_paper_plot(app)
     valley_hm.FontColor = [0, 0, 0];
     valley_hm.FontSize = 15;
     valley_hm.MissingDataLabel = 'Nan';
-    title('(c) Valley');
+    title('(iii) Valley');
     xlabel(feature_description2); % x, y flipped in plot
     ylabel(feature_description1);
 
@@ -123,9 +123,16 @@ function generate_paper_plot(app)
     end
     update_bar.select();
     stacked_bar3(update_bar.axis, app.map_stat);
-    title('(d) Updates per Bin', 'fontweight', 'bold', 'fontsize', 15);
+    title('(iv) Updates per Bin', 'fontweight', 'bold', 'fontsize', 15);
     xlabel(feature_description2, 'fontsize', 15, 'color', [0, 0, 0]); % x, y flipped in plot
     ylabel(feature_description1, 'fontsize', 15, 'color', [0, 0, 0]);
     zlabel('Number of robots');
     legend('Ground', 'Sine', 'Valley');
+
+    % Finally adjust the color limits of plots
+    c_min = min([ground_hm.ColorLimits(1), sine_hm.ColorLimits(1), valley_hm.ColorLimits(1)]);
+    c_max = max([ground_hm.ColorLimits(2), sine_hm.ColorLimits(2), valley_hm.ColorLimits(2)]);
+    ground_hm.ColorLimits = [c_min, c_max];
+    sine_hm.ColorLimits = [c_min, c_max];
+    valley_hm.ColorLimits = [c_min, c_max];
 end
