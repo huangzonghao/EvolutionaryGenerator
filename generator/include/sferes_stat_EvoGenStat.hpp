@@ -50,12 +50,12 @@ class EvoGenStat {
         std::ofstream ofs(output_filename);
         ofs.precision(5);
         for (auto it = pop.begin(); it != pop.end(); ++it) {
-            ofs << (*it)->id().gen << "," << (*it)->id().id << ","
-                << (*it)->id().p1_gen << "," << (*it)->id().p1_id << ","
-                << (*it)->id().p2_gen << "," << (*it)->id().p2_id << ","
-                << (*it)->grid_id()[0] << "," << (*it)->grid_id()[1] << ","
-                << (*it)->fit().desc()[0] << "," << (*it)->fit().desc()[1] << ","
-                << (*it)->fit().value();
+            ofs << (*it)->id().gen << "," << (*it)->id().id << "," // 1, 2
+                << (*it)->id().p1_gen << "," << (*it)->id().p1_id << "," // 3, 4
+                << (*it)->id().p2_gen << "," << (*it)->id().p2_id << "," // 5, 6
+                << (*it)->grid_id()[0] << "," << (*it)->grid_id()[1] << "," // 7, 8
+                << (*it)->fit().desc()[0] << "," << (*it)->fit().desc()[1] << "," // 9, 10
+                << (*it)->fit().value(); // 11
 
             for (size_t i = 0; i < (*it)->size(); ++i)
                 ofs << "," << (*it)->data(i);

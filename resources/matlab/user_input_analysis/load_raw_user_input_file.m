@@ -17,7 +17,7 @@ function user_id = load_raw_user_input_file(app, input_file)
     % Result Structure
     % env : the order of environments
     % fitness : num_env x num_ver (env in order of app.default_env_order)
-    % feature : num_env x 2 x num_ver (env in order of app.default_env_order)
+    % feature : num_env x num_ver x 2 (env in order of app.default_env_order)
     % feature_description : string array containing the feature descriptions
     tmp_result.internal_id = length(app.results) + 1;
     user_id = jsobj.user_id;

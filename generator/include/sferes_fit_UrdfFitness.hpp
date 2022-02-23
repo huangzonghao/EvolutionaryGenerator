@@ -23,6 +23,8 @@ class UrdfFitness {
     double value() const { return _value; }
     void set_value(double val) { _value = val; }
 
+    // TODO: all the fitness object belong to some phen. they should be able
+    // to evaluate themselves without asking for ind again
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
         if (!ind.valid()) {
@@ -59,7 +61,7 @@ class UrdfFitness {
         // double body_length = robot.get_body_length();
         // _desc[0] = robot.get_body_size(1) / body_length;
         // _desc[0] /=  2; // assuming the range of the origin ratio is [0, 2], ignoring the rest
-        _desc[0] = ind.data(1);
+        // _desc[0] = ind.data(1);
         _desc[0] = range_to_unit(robot.get_body_length(), 0.5, 2.3);
         double avg_leg_length = 0;
         for (int i = 0; i < num_legs; ++i) {
