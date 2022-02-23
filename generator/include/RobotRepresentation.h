@@ -91,6 +91,7 @@ class RobotRepresentation {
     int num_legs_ = 0;
     double scale_min_ = 0;
     double scale_max_ = 1;
+    double density_ = 2500; // unit: kg/m3. or x/1000 g/cm3
 };
 
 #endif /* end of include guard: EVOGEN_GENERATOR_ROBOTREPRESENTATION_H_ */
