@@ -212,6 +212,7 @@ bool SimulationManager::RunSimulation() {
     // update fall down threshold
     fall_down_thresh = robot_doc_->GetMinPos().z() * 1.5 - 2;
 
+    init_stats();
     if(do_viz_) {
         ChRealtimeStepTimer realtime_timer;
         using namespace chrono::irrlicht;
@@ -250,6 +251,7 @@ bool SimulationManager::RunSimulation() {
             vis_app.EndScene();
 
             task_done_ = controller->Update();
+            update_stats();
 
             if (do_realtime_) realtime_timer.Spin(step_size_);
 
@@ -266,6 +268,7 @@ bool SimulationManager::RunSimulation() {
             ch_system_->DoStepDynamics(step_size_);
 
             task_done_ = controller->Update();
+            update_stats();
         }
         tok = std::chrono::steady_clock::now();
     }
@@ -312,12 +315,27 @@ double SimulationManager::GetRootBodyDisplacementX() const {
 double SimulationManager::GetRootBodyDisplacementY() const {
     return  robot_doc_->GetRootBody()->GetPos().y() - ch_waypoints_[0].y();
 }
+
+double SimulationManager::GetRootBodyAccumulatedY() const {
+    return  accumulated_y_;
+}
 /***********************
 *  private functions  *
 ***********************/
 
 bool SimulationManager::check_termination() {
     return  robot_doc_->GetRootBody()->GetPos().z() < fall_down_thresh ? true : false;
+}
+
+void SimulationManager::init_stats() {
+    prev_y_ = robot_doc_->GetRootBody()->GetPos().y();
+    accumulated_y_ = 0;
+}
+
+void SimulationManager::update_stats() {
+    double current_y = robot_doc_->GetRootBody()->GetPos().y();
+    accumulated_y_ += std::abs(current_y - prev_y_);
+    prev_y_ = current_y;
 }
 
 // TODO: right now using greedy method to place the env under the robot, that the

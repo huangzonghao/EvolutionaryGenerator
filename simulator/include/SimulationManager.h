@@ -77,6 +77,7 @@ class  SimulationManager {
     double GetRootBodyDisplacement() const;
     double GetRootBodyDisplacementX() const;
     double GetRootBodyDisplacementY() const;
+    double GetRootBodyAccumulatedY() const;
     void EnableEarlyTermination() { early_termination_enabled_ = true; }
   private:
     ControllerType controller_type_ = EvoGen;
@@ -90,6 +91,12 @@ class  SimulationManager {
     double k_friction_;
     double s_friction_;
     bool robot_self_collided_ = false;
+
+    // Statics collected in training
+    void init_stats();
+    void update_stats();
+    double accumulated_y_= 0;
+    double prev_y_= 0;
 
     std::vector<std::shared_ptr<SimPayload>> payloads_;
     std::vector<std::shared_ptr<SimMotor>> motors_;
