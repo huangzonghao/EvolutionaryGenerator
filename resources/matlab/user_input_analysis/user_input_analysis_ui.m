@@ -3,6 +3,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        FeaturePlotButton              matlab.ui.control.Button
         SavePaperPlotButton            matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         PaperPlotButton                matlab.ui.control.Button
@@ -146,6 +147,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: VerPlotButton
         function VerPlotButtonPushed(app, event)
             plot_ver_fitness(app);
+        end
+
+        % Button pushed function: FeaturePlotButton
+        function FeaturePlotButtonPushed(app, event)
+            plot_ver_features(app);
         end
 
         % Button pushed function: RefreshRawUserInputListButton
@@ -336,7 +342,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create VerPlotButton
             app.VerPlotButton = uibutton(app.MainFigure, 'push');
             app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
-            app.VerPlotButton.Position = [23 157 104 33];
+            app.VerPlotButton.Position = [13 157 47 20];
             app.VerPlotButton.Text = 'VerPlot';
 
             % Create RefreshRawUserInputListButton
@@ -541,6 +547,12 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.SavePaperPlotButton.WordWrap = 'on';
             app.SavePaperPlotButton.Position = [674 199 75 34];
             app.SavePaperPlotButton.Text = 'Save Paper Plot';
+
+            % Create FeaturePlotButton
+            app.FeaturePlotButton = uibutton(app.MainFigure, 'push');
+            app.FeaturePlotButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotButtonPushed, true);
+            app.FeaturePlotButton.Position = [61 155 78 22];
+            app.FeaturePlotButton.Text = 'FeaturePlot';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
