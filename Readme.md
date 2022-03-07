@@ -288,6 +288,8 @@ The Matlab tool that helps user deal with the training results.
         the auto configured paths could be updated.
 * Load a **result group** by clicking the `Load Group` button and select the group folder.
 * All results within that group folder will be listed in the list box.
+    * If the selected group folder do contain results, but nothing showed up in the list box,
+        click the `refresh` button. This happens when a group is opened for the first time.
     * If the result has a nickname specified, nickname will be used in the listing,
         otherwise folder name of the result folder is used.
     * A leading `*` indicates the result is fresh off the trainer, with no post
