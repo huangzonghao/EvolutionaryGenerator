@@ -5,8 +5,17 @@ function plot_ver_features(app)
         return
     end
 
+    if isempty(app.feature_plot_fig) || ~isvalid(app.feature_plot_fig)
+        % open new plot
+        app.feature_plot_fig = figure();
+        app.feature_plot_fig.OuterPosition = [260, 40, 1400, 1000];
+    else
+        figure(app.feature_plot_fig);
+    end
+
     % plotting only the first selected user
-    plot_ver_features_kernel(app, app.ListBox.Value(1));
+    app.ListBox.Value = app.ListBox.Value(1);
+    plot_ver_features_kernel(app, app.ListBox.Value);
 end
 
 function plot_ver_features_kernel(app, result_id)
@@ -33,9 +42,6 @@ function plot_ver_features_kernel(app, result_id)
             user_study_order(i) = i;
         end
     end
-
-    fig = figure();
-    fig.OuterPosition = [260, 40, 1400, 1000];
 
     % Result Structure
     % env : the order of environments

@@ -3,6 +3,8 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        FeaturePlotPrevUserButton      matlab.ui.control.Button
+        FeaturePlotNextUserButton      matlab.ui.control.Button
         FeaturePlotButton              matlab.ui.control.Button
         SavePaperPlotButton            matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
@@ -53,6 +55,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         paper_fig
         plot_fig
+        feature_plot_fig
         heat_axes
         panel
         map_surf
@@ -152,6 +155,16 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: FeaturePlotButton
         function FeaturePlotButtonPushed(app, event)
             plot_ver_features(app);
+        end
+
+        % Button pushed function: FeaturePlotNextUserButton
+        function FeaturePlotNextUserButtonPushed(app, event)
+            feature_plot_next_user(app);
+        end
+
+        % Button pushed function: FeaturePlotPrevUserButton
+        function FeaturePlotPrevUserButtonPushed(app, event)
+            feature_plot_prev_user(app);
         end
 
         % Button pushed function: RefreshRawUserInputListButton
@@ -292,26 +305,26 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [22 81 72 22];
+            app.SimulateRobotButton.Position = [19 59 72 22];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.MainFigure, 'text');
             app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [18 108 39 22];
+            app.RobotIDXField.Position = [18 84 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.MainFigure, 'text');
             app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [58 108 39 22];
+            app.RobotIDYField.Position = [58 84 39 22];
 
             % Create OpenFolderButton
             app.OpenFolderButton = uibutton(app.MainFigure, 'push');
             app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
             app.OpenFolderButton.Tag = 'loadresult';
-            app.OpenFolderButton.Position = [18 19 82 22];
+            app.OpenFolderButton.Position = [18 8 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
 
             % Create ListBox
@@ -330,7 +343,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create PopVarButton
             app.PopVarButton = uibutton(app.MainFigure, 'push');
             app.PopVarButton.ButtonPushedFcn = createCallbackFcn(app, @PopVarButtonPushed, true);
-            app.PopVarButton.Position = [18 48 73 22];
+            app.PopVarButton.Position = [18 34 73 22];
             app.PopVarButton.Text = 'Pop Var';
 
             % Create RefreshPlotButton
@@ -342,7 +355,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create VerPlotButton
             app.VerPlotButton = uibutton(app.MainFigure, 'push');
             app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
-            app.VerPlotButton.Position = [13 157 47 20];
+            app.VerPlotButton.Position = [9 168 47 20];
             app.VerPlotButton.Text = 'VerPlot';
 
             % Create RefreshRawUserInputListButton
@@ -384,7 +397,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create VerOrderCheckBox
             app.VerOrderCheckBox = uicheckbox(app.MainFigure);
             app.VerOrderCheckBox.Text = 'default order';
-            app.VerOrderCheckBox.Position = [27 135 89 22];
+            app.VerOrderCheckBox.Position = [58 166 89 22];
             app.VerOrderCheckBox.Value = true;
 
             % Create RefLeftButton
@@ -551,8 +564,20 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create FeaturePlotButton
             app.FeaturePlotButton = uibutton(app.MainFigure, 'push');
             app.FeaturePlotButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotButtonPushed, true);
-            app.FeaturePlotButton.Position = [61 155 78 22];
+            app.FeaturePlotButton.Position = [36 140 72 22];
             app.FeaturePlotButton.Text = 'FeaturePlot';
+
+            % Create FeaturePlotNextUserButton
+            app.FeaturePlotNextUserButton = uibutton(app.MainFigure, 'push');
+            app.FeaturePlotNextUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotNextUserButtonPushed, true);
+            app.FeaturePlotNextUserButton.Position = [83 112 42 25];
+            app.FeaturePlotNextUserButton.Text = 'Next';
+
+            % Create FeaturePlotPrevUserButton
+            app.FeaturePlotPrevUserButton = uibutton(app.MainFigure, 'push');
+            app.FeaturePlotPrevUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotPrevUserButtonPushed, true);
+            app.FeaturePlotPrevUserButton.Position = [19 112 46 25];
+            app.FeaturePlotPrevUserButton.Text = 'Prev';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';
