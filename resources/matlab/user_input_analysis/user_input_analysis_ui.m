@@ -36,6 +36,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         UserInputGroupNameLabel        matlab.ui.control.Label
         LoadUserInputGroupButton       matlab.ui.control.Button
         UserRelatedPlotsPanel          matlab.ui.container.Panel
+        UserCompareGroupNameLabel      matlab.ui.control.Label
         FeaturePlotPrevUserButton      matlab.ui.control.Button
         FeaturePlotNextUserButton      matlab.ui.control.Button
         FeaturePlotButton              matlab.ui.control.Button
@@ -466,45 +467,53 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.LoadCompareGroupButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.LoadCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @LoadCompareGroupButtonPushed, true);
             app.LoadCompareGroupButton.WordWrap = 'on';
-            app.LoadCompareGroupButton.Position = [8 305 61 50];
+            app.LoadCompareGroupButton.Position = [18 286 61 50];
             app.LoadCompareGroupButton.Text = 'Load Compare Group';
 
             % Create ResetCompareGroupButton
             app.ResetCompareGroupButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.ResetCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @ResetCompareGroupButtonPushed, true);
             app.ResetCompareGroupButton.WordWrap = 'on';
-            app.ResetCompareGroupButton.Position = [79 305 61 50];
+            app.ResetCompareGroupButton.Position = [89 286 61 50];
             app.ResetCompareGroupButton.Text = 'Reset Compare Group';
 
             % Create VerPlotButton
             app.VerPlotButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
-            app.VerPlotButton.Position = [32 274 47 20];
+            app.VerPlotButton.Position = [10 242 65 30];
             app.VerPlotButton.Text = 'VerPlot';
 
             % Create VerOrderCheckBox
             app.VerOrderCheckBox = uicheckbox(app.UserRelatedPlotsPanel);
             app.VerOrderCheckBox.Text = 'default order';
-            app.VerOrderCheckBox.Position = [35 248 89 22];
+            app.VerOrderCheckBox.Position = [81 246 89 22];
             app.VerOrderCheckBox.Value = true;
 
             % Create FeaturePlotButton
             app.FeaturePlotButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotButtonPushed, true);
-            app.FeaturePlotButton.Position = [32 225 72 22];
+            app.FeaturePlotButton.Position = [42 191 89 39];
             app.FeaturePlotButton.Text = 'FeaturePlot';
 
             % Create FeaturePlotNextUserButton
             app.FeaturePlotNextUserButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotNextUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotNextUserButtonPushed, true);
-            app.FeaturePlotNextUserButton.Position = [79 197 42 25];
+            app.FeaturePlotNextUserButton.Position = [99 156 42 25];
             app.FeaturePlotNextUserButton.Text = 'Next';
 
             % Create FeaturePlotPrevUserButton
             app.FeaturePlotPrevUserButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotPrevUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotPrevUserButtonPushed, true);
-            app.FeaturePlotPrevUserButton.Position = [15 197 46 25];
+            app.FeaturePlotPrevUserButton.Position = [35 156 46 25];
             app.FeaturePlotPrevUserButton.Text = 'Prev';
+
+            % Create UserCompareGroupNameLabel
+            app.UserCompareGroupNameLabel = uilabel(app.UserRelatedPlotsPanel);
+            app.UserCompareGroupNameLabel.HorizontalAlignment = 'center';
+            app.UserCompareGroupNameLabel.FontSize = 14;
+            app.UserCompareGroupNameLabel.FontWeight = 'bold';
+            app.UserCompareGroupNameLabel.Position = [8 343 160 22];
+            app.UserCompareGroupNameLabel.Text = '';
 
             % Create LoadUserInputGroupButton
             app.LoadUserInputGroupButton = uibutton(app.UserInputFileExplorerPanel, 'push');
