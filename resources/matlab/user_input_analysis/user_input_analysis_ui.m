@@ -33,6 +33,8 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         RefreshRobotsListButton        matlab.ui.control.Button
         SelectedRobotsListBox          matlab.ui.control.ListBox
         UserInputFileExplorerPanel     matlab.ui.container.Panel
+        UserInputGroupNameLabel        matlab.ui.control.Label
+        LoadUserInputGroupButton       matlab.ui.control.Button
         UserRelatedPlotsPanel          matlab.ui.container.Panel
         FeaturePlotPrevUserButton      matlab.ui.control.Button
         FeaturePlotNextUserButton      matlab.ui.control.Button
@@ -83,6 +85,10 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         results = {}
         fitness_range = [Inf, -Inf];
         evo_params % parameters of an evolutionary generation process
+        user_input_group
+        compare_group = false
+
+        % Constants
         user_input_dir
         training_results_dir
         evogen_exe_path
@@ -100,7 +106,6 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         random_robots = [] % a [n x max_gene_length] matrix containing gene for randomly generated robots
         default_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
         auto_refresh_selected_list_on_next_enabled_update = true % controls if next update on results_enabled matrix would trigger an automatic update of the selected_robots_list
-        compare_group = false
     end
 
     % Callbacks that handle component events
@@ -180,6 +185,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: FeaturePlotPrevUserButton
         function FeaturePlotPrevUserButtonPushed(app, event)
             feature_plot_prev_user(app);
+        end
+
+        % Button pushed function: LoadUserInputGroupButton
+        function LoadUserInputGroupButtonPushed(app, event)
+            load_user_input_group(app);
         end
 
         % Button pushed function: RefreshRawUserInputListButton
@@ -340,54 +350,54 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.UserInputFileListBox = uilistbox(app.UserInputFileExplorerPanel);
             app.UserInputFileListBox.Items = {};
             app.UserInputFileListBox.Multiselect = 'on';
-            app.UserInputFileListBox.Position = [2 0 112 639];
+            app.UserInputFileListBox.Position = [2 0 112 614];
             app.UserInputFileListBox.Value = {};
 
             % Create RefreshRawUserInputListButton
             app.RefreshRawUserInputListButton = uibutton(app.UserInputFileExplorerPanel, 'push');
             app.RefreshRawUserInputListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshRawUserInputListButtonPushed, true);
-            app.RefreshRawUserInputListButton.Position = [122 595 86 36];
+            app.RefreshRawUserInputListButton.Position = [122 527 86 36];
             app.RefreshRawUserInputListButton.Text = 'RefreshList';
 
             % Create UserDesignFilterPanel
             app.UserDesignFilterPanel = uipanel(app.UserInputFileExplorerPanel);
             app.UserDesignFilterPanel.Title = 'User Design Filter';
-            app.UserDesignFilterPanel.Position = [114 388 115 201];
+            app.UserDesignFilterPanel.Position = [114 0 115 521];
 
             % Create groundButton
             app.groundButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.groundButton.ButtonPushedFcn = createCallbackFcn(app, @groundButtonPushed, true);
-            app.groundButton.Position = [27 110 57 22];
+            app.groundButton.Position = [27 430 57 22];
             app.groundButton.Text = 'ground';
 
             % Create sineButton
             app.sineButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.sineButton.ButtonPushedFcn = createCallbackFcn(app, @sineButtonPushed, true);
-            app.sineButton.Position = [27 86 57 22];
+            app.sineButton.Position = [27 406 57 22];
             app.sineButton.Text = 'sine';
 
             % Create valleyButton
             app.valleyButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.valleyButton.ButtonPushedFcn = createCallbackFcn(app, @valleyButtonPushed, true);
-            app.valleyButton.Position = [27 62 57 22];
+            app.valleyButton.Position = [27 382 57 22];
             app.valleyButton.Text = 'valley';
 
             % Create ClearButton
             app.ClearButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.ClearButton.ButtonPushedFcn = createCallbackFcn(app, @ClearButtonPushed, true);
-            app.ClearButton.Position = [27 8 57 22];
+            app.ClearButton.Position = [27 328 57 22];
             app.ClearButton.Text = 'Clear';
 
             % Create AllButton
             app.AllButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.AllButton.ButtonPushedFcn = createCallbackFcn(app, @AllButtonPushed, true);
-            app.AllButton.Position = [27 31 57 22];
+            app.AllButton.Position = [27 351 57 22];
             app.AllButton.Text = 'All';
 
             % Create ClearAllButton
             app.ClearAllButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.ClearAllButton.ButtonPushedFcn = createCallbackFcn(app, @ClearAllButtonPushed, true);
-            app.ClearAllButton.Position = [21 139 72 31];
+            app.ClearAllButton.Position = [21 459 72 31];
             app.ClearAllButton.Text = 'ClearAll';
 
             % Create CompareUsertoTrainingPanel
@@ -450,51 +460,65 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create UserRelatedPlotsPanel
             app.UserRelatedPlotsPanel = uipanel(app.UserInputFileExplorerPanel);
             app.UserRelatedPlotsPanel.Title = 'User Related Plots';
-            app.UserRelatedPlotsPanel.Position = [114 0 291 389];
+            app.UserRelatedPlotsPanel.Position = [229 0 176 389];
 
             % Create LoadCompareGroupButton
             app.LoadCompareGroupButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.LoadCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @LoadCompareGroupButtonPushed, true);
             app.LoadCompareGroupButton.WordWrap = 'on';
-            app.LoadCompareGroupButton.Position = [13 312 61 50];
+            app.LoadCompareGroupButton.Position = [8 305 61 50];
             app.LoadCompareGroupButton.Text = 'Load Compare Group';
 
             % Create ResetCompareGroupButton
             app.ResetCompareGroupButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.ResetCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @ResetCompareGroupButtonPushed, true);
             app.ResetCompareGroupButton.WordWrap = 'on';
-            app.ResetCompareGroupButton.Position = [84 312 61 50];
+            app.ResetCompareGroupButton.Position = [79 305 61 50];
             app.ResetCompareGroupButton.Text = 'Reset Compare Group';
 
             % Create VerPlotButton
             app.VerPlotButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
-            app.VerPlotButton.Position = [37 281 47 20];
+            app.VerPlotButton.Position = [32 274 47 20];
             app.VerPlotButton.Text = 'VerPlot';
 
             % Create VerOrderCheckBox
             app.VerOrderCheckBox = uicheckbox(app.UserRelatedPlotsPanel);
             app.VerOrderCheckBox.Text = 'default order';
-            app.VerOrderCheckBox.Position = [40 255 89 22];
+            app.VerOrderCheckBox.Position = [35 248 89 22];
             app.VerOrderCheckBox.Value = true;
 
             % Create FeaturePlotButton
             app.FeaturePlotButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotButtonPushed, true);
-            app.FeaturePlotButton.Position = [37 232 72 22];
+            app.FeaturePlotButton.Position = [32 225 72 22];
             app.FeaturePlotButton.Text = 'FeaturePlot';
 
             % Create FeaturePlotNextUserButton
             app.FeaturePlotNextUserButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotNextUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotNextUserButtonPushed, true);
-            app.FeaturePlotNextUserButton.Position = [84 204 42 25];
+            app.FeaturePlotNextUserButton.Position = [79 197 42 25];
             app.FeaturePlotNextUserButton.Text = 'Next';
 
             % Create FeaturePlotPrevUserButton
             app.FeaturePlotPrevUserButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotPrevUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotPrevUserButtonPushed, true);
-            app.FeaturePlotPrevUserButton.Position = [20 204 46 25];
+            app.FeaturePlotPrevUserButton.Position = [15 197 46 25];
             app.FeaturePlotPrevUserButton.Text = 'Prev';
+
+            % Create LoadUserInputGroupButton
+            app.LoadUserInputGroupButton = uibutton(app.UserInputFileExplorerPanel, 'push');
+            app.LoadUserInputGroupButton.ButtonPushedFcn = createCallbackFcn(app, @LoadUserInputGroupButtonPushed, true);
+            app.LoadUserInputGroupButton.Position = [122 575 86 36];
+            app.LoadUserInputGroupButton.Text = 'LoadGroup';
+
+            % Create UserInputGroupNameLabel
+            app.UserInputGroupNameLabel = uilabel(app.UserInputFileExplorerPanel);
+            app.UserInputGroupNameLabel.HorizontalAlignment = 'center';
+            app.UserInputGroupNameLabel.FontSize = 14;
+            app.UserInputGroupNameLabel.FontWeight = 'bold';
+            app.UserInputGroupNameLabel.Position = [7 615 214 22];
+            app.UserInputGroupNameLabel.Text = '';
 
             % Create UserDesignExplorerPanel
             app.UserDesignExplorerPanel = uipanel(app.MainFigure);

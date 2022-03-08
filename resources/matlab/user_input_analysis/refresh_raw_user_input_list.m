@@ -1,17 +1,24 @@
 function refresh_raw_user_input_list(app)
+    if isempty(app.user_input_group)
+        new_group.path = app.user_input_dir;
+        new_group.name = 'Base';
+        app.user_input_group = new_group;
+        app.UserInputGroupNameLabel.Text = new_group.name;
+    end
+
     app.UserInputFileListBox.Items = {};
     app.UserInputFileListBox.ItemsData = [];
     app.results_enabled = [];
     app.results = {};
 
-    dirs = dir(app.user_input_dir);
+    dirs = dir(app.user_input_group.path);
     counter = 1;
     for i = 1 : length(dirs)
         if (dirs(i).isdir || ~contains(dirs(i).name, digitsPattern(6) + '.json'))
             continue;
         end
 
-        user_file = fullfile(app.user_input_dir, dirs(i).name);
+        user_file = fullfile(app.user_input_group.path, dirs(i).name);
 
         % First check if the file has been loaded before
         % TODO: better logic for checking
