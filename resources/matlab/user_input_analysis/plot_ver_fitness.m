@@ -55,7 +55,14 @@ function plot_ver_fitness_kernel(app, p, result_id)
         idx = env_default_idx(i);
         % subplot(result.num_env, 1, i);
         p(i, 1).select();
+
         plot(result.fitness(idx, :));
+        if app.compare_group == true
+            hold on;
+            plot(result.compare.fitness(idx, :));
+            hold off;
+        end
+
         env = app.default_env_order(idx);
         xlim([1, 11]); % TODO: hard coded here
         % ylim([]) % TODO: how to make the ylim be the same through all users of the same env?
