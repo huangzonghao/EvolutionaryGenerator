@@ -179,16 +179,15 @@ h=imagesc([xa,xb], [ya,yb], mapbounds);
 set(h,'visible','off');
 
 %   Prep colorbar
-rang = (colormax-colormin)/colormax;
+rang = colormax - colormin;
 ticknum = 6;        %if you want to toggle number of ticks on colorbar
-incr = rang./(ticknum-1);
-B = [colormin/colormax:incr:1];
-B = B.*colormax;
-C = sprintf(['%4.2e',repmat([' \n%4.2e'], 1, ticknum)],B);
+incr = rang./(ticknum - 1);
+B = [colormin : incr : colormax];
+C = sprintf(['%4.2e', repmat([' \n%4.2e'], 1, ticknum)],B);
 C = str2num(C);
 caxis([colormin colormax]);
 colorbar('EastOutside','ytick', B,'yticklabel', C,...
-         'YLim', [B(1) B(ticknum)])
+         'YLim', [B(1) B(end)]);
 
 % In quiverc2wcmap this loop plotted for each color level (n=20) and was very
 % fast, but I found it did not plot some large data sets with enough color
