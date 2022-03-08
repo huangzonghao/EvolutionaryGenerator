@@ -1,5 +1,5 @@
 function refresh_selected_robots_list(app)
-% List all robots selected by the results_enabled matrix in the ListBox
+% List all robots selected by the results_enabled matrix in the UserInputFileListBox
 % Display format: user_id-env-ver-fitness
     % TODO: probably can initialize the user_inputs_selected matrix to the right size
     app.user_inputs_selected = [];

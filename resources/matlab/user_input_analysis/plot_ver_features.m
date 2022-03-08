@@ -1,5 +1,5 @@
 function plot_ver_features(app)
-    num_results = length(app.ListBox.Value);
+    num_results = length(app.UserInputFileListBox.Value);
     if num_results == 0
         msgbox("Select at least one user to generate the feature trace plot", "Error");
         return
@@ -14,8 +14,8 @@ function plot_ver_features(app)
     end
 
     % plotting only the first selected user
-    app.ListBox.Value = app.ListBox.Value(1);
-    plot_ver_features_kernel(app, app.ListBox.Value);
+    app.UserInputFileListBox.Value = app.UserInputFileListBox.Value(1);
+    plot_ver_features_kernel(app, app.UserInputFileListBox.Value);
 end
 
 function plot_ver_features_kernel(app, result_id)

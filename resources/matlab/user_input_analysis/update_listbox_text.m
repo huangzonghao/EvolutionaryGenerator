@@ -11,6 +11,6 @@ function update_listbox_text(app)
         if app.results_enabled(i, 3) == 1
             tmp_str = [tmp_str, ' v'];
         end
-        app.ListBox.Items{i} = tmp_str;
+        app.UserInputFileListBox.Items{i} = tmp_str;
     end
 end

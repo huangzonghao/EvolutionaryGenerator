@@ -9,7 +9,7 @@ function update_results_enabled(app, env_id)
         app.results_enabled(:, :) = 0;
         app.auto_refresh_selected_list_on_next_enabled_update = true;
     else
-        ids = app.ListBox.Value;
+        ids = app.UserInputFileListBox.Value;
         if isempty(ids)
             return
         end
@@ -32,6 +32,6 @@ function update_results_enabled(app, env_id)
         end
     end
 
-    % Update the ListBox display
+    % Update the UserInputFileListBox display
     update_listbox_text(app);
 end

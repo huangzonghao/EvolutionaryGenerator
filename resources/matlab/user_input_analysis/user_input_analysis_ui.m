@@ -3,61 +3,69 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
-        FeaturePlotPrevUserButton      matlab.ui.control.Button
-        FeaturePlotNextUserButton      matlab.ui.control.Button
-        ResetCompareGroupButton        matlab.ui.control.Button
-        LoadCompareGroupButton         matlab.ui.control.Button
-        FeaturePlotButton              matlab.ui.control.Button
+        MiscellaneousPanel             matlab.ui.container.Panel
+        CLCButton                      matlab.ui.control.Button
+        PopVarButton                   matlab.ui.control.Button
+        OpenFolderButton               matlab.ui.control.Button
+        RobotIDYField                  matlab.ui.control.EditField
+        RobotIDXField                  matlab.ui.control.EditField
+        SimulateRobotButton            matlab.ui.control.Button
         SavePaperPlotButton            matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         PaperPlotButton                matlab.ui.control.Button
-        AddRandomtoAddedButton         matlab.ui.control.Button
+        UserDesignBagCreatorPanel      matlab.ui.container.Panel
         NumRandomField                 matlab.ui.control.EditField
         NumEditFieldLabel              matlab.ui.control.Label
-        SortAddedFitnessButton         matlab.ui.control.Button
-        SortSelectedFitnessButton      matlab.ui.control.Button
+        AddRandomtoAddedButton         matlab.ui.control.Button
+        ClearAddedListBoxButton        matlab.ui.control.Button
         TotalAddedCountLabel           matlab.ui.control.Label
-        ScreenshotNameField            matlab.ui.control.EditField
-        PicFileLabel                   matlab.ui.control.Label
-        ClearAllButton                 matlab.ui.control.Button
         CommentTextArea                matlab.ui.control.TextArea
         CommentsLabel                  matlab.ui.control.Label
         OutputBagNameField             matlab.ui.control.EditField
         BagNameLabel                   matlab.ui.control.Label
-        ClearAddedListBoxButton        matlab.ui.control.Button
+        SortAddedFitnessButton         matlab.ui.control.Button
         SaveButton                     matlab.ui.control.Button
         RemoveButton                   matlab.ui.control.Button
+        AddedRobotsListBox             matlab.ui.control.ListBox
+        UserDesignExplorerPanel        matlab.ui.container.Panel
+        SortSelectedFitnessButton      matlab.ui.control.Button
         AddFromSelectedtoAddedButton   matlab.ui.control.Button
         RefreshRobotsListButton        matlab.ui.control.Button
-        AddedRobotsListBox             matlab.ui.control.ListBox
         SelectedRobotsListBox          matlab.ui.control.ListBox
+        UserInputFileExplorerPanel     matlab.ui.container.Panel
+        UserRelatedPlotsPanel          matlab.ui.container.Panel
+        FeaturePlotPrevUserButton      matlab.ui.control.Button
+        FeaturePlotNextUserButton      matlab.ui.control.Button
+        FeaturePlotButton              matlab.ui.control.Button
+        VerOrderCheckBox               matlab.ui.control.CheckBox
+        VerPlotButton                  matlab.ui.control.Button
+        ResetCompareGroupButton        matlab.ui.control.Button
+        LoadCompareGroupButton         matlab.ui.control.Button
+        CompareUsertoTrainingPanel     matlab.ui.container.Panel
+        ScreenshotNameField            matlab.ui.control.EditField
+        PicFileLabel                   matlab.ui.control.Label
         CloseFigButton                 matlab.ui.control.Button
         OpenFigButton                  matlab.ui.control.Button
         ScreenShotButton               matlab.ui.control.Button
         RefRightButton                 matlab.ui.control.Button
         RefLeftButton                  matlab.ui.control.Button
-        VerOrderCheckBox               matlab.ui.control.CheckBox
+        RefreshPlotButton              matlab.ui.control.Button
+        ClearPlotButton                matlab.ui.control.Button
+        UserDesignFilterPanel          matlab.ui.container.Panel
+        ClearAllButton                 matlab.ui.control.Button
         AllButton                      matlab.ui.control.Button
         ClearButton                    matlab.ui.control.Button
         valleyButton                   matlab.ui.control.Button
         sineButton                     matlab.ui.control.Button
         groundButton                   matlab.ui.control.Button
         RefreshRawUserInputListButton  matlab.ui.control.Button
-        VerPlotButton                  matlab.ui.control.Button
-        RefreshPlotButton              matlab.ui.control.Button
-        PopVarButton                   matlab.ui.control.Button
-        ClearPlotButton                matlab.ui.control.Button
-        ListBox                        matlab.ui.control.ListBox
-        OpenFolderButton               matlab.ui.control.Button
-        RobotIDYField                  matlab.ui.control.EditField
-        RobotIDXField                  matlab.ui.control.EditField
-        SimulateRobotButton            matlab.ui.control.Button
+        UserInputFileListBox           matlab.ui.control.ListBox
     end
 
     properties (Access = public)
-        paper_fig
+        % User Input ref plot
+        % TODO: merge the following into a structure
         plot_fig
-        feature_plot_fig
         heat_axes
         panel
         map_surf
@@ -68,6 +76,10 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         left_heat
         right_surf
         right_heat
+        archive_map
+
+        paper_fig
+        feature_plot_fig
         results = {}
         fitness_range = [Inf, -Inf];
         evo_params % parameters of an evolutionary generation process
@@ -79,7 +91,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         map_dim_0 = 20
         map_dim_1 = 20
         default_feature_description string
-        archive_map
+
         map_stat % one archive_map stat per env
         results_enabled = [] % a num_user x num_env matrix representing which result is enabled to show
         user_inputs_selected = [] % a n x 3 matrix storing the n selected user inputs to be saved to output bag, one for each row
@@ -300,6 +312,11 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         function ResetCompareGroupButtonPushed(app, event)
             reset_compare_group(app);
         end
+
+        % Button pushed function: CLCButton
+        function CLCButtonPushed(app, event)
+            clc;
+        end
     end
 
     % Component initialization
@@ -310,301 +327,342 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
 
             % Create MainFigure and hide until all components are created
             app.MainFigure = uifigure('Visible', 'off');
-            app.MainFigure.Position = [250 20 767 660];
+            app.MainFigure.Position = [250 20 1150 660];
             app.MainFigure.Name = 'Evolutionary Robogami User Input Viewer';
             app.MainFigure.CloseRequestFcn = createCallbackFcn(app, @MainFigureCloseRequest, true);
 
-            % Create SimulateRobotButton
-            app.SimulateRobotButton = uibutton(app.MainFigure, 'push');
-            app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
-            app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [19 59 72 22];
-            app.SimulateRobotButton.Text = 'Simulate';
+            % Create UserInputFileExplorerPanel
+            app.UserInputFileExplorerPanel = uipanel(app.MainFigure);
+            app.UserInputFileExplorerPanel.Title = 'User Input File Explorer';
+            app.UserInputFileExplorerPanel.Position = [1 1 405 660];
 
-            % Create RobotIDXField
-            app.RobotIDXField = uieditfield(app.MainFigure, 'text');
-            app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
-            app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [18 84 39 22];
-
-            % Create RobotIDYField
-            app.RobotIDYField = uieditfield(app.MainFigure, 'text');
-            app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
-            app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [58 84 39 22];
-
-            % Create OpenFolderButton
-            app.OpenFolderButton = uibutton(app.MainFigure, 'push');
-            app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
-            app.OpenFolderButton.Tag = 'loadresult';
-            app.OpenFolderButton.Position = [18 8 82 22];
-            app.OpenFolderButton.Text = 'Open Folder';
-
-            % Create ListBox
-            app.ListBox = uilistbox(app.MainFigure);
-            app.ListBox.Items = {};
-            app.ListBox.Multiselect = 'on';
-            app.ListBox.Position = [151 16 112 631];
-            app.ListBox.Value = {};
-
-            % Create ClearPlotButton
-            app.ClearPlotButton = uibutton(app.MainFigure, 'push');
-            app.ClearPlotButton.ButtonPushedFcn = createCallbackFcn(app, @ClearPlotButtonPushed, true);
-            app.ClearPlotButton.Position = [30 347 73 22];
-            app.ClearPlotButton.Text = 'ClearPlot';
-
-            % Create PopVarButton
-            app.PopVarButton = uibutton(app.MainFigure, 'push');
-            app.PopVarButton.ButtonPushedFcn = createCallbackFcn(app, @PopVarButtonPushed, true);
-            app.PopVarButton.Position = [18 34 73 22];
-            app.PopVarButton.Text = 'Pop Var';
-
-            % Create RefreshPlotButton
-            app.RefreshPlotButton = uibutton(app.MainFigure, 'push');
-            app.RefreshPlotButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshPlotButtonPushed, true);
-            app.RefreshPlotButton.Position = [22 374 85 40];
-            app.RefreshPlotButton.Text = 'RefreshPlot';
-
-            % Create VerPlotButton
-            app.VerPlotButton = uibutton(app.MainFigure, 'push');
-            app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
-            app.VerPlotButton.Position = [9 168 47 20];
-            app.VerPlotButton.Text = 'VerPlot';
+            % Create UserInputFileListBox
+            app.UserInputFileListBox = uilistbox(app.UserInputFileExplorerPanel);
+            app.UserInputFileListBox.Items = {};
+            app.UserInputFileListBox.Multiselect = 'on';
+            app.UserInputFileListBox.Position = [2 0 112 639];
+            app.UserInputFileListBox.Value = {};
 
             % Create RefreshRawUserInputListButton
-            app.RefreshRawUserInputListButton = uibutton(app.MainFigure, 'push');
+            app.RefreshRawUserInputListButton = uibutton(app.UserInputFileExplorerPanel, 'push');
             app.RefreshRawUserInputListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshRawUserInputListButtonPushed, true);
-            app.RefreshRawUserInputListButton.Position = [22 611 86 36];
+            app.RefreshRawUserInputListButton.Position = [122 595 86 36];
             app.RefreshRawUserInputListButton.Text = 'RefreshList';
 
+            % Create UserDesignFilterPanel
+            app.UserDesignFilterPanel = uipanel(app.UserInputFileExplorerPanel);
+            app.UserDesignFilterPanel.Title = 'User Design Filter';
+            app.UserDesignFilterPanel.Position = [114 388 115 201];
+
             % Create groundButton
-            app.groundButton = uibutton(app.MainFigure, 'push');
+            app.groundButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.groundButton.ButtonPushedFcn = createCallbackFcn(app, @groundButtonPushed, true);
-            app.groundButton.Position = [38 529 57 22];
+            app.groundButton.Position = [27 110 57 22];
             app.groundButton.Text = 'ground';
 
             % Create sineButton
-            app.sineButton = uibutton(app.MainFigure, 'push');
+            app.sineButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.sineButton.ButtonPushedFcn = createCallbackFcn(app, @sineButtonPushed, true);
-            app.sineButton.Position = [38 505 57 22];
+            app.sineButton.Position = [27 86 57 22];
             app.sineButton.Text = 'sine';
 
             % Create valleyButton
-            app.valleyButton = uibutton(app.MainFigure, 'push');
+            app.valleyButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.valleyButton.ButtonPushedFcn = createCallbackFcn(app, @valleyButtonPushed, true);
-            app.valleyButton.Position = [38 481 57 22];
+            app.valleyButton.Position = [27 62 57 22];
             app.valleyButton.Text = 'valley';
 
             % Create ClearButton
-            app.ClearButton = uibutton(app.MainFigure, 'push');
+            app.ClearButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.ClearButton.ButtonPushedFcn = createCallbackFcn(app, @ClearButtonPushed, true);
-            app.ClearButton.Position = [38 427 57 22];
+            app.ClearButton.Position = [27 8 57 22];
             app.ClearButton.Text = 'Clear';
 
             % Create AllButton
-            app.AllButton = uibutton(app.MainFigure, 'push');
+            app.AllButton = uibutton(app.UserDesignFilterPanel, 'push');
             app.AllButton.ButtonPushedFcn = createCallbackFcn(app, @AllButtonPushed, true);
-            app.AllButton.Position = [38 450 57 22];
+            app.AllButton.Position = [27 31 57 22];
             app.AllButton.Text = 'All';
 
-            % Create VerOrderCheckBox
-            app.VerOrderCheckBox = uicheckbox(app.MainFigure);
-            app.VerOrderCheckBox.Text = 'default order';
-            app.VerOrderCheckBox.Position = [58 166 89 22];
-            app.VerOrderCheckBox.Value = true;
+            % Create ClearAllButton
+            app.ClearAllButton = uibutton(app.UserDesignFilterPanel, 'push');
+            app.ClearAllButton.ButtonPushedFcn = createCallbackFcn(app, @ClearAllButtonPushed, true);
+            app.ClearAllButton.Position = [21 139 72 31];
+            app.ClearAllButton.Text = 'ClearAll';
+
+            % Create CompareUsertoTrainingPanel
+            app.CompareUsertoTrainingPanel = uipanel(app.UserInputFileExplorerPanel);
+            app.CompareUsertoTrainingPanel.Title = 'Compare User to Training';
+            app.CompareUsertoTrainingPanel.Position = [229 388 176 252];
+
+            % Create ClearPlotButton
+            app.ClearPlotButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
+            app.ClearPlotButton.ButtonPushedFcn = createCallbackFcn(app, @ClearPlotButtonPushed, true);
+            app.ClearPlotButton.Position = [6 155 73 22];
+            app.ClearPlotButton.Text = 'ClearPlot';
+
+            % Create RefreshPlotButton
+            app.RefreshPlotButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
+            app.RefreshPlotButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshPlotButtonPushed, true);
+            app.RefreshPlotButton.Position = [6 186 85 40];
+            app.RefreshPlotButton.Text = 'RefreshPlot';
 
             % Create RefLeftButton
-            app.RefLeftButton = uibutton(app.MainFigure, 'push');
+            app.RefLeftButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
             app.RefLeftButton.ButtonPushedFcn = createCallbackFcn(app, @RefLeftButtonPushed, true);
-            app.RefLeftButton.Position = [12 291 50 40];
+            app.RefLeftButton.Position = [107 188 50 40];
             app.RefLeftButton.Text = 'RefLeft';
 
             % Create RefRightButton
-            app.RefRightButton = uibutton(app.MainFigure, 'push');
+            app.RefRightButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
             app.RefRightButton.ButtonPushedFcn = createCallbackFcn(app, @RefRightButtonPushed, true);
-            app.RefRightButton.Position = [70 291 57 40];
+            app.RefRightButton.Position = [103 145 57 40];
             app.RefRightButton.Text = 'RefRight';
 
             % Create ScreenShotButton
-            app.ScreenShotButton = uibutton(app.MainFigure, 'push');
+            app.ScreenShotButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
             app.ScreenShotButton.ButtonPushedFcn = createCallbackFcn(app, @ScreenShotButtonPushed, true);
-            app.ScreenShotButton.Position = [34 263 78 22];
+            app.ScreenShotButton.Position = [13 78 78 22];
             app.ScreenShotButton.Text = 'ScreenShot';
 
             % Create OpenFigButton
-            app.OpenFigButton = uibutton(app.MainFigure, 'push');
+            app.OpenFigButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
             app.OpenFigButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFigButtonPushed, true);
-            app.OpenFigButton.Position = [18 205 54 22];
+            app.OpenFigButton.Position = [13 42 54 22];
             app.OpenFigButton.Text = 'OpenFig';
 
             % Create CloseFigButton
-            app.CloseFigButton = uibutton(app.MainFigure, 'push');
+            app.CloseFigButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
             app.CloseFigButton.ButtonPushedFcn = createCallbackFcn(app, @CloseFigButtonPushed, true);
-            app.CloseFigButton.Position = [80 205 56 22];
+            app.CloseFigButton.Position = [101 42 56 22];
             app.CloseFigButton.Text = 'CloseFig';
 
-            % Create SelectedRobotsListBox
-            app.SelectedRobotsListBox = uilistbox(app.MainFigure);
-            app.SelectedRobotsListBox.Items = {};
-            app.SelectedRobotsListBox.Multiselect = 'on';
-            app.SelectedRobotsListBox.Position = [338 16 152 631];
-            app.SelectedRobotsListBox.Value = {};
-
-            % Create AddedRobotsListBox
-            app.AddedRobotsListBox = uilistbox(app.MainFigure);
-            app.AddedRobotsListBox.Items = {};
-            app.AddedRobotsListBox.Multiselect = 'on';
-            app.AddedRobotsListBox.Position = [498 16 152 631];
-            app.AddedRobotsListBox.Value = {};
-
-            % Create RefreshRobotsListButton
-            app.RefreshRobotsListButton = uibutton(app.MainFigure, 'push');
-            app.RefreshRobotsListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshRobotsListButtonPushed, true);
-            app.RefreshRobotsListButton.Position = [271 618 58 22];
-            app.RefreshRobotsListButton.Text = 'Refresh';
-
-            % Create AddFromSelectedtoAddedButton
-            app.AddFromSelectedtoAddedButton = uibutton(app.MainFigure, 'push');
-            app.AddFromSelectedtoAddedButton.ButtonPushedFcn = createCallbackFcn(app, @AddFromSelectedtoAddedButtonPushed, true);
-            app.AddFromSelectedtoAddedButton.Position = [272 427 58 22];
-            app.AddFromSelectedtoAddedButton.Text = 'Add';
-
-            % Create RemoveButton
-            app.RemoveButton = uibutton(app.MainFigure, 'push');
-            app.RemoveButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveButtonPushed, true);
-            app.RemoveButton.Position = [676 618 60 22];
-            app.RemoveButton.Text = 'Remove';
-
-            % Create SaveButton
-            app.SaveButton = uibutton(app.MainFigure, 'push');
-            app.SaveButton.ButtonPushedFcn = createCallbackFcn(app, @SaveButtonPushed, true);
-            app.SaveButton.Position = [676 319 60 22];
-            app.SaveButton.Text = 'Save';
-
-            % Create ClearAddedListBoxButton
-            app.ClearAddedListBoxButton = uibutton(app.MainFigure, 'push');
-            app.ClearAddedListBoxButton.ButtonPushedFcn = createCallbackFcn(app, @ClearAddedListBoxButtonPushed, true);
-            app.ClearAddedListBoxButton.Position = [677 40 60 22];
-            app.ClearAddedListBoxButton.Text = 'Clear';
-
-            % Create BagNameLabel
-            app.BagNameLabel = uilabel(app.MainFigure);
-            app.BagNameLabel.HorizontalAlignment = 'right';
-            app.BagNameLabel.Position = [651 567 66 22];
-            app.BagNameLabel.Text = 'Bag Name:';
-
-            % Create OutputBagNameField
-            app.OutputBagNameField = uieditfield(app.MainFigure, 'text');
-            app.OutputBagNameField.Position = [666 541 95 23];
-
-            % Create CommentsLabel
-            app.CommentsLabel = uilabel(app.MainFigure);
-            app.CommentsLabel.Position = [654 513 67 22];
-            app.CommentsLabel.Text = 'Comments:';
-
-            % Create CommentTextArea
-            app.CommentTextArea = uitextarea(app.MainFigure);
-            app.CommentTextArea.Position = [661 347 107 166];
-
-            % Create ClearAllButton
-            app.ClearAllButton = uibutton(app.MainFigure, 'push');
-            app.ClearAllButton.ButtonPushedFcn = createCallbackFcn(app, @ClearAllButtonPushed, true);
-            app.ClearAllButton.Position = [32 558 72 31];
-            app.ClearAllButton.Text = 'ClearAll';
-
             % Create PicFileLabel
-            app.PicFileLabel = uilabel(app.MainFigure);
+            app.PicFileLabel = uilabel(app.CompareUsertoTrainingPanel);
             app.PicFileLabel.HorizontalAlignment = 'right';
-            app.PicFileLabel.Position = [2 232 46 22];
+            app.PicFileLabel.Position = [13 110 46 22];
             app.PicFileLabel.Text = 'Pic File';
 
             % Create ScreenshotNameField
-            app.ScreenshotNameField = uieditfield(app.MainFigure, 'text');
-            app.ScreenshotNameField.Position = [55 232 95 23];
+            app.ScreenshotNameField = uieditfield(app.CompareUsertoTrainingPanel, 'text');
+            app.ScreenshotNameField.Position = [66 110 95 23];
 
-            % Create TotalAddedCountLabel
-            app.TotalAddedCountLabel = uilabel(app.MainFigure);
-            app.TotalAddedCountLabel.Position = [661 81 100 22];
-            app.TotalAddedCountLabel.Text = '';
-
-            % Create SortSelectedFitnessButton
-            app.SortSelectedFitnessButton = uibutton(app.MainFigure, 'push');
-            app.SortSelectedFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortSelectedFitnessButtonPushed, true);
-            app.SortSelectedFitnessButton.Position = [279 590 44 22];
-            app.SortSelectedFitnessButton.Text = 'SortFit';
-
-            % Create SortAddedFitnessButton
-            app.SortAddedFitnessButton = uibutton(app.MainFigure, 'push');
-            app.SortAddedFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortAddedFitnessButtonPushed, true);
-            app.SortAddedFitnessButton.Position = [684 592 44 22];
-            app.SortAddedFitnessButton.Text = 'SortFit';
-
-            % Create NumEditFieldLabel
-            app.NumEditFieldLabel = uilabel(app.MainFigure);
-            app.NumEditFieldLabel.Position = [278 392 34 22];
-            app.NumEditFieldLabel.Text = 'Num:';
-
-            % Create NumRandomField
-            app.NumRandomField = uieditfield(app.MainFigure, 'text');
-            app.NumRandomField.Position = [283 365 41 22];
-
-            % Create AddRandomtoAddedButton
-            app.AddRandomtoAddedButton = uibutton(app.MainFigure, 'push');
-            app.AddRandomtoAddedButton.ButtonPushedFcn = createCallbackFcn(app, @AddRandomtoAddedButtonPushed, true);
-            app.AddRandomtoAddedButton.WordWrap = 'on';
-            app.AddRandomtoAddedButton.Position = [268 310 65 49];
-            app.AddRandomtoAddedButton.Text = 'Add Random';
-
-            % Create PaperPlotButton
-            app.PaperPlotButton = uibutton(app.MainFigure, 'push');
-            app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
-            app.PaperPlotButton.Position = [670 242 84 22];
-            app.PaperPlotButton.Text = 'Paper Plot';
-
-            % Create RehashButton
-            app.RehashButton = uibutton(app.MainFigure, 'push');
-            app.RehashButton.ButtonPushedFcn = createCallbackFcn(app, @RehashButtonPushed, true);
-            app.RehashButton.Position = [671 87 84 22];
-            app.RehashButton.Text = 'Rehash';
-
-            % Create SavePaperPlotButton
-            app.SavePaperPlotButton = uibutton(app.MainFigure, 'push');
-            app.SavePaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @SavePaperPlotButtonPushed, true);
-            app.SavePaperPlotButton.WordWrap = 'on';
-            app.SavePaperPlotButton.Position = [674 199 75 34];
-            app.SavePaperPlotButton.Text = 'Save Paper Plot';
-
-            % Create FeaturePlotButton
-            app.FeaturePlotButton = uibutton(app.MainFigure, 'push');
-            app.FeaturePlotButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotButtonPushed, true);
-            app.FeaturePlotButton.Position = [36 140 72 22];
-            app.FeaturePlotButton.Text = 'FeaturePlot';
+            % Create UserRelatedPlotsPanel
+            app.UserRelatedPlotsPanel = uipanel(app.UserInputFileExplorerPanel);
+            app.UserRelatedPlotsPanel.Title = 'User Related Plots';
+            app.UserRelatedPlotsPanel.Position = [114 0 291 389];
 
             % Create LoadCompareGroupButton
-            app.LoadCompareGroupButton = uibutton(app.MainFigure, 'push');
+            app.LoadCompareGroupButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.LoadCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @LoadCompareGroupButtonPushed, true);
             app.LoadCompareGroupButton.WordWrap = 'on';
-            app.LoadCompareGroupButton.Position = [270 534 61 47];
+            app.LoadCompareGroupButton.Position = [13 312 61 50];
             app.LoadCompareGroupButton.Text = 'Load Compare Group';
 
             % Create ResetCompareGroupButton
-            app.ResetCompareGroupButton = uibutton(app.MainFigure, 'push');
+            app.ResetCompareGroupButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.ResetCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @ResetCompareGroupButtonPushed, true);
             app.ResetCompareGroupButton.WordWrap = 'on';
-            app.ResetCompareGroupButton.Position = [271 478 61 50];
+            app.ResetCompareGroupButton.Position = [84 312 61 50];
             app.ResetCompareGroupButton.Text = 'Reset Compare Group';
 
+            % Create VerPlotButton
+            app.VerPlotButton = uibutton(app.UserRelatedPlotsPanel, 'push');
+            app.VerPlotButton.ButtonPushedFcn = createCallbackFcn(app, @VerPlotButtonPushed, true);
+            app.VerPlotButton.Position = [37 281 47 20];
+            app.VerPlotButton.Text = 'VerPlot';
+
+            % Create VerOrderCheckBox
+            app.VerOrderCheckBox = uicheckbox(app.UserRelatedPlotsPanel);
+            app.VerOrderCheckBox.Text = 'default order';
+            app.VerOrderCheckBox.Position = [40 255 89 22];
+            app.VerOrderCheckBox.Value = true;
+
+            % Create FeaturePlotButton
+            app.FeaturePlotButton = uibutton(app.UserRelatedPlotsPanel, 'push');
+            app.FeaturePlotButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotButtonPushed, true);
+            app.FeaturePlotButton.Position = [37 232 72 22];
+            app.FeaturePlotButton.Text = 'FeaturePlot';
+
             % Create FeaturePlotNextUserButton
-            app.FeaturePlotNextUserButton = uibutton(app.MainFigure, 'push');
+            app.FeaturePlotNextUserButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotNextUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotNextUserButtonPushed, true);
-            app.FeaturePlotNextUserButton.Position = [83 112 42 25];
+            app.FeaturePlotNextUserButton.Position = [84 204 42 25];
             app.FeaturePlotNextUserButton.Text = 'Next';
 
             % Create FeaturePlotPrevUserButton
-            app.FeaturePlotPrevUserButton = uibutton(app.MainFigure, 'push');
+            app.FeaturePlotPrevUserButton = uibutton(app.UserRelatedPlotsPanel, 'push');
             app.FeaturePlotPrevUserButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotPrevUserButtonPushed, true);
-            app.FeaturePlotPrevUserButton.Position = [19 112 46 25];
+            app.FeaturePlotPrevUserButton.Position = [20 204 46 25];
             app.FeaturePlotPrevUserButton.Text = 'Prev';
+
+            % Create UserDesignExplorerPanel
+            app.UserDesignExplorerPanel = uipanel(app.MainFigure);
+            app.UserDesignExplorerPanel.Title = 'User Design Explorer';
+            app.UserDesignExplorerPanel.Position = [405 1 260 660];
+
+            % Create SelectedRobotsListBox
+            app.SelectedRobotsListBox = uilistbox(app.UserDesignExplorerPanel);
+            app.SelectedRobotsListBox.Items = {};
+            app.SelectedRobotsListBox.Multiselect = 'on';
+            app.SelectedRobotsListBox.Position = [1 0 152 638];
+            app.SelectedRobotsListBox.Value = {};
+
+            % Create RefreshRobotsListButton
+            app.RefreshRobotsListButton = uibutton(app.UserDesignExplorerPanel, 'push');
+            app.RefreshRobotsListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshRobotsListButtonPushed, true);
+            app.RefreshRobotsListButton.Position = [176 609 58 22];
+            app.RefreshRobotsListButton.Text = 'Refresh';
+
+            % Create AddFromSelectedtoAddedButton
+            app.AddFromSelectedtoAddedButton = uibutton(app.UserDesignExplorerPanel, 'push');
+            app.AddFromSelectedtoAddedButton.ButtonPushedFcn = createCallbackFcn(app, @AddFromSelectedtoAddedButtonPushed, true);
+            app.AddFromSelectedtoAddedButton.Position = [176 509 58 39];
+            app.AddFromSelectedtoAddedButton.Text = '=>';
+
+            % Create SortSelectedFitnessButton
+            app.SortSelectedFitnessButton = uibutton(app.UserDesignExplorerPanel, 'push');
+            app.SortSelectedFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortSelectedFitnessButtonPushed, true);
+            app.SortSelectedFitnessButton.Position = [184 581 44 22];
+            app.SortSelectedFitnessButton.Text = 'SortFit';
+
+            % Create UserDesignBagCreatorPanel
+            app.UserDesignBagCreatorPanel = uipanel(app.MainFigure);
+            app.UserDesignBagCreatorPanel.Title = 'User Design Bag Creator';
+            app.UserDesignBagCreatorPanel.Position = [664 1 312 660];
+
+            % Create AddedRobotsListBox
+            app.AddedRobotsListBox = uilistbox(app.UserDesignBagCreatorPanel);
+            app.AddedRobotsListBox.Items = {};
+            app.AddedRobotsListBox.Multiselect = 'on';
+            app.AddedRobotsListBox.Position = [1 0 152 638];
+            app.AddedRobotsListBox.Value = {};
+
+            % Create RemoveButton
+            app.RemoveButton = uibutton(app.UserDesignBagCreatorPanel, 'push');
+            app.RemoveButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveButtonPushed, true);
+            app.RemoveButton.Position = [194 609 60 22];
+            app.RemoveButton.Text = 'Remove';
+
+            % Create SaveButton
+            app.SaveButton = uibutton(app.UserDesignBagCreatorPanel, 'push');
+            app.SaveButton.ButtonPushedFcn = createCallbackFcn(app, @SaveButtonPushed, true);
+            app.SaveButton.Position = [194 157 60 22];
+            app.SaveButton.Text = 'Save';
+
+            % Create SortAddedFitnessButton
+            app.SortAddedFitnessButton = uibutton(app.UserDesignBagCreatorPanel, 'push');
+            app.SortAddedFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @SortAddedFitnessButtonPushed, true);
+            app.SortAddedFitnessButton.Position = [202 583 44 22];
+            app.SortAddedFitnessButton.Text = 'SortFit';
+
+            % Create BagNameLabel
+            app.BagNameLabel = uilabel(app.UserDesignBagCreatorPanel);
+            app.BagNameLabel.HorizontalAlignment = 'right';
+            app.BagNameLabel.Position = [169 405 66 22];
+            app.BagNameLabel.Text = 'Bag Name:';
+
+            % Create OutputBagNameField
+            app.OutputBagNameField = uieditfield(app.UserDesignBagCreatorPanel, 'text');
+            app.OutputBagNameField.Position = [184 379 95 23];
+
+            % Create CommentsLabel
+            app.CommentsLabel = uilabel(app.UserDesignBagCreatorPanel);
+            app.CommentsLabel.Position = [172 351 67 22];
+            app.CommentsLabel.Text = 'Comments:';
+
+            % Create CommentTextArea
+            app.CommentTextArea = uitextarea(app.UserDesignBagCreatorPanel);
+            app.CommentTextArea.Position = [179 185 107 166];
+
+            % Create TotalAddedCountLabel
+            app.TotalAddedCountLabel = uilabel(app.UserDesignBagCreatorPanel);
+            app.TotalAddedCountLabel.Position = [179 46 100 22];
+            app.TotalAddedCountLabel.Text = '';
+
+            % Create ClearAddedListBoxButton
+            app.ClearAddedListBoxButton = uibutton(app.UserDesignBagCreatorPanel, 'push');
+            app.ClearAddedListBoxButton.ButtonPushedFcn = createCallbackFcn(app, @ClearAddedListBoxButtonPushed, true);
+            app.ClearAddedListBoxButton.Position = [202 23 60 22];
+            app.ClearAddedListBoxButton.Text = 'Clear';
+
+            % Create AddRandomtoAddedButton
+            app.AddRandomtoAddedButton = uibutton(app.UserDesignBagCreatorPanel, 'push');
+            app.AddRandomtoAddedButton.ButtonPushedFcn = createCallbackFcn(app, @AddRandomtoAddedButtonPushed, true);
+            app.AddRandomtoAddedButton.WordWrap = 'on';
+            app.AddRandomtoAddedButton.Position = [228 509 65 49];
+            app.AddRandomtoAddedButton.Text = 'Add Random';
+
+            % Create NumEditFieldLabel
+            app.NumEditFieldLabel = uilabel(app.UserDesignBagCreatorPanel);
+            app.NumEditFieldLabel.Position = [169 536 34 22];
+            app.NumEditFieldLabel.Text = 'Num:';
+
+            % Create NumRandomField
+            app.NumRandomField = uieditfield(app.UserDesignBagCreatorPanel, 'text');
+            app.NumRandomField.Position = [174 509 41 22];
+
+            % Create MiscellaneousPanel
+            app.MiscellaneousPanel = uipanel(app.MainFigure);
+            app.MiscellaneousPanel.Title = 'Miscellaneous';
+            app.MiscellaneousPanel.Position = [975 1 176 660];
+
+            % Create PaperPlotButton
+            app.PaperPlotButton = uibutton(app.MiscellaneousPanel, 'push');
+            app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
+            app.PaperPlotButton.Position = [35 439 84 22];
+            app.PaperPlotButton.Text = 'Paper Plot';
+
+            % Create RehashButton
+            app.RehashButton = uibutton(app.MiscellaneousPanel, 'push');
+            app.RehashButton.ButtonPushedFcn = createCallbackFcn(app, @RehashButtonPushed, true);
+            app.RehashButton.Position = [35 609 84 22];
+            app.RehashButton.Text = 'Rehash';
+
+            % Create SavePaperPlotButton
+            app.SavePaperPlotButton = uibutton(app.MiscellaneousPanel, 'push');
+            app.SavePaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @SavePaperPlotButtonPushed, true);
+            app.SavePaperPlotButton.WordWrap = 'on';
+            app.SavePaperPlotButton.Position = [39 396 75 34];
+            app.SavePaperPlotButton.Text = 'Save Paper Plot';
+
+            % Create SimulateRobotButton
+            app.SimulateRobotButton = uibutton(app.MiscellaneousPanel, 'push');
+            app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
+            app.SimulateRobotButton.Tag = 'loadresult';
+            app.SimulateRobotButton.Position = [36 524 72 22];
+            app.SimulateRobotButton.Text = 'Simulate';
+
+            % Create RobotIDXField
+            app.RobotIDXField = uieditfield(app.MiscellaneousPanel, 'text');
+            app.RobotIDXField.ValueChangedFcn = createCallbackFcn(app, @RobotIDXFieldValueChanged, true);
+            app.RobotIDXField.HorizontalAlignment = 'center';
+            app.RobotIDXField.Position = [35 549 39 22];
+
+            % Create RobotIDYField
+            app.RobotIDYField = uieditfield(app.MiscellaneousPanel, 'text');
+            app.RobotIDYField.ValueChangedFcn = createCallbackFcn(app, @RobotIDYFieldValueChanged, true);
+            app.RobotIDYField.HorizontalAlignment = 'center';
+            app.RobotIDYField.Position = [75 549 39 22];
+
+            % Create OpenFolderButton
+            app.OpenFolderButton = uibutton(app.MiscellaneousPanel, 'push');
+            app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
+            app.OpenFolderButton.Tag = 'loadresult';
+            app.OpenFolderButton.Position = [35 473 82 22];
+            app.OpenFolderButton.Text = 'Open Folder';
+
+            % Create PopVarButton
+            app.PopVarButton = uibutton(app.MiscellaneousPanel, 'push');
+            app.PopVarButton.ButtonPushedFcn = createCallbackFcn(app, @PopVarButtonPushed, true);
+            app.PopVarButton.Position = [35 499 73 22];
+            app.PopVarButton.Text = 'Pop Var';
+
+            % Create CLCButton
+            app.CLCButton = uibutton(app.MiscellaneousPanel, 'push');
+            app.CLCButton.ButtonPushedFcn = createCallbackFcn(app, @CLCButtonPushed, true);
+            app.CLCButton.Position = [35 583 84 22];
+            app.CLCButton.Text = 'CLC';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

@@ -1,6 +1,6 @@
 function refresh_raw_user_input_list(app)
-    app.ListBox.Items = {};
-    app.ListBox.ItemsData = [];
+    app.UserInputFileListBox.Items = {};
+    app.UserInputFileListBox.ItemsData = [];
     app.results_enabled = [];
     app.results = {};
 
@@ -33,7 +33,7 @@ function refresh_raw_user_input_list(app)
             app.default_feature_description = new_user.feature_description;
         end
 
-        app.ListBox.ItemsData(end + 1) = counter;
+        app.UserInputFileListBox.ItemsData(end + 1) = counter;
         app.results_enabled = [app.results_enabled; zeros(1, app.results{counter}.num_env)];
         counter = counter + 1;
     end

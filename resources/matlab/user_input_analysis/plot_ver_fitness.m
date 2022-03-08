@@ -1,5 +1,5 @@
 function plot_ver_fitness(app)
-    num_results = length(app.ListBox.Value);
+    num_results = length(app.UserInputFileListBox.Value);
     if num_results == 0
         msgbox("Select at least one user to generate the fitness plot", "Error");
         return
@@ -20,7 +20,7 @@ function plot_ver_fitness(app)
             if counter > num_results
                 return
             end
-            plot_ver_fitness_kernel(app, p(nr, nc), app.ListBox.Value(counter));
+            plot_ver_fitness_kernel(app, p(nr, nc), app.UserInputFileListBox.Value(counter));
             counter = counter + 1;
         end
     end
