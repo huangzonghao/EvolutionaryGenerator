@@ -25,7 +25,10 @@ function export_group(app)
     dest_group_dir = fullfile(dest_path, group_basename);
     mkdir(dest_group_dir);
     copyfile(fullfile(source_group_dir, 'result_list.mat'), dest_group_dir);
-    copyfile(fullfile(source_group_dir, 'virtual_results.mat'), dest_group_dir);
+    virtual_result_file = fullfile(source_group_dir, 'virtual_results.mat');
+    if isfile(virtual_result_file)
+        copyfile(virtual_result_file, dest_group_dir);
+    end
 
     num_results = length(app.results);
     for i = 1 : num_results
