@@ -1,16 +1,8 @@
-function user_id = load_raw_user_input_file(app, input_file)
+function tmp_result = load_raw_user_input_file(app, input_file)
     %% Input file : the stem file name
+    %  Output: a structure holding the information read from the user file
 
-    % First check if the file has been loaded before
-    user_id = strrep(input_file, '.json', '');
-    for i = 1 : length(app.results)
-        if strcmp(app.results{i}.user_id, user_id);
-            % disp('Same file already loaded. Exit without loading');
-            return
-        end
-    end
-
-    fid = fopen(fullfile(app.user_input_dir, input_file));
+    fid = fopen(input_file);
     jsobj = jsondecode(fscanf(fid, '%c', inf));
     fclose(fid);
 
@@ -19,7 +11,6 @@ function user_id = load_raw_user_input_file(app, input_file)
     % fitness : num_env x num_ver (env in order of app.default_env_order)
     % feature : num_env x num_ver x 2 (env in order of app.default_env_order)
     % feature_description : string array containing the feature descriptions
-    tmp_result.internal_id = length(app.results) + 1;
     user_id = jsobj.user_id;
     tmp_result.user_id = user_id;
     for i = 1 : length(jsobj.feature_description)
@@ -54,12 +45,5 @@ function user_id = load_raw_user_input_file(app, input_file)
             tmp_result.feature(i, j, 2) = jsobj.designs.(env_alt_name).(ver_name).feature(2);
             tmp_result.gene{i,j} = jsobj.designs.(env_alt_name).(ver_name).gene;
         end
-    end
-
-    tmp_result.internal_id = length(app.results) + 1;
-    app.results{end+1} = tmp_result;
-
-    if isempty(app.default_feature_description)
-        app.default_feature_description = tmp_result.feature_description;
     end
 end

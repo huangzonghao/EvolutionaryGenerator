@@ -5,6 +5,8 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         MainFigure                     matlab.ui.Figure
         FeaturePlotPrevUserButton      matlab.ui.control.Button
         FeaturePlotNextUserButton      matlab.ui.control.Button
+        ResetCompareGroupButton        matlab.ui.control.Button
+        LoadCompareGroupButton         matlab.ui.control.Button
         FeaturePlotButton              matlab.ui.control.Button
         SavePaperPlotButton            matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
@@ -86,6 +88,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         random_robots = [] % a [n x max_gene_length] matrix containing gene for randomly generated robots
         default_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
         auto_refresh_selected_list_on_next_enabled_update = true % controls if next update on results_enabled matrix would trigger an automatic update of the selected_robots_list
+        compare_group = false
     end
 
     % Callbacks that handle component events
@@ -286,6 +289,16 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: RehashButton
         function RehashButtonPushed(app, event)
             rehash;
+        end
+
+        % Button pushed function: LoadCompareGroupButton
+        function LoadCompareGroupButtonPushed(app, event)
+            load_compare_group(app);
+        end
+
+        % Button pushed function: ResetCompareGroupButton
+        function ResetCompareGroupButtonPushed(app, event)
+            reset_compare_group(app);
         end
     end
 
@@ -566,6 +579,20 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.FeaturePlotButton.ButtonPushedFcn = createCallbackFcn(app, @FeaturePlotButtonPushed, true);
             app.FeaturePlotButton.Position = [36 140 72 22];
             app.FeaturePlotButton.Text = 'FeaturePlot';
+
+            % Create LoadCompareGroupButton
+            app.LoadCompareGroupButton = uibutton(app.MainFigure, 'push');
+            app.LoadCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @LoadCompareGroupButtonPushed, true);
+            app.LoadCompareGroupButton.WordWrap = 'on';
+            app.LoadCompareGroupButton.Position = [270 534 61 47];
+            app.LoadCompareGroupButton.Text = 'Load Compare Group';
+
+            % Create ResetCompareGroupButton
+            app.ResetCompareGroupButton = uibutton(app.MainFigure, 'push');
+            app.ResetCompareGroupButton.ButtonPushedFcn = createCallbackFcn(app, @ResetCompareGroupButtonPushed, true);
+            app.ResetCompareGroupButton.WordWrap = 'on';
+            app.ResetCompareGroupButton.Position = [271 478 61 50];
+            app.ResetCompareGroupButton.Text = 'Reset Compare Group';
 
             % Create FeaturePlotNextUserButton
             app.FeaturePlotNextUserButton = uibutton(app.MainFigure, 'push');

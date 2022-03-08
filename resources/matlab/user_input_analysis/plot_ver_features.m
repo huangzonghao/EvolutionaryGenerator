@@ -20,6 +20,7 @@ end
 
 function plot_ver_features_kernel(app, result_id)
     result = app.results{result_id};
+
     if result.num_env > length(app.default_env_order)
         fprintf("plot_ver_fitness Error: More env(%d) in %s than app.default_env_order(%d)\n", result.num_env, result.user_id, length(app.default_env_order));
     end
@@ -48,8 +49,14 @@ function plot_ver_features_kernel(app, result_id)
     % fitness : num_env x num_ver (env in order of app.default_env_order)
     % feature : num_env x num_ver x 2 (env in order of app.default_env_order)
     % feature_description : string array containing the feature descriptions
+    subplot_num_columns = 2;
+    if app.compare_group == true
+        subplot_num_columns = 3;
+    end
     for i = 1 : result.num_env
         idx = env_default_idx(i);
+
+        % gather plot data
         fitness = result.fitness(idx, :)';
         features = squeeze(result.feature(idx, :, :)); % num_ver x 2
         feature_leg_x = result.feature_description(1);
@@ -58,14 +65,32 @@ function plot_ver_features_kernel(app, result_id)
         feature_y = features(:, 2);
         len_x = feature_x(2:end) - feature_x(1:end-1);
         len_y = feature_y(2:end) - feature_y(1:end-1);
+        if app.compare_group == true
+            compare_fitness = result.compare.fitness(idx, :)';
+            compare_features = squeeze(result.compare.feature(idx, :, :)); % num_ver x 2
+            compare_feature_leg_x = result.compare.feature_description(1);
+            compare_feature_leg_y = result.compare.feature_description(2);
+            compare_feature_x = compare_features(:, 1);
+            compare_feature_y = compare_features(:, 2);
+            compare_len_x = compare_feature_x(2:end) - compare_feature_x(1:end-1);
+            compare_len_y = compare_feature_y(2:end) - compare_feature_y(1:end-1);
+        end
 
-        sph = subplot(result.num_env, 2, 2*i-1);
+        % fitness vs versions
+        sph = subplot(result.num_env, subplot_num_columns, subplot_num_columns*i-1);
         plot(fitness);
+        if app.compare_group == true
+            hold on;
+            plot(compare_fitness);
+            hold off;
+            legend('Current', 'Compare');
+        end
         title(sprintf('%s - (%d)', app.default_env_order(idx), user_study_order(i)));
         xlabel('Versions');
         ylabel('Fitness');
 
-        sph = subplot(result.num_env, 2, 2*i);
+        % quiver map of features
+        sph = subplot(result.num_env, subplot_num_columns, subplot_num_columns*i);
         qh = quiverwcolorbar(feature_x(1:end-1), feature_y(1:end-1), len_x, len_y, ...
                              fitness(2:end) - fitness(1:end-1), 1);
 
@@ -80,7 +105,27 @@ function plot_ver_features_kernel(app, result_id)
         hold on;
         scatter(feature_x, feature_y);
         hold off;
+
+        % quiver map of features for the compared result
+        if app.compare_group == true
+            sph = subplot(result.num_env, subplot_num_columns, subplot_num_columns*i - 2);
+            qh = quiverwcolorbar(compare_feature_x(1:end-1), compare_feature_y(1:end-1), compare_len_x, compare_len_y, ...
+                                 compare_fitness(2:end) - compare_fitness(1:end-1), 1);
+
+            axis equal;
+            xlim([-0.1, 1.1]);
+            ylim([-0.1, 1.1]);
+            env = app.default_env_order(idx);
+            title(sprintf('%s - (%d) Compare', app.default_env_order(idx), user_study_order(i)));
+            xlabel([compare_feature_leg_x]);
+            ylabel([compare_feature_leg_y]);
+
+            hold on;
+            scatter(feature_x, feature_y);
+            hold off;
+        end
     end
+
     sgtitle(sprintf('%s', result.user_id));
 
     %% Helper functions
