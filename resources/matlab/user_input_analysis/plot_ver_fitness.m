@@ -12,6 +12,12 @@ function plot_ver_fitness(app)
 
     num_rows = ceil(num_results / num_cols);
     new_fig = figure();
+
+    if num_results > 4
+        new_fig.Units = 'normalized';
+        new_fig.OuterPosition = [0, 0, 1, 1];
+    end
+
     p = panel(new_fig);
     p.pack(num_rows, num_cols)
     counter = 1;
