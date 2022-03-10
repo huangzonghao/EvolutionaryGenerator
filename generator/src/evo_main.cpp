@@ -166,7 +166,12 @@ void resume_from_job(const std::string& result_dir) {
 }
 
 void process_job_file(const std::string& job_file_basename) {
-    std::string jobfile_fullpath(Job_File_Dir + "/" + job_file_basename + ".json");
+    std::string jobfile_fullpath;
+    if (job_file_basename.find(".json") != std::string::npos)
+        jobfile_fullpath = Job_File_Dir + "/" + job_file_basename;
+    else
+        jobfile_fullpath = Job_File_Dir + "/" + job_file_basename + ".json";
+
     if (!std::filesystem::exists(jobfile_fullpath)) {
         std::cout << "evo_main Error: " << jobfile_fullpath << " doesn't exist" << std::endl;
         return;
