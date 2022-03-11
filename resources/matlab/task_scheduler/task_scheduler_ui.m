@@ -3,6 +3,8 @@ classdef task_scheduler_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                    matlab.ui.Figure
+        SessionTimeEditField          matlab.ui.control.NumericEditField
+        SessionTimeminEditFieldLabel  matlab.ui.control.Label
         NumRepsEditField              matlab.ui.control.NumericEditField
         RepsLabel                     matlab.ui.control.Label
         ClearBagSelectionButton       matlab.ui.control.Button
@@ -125,13 +127,13 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create OutputFileNameLabel
             app.OutputFileNameLabel = uilabel(app.MainFigure);
             app.OutputFileNameLabel.HorizontalAlignment = 'right';
-            app.OutputFileNameLabel.Position = [526 329 103 22];
+            app.OutputFileNameLabel.Position = [536 163 103 22];
             app.OutputFileNameLabel.Text = 'Output File Name:';
 
             % Create OutputFileNameEditField
             app.OutputFileNameEditField = uieditfield(app.MainFigure, 'text');
             app.OutputFileNameEditField.HorizontalAlignment = 'center';
-            app.OutputFileNameEditField.Position = [548 303 116 20];
+            app.OutputFileNameEditField.Position = [548 137 116 20];
 
             % Create CreateJobButton
             app.CreateJobButton = uibutton(app.MainFigure, 'push');
@@ -196,7 +198,7 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create SaveButton
             app.SaveButton = uibutton(app.MainFigure, 'push');
             app.SaveButton.ButtonPushedFcn = createCallbackFcn(app, @SaveButtonPushed, true);
-            app.SaveButton.Position = [569 71 71 23];
+            app.SaveButton.Position = [569 34 71 23];
             app.SaveButton.Text = 'Save';
 
             % Create NicknameEditFieldLabel
@@ -234,16 +236,16 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create GroupCommentsTextAreaLabel
             app.GroupCommentsTextAreaLabel = uilabel(app.MainFigure);
             app.GroupCommentsTextAreaLabel.HorizontalAlignment = 'right';
-            app.GroupCommentsTextAreaLabel.Position = [529 271 104 22];
+            app.GroupCommentsTextAreaLabel.Position = [529 328 104 22];
             app.GroupCommentsTextAreaLabel.Text = 'Group Comments:';
 
             % Create GroupCommentsTextArea
             app.GroupCommentsTextArea = uitextarea(app.MainFigure);
-            app.GroupCommentsTextArea.Position = [541 135 123 132];
+            app.GroupCommentsTextArea.Position = [541 192 123 132];
 
             % Create JobCountLabel
             app.JobCountLabel = uilabel(app.MainFigure);
-            app.JobCountLabel.Position = [541 85 51 22];
+            app.JobCountLabel.Position = [541 108 51 22];
             app.JobCountLabel.Text = '';
 
             % Create RefreshButton
@@ -254,7 +256,7 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create OpenFolderButton
             app.OpenFolderButton = uibutton(app.MainFigure, 'push');
             app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
-            app.OpenFolderButton.Position = [567 35 82 23];
+            app.OpenFolderButton.Position = [567 6 82 23];
             app.OpenFolderButton.Text = 'Open Folder';
 
             % Create LoadJobButton
@@ -290,6 +292,19 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             app.NumRepsEditField.HorizontalAlignment = 'center';
             app.NumRepsEditField.Position = [267 42 50 20];
             app.NumRepsEditField.Value = 1;
+
+            % Create SessionTimeminEditFieldLabel
+            app.SessionTimeminEditFieldLabel = uilabel(app.MainFigure);
+            app.SessionTimeminEditFieldLabel.HorizontalAlignment = 'right';
+            app.SessionTimeminEditFieldLabel.Position = [537 107 108 22];
+            app.SessionTimeminEditFieldLabel.Text = 'Session Time (min)';
+
+            % Create SessionTimeEditField
+            app.SessionTimeEditField = uieditfield(app.MainFigure, 'numeric');
+            app.SessionTimeEditField.Limits = [0 180];
+            app.SessionTimeEditField.RoundFractionalValues = 'on';
+            app.SessionTimeEditField.ValueDisplayFormat = '%.0f';
+            app.SessionTimeEditField.Position = [628 86 36 22];
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

@@ -3,13 +3,14 @@ function save_schedule_file(app)
     jsobj.current_job = 1;
     jsobj.group_name = app.GroupNameEditField.Value;
     jsobj.group_comments = string(app.GroupCommentsTextArea.Value);
+    jsobj.session_time = app.SessionTimeEditField.Value;
     jsobj.timestamp = datestr(now,'yyyy-mm-dd HH:MM:SS');
 
     for i = 1 : jsobj.job_count
         jsobj.(['j', num2str(i)]) = app.jobs{i};
     end
 
-    jsobj.format_ver = '1.1';
+    jsobj.format_ver = '1.2';
 
     middlename = '';
     if ~isempty(app.OutputFileNameEditField.Value)

@@ -5,14 +5,26 @@
 # This file launches and stops training exe at given length of period
 
 import sys
+import json
 import subprocess
 
 evogen_exe_path = r"@EVOGEN_EXE_PATH@/Evolutionary_Generator.exe"
+job_file_path = r"@JOB_FILE_DIR@/"
 
 job_file = sys.argv[1]
+if job_file[-5:] != '.json':
+    job_file = job_file + '.json'
+
 period = 30 # default period is 30 mins
+# prioritize command line input over job file
 if len(sys.argv) > 2:
     period = int(sys.argv[2])
+else:
+    job_file = job_file_path + job_file
+    fileobj = open(job_file)
+    jsobj = json.load(fileobj)
+    if 'session_time' in jsobj:
+        period = jsobj['session_time']
 
 print("EvoGen Python Trainer")
 print("Training with peroid of " + str(period) + " minutes\n\n")

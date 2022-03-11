@@ -13,6 +13,7 @@ function task_scheduler_init(app, evogen_workspace_path)
     app.NumGenEditField.Value = 6000;
     app.PopSizeEditField.Value = 30;
     app.SimTimeEditField.Value = 60;
+    app.SessionTimeEditField.Value = 30;
 
     refresh_bag_list(app);
 end
