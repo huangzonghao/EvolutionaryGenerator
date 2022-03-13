@@ -10,6 +10,9 @@ function save_schedule_file(app)
         jsobj.(['j', num2str(i)]) = app.jobs{i};
     end
 
+    % Change log
+    % 1.1: add ignore_random_pop_in_bag
+    % 1.2: add session_time
     jsobj.format_ver = '1.2';
 
     middlename = '';
@@ -20,6 +23,8 @@ function save_schedule_file(app)
     new_file_spec = fopen(filename, "wt");
     fprintf(new_file_spec, jsonencode(jsobj, 'PrettyPrint', true));
     fclose(new_file_spec);
+
+    refresh_job_files_list(app);
     msgbox(['Job file saved to ', filename]);
     app.OutputFileNameEditField.Value = string.empty;
 end

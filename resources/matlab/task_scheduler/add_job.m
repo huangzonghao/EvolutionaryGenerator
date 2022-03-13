@@ -4,7 +4,7 @@ function add_job(app)
     else
         new_job.bagfile = app.BagFilesListBox.Items{app.BagFilesListBox.Value};
     end
-    new_job.env = app.EnvDropDown.Value;
+    new_job.env = app.EnvironmentDropDown.Value;
     new_job.num_gen = app.NumGenEditField.Value;
     new_job.pop_size = app.PopSizeEditField.Value;
     new_job.sim_time = app.SimTimeEditField.Value;

@@ -43,8 +43,9 @@ while True:
             print("All jobs has finished, return from task_launcher")
             exit()
     except subprocess.TimeoutExpired:
-        print("Class " + str(num_class) + " time's up")
+        print("\nClass " + str(num_class) + " time's up")
     except:
-        print("Unexcepted error")
-    print("\n\nClass " + str(num_class) + " finished\n\n")
+        print("\nUnexcepted error")
+    print("\n\n--------------------------------------------")
+    print("Class " + str(num_class) + " finished\n\n")
     num_class = num_class + 1
