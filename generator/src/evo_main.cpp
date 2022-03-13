@@ -168,7 +168,7 @@ void resume_from_job(const std::string& result_dir) {
 void process_job_file(const std::string& job_file_basename) {
     std::string jobfile_fullpath;
     // first check if the input file name is a full path
-    if (!std::filesystem::exists(job_file_basename)) {
+    if (std::filesystem::exists(job_file_basename)) {
         jobfile_fullpath = job_file_basename;
     } else {
         if (job_file_basename.find(".json") != std::string::npos)

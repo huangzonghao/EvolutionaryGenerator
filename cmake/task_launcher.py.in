@@ -20,8 +20,8 @@ period = 30 # default period is 30 mins
 if len(sys.argv) > 2:
     period = int(sys.argv[2])
 else:
-    job_file = job_file_path + job_file
-    fileobj = open(job_file)
+    job_file_tmp = job_file_path + job_file
+    fileobj = open(job_file_tmp)
     jsobj = json.load(fileobj)
     if 'session_time' in jsobj:
         period = jsobj['session_time']
