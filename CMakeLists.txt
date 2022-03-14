@@ -80,6 +80,8 @@ set(EVOGEN_MAPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/maps)
 set(JS_UI_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/javascript/robot_design)
 set(PROJECT_IN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(EVOGEN_MATLAB_SCRIPTS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/matlab)
+set(EVOGEN_PYTHON_SCRIPTS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/python)
+set(EVOGEN_TASK_LAUNCHER_PATH ${EVOGEN_PYTHON_SCRIPTS_PATH}/task_launcher/task_launcher.py)
 if (MSVC)
     set(EVOGEN_EXE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE})
 else()
@@ -102,9 +104,6 @@ set(CMAKE_CXX_STANDARD 17)
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_COMMIT_HASH)
 configure_file(${PROJECT_IN_FILE_DIR}/git_commit_hash.txt.in ${PROJECT_WORKSPACE_DIR}/git_commit_hash.txt @ONLY)
-
-# Trainer
-configure_file(${PROJECT_IN_FILE_DIR}/task_launcher.py.in ${PROJECT_WORKSPACE_DIR}/task_launcher.py @ONLY)
 
 #######################################################################
 #                         Setup Dependencies                          #

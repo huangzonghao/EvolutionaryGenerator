@@ -56,6 +56,8 @@ classdef task_scheduler_ui < matlab.apps.AppBase
         workspace_dir
         bagfile_dir
         jobfile_dir
+        trainer_exe_path
+        task_launcher_path
 
         jobs % cell array of job struct containing the jobs created
              % fields of job struct:
@@ -67,8 +69,8 @@ classdef task_scheduler_ui < matlab.apps.AppBase
     methods (Access = private)
 
         % Code that executes after component creation
-        function startupFcn(app, evogen_workspace_path)
-            task_scheduler_init(app, evogen_workspace_path);
+        function startupFcn(app, evogen_workspace_path, evogen_exe_path, evogen_task_launcher_path)
+            task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen_task_launcher_path);
         end
 
         % Button pushed function: CreateJobButton

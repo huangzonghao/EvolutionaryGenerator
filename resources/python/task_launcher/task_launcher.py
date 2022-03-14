@@ -1,27 +1,33 @@
-# This is an auto-generated file, do not edit
-# If at any time the paths in this file become invalid,
-# try to rebuild the project.
-
 # This file launches and stops training exe at given length of period
+# Input: exe_path (full path)
+#        job_file_path (full path)
+#        class_time (optional)
 
+import os.path # os.path.exists
+import time # sleep
 import sys
 import json
 import subprocess
 
-evogen_exe_path = r"@EVOGEN_EXE_PATH@/Evolutionary_Generator.exe"
-job_file_path = r"@JOB_FILE_DIR@/"
-
-job_file = sys.argv[1]
-if job_file[-5:] != '.json':
-    job_file = job_file + '.json'
+need_to_return = False
+evogen_exe_path = sys.argv[1];
+job_file = sys.argv[2]
+if not os.path.exists(evogen_exe_path):
+    print("Error: " + evogen_exe_path + " does not exist")
+    need_to_return = True
+if not os.path.exists(job_file):
+    print("Error: " + job_file + " does not exist")
+    need_to_return = True
+if need_to_return:
+    time.sleep(5) # let error message stay for a moment before cmd window is closed
+    exit()
 
 period = 30 # default period is 30 mins
 # prioritize command line input over job file
-if len(sys.argv) > 2:
-    period = int(sys.argv[2])
+if len(sys.argv) > 3:
+    period = int(sys.argv[3])
 else:
-    job_file_tmp = job_file_path + job_file
-    fileobj = open(job_file_tmp)
+    fileobj = open(job_file)
     jsobj = json.load(fileobj)
     if 'session_time' in jsobj:
         period = jsobj['session_time']
