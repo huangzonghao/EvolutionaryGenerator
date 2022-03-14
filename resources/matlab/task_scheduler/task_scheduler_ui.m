@@ -30,6 +30,8 @@ classdef task_scheduler_ui < matlab.apps.AppBase
         SaveButton                    matlab.ui.control.Button
         RemoveButton                  matlab.ui.control.Button
         JobEditorPanel                matlab.ui.container.Panel
+        StartIndexEditField           matlab.ui.control.NumericEditField
+        StartIndexEditFieldLabel      matlab.ui.control.Label
         NicknameEditField             matlab.ui.control.EditField
         NicknameEditFieldLabel        matlab.ui.control.Label
         NumRepsEditField              matlab.ui.control.NumericEditField
@@ -256,13 +258,24 @@ classdef task_scheduler_ui < matlab.apps.AppBase
             % Create NicknameEditFieldLabel
             app.NicknameEditFieldLabel = uilabel(app.JobEditorPanel);
             app.NicknameEditFieldLabel.HorizontalAlignment = 'right';
-            app.NicknameEditFieldLabel.Position = [213 141 62 22];
+            app.NicknameEditFieldLabel.Position = [213 147 62 22];
             app.NicknameEditFieldLabel.Text = 'Nickname:';
 
             % Create NicknameEditField
             app.NicknameEditField = uieditfield(app.JobEditorPanel, 'text');
             app.NicknameEditField.HorizontalAlignment = 'center';
-            app.NicknameEditField.Position = [231 118 89 20];
+            app.NicknameEditField.Position = [231 124 89 20];
+
+            % Create StartIndexEditFieldLabel
+            app.StartIndexEditFieldLabel = uilabel(app.JobEditorPanel);
+            app.StartIndexEditFieldLabel.HorizontalAlignment = 'right';
+            app.StartIndexEditFieldLabel.Position = [216 95 67 22];
+            app.StartIndexEditFieldLabel.Text = 'Start Index:';
+
+            % Create StartIndexEditField
+            app.StartIndexEditField = uieditfield(app.JobEditorPanel, 'numeric');
+            app.StartIndexEditField.Limits = [0 Inf];
+            app.StartIndexEditField.Position = [291 95 28 22];
 
             % Create JobFileEditorPanel
             app.JobFileEditorPanel = uipanel(app.MainFigure);
