@@ -19,7 +19,6 @@ def launch_trainer(evogen_exe_path, job_file_path, period):
         print("EvoGen Python Trainer Error: " + job_file_path + " does not exist")
         need_to_return = True
     if need_to_return:
-        time.sleep(5) # let error message stay for a moment before cmd window is closed
         return
 
     if period == -1: # no period given by user
@@ -61,3 +60,4 @@ if __name__ == "__main__":
         period = int(sys.argv[3])
 
     launch_trainer(evogen_exe_path, job_file_path, period)
+    input("Press ENTER to exit")
