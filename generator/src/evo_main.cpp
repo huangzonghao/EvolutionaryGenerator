@@ -139,7 +139,7 @@ void new_training_from_job(EvoGenTrainingConfigs& training_configs,
     new_training(evo_params, sim_params, bagfile_basename, training_configs.output_dir());
 }
 
-void resume_training(const std::string& result_dir) {
+int resume_training(const std::string& result_dir) {
     std::regex rx(".*gen_([0-9]+).*");
     std::smatch match;
     int last_gen = -1;
@@ -151,9 +151,16 @@ void resume_training(const std::string& result_dir) {
                 last_gen = curr_gen;
         }
     }
-
+    if (last_gen == -1) {
+        // The previous training couldn't even finish evaluating the initial population.
+        // we don't know how much configuration files have been copied successfully,
+        // so the best practice is to remove the current folder and do a fresh
+        // start of the current job
+        return 1;
+    }
     EvoGenerator evo_gen;
     evo_gen.resume(result_dir, last_gen);
+    return 0;
 }
 
 void resume_from_cmd(const std::string& result_dir_basename) {
@@ -161,8 +168,8 @@ void resume_from_cmd(const std::string& result_dir_basename) {
     resume_training(result_dir);
 }
 
-void resume_from_job(const std::string& result_dir) {
-    resume_training(result_dir);
+int resume_from_job(const std::string& result_dir) {
+    return resume_training(result_dir);
 }
 
 void process_job_file(const std::string& job_file_basename) {
@@ -263,7 +270,22 @@ void process_job_file(const std::string& job_file_basename) {
                 new_training_from_job(training_configs, bagfile_basename);
             } else {
                 std::cout << "Resuming job " << job["result_dir"] << std::endl;
-                resume_from_job(job["result_dir"]);
+                int ret_code = resume_from_job(job["result_dir"]);
+                if (ret_code == 1) {
+                    // The resume is unsuccessful due to memory dump of the
+                    // initial population being not done.
+                    // Clean up the current result folder and setup for a fresh
+                    // start in the next loop step
+                    std::filesystem::remove_all(job["result_dir"].get<std::string>());
+                    job["result_dir"] = "";
+                    job["num_runs"] = 0;
+                    ofs.open(jobfile_fullpath);
+                    ofs << jsobj.dump(2) << std::endl; // the number in json::dump specifies indention
+                    ofs.close();
+                    i = i - 1;
+                    std::cout << "Job resumption unsuccessful. Cleaning up and restarting" << std::endl;
+                    continue;
+                }
             }
 
             // if returned from training, update group_status and write to file
