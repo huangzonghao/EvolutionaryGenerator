@@ -8,6 +8,8 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     % robots format:
     % [p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness]
     % nb_gen + 1 because init seeds are gen 0
+    % Note the robot id starts from 0, so always +1 when retriving data from matlab array
+    % data goes into the table is guaranteed to be sorted
     robots = zeros(evo_params.gen_size, 9, nb_gen + 1);
 
     % Parentage
@@ -148,7 +150,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         end
 
         % Load robots
-        % robots format: gen_id, id, p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness
+        % robots format from file: gen_id, id, p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness
         curr_gen_robot = readmatrix(fullfile(result_path, strcat('/robots/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
         % sort entries to make them in the order of id -- need to do this because of a stupid bug I made
         %     in the training code that caused the results to be recorded in the randomized parent order

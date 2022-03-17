@@ -120,8 +120,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
         compare_plot_config % struct containing the config for compare plots
 
         % TODO: need to remove the following
-        robots_buffer
-        robots_gen = -1
         archive_ids
     end
 
