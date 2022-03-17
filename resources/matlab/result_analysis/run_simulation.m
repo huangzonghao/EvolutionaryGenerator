@@ -7,9 +7,12 @@ function run_simulation(app)
     % Note the XY has been flipped already in gui layout
     fid_x = str2double(app.RobotIDXField.Value);
     fid_y = str2double(app.RobotIDYField.Value);
-    if fid_x <= 0 || fid_x > result.evo_params.griddim_0 || fid_y <=0 || fid_y > result.evo_params.griddim_1
+    if isnan(fid_x) || isnan(fid_y) || fid_x <= 0 || ...
+       fid_x > result.evo_params.griddim_0 || fid_y <=0 || fid_y > result.evo_params.griddim_1
         msgbox(sprintf("Error: Invalid robot coord (%d, %d)", fid_y, fid_x));
+        return
     end
+
     id_in_archive = app.archive_ids(fid_x, fid_y);
     if (id_in_archive == 0)
         msgbox("Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty");

@@ -12,8 +12,10 @@ function plot_parentage_trace(app)
     % Note the XY has been flipped already in gui layout
     fid_x = str2double(app.RobotIDXField.Value);
     fid_y = str2double(app.RobotIDYField.Value);
-    if fid_x <= 0 || fid_x > result.evo_params.griddim_0 || fid_y <=0 || fid_y > result.evo_params.griddim_1
+    if isnan(fid_x) || isnan(fid_y) || fid_x <= 0 || ...
+       fid_x > result.evo_params.griddim_0 || fid_y <=0 || fid_y > result.evo_params.griddim_1
         msgbox(sprintf("Error: Invalid robot coord (%d, %d)", fid_y, fid_x));
+        return
     end
 
     % The following code gets the gen_id and id of a robot, given f_id1 and f_id2
