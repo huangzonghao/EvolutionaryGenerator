@@ -46,7 +46,9 @@ function refresh_result_list(app, varargin)
         dirs = dir(result_dir);
         for i = 1 : length(dirs)
             tmp_path = fullfile(dirs(i).folder, dirs(i).name);
-            if (~dirs(i).isdir || ~verify_result_dir(tmp_path))
+            % TODO: display raw results and exported results differently
+            if ~dirs(i).isdir || ...
+               ~(verify_result_dir(tmp_path) || verify_exported_result_dir(tmp_path))
                 continue;
             end
             [~, basename, ~] = fileparts(tmp_path);
