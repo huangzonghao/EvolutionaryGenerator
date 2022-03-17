@@ -33,16 +33,7 @@ function export_group(app)
     num_results = length(app.results);
     for i = 1 : num_results
         waitbar(double(i) / double(num_results + 1), wb, sprintf("Copying files"));
-        result = app.results{i};
-        source_result_dir = fullfile(source_group_dir, result.basename);
-        dest_result_dir = fullfile(dest_group_dir, result.basename);
-        mkdir(dest_result_dir);
-        copyfile(fullfile(source_result_dir, 'archive.mat'), dest_result_dir);
-        copyfile(fullfile(source_result_dir, 'robots.mat'), dest_result_dir);
-        copyfile(fullfile(source_result_dir, 'stat.mat'), dest_result_dir);
-        copyfile(fullfile(source_result_dir, 'name.txt'), dest_result_dir);
-        copyfile(fullfile(source_result_dir, 'evo_params.xml'), dest_result_dir);
-        copyfile(fullfile(source_result_dir, 'status.txt'), dest_result_dir);
+        export_result(app.results{i}, dest_group_dir);
     end
     close(wb);
     figure(app.MainFigure);
