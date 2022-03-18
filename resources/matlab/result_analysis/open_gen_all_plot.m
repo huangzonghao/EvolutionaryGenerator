@@ -31,11 +31,13 @@ function open_gen_all_plot(app)
     app.gen_plot.archive_surf = surf(zeros(result.evo_params.griddim_0, result.evo_params.griddim_1));
     xlabel(result.evo_params.feature_description2); % x, y flipped in plot
     ylabel(result.evo_params.feature_description1);
-    title('Archive Map');
+    % TODO: for some reason, setting the title font here doesn't work.
+    app.gen_plot.archive_surf_title = title('Archive Map', 'FontWeight', 'bold', 'FontSize', 12);
     axis square;
 
     plot_panel(2,1).select();
     app.gen_plot.archive_hist = histogram(0);
+    app.gen_plot.archive_hist_title = title('Fitness Histogram', 'FontWeight', 'bold', 'FontSize', 12);
 
     plot_panel(1,2).select();
     app.gen_plot.archive_heat = heatmap(zeros(result.evo_params.griddim_0, result.evo_params.griddim_1));
@@ -43,6 +45,9 @@ function open_gen_all_plot(app)
     app.gen_plot.archive_heat.XLabel = result.evo_params.feature_description2;
     app.gen_plot.archive_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.archive_heat.Title = 'Archive Map';
+    app.gen_plot.archive_heat.MissingDataLabel = 'Nan';
+    app.gen_plot.archive_heat.MissingDataColor = [1, 1, 1];
+    colormap(app.gen_plot.archive_heat, 'jet');
 
     plot_panel(1,3).select();
     app.gen_plot.parentage_heat = heatmap(double(-1) * ones(result.evo_params.griddim_0, result.evo_params.griddim_1));
@@ -51,6 +56,9 @@ function open_gen_all_plot(app)
     app.gen_plot.parentage_heat.XLabel = result.evo_params.feature_description2;
     app.gen_plot.parentage_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.parentage_heat.Title = 'Percentage of User Input Per Robot';
+    app.gen_plot.parentage_heat.MissingDataLabel = 'Nan';
+    app.gen_plot.parentage_heat.MissingDataColor = [1, 1, 1];
+    colormap(app.gen_plot.parentage_heat, 'jet');
 
     plot_panel(2,2).select();
     app.gen_plot.updates_per_bin_heat = heatmap(double(-1) * ones(result.evo_params.griddim_0, result.evo_params.griddim_1));
@@ -58,6 +66,9 @@ function open_gen_all_plot(app)
     app.gen_plot.updates_per_bin_heat.XLabel = result.evo_params.feature_description2;
     app.gen_plot.updates_per_bin_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.updates_per_bin_heat.Title = 'Total Updates Per Bin';
+    app.gen_plot.updates_per_bin_heat.MissingDataLabel = 'Nan';
+    app.gen_plot.updates_per_bin_heat.MissingDataColor = [1, 1, 1];
+    colormap(app.gen_plot.updates_per_bin_heat, 'jet');
 
     plot_panel(2,3).select();
     app.gen_plot.bin_age_heat = heatmap(double(-1) * ones(result.evo_params.griddim_0, result.evo_params.griddim_1));
@@ -65,4 +76,7 @@ function open_gen_all_plot(app)
     app.gen_plot.bin_age_heat.XLabel = result.evo_params.feature_description2;
     app.gen_plot.bin_age_heat.YLabel = result.evo_params.feature_description1;
     app.gen_plot.bin_age_heat.Title = 'Age of Each Bin';
+    app.gen_plot.bin_age_heat.MissingDataLabel = 'Nan';
+    app.gen_plot.bin_age_heat.MissingDataColor = [1, 1, 1];
+    colormap(app.gen_plot.bin_age_heat, 'jet');
 end
