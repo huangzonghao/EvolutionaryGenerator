@@ -98,13 +98,15 @@ function patch_stat(result_path)
         % need_to_save = true;
     % end
 
-    % Get the best fitness of each generation
+    % % Get the best fitness of each generation
     % archive_file = load(fullfile(result_path, 'archive.mat'));
     % stat.best_fits = zeros(1, nb_gen + 1); % best fitness of archive
     % for i = 0 : nb_gen
         % curr_gen_archive =  archive_file.archive{i + 1};
         % fitness = curr_gen_archive(:, 5);
-        % stat.best_fits(i + 1) = max(fitness);
+        % clean_fitness = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 5);
+        % % Use clean fitness here
+        % stat.best_fits(i + 1) = max(clean_fitness);
     % end
     % need_to_save = true;
 
