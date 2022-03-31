@@ -31,12 +31,12 @@ function patch_stat(result_path)
     end
 
     % Now check fields of stat and apply modifications appropriately
-    % Add robot_fitness
-    if ~isfield(stat, 'robot_fitness')
-        robot_file = load(fullfile(result_path, 'robots.mat'));
-        stat.robot_fitness = squeeze(robot_file.robots(:, 9, :));
-        need_to_save = true;
-    end
+    % % Add robot_fitness
+    % if ~isfield(stat, 'robot_fitness')
+        % robot_file = load(fullfile(result_path, 'robots.mat'));
+        % stat.robot_fitness = squeeze(robot_file.robots(:, 9, :));
+        % need_to_save = true;
+    % end
 
     % % Longevity Patch
     % archive_file = load(fullfile(result_path, 'archive.mat'));
@@ -97,6 +97,16 @@ function patch_stat(result_path)
         % end
         % need_to_save = true;
     % end
+
+    % Get the best fitness of each generation
+    % archive_file = load(fullfile(result_path, 'archive.mat'));
+    % stat.best_fits = zeros(1, nb_gen + 1); % best fitness of archive
+    % for i = 0 : nb_gen
+        % curr_gen_archive =  archive_file.archive{i + 1};
+        % fitness = curr_gen_archive(:, 5);
+        % stat.best_fits(i + 1) = max(fitness);
+    % end
+    % need_to_save = true;
 
     if need_to_save
         save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
