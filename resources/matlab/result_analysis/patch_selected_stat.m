@@ -102,11 +102,23 @@ function patch_stat(result_path)
     % archive_file = load(fullfile(result_path, 'archive.mat'));
     % stat.best_fits = zeros(1, nb_gen + 1); % best fitness of archive
     % for i = 0 : nb_gen
-        % curr_gen_archive =  archive_file.archive{i + 1};
+        % curr_gen_archive = archive_file.archive{i + 1};
         % fitness = curr_gen_archive(:, 5);
         % clean_fitness = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 5);
         % % Use clean fitness here
         % stat.best_fits(i + 1) = max(clean_fitness);
+    % end
+    % need_to_save = true;
+
+    % % Patch for QD-score
+    % archive_file = load(fullfile(result_path, 'archive.mat'));
+    % stat.qd_score = zeros(1, nb_gen + 1);
+    % for i = 0 : nb_gen
+        % curr_gen_archive = archive_file.archive{i + 1};
+        % fitness = curr_gen_archive(:, 5);
+        % clean_fitness = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 5);
+        % % Use clean fitness here
+        % stat.qd_score(i + 1) = sum(clean_fitness);
     % end
     % need_to_save = true;
 
