@@ -3,6 +3,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
+        DebugPanel                     matlab.ui.container.Panel
+        CLCButton                      matlab.ui.control.Button
+        RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
         PackSelectedResultsButton      matlab.ui.control.Button
         ExportArchiveMapButton         matlab.ui.control.Button
@@ -70,7 +73,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
         VirtualResultsListBox          matlab.ui.control.ListBox
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
-        ComparePanel                   matlab.ui.container.Panel
+        ComparisonPlotsTestsPanel      matlab.ui.container.Panel
+        PaperPlot2Button               matlab.ui.control.Button
+        PaperPlotButton                matlab.ui.control.Button
         ExportComparePlotDataButton    matlab.ui.control.Button
         MannWhitneyTestButton          matlab.ui.control.Button
         QQPlotForCompareButton         matlab.ui.control.Button
@@ -90,13 +95,6 @@ classdef result_analysis_ui < matlab.apps.AppBase
         RemoveCompareButton            matlab.ui.control.Button
         CompareListBox                 matlab.ui.control.ListBox
         GenerateAllComparePlotsButton  matlab.ui.control.Button
-        DebugPanel                     matlab.ui.container.Panel
-        PaperPlot2NameField            matlab.ui.control.EditField
-        PlotNameLabel_2                matlab.ui.control.Label
-        PaperPlot2Button               matlab.ui.control.Button
-        PaperPlotButton                matlab.ui.control.Button
-        CLCButton                      matlab.ui.control.Button
-        RehashButton                   matlab.ui.control.Button
     end
 
     properties (Access = public)
@@ -445,57 +443,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MainFigure.Position = [100 100 1228 580];
             app.MainFigure.Name = 'Evolutionary Robogami Result Viewer';
 
-            % Create DebugPanel
-            app.DebugPanel = uipanel(app.MainFigure);
-            app.DebugPanel.Title = 'Debug';
-            app.DebugPanel.FontWeight = 'bold';
-            app.DebugPanel.Position = [1131 1 100 580];
-
-            % Create RehashButton
-            app.RehashButton = uibutton(app.DebugPanel, 'push');
-            app.RehashButton.ButtonPushedFcn = createCallbackFcn(app, @RehashButtonPushed, true);
-            app.RehashButton.Tag = 'loadresult';
-            app.RehashButton.Position = [21 522 57 22];
-            app.RehashButton.Text = 'Rehash';
-
-            % Create CLCButton
-            app.CLCButton = uibutton(app.DebugPanel, 'push');
-            app.CLCButton.ButtonPushedFcn = createCallbackFcn(app, @CLCButtonPushed, true);
-            app.CLCButton.Tag = 'loadresult';
-            app.CLCButton.Position = [21 496 57 22];
-            app.CLCButton.Text = 'CLC';
-
-            % Create PaperPlotButton
-            app.PaperPlotButton = uibutton(app.DebugPanel, 'push');
-            app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
-            app.PaperPlotButton.Tag = 'loadresult';
-            app.PaperPlotButton.Position = [14 264 72 22];
-            app.PaperPlotButton.Text = 'Paper Plot';
-
-            % Create PaperPlot2Button
-            app.PaperPlot2Button = uibutton(app.DebugPanel, 'push');
-            app.PaperPlot2Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot2ButtonPushed, true);
-            app.PaperPlot2Button.Tag = 'loadresult';
-            app.PaperPlot2Button.Position = [9 233 82 22];
-            app.PaperPlot2Button.Text = 'Paper Plot 2';
-
-            % Create PlotNameLabel_2
-            app.PlotNameLabel_2 = uilabel(app.DebugPanel);
-            app.PlotNameLabel_2.Position = [9 204 65 22];
-            app.PlotNameLabel_2.Text = 'Plot Name:';
-
-            % Create PaperPlot2NameField
-            app.PaperPlot2NameField = uieditfield(app.DebugPanel, 'text');
-            app.PaperPlot2NameField.Position = [21 183 70 22];
-
-            % Create ComparePanel
-            app.ComparePanel = uipanel(app.MainFigure);
-            app.ComparePanel.Title = 'Compare';
-            app.ComparePanel.FontWeight = 'bold';
-            app.ComparePanel.Position = [852 1 280 580];
+            % Create ComparisonPlotsTestsPanel
+            app.ComparisonPlotsTestsPanel = uipanel(app.MainFigure);
+            app.ComparisonPlotsTestsPanel.Title = 'Comparison Plots & Tests';
+            app.ComparisonPlotsTestsPanel.FontWeight = 'bold';
+            app.ComparisonPlotsTestsPanel.Position = [852 1 379 580];
 
             % Create GenerateAllComparePlotsButton
-            app.GenerateAllComparePlotsButton = uibutton(app.ComparePanel, 'push');
+            app.GenerateAllComparePlotsButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.GenerateAllComparePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllComparePlotsButtonPushed, true);
             app.GenerateAllComparePlotsButton.WordWrap = 'on';
             app.GenerateAllComparePlotsButton.FontSize = 11;
@@ -503,117 +458,131 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.GenerateAllComparePlotsButton.Text = 'Generate All Plots';
 
             % Create CompareListBox
-            app.CompareListBox = uilistbox(app.ComparePanel);
+            app.CompareListBox = uilistbox(app.ComparisonPlotsTestsPanel);
             app.CompareListBox.Items = {};
             app.CompareListBox.Multiselect = 'on';
             app.CompareListBox.Position = [1 1 176 524];
             app.CompareListBox.Value = {};
 
             % Create RemoveCompareButton
-            app.RemoveCompareButton = uibutton(app.ComparePanel, 'push');
+            app.RemoveCompareButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.RemoveCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveCompareButtonPushed, true);
             app.RemoveCompareButton.Position = [185 446 60 22];
             app.RemoveCompareButton.Text = 'Remove';
 
             % Create RemoveAllCompareButton
-            app.RemoveAllCompareButton = uibutton(app.ComparePanel, 'push');
+            app.RemoveAllCompareButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.RemoveAllCompareButton.ButtonPushedFcn = createCallbackFcn(app, @RemoveAllCompareButtonPushed, true);
             app.RemoveAllCompareButton.Position = [185 531 60 22];
             app.RemoveAllCompareButton.Text = 'Clear All';
 
             % Create MoveCompareUpButton
-            app.MoveCompareUpButton = uibutton(app.ComparePanel, 'push');
+            app.MoveCompareUpButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.MoveCompareUpButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareUpButtonPushed, true);
             app.MoveCompareUpButton.Position = [185 499 60 22];
             app.MoveCompareUpButton.Text = 'Up';
 
             % Create MoveCompareDownButton
-            app.MoveCompareDownButton = uibutton(app.ComparePanel, 'push');
+            app.MoveCompareDownButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.MoveCompareDownButton.ButtonPushedFcn = createCallbackFcn(app, @MoveCompareDownButtonPushed, true);
             app.MoveCompareDownButton.Position = [185 474 60 22];
             app.MoveCompareDownButton.Text = 'Down';
 
             % Create ComparePlotButton
-            app.ComparePlotButton = uibutton(app.ComparePanel, 'push');
+            app.ComparePlotButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.ComparePlotButton.ButtonPushedFcn = createCallbackFcn(app, @ComparePlotButtonPushed, true);
             app.ComparePlotButton.WordWrap = 'on';
             app.ComparePlotButton.Position = [185 397 63 36];
             app.ComparePlotButton.Text = 'Compare Plot';
 
             % Create CleanCompareButton
-            app.CleanCompareButton = uibutton(app.ComparePanel, 'push');
+            app.CleanCompareButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.CleanCompareButton.ButtonPushedFcn = createCallbackFcn(app, @CleanCompareButtonPushed, true);
             app.CleanCompareButton.WordWrap = 'on';
             app.CleanCompareButton.Position = [185 303 63 43];
             app.CleanCompareButton.Text = 'Clean Compare';
 
             % Create PlotNameLabel
-            app.PlotNameLabel = uilabel(app.ComparePanel);
+            app.PlotNameLabel = uilabel(app.ComparisonPlotsTestsPanel);
             app.PlotNameLabel.Position = [4 531 65 22];
             app.PlotNameLabel.Text = 'Plot Name:';
 
             % Create CompPlotNameField
-            app.CompPlotNameField = uieditfield(app.ComparePanel, 'text');
+            app.CompPlotNameField = uieditfield(app.ComparisonPlotsTestsPanel, 'text');
             app.CompPlotNameField.Position = [68 532 109 22];
 
             % Create TTestButton
-            app.TTestButton = uibutton(app.ComparePanel, 'push');
+            app.TTestButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.TTestButton.ButtonPushedFcn = createCallbackFcn(app, @TTestButtonPushed, true);
             app.TTestButton.WordWrap = 'on';
             app.TTestButton.Position = [188 219 57 22];
             app.TTestButton.Text = 'T-Test';
 
             % Create ANOVAButton
-            app.ANOVAButton = uibutton(app.ComparePanel, 'push');
+            app.ANOVAButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.ANOVAButton.ButtonPushedFcn = createCallbackFcn(app, @ANOVAButtonPushed, true);
             app.ANOVAButton.WordWrap = 'on';
             app.ANOVAButton.Position = [188 195 57 22];
             app.ANOVAButton.Text = 'ANOVA';
 
             % Create VarTestButton
-            app.VarTestButton = uibutton(app.ComparePanel, 'push');
+            app.VarTestButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.VarTestButton.ButtonPushedFcn = createCallbackFcn(app, @VarTestButtonPushed, true);
             app.VarTestButton.WordWrap = 'on';
             app.VarTestButton.Position = [188 172 57 22];
             app.VarTestButton.Text = 'VarTest';
 
             % Create TTestAllButton
-            app.TTestAllButton = uibutton(app.ComparePanel, 'push');
+            app.TTestAllButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.TTestAllButton.ButtonPushedFcn = createCallbackFcn(app, @TTestAllButtonPushed, true);
             app.TTestAllButton.Position = [185 148 65 22];
             app.TTestAllButton.Text = 'T-Test All';
 
             % Create TTestOptionDropDownLabel
-            app.TTestOptionDropDownLabel = uilabel(app.ComparePanel);
+            app.TTestOptionDropDownLabel = uilabel(app.ComparisonPlotsTestsPanel);
             app.TTestOptionDropDownLabel.Position = [181 270 73 22];
             app.TTestOptionDropDownLabel.Text = 'T-Test Option';
 
             % Create TTestOptionDropDown
-            app.TTestOptionDropDown = uidropdown(app.ComparePanel);
+            app.TTestOptionDropDown = uidropdown(app.ComparisonPlotsTestsPanel);
             app.TTestOptionDropDown.Items = {};
             app.TTestOptionDropDown.Position = [181 243 92 22];
             app.TTestOptionDropDown.Value = {};
 
             % Create QQPlotForCompareButton
-            app.QQPlotForCompareButton = uibutton(app.ComparePanel, 'push');
+            app.QQPlotForCompareButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.QQPlotForCompareButton.ButtonPushedFcn = createCallbackFcn(app, @QQPlotForCompareButtonPushed, true);
             app.QQPlotForCompareButton.WordWrap = 'on';
             app.QQPlotForCompareButton.Position = [190 125 57 22];
             app.QQPlotForCompareButton.Text = 'QQ Plot';
 
             % Create MannWhitneyTestButton
-            app.MannWhitneyTestButton = uibutton(app.ComparePanel, 'push');
+            app.MannWhitneyTestButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.MannWhitneyTestButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestButtonPushed, true);
             app.MannWhitneyTestButton.WordWrap = 'on';
             app.MannWhitneyTestButton.Position = [187 83 57 22];
             app.MannWhitneyTestButton.Text = 'mwwtest';
 
             % Create ExportComparePlotDataButton
-            app.ExportComparePlotDataButton = uibutton(app.ComparePanel, 'push');
+            app.ExportComparePlotDataButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.ExportComparePlotDataButton.ButtonPushedFcn = createCallbackFcn(app, @ExportComparePlotDataButtonPushed, true);
             app.ExportComparePlotDataButton.WordWrap = 'on';
             app.ExportComparePlotDataButton.Position = [186 359 63 36];
             app.ExportComparePlotDataButton.Text = 'Compare Plot Data';
+
+            % Create PaperPlotButton
+            app.PaperPlotButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
+            app.PaperPlotButton.Tag = 'loadresult';
+            app.PaperPlotButton.Position = [281 425 81 22];
+            app.PaperPlotButton.Text = 'Paper Plot';
+
+            % Create PaperPlot2Button
+            app.PaperPlot2Button = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.PaperPlot2Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot2ButtonPushed, true);
+            app.PaperPlot2Button.Tag = 'loadresult';
+            app.PaperPlot2Button.Position = [279 394 83 22];
+            app.PaperPlot2Button.Text = 'Paper Plot 2';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
@@ -1053,6 +1022,26 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PackSelectedResultsButton.WordWrap = 'on';
             app.PackSelectedResultsButton.Position = [280 445 62 22];
             app.PackSelectedResultsButton.Text = 'Pack';
+
+            % Create DebugPanel
+            app.DebugPanel = uipanel(app.MainFigure);
+            app.DebugPanel.Title = 'Debug';
+            app.DebugPanel.FontWeight = 'bold';
+            app.DebugPanel.Position = [1131 467 100 114];
+
+            % Create RehashButton
+            app.RehashButton = uibutton(app.DebugPanel, 'push');
+            app.RehashButton.ButtonPushedFcn = createCallbackFcn(app, @RehashButtonPushed, true);
+            app.RehashButton.Tag = 'loadresult';
+            app.RehashButton.Position = [21 56 57 22];
+            app.RehashButton.Text = 'Rehash';
+
+            % Create CLCButton
+            app.CLCButton = uibutton(app.DebugPanel, 'push');
+            app.CLCButton.ButtonPushedFcn = createCallbackFcn(app, @CLCButtonPushed, true);
+            app.CLCButton.Tag = 'loadresult';
+            app.CLCButton.Position = [21 30 57 22];
+            app.CLCButton.Text = 'CLC';
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

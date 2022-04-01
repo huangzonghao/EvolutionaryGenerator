@@ -13,8 +13,8 @@ function generate_paper_plot2(app)
     end
 
     fig = figure();
-    if ~isempty(app.PaperPlot2NameField.Value)
-        sgtitle(fig, app.PaperPlot2NameField.Value);
+    if ~isempty(app.CompPlotNameField.Value)
+        sgtitle(fig, app.CompPlotNameField.Value);
     end
     p1 = subplot(2, 2, 1);
     p2 = subplot(2, 2, 2);
@@ -37,11 +37,7 @@ function generate_paper_plot2(app)
 
         for i_result = 1 : num_results
             % get the qd score for each result
-            result = app.results{virtual_result.ids(i_result)};
-            if ~result.loaded
-                load_result(app, result.id);
-                result = app.results{result.id};
-            end
+            result = load_target_result(app, false, virtual_result.ids(i_result));
 
             qd_column(i_result) = result.stat.qd_score(end);
             global_performance_column(i_result) = result.stat.best_fits(end);

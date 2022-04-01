@@ -36,17 +36,11 @@ end
 function merged_archive = process_virtual_result(app, v_id)
     vr_ref = app.virtual_results{v_id};
 
-    for i = 1 : vr_ref.num_results
-        if ~app.results{vr_ref.ids(i)}.loaded
-            load_result(app, vr_ref.ids(i));
-        end
-    end
-
     result = app.results{vr_ref.ids(1)};
     griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
     merged_archive = -Inf(griddim);
     for i = 1 : vr_ref.num_results
-        result = app.results{vr_ref.ids(i)};
+        result = load_target_result(app, false, vr_ref.ids(i));
 
         archive_map = -Inf(griddim);
         current_gen_archive = result.archive{end};
