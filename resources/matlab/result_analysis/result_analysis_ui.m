@@ -91,6 +91,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
         CompareListBox                 matlab.ui.control.ListBox
         GenerateAllComparePlotsButton  matlab.ui.control.Button
         DebugPanel                     matlab.ui.container.Panel
+        PaperPlot2NameField            matlab.ui.control.EditField
+        PlotNameLabel_2                matlab.ui.control.Label
+        PaperPlot2Button               matlab.ui.control.Button
         PaperPlotButton                matlab.ui.control.Button
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
@@ -424,6 +427,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function PaperPlotButtonPushed(app, event)
             generate_paper_plot(app);
         end
+
+        % Button pushed function: PaperPlot2Button
+        function PaperPlot2ButtonPushed(app, event)
+            generate_paper_plot2(app);
+        end
     end
 
     % Component initialization
@@ -463,6 +471,22 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PaperPlotButton.Tag = 'loadresult';
             app.PaperPlotButton.Position = [14 264 72 22];
             app.PaperPlotButton.Text = 'Paper Plot';
+
+            % Create PaperPlot2Button
+            app.PaperPlot2Button = uibutton(app.DebugPanel, 'push');
+            app.PaperPlot2Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot2ButtonPushed, true);
+            app.PaperPlot2Button.Tag = 'loadresult';
+            app.PaperPlot2Button.Position = [9 233 82 22];
+            app.PaperPlot2Button.Text = 'Paper Plot 2';
+
+            % Create PlotNameLabel_2
+            app.PlotNameLabel_2 = uilabel(app.DebugPanel);
+            app.PlotNameLabel_2.Position = [9 204 65 22];
+            app.PlotNameLabel_2.Text = 'Plot Name:';
+
+            % Create PaperPlot2NameField
+            app.PaperPlot2NameField = uieditfield(app.DebugPanel, 'text');
+            app.PaperPlot2NameField.Position = [21 183 70 22];
 
             % Create ComparePanel
             app.ComparePanel = uipanel(app.MainFigure);
