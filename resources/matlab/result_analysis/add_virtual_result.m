@@ -1,4 +1,11 @@
 function add_virtual_result(app)
+% Virtual result is the grouping of several actual result.
+% Fields of virtual result:
+%     isgroup: true.
+%     name: name of the virtual result.
+%     ids: the list of id of the actual results contained by this virtual result.
+%     num_results: total number of actual results contained in this virtual result,
+%         equal to the length of ids.
     if isempty(app.VirtualResultNameField.Value)
         msgbox("Specify a group name when adding a group");
         return

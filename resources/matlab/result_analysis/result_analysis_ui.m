@@ -53,6 +53,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         ResultGroupLabel               matlab.ui.control.Label
         ResultsListBox                 matlab.ui.control.ListBox
         VirtualResultsPanel            matlab.ui.container.Panel
+        ComputeBenchmarkButton         matlab.ui.control.Button
         MannWhitneyTestCoverageAllButton  matlab.ui.control.Button
         mwwPercentEditField            matlab.ui.control.NumericEditField
         mwwLabel                       matlab.ui.control.Label
@@ -201,6 +202,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: DeleteVirtualResultButton
         function DeleteVirtualResultButtonPushed(app, event)
             delete_virtual_result(app);
+        end
+
+        % Button pushed function: ComputeBenchmarkButton
+        function ComputeBenchmarkButtonPushed(app, event)
+            compute_benchmark(app);
         end
 
         % Button pushed function: ExportGroupButton
@@ -630,7 +636,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AddVirtualToCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddVirtualToCompareButtonPushed, true);
             app.AddVirtualToCompareButton.WordWrap = 'on';
             app.AddVirtualToCompareButton.FontSize = 11;
-            app.AddVirtualToCompareButton.Position = [182 420 65 45];
+            app.AddVirtualToCompareButton.Position = [182 402 65 45];
             app.AddVirtualToCompareButton.Text = 'Add to Compare';
 
             % Create GroupNameLabel
@@ -689,6 +695,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.MannWhitneyTestCoverageAllButton.WordWrap = 'on';
             app.MannWhitneyTestCoverageAllButton.Position = [186 58 60 50];
             app.MannWhitneyTestCoverageAllButton.Text = 'mwwtest coverage all';
+
+            % Create ComputeBenchmarkButton
+            app.ComputeBenchmarkButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.ComputeBenchmarkButton.ButtonPushedFcn = createCallbackFcn(app, @ComputeBenchmarkButtonPushed, true);
+            app.ComputeBenchmarkButton.Tag = 'loadresult';
+            app.ComputeBenchmarkButton.WordWrap = 'on';
+            app.ComputeBenchmarkButton.Position = [179 454 74 51];
+            app.ComputeBenchmarkButton.Text = 'Compute Benchmark';
 
             % Create SingleResultsPanel
             app.SingleResultsPanel = uipanel(app.MainFigure);
