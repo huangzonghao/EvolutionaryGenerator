@@ -27,11 +27,7 @@ function plot_result_compares(app, do_clean_plot)
     ylabel(p1, 'fitness');
 
     p2 = subplot(num_subplots, 1, 2, 'NextPlot', 'add');
-    if do_clean_plot
-        title(p2, 'Clean Elite Fitness');
-    else
-        title(p2, 'Elite Fitness');
-    end
+    title(p2, 'Best Fitness');
     xlabel(p2, 'generation');
     ylabel(p2, 'fitness');
 
@@ -41,9 +37,9 @@ function plot_result_compares(app, do_clean_plot)
     ylabel(p3, 'coverage');
 
     p4 = subplot(num_subplots, 1, 4, 'NextPlot', 'add');
-    title(p4, 'Average Parentage Percentage Per Robot');
+    title(p4, 'QD-Score');
     xlabel(p4, 'generation');
-    ylabel(p4, 'parentage');
+    ylabel(p4, 'QD-Score');
 
     % get each plot a different color
     plot_colors = 'brcmgk';
@@ -71,22 +67,18 @@ function plot_result_compares(app, do_clean_plot)
             end
             if do_clean_plot
                 plot(p1, result.stat.clean_archive_fits, 'Color', plot_color, 'DisplayName', result.name);
-                plot(p2, result.stat.clean_elite_archive_fits, 'Color', plot_color, 'DisplayName', result.name);
             else
                 plot(p1, result.stat.archive_fits, 'Color', plot_color, 'DisplayName', result.name);
-                plot(p2, result.stat.elite_archive_fits, 'Color', plot_color, 'DisplayName', result.name);
             end
+            plot(p2, result.stat.best_fits, 'Color', plot_color, 'DisplayName', result.name);
             plot(p3, result.stat.coverage, 'Color', plot_color, 'DisplayName', result.name);
-            if result.stat.has_parentage
-                plot(p4, result.stat.archive_parentage, 'Color', plot_color, 'DisplayName', result.name);
-            end
+            plot(p4, result.stat.qd_score, 'Color', plot_color, 'DisplayName', result.name);
         else % virtual result
             coverage = [];
+            best_fits = [];
+            qd_score = [];
             archive_fits = [];
-            elite_archive_fits = [];
             clean_archive_fits = [];
-            clean_elite_archive_fits = [];
-            archive_parentage = [];
 
             for i_virtual_result = 1 : result.num_results
                 child_result = app.results{result.ids(i_virtual_result)};
@@ -95,25 +87,19 @@ function plot_result_compares(app, do_clean_plot)
                     child_result = app.results{child_result.id};
                 end
                 coverage(end + 1, :) = child_result.stat.coverage;
+                best_fits(end + 1, :) = child_result.stat.best_fits;
+                qd_score(end + 1, :) = child_result.stat.qd_score;
                 archive_fits(end + 1, :) = child_result.stat.archive_fits;
-                elite_archive_fits(end + 1, :) = child_result.stat.elite_archive_fits;
                 clean_archive_fits(end + 1, :) = child_result.stat.clean_archive_fits;
-                clean_elite_archive_fits(end + 1, :) = child_result.stat.clean_elite_archive_fits;
-                if child_result.stat.has_parentage
-                    archive_parentage(end + 1, :) = child_result.stat.archive_parentage;
-                end
             end
             if do_clean_plot
                 shadedErrorBar(p1, [], clean_archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
-                shadedErrorBar(p2, [], clean_elite_archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
             else
                 shadedErrorBar(p1, [], archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
-                shadedErrorBar(p2, [], elite_archive_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
             end
+            shadedErrorBar(p2, [], best_fits, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
             shadedErrorBar(p3, [], coverage, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
-            if length(archive_parentage) ~= 0
-                shadedErrorBar(p4, [], archive_parentage, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
-            end
+            shadedErrorBar(p4, [], qd_score, {@mean, @std}, 'Color', plot_color, 'DisplayName', result.name);
         end
     end
 
