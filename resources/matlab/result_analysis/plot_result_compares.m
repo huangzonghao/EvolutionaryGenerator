@@ -42,7 +42,12 @@ function plot_result_compares(app, do_clean_plot)
     ylabel(p4, 'QD-Score');
 
     % get each plot a different color
-    plot_colors = 'brcmgk';
+    % plot_colors = 'brcmgk';
+    plot_colors = [1, 0, 0;
+                   1, .6, 0;
+                   0, .75, 0;
+                   0, .75, .75;
+                   0, 0, 1];
     % the default matlab rgb triplet
     % plot_colors = [0 0.4470 0.7410;
                    % 0.8500 0.3250 0.0980;
@@ -58,8 +63,8 @@ function plot_result_compares(app, do_clean_plot)
         else
             result = app.results{app.targets_to_compare{i_target_to_compare}.id};
         end
-        plot_color = plot_colors(rem(i_target_to_compare, length(plot_colors)) + 1);
-        % plot_color = plot_colors(rem(i_target_to_compare, size(plot_colors, 1)) + 1, :);
+        % plot_color = plot_colors(rem(i_target_to_compare, length(plot_colors)) + 1);
+        plot_color = plot_colors(rem(i_target_to_compare - 1, size(plot_colors, 1)) + 1, :);
         if ~result.isgroup
             if ~result.loaded
                 load_result(app, result.id);
