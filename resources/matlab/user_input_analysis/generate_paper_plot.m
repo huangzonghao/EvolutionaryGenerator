@@ -38,6 +38,7 @@ function generate_paper_plot(app)
     ground_hm.NodeChildren(3).YDir='normal';
     ground_hm.FontColor = [0, 0, 0];
     ground_hm.FontSize = 15;
+    ground_hm.FontName = 'Times New Roman';
     ground_hm.MissingDataLabel = 'Nan';
     title('(i) Ground');
     xlabel(feature_description2); % x, y flipped in plot
@@ -62,6 +63,7 @@ function generate_paper_plot(app)
     sine_hm.FontColor = [0, 0, 0];
     sine_hm.FontSize = 15;
     sine_hm.MissingDataLabel = 'Nan';
+    sine_hm.FontName = 'Times New Roman';
     title('(ii) Sine');
     xlabel(feature_description2); % x, y flipped in plot
     ylabel(feature_description1);
@@ -84,6 +86,7 @@ function generate_paper_plot(app)
     valley_hm.NodeChildren(3).YDir='normal';
     valley_hm.FontColor = [0, 0, 0];
     valley_hm.FontSize = 15;
+    valley_hm.FontName = 'Times New Roman';
     valley_hm.MissingDataLabel = 'Nan';
     title('(iii) Valley');
     xlabel(feature_description2); % x, y flipped in plot
@@ -123,10 +126,10 @@ function generate_paper_plot(app)
     end
     update_bar.select();
     stacked_bar3(update_bar.axis, app.map_stat);
-    title('(iv) Updates per Bin', 'fontweight', 'bold', 'fontsize', 15);
-    xlabel(feature_description2, 'fontsize', 15, 'color', [0, 0, 0]); % x, y flipped in plot
-    ylabel(feature_description1, 'fontsize', 15, 'color', [0, 0, 0]);
-    zlabel('Number of robots');
+    title('(iv) Updates per Bin', 'fontweight', 'bold', 'fontsize', 15, 'FontName', 'Times New Roman');
+    xlabel(feature_description2, 'fontsize', 13, 'color', [0, 0, 0], 'FontName', 'Times New Roman'); % x, y flipped in plot
+    ylabel(feature_description1, 'fontsize', 13, 'color', [0, 0, 0], 'FontName', 'Times New Roman');
+    zlabel('Number of robots', 'fontsize', 13, 'color', [0, 0, 0], 'FontName', 'Times New Roman');
     legend('Ground', 'Sine', 'Valley');
 
     % Finally adjust the color limits of plots
