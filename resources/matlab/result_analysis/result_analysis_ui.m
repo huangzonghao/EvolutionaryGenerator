@@ -74,6 +74,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparisonPlotsTestsPanel      matlab.ui.container.Panel
+        PaperPlot3Button               matlab.ui.control.Button
         PaperPlot2Button               matlab.ui.control.Button
         PaperPlotButton                matlab.ui.control.Button
         ExportComparePlotDataButton    matlab.ui.control.Button
@@ -430,6 +431,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function PaperPlot2ButtonPushed(app, event)
             generate_paper_plot2(app);
         end
+
+        % Button pushed function: PaperPlot3Button
+        function PaperPlot3ButtonPushed(app, event)
+            generate_paper_plot3(app);
+        end
     end
 
     % Component initialization
@@ -583,6 +589,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PaperPlot2Button.Tag = 'loadresult';
             app.PaperPlot2Button.Position = [279 394 83 22];
             app.PaperPlot2Button.Text = 'Paper Plot 2';
+
+            % Create PaperPlot3Button
+            app.PaperPlot3Button = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.PaperPlot3Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot3ButtonPushed, true);
+            app.PaperPlot3Button.Tag = 'loadresult';
+            app.PaperPlot3Button.Position = [281 365 83 22];
+            app.PaperPlot3Button.Text = 'Paper Plot 3';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
