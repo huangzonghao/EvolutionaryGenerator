@@ -14,19 +14,19 @@ function report = mwwtest_result_stats(app, result1, result2, gen)
 
     report.raw = samples;
     [report.P1, report.H1] = ranksum(samples{1}.fits, samples{2}.fits);
-    [report.P2, report.H2] = ranksum(samples{1}.elite_fits, samples{2}.elite_fits);
+    [report.P2, report.H2] = ranksum(samples{1}.best_fits, samples{2}.best_fits);
 end
 
 function sample = sample_result(app, result, gen)
     sample.fits = [];
-    sample.elite_fits = [];
+    sample.best_fits = [];
     for i = 1 : result.num_results
         child_result = load_target_result(app, false, result.ids(i));
         sample.fits(i) = child_result.stat.archive_fits(gen + 1);
-        sample.elite_fits(i) = child_result.stat.elite_archive_fits(gen + 1);
+        sample.best_fits(i) = child_result.stat.best_fits(gen + 1);
         % sample.fits(i) = child_result.stat.clean_archive_fits(gen + 1);
         % sample.elite_fits(i) = child_result.stat.clean_elite_archive_fits(gen + 1);
     end
     sample.fits_mean = mean(sample.fits);
-    sample.elite_fits_mean = mean(sample.elite_fits);
+    sample.best_fits_mean = mean(sample.best_fits);
 end
