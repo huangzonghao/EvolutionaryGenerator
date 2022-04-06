@@ -42,9 +42,10 @@ function generate_paper_plot(app)
     hm1.NodeChildren(3).YDir='normal';
     hm1.XLabel = feature_description2;
     hm1.YLabel = feature_description1;
-    hm1.Title = 'H0 - Gen 0';
+    hm1.Title = 'H0 - Initial Population';
     hm1.FontColor = [0, 0, 0];
     hm1.FontSize = 15;
+    hm1.FontName = 'Times New Roman';
     hm1.MissingDataLabel = 'Nan';
 
     % Gen 2000
@@ -62,9 +63,10 @@ function generate_paper_plot(app)
     hm2.NodeChildren(3).YDir='normal';
     hm2.XLabel = feature_description2;
     hm2.YLabel = feature_description1;
-    hm2.Title = 'H0 - Gen 2000';
+    hm2.Title = 'H0 - Final Population';
     hm2.FontColor = [0, 0, 0];
     hm2.FontSize = 15;
+    hm2.FontName = 'Times New Roman';
     hm2.MissingDataLabel = 'Nan';
 
     % Result 2
@@ -85,9 +87,10 @@ function generate_paper_plot(app)
     hm3.NodeChildren(3).YDir='normal';
     hm3.XLabel = feature_description2;
     hm3.YLabel = feature_description1;
-    hm3.Title = 'H25 - Gen 0';
+    hm3.Title = 'H25 - Initial Population';
     hm3.FontColor = [0, 0, 0];
     hm3.FontSize = 15;
+    hm3.FontName = 'Times New Roman';
     hm3.MissingDataLabel = 'Nan';
 
     % Gen 2000
@@ -105,9 +108,10 @@ function generate_paper_plot(app)
     hm4.NodeChildren(3).YDir='normal';
     hm4.XLabel = feature_description2;
     hm4.YLabel = feature_description1;
-    hm4.Title = 'H25 - Gen 2000';
+    hm4.Title = 'H25 - Final Population';
     hm4.FontColor = [0, 0, 0];
     hm4.FontSize = 15;
+    hm4.FontName = 'Times New Roman';
     hm4.MissingDataLabel = 'Nan';
 
     % Finally adjust the color limits of plots
@@ -141,4 +145,9 @@ function generate_paper_plot(app)
     hm3.YLabel = '';
     hm4.YLabel = '';
     colormap(paper_fig, 'jet');
+
+    % Save
+    if ~isempty(app.CompPlotNameField.Value)
+        exportgraphics(paper_fig, [app.CompPlotNameField.Value '.pdf']);
+    end
 end

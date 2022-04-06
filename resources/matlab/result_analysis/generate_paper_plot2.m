@@ -12,17 +12,19 @@ function generate_paper_plot2(app)
         end
     end
 
-    fig = figure();
+    fig = figure('Position', [100, 100, 600, 600]);
     if ~isempty(app.CompPlotNameField.Value)
-        sgtitle(fig, app.CompPlotNameField.Value);
+        sgtitle(fig, app.CompPlotNameField.Value, 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 14);
     end
-    p1 = subplot(2, 2, 1);
-    p2 = subplot(2, 2, 2);
-    p3 = subplot(2, 2, 3);
-    p4 = subplot(2, 2, 4);
+    % Subplot handles
+    p = {};
 
-    title(p3, 'Global Reality');
-    title(p4, 'Global Precision');
+    for i = 1 : 4
+        p{i} = subplot(2, 2, i);
+    end
+
+    title(p{3}, 'Global Reality');
+    title(p{4}, 'Global Precision');
 
     % Final QD-Score
     qd_score_mat = [];
@@ -58,16 +60,28 @@ function generate_paper_plot2(app)
         reliability_mat = [reliability_mat reliability_column];
     end
 
-    boxplot(p1, qd_score_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
-    title(p1, 'QD-Score');
-    ylabel(p1, 'QD-Score');
+    boxplot(p{1}, qd_score_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    title(p{1}, 'QD-Score', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
 
-    boxplot(p2, global_performance_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
-    title(p2, 'Global Performance');
+    boxplot(p{2}, global_performance_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    title(p{2}, 'Global Performance', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
 
-    boxplot(p3, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
-    title(p3, 'Reliabilitiy');
+    boxplot(p{3}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    title(p{3}, 'Reliabilitiy', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
 
-    boxplot(p4, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
-    title(p4, 'Precision');
+    boxplot(p{4}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    title(p{4}, 'Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+
+    plot_height = p{1}.Position(3);
+    plot_width = p{1}.Position(4);
+    p{1}.Position(2) = p{2}.Position(2);
+    for i = 1 : 4
+        p{i}.Position(3) = plot_height;
+        p{i}.Position(4) = plot_width;
+    end
+
+    % Save
+    if ~isempty(app.CompPlotNameField.Value)
+        exportgraphics(fig, [app.CompPlotNameField.Value '_box.pdf']);
+    end
 end

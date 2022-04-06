@@ -30,7 +30,7 @@ function generate_paper_plot3(app)
 
     p3 = subplot(num_subplots, 1, 4, 'NextPlot', 'add');
     % title(p3, 'Coverage');
-    xlabel(p3, 'Generation');
+    xlabel(p3, 'Iteration (Batch Size 30)');
     xlim([0, 2000]);
     ylabel(p3, 'Coverage(%)');
 

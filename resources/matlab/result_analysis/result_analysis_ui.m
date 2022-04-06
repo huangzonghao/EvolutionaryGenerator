@@ -76,7 +76,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         ComparisonPlotsTestsPanel      matlab.ui.container.Panel
         PaperPlot3Button               matlab.ui.control.Button
         PaperPlot2Button               matlab.ui.control.Button
-        PaperPlotButton                matlab.ui.control.Button
+        PaperPlot1Button               matlab.ui.control.Button
         ExportComparePlotDataButton    matlab.ui.control.Button
         MannWhitneyTestButton          matlab.ui.control.Button
         QQPlotForCompareButton         matlab.ui.control.Button
@@ -422,9 +422,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
             run_mwwtest_coverage_all(app);
         end
 
-        % Button pushed function: PaperPlotButton
-        function PaperPlotButtonPushed(app, event)
-            generate_paper_plot(app);
+        % Button pushed function: PaperPlot1Button
+        function PaperPlot1ButtonPushed(app, event)
+            generate_paper_plot1(app);
         end
 
         % Button pushed function: PaperPlot2Button
@@ -576,26 +576,27 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ExportComparePlotDataButton.Position = [186 359 63 36];
             app.ExportComparePlotDataButton.Text = 'Compare Plot Data';
 
-            % Create PaperPlotButton
-            app.PaperPlotButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
-            app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
-            app.PaperPlotButton.Tag = 'loadresult';
-            app.PaperPlotButton.Position = [281 425 81 22];
-            app.PaperPlotButton.Text = 'Paper Plot';
+            % Create PaperPlot1Button
+            app.PaperPlot1Button = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.PaperPlot1Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot1ButtonPushed, true);
+            app.PaperPlot1Button.Tag = 'loadresult';
+            app.PaperPlot1Button.Position = [279 424 86 22];
+            app.PaperPlot1Button.Text = 'stat v. iteration';
 
             % Create PaperPlot2Button
             app.PaperPlot2Button = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.PaperPlot2Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot2ButtonPushed, true);
             app.PaperPlot2Button.Tag = 'loadresult';
-            app.PaperPlot2Button.Position = [279 394 83 22];
-            app.PaperPlot2Button.Text = 'Paper Plot 2';
+            app.PaperPlot2Button.Position = [279 397 83 22];
+            app.PaperPlot2Button.Text = 'box plots';
 
             % Create PaperPlot3Button
             app.PaperPlot3Button = uibutton(app.ComparisonPlotsTestsPanel, 'push');
             app.PaperPlot3Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot3ButtonPushed, true);
             app.PaperPlot3Button.Tag = 'loadresult';
-            app.PaperPlot3Button.Position = [281 365 83 22];
-            app.PaperPlot3Button.Text = 'Paper Plot 3';
+            app.PaperPlot3Button.WordWrap = 'on';
+            app.PaperPlot3Button.Position = [279 351 84 41];
+            app.PaperPlot3Button.Text = 'archive comparison';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
@@ -641,9 +642,10 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AddVirtualToCompareButton = uibutton(app.VirtualResultsPanel, 'push');
             app.AddVirtualToCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddVirtualToCompareButtonPushed, true);
             app.AddVirtualToCompareButton.WordWrap = 'on';
-            app.AddVirtualToCompareButton.FontSize = 11;
-            app.AddVirtualToCompareButton.Position = [182 402 65 45];
-            app.AddVirtualToCompareButton.Text = 'Add to Compare';
+            app.AddVirtualToCompareButton.FontSize = 14;
+            app.AddVirtualToCompareButton.FontWeight = 'bold';
+            app.AddVirtualToCompareButton.Position = [182 407 65 40];
+            app.AddVirtualToCompareButton.Text = 'Add to Plot';
 
             % Create GroupNameLabel
             app.GroupNameLabel = uilabel(app.VirtualResultsPanel);
@@ -772,9 +774,10 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AddResultToCompareButton = uibutton(app.SingleResultsPanel, 'push');
             app.AddResultToCompareButton.ButtonPushedFcn = createCallbackFcn(app, @AddResultToCompareButtonPushed, true);
             app.AddResultToCompareButton.WordWrap = 'on';
-            app.AddResultToCompareButton.FontSize = 11;
-            app.AddResultToCompareButton.Position = [280 254 62 45];
-            app.AddResultToCompareButton.Text = 'Add to Compare';
+            app.AddResultToCompareButton.FontSize = 14;
+            app.AddResultToCompareButton.FontWeight = 'bold';
+            app.AddResultToCompareButton.Position = [280 265 61 45];
+            app.AddResultToCompareButton.Text = 'Add to Plot';
 
             % Create ResultNameLabel
             app.ResultNameLabel = uilabel(app.SingleResultsPanel);
