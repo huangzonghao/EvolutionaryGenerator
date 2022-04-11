@@ -6,6 +6,8 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         MiscellaneousPanel             matlab.ui.container.Panel
         PaperPlotSaveNameField         matlab.ui.control.EditField
         PicFileLabel_2                 matlab.ui.control.Label
+        PaperPlot3Button               matlab.ui.control.Button
+        PaperPlot2Button               matlab.ui.control.Button
         CLCButton                      matlab.ui.control.Button
         PopVarButton                   matlab.ui.control.Button
         OpenFolderButton               matlab.ui.control.Button
@@ -323,6 +325,16 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: CLCButton
         function CLCButtonPushed(app, event)
             clc;
+        end
+
+        % Button pushed function: PaperPlot2Button
+        function PaperPlot2ButtonPushed(app, event)
+            generate_paper_plot2(app);
+        end
+
+        % Button pushed function: PaperPlot3Button
+        function PaperPlot3ButtonPushed(app, event)
+            generate_paper_plot3(app);
         end
     end
 
@@ -685,6 +697,20 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.CLCButton.ButtonPushedFcn = createCallbackFcn(app, @CLCButtonPushed, true);
             app.CLCButton.Position = [35 583 84 22];
             app.CLCButton.Text = 'CLC';
+
+            % Create PaperPlot2Button
+            app.PaperPlot2Button = uibutton(app.MiscellaneousPanel, 'push');
+            app.PaperPlot2Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot2ButtonPushed, true);
+            app.PaperPlot2Button.WordWrap = 'on';
+            app.PaperPlot2Button.Position = [33 344 94 38];
+            app.PaperPlot2Button.Text = 'single fitness progress';
+
+            % Create PaperPlot3Button
+            app.PaperPlot3Button = uibutton(app.MiscellaneousPanel, 'push');
+            app.PaperPlot3Button.ButtonPushedFcn = createCallbackFcn(app, @PaperPlot3ButtonPushed, true);
+            app.PaperPlot3Button.WordWrap = 'on';
+            app.PaperPlot3Button.Position = [33 301 94 38];
+            app.PaperPlot3Button.Text = 'all fitness progress';
 
             % Create PicFileLabel_2
             app.PicFileLabel_2 = uilabel(app.MiscellaneousPanel);
