@@ -1,11 +1,16 @@
 function generate_paper_plot(app)
+    if isempty(app.UserInputFileListBox.Value)
+        msgbox('Select some user inputs to generate maps');
+        return
+    end
+
     feature_description2 = 'Leg Length SD';
     feature_description1 = 'Body Length';
 
     fitness_range = [Inf, -Inf];
-    app.paper_fig = figure('Position', [100, 100, 800, 800]);
-    app.paper_fig.PaperSize = [8.5, 8.5];
-    fig_panel = panel(app.paper_fig);
+    fig = figure('Position', [100, 100, 800, 800]);
+    fig.PaperSize = [8.5, 8.5];
+    fig_panel = panel(fig);
     fig_panel.pack(2, 2);
     fig_panel.margintop = 10;
     fig_panel.marginbottom = 20;
@@ -19,10 +24,11 @@ function generate_paper_plot(app)
     valley_archive = fig_panel(2, 1);
     update_bar = fig_panel(2, 2);
 
+    results_enabled_cache = app.results_enabled;
 
     % Ground
-    update_results_enabled(app, -1);
-    update_results_enabled(app, 1);
+    result_enable_helper(app, -1);
+    result_enable_helper(app, 1);
 
     app.archive_map(:) = nan;
     app.map_stat(:) = 0;
@@ -45,8 +51,8 @@ function generate_paper_plot(app)
     ylabel(feature_description1);
 
     % Sine
-    update_results_enabled(app, -1);
-    update_results_enabled(app, 2);
+    result_enable_helper(app, -1);
+    result_enable_helper(app, 2);
 
     app.archive_map(:) = nan;
     app.map_stat(:) = 0;
@@ -69,8 +75,8 @@ function generate_paper_plot(app)
     ylabel(feature_description1);
 
     % Valley
-    update_results_enabled(app, -1);
-    update_results_enabled(app, 3);
+    result_enable_helper(app, -1);
+    result_enable_helper(app, 3);
 
     app.archive_map(:) = nan;
     app.map_stat(:) = 0;
@@ -110,10 +116,10 @@ function generate_paper_plot(app)
     ground_hm.XLabel = '';
     sine_hm.XLabel = '';
     sine_hm.YLabel = '';
-    colormap(app.paper_fig, 'jet');
+    colormap(fig, 'jet');
 
     % Updates per bin
-    update_results_enabled(app, 0);
+    result_enable_helper(app, 0);
     app.archive_map(:) = 0;
     app.map_stat(:) = 0;
 
@@ -143,9 +149,22 @@ function generate_paper_plot(app)
     if ~isempty(app.PaperPlotSaveNameField.Value)
         output_filename = [app.PaperPlotSaveNameField.Value, '.pdf'];
         % Need to setup the papersize of the figure properly before getting a perfect pdf
-        % print(app.paper_fig, output_filename, '-dpdf', '-painters');
-        % saveas(app.paper_fig, output_filename);
-        exportgraphics(app.paper_fig, output_filename);
+        % print(fig, output_filename, '-dpdf', '-painters');
+        % saveas(fig, output_filename);
+        exportgraphics(fig, output_filename);
         msgbox(sprintf("Paper plot saved to %s", output_filename));
+    end
+
+    app.results_enabled = results_enabled_cache;
+end
+
+function result_enable_helper(app, env_id)
+    ids = app.UserInputFileListBox.Value;
+    if env_id == 0
+        app.results_enabled(ids, :) = 1;
+    elseif env_id == -1
+        app.results_enabled(ids, :) = 0;
+    else
+        app.results_enabled(ids, env_id) = 1;
     end
 end

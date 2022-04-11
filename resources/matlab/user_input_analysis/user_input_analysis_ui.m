@@ -84,7 +84,6 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         right_heat
         archive_map
 
-        paper_fig
         feature_plot_fig
         results = {}
         fitness_range = [Inf, -Inf];
