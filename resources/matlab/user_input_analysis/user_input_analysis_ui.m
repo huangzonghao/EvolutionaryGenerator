@@ -4,13 +4,14 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     properties (Access = public)
         MainFigure                     matlab.ui.Figure
         MiscellaneousPanel             matlab.ui.container.Panel
+        PaperPlotSaveNameField         matlab.ui.control.EditField
+        PicFileLabel_2                 matlab.ui.control.Label
         CLCButton                      matlab.ui.control.Button
         PopVarButton                   matlab.ui.control.Button
         OpenFolderButton               matlab.ui.control.Button
         RobotIDYField                  matlab.ui.control.EditField
         RobotIDXField                  matlab.ui.control.EditField
         SimulateRobotButton            matlab.ui.control.Button
-        SavePaperPlotButton            matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         PaperPlotButton                matlab.ui.control.Button
         UserDesignBagCreatorPanel      matlab.ui.container.Panel
@@ -302,11 +303,6 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         % Button pushed function: PaperPlotButton
         function PaperPlotButtonPushed(app, event)
             generate_paper_plot(app);
-        end
-
-        % Button pushed function: SavePaperPlotButton
-        function SavePaperPlotButtonPushed(app, event)
-            save_paper_plot(app);
         end
 
         % Button pushed function: RehashButton
@@ -643,21 +639,14 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             % Create PaperPlotButton
             app.PaperPlotButton = uibutton(app.MiscellaneousPanel, 'push');
             app.PaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @PaperPlotButtonPushed, true);
-            app.PaperPlotButton.Position = [35 439 84 22];
-            app.PaperPlotButton.Text = 'Paper Plot';
+            app.PaperPlotButton.Position = [30 386 104 22];
+            app.PaperPlotButton.Text = 'User Input Maps';
 
             % Create RehashButton
             app.RehashButton = uibutton(app.MiscellaneousPanel, 'push');
             app.RehashButton.ButtonPushedFcn = createCallbackFcn(app, @RehashButtonPushed, true);
             app.RehashButton.Position = [35 609 84 22];
             app.RehashButton.Text = 'Rehash';
-
-            % Create SavePaperPlotButton
-            app.SavePaperPlotButton = uibutton(app.MiscellaneousPanel, 'push');
-            app.SavePaperPlotButton.ButtonPushedFcn = createCallbackFcn(app, @SavePaperPlotButtonPushed, true);
-            app.SavePaperPlotButton.WordWrap = 'on';
-            app.SavePaperPlotButton.Position = [39 396 75 34];
-            app.SavePaperPlotButton.Text = 'Save Paper Plot';
 
             % Create SimulateRobotButton
             app.SimulateRobotButton = uibutton(app.MiscellaneousPanel, 'push');
@@ -696,6 +685,16 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
             app.CLCButton.ButtonPushedFcn = createCallbackFcn(app, @CLCButtonPushed, true);
             app.CLCButton.Position = [35 583 84 22];
             app.CLCButton.Text = 'CLC';
+
+            % Create PicFileLabel_2
+            app.PicFileLabel_2 = uilabel(app.MiscellaneousPanel);
+            app.PicFileLabel_2.HorizontalAlignment = 'right';
+            app.PicFileLabel_2.Position = [8 439 65 22];
+            app.PicFileLabel_2.Text = 'Plot Name:';
+
+            % Create PaperPlotSaveNameField
+            app.PaperPlotSaveNameField = uieditfield(app.MiscellaneousPanel, 'text');
+            app.PaperPlotSaveNameField.Position = [19 417 143 23];
 
             % Show the figure after all components are created
             app.MainFigure.Visible = 'on';

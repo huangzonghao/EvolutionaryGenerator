@@ -138,4 +138,14 @@ function generate_paper_plot(app)
     ground_hm.ColorLimits = [c_min, c_max];
     sine_hm.ColorLimits = [c_min, c_max];
     valley_hm.ColorLimits = [c_min, c_max];
+
+    % Save
+    if ~isempty(app.PaperPlotSaveNameField.Value)
+        output_filename = [app.PaperPlotSaveNameField.Value, '.pdf'];
+        % Need to setup the papersize of the figure properly before getting a perfect pdf
+        % print(app.paper_fig, output_filename, '-dpdf', '-painters');
+        % saveas(app.paper_fig, output_filename);
+        exportgraphics(app.paper_fig, output_filename);
+        msgbox(sprintf("Paper plot saved to %s", output_filename));
+    end
 end

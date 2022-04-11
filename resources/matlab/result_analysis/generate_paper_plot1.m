@@ -1,4 +1,4 @@
-function generate_paper_plot(app)
+function generate_paper_plot1(app)
     if length(app.targets_to_compare) ~= 2
         msgbox('Select 2 results for paper plot');
         return
