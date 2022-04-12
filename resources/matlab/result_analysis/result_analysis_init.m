@@ -20,6 +20,7 @@ function result_analysis_init(app)
     app.TTestOptionDropDown.Value = 1;
 
     app.SimTimeEditField.Value = 30;
+    app.DumpRobotsCheckBox.Value = false;
 
     refresh_result_list(app);
 end

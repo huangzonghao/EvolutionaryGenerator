@@ -12,4 +12,8 @@ copyfile(fullfile(result.path, 'name.txt'), dest_result_dir);
 copyfile(fullfile(result.path, 'evo_params.xml'), dest_result_dir);
 copyfile(fullfile(result.path, 'status.txt'), dest_result_dir);
 
+robot_dump_file = fullfile(result.path, 'robots_dump.mat');
+if isfile(robot_dump_file)
+    copyfile(robot_dump_file, dest_result_dir);
+end
 end

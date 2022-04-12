@@ -3,16 +3,30 @@
 % the existing results, otherwise we should simply update build_stat.m and then
 % rebuild
 function patch_selected_stat(app)
-    wb = waitbar(0, 'Start patching', 'Name', 'Patching Results');
-    wb.Children.Title.Interpreter = 'none';
-    num_patches = length(app.ResultsListBox.Value);
-    if num_patches == 0
-        msgbox('Select results to patch');
+    dump_robots = app.DumpRobotsCheckBox.Value;
+    if dump_robots
+        wb = waitbar(0, 'Start dumping robots', 'Name', 'Dumping Robots');
+    else
+        wb = waitbar(0, 'Start patching', 'Name', 'Patching Results');
     end
-    for i = 1 : num_patches
+    wb.Children.Title.Interpreter = 'none';
+    num_results = length(app.ResultsListBox.Value);
+    if num_results == 0
+        if dump_robots
+            msgbox('Select results to dump robots');
+        else
+            msgbox('Select results to patch');
+        end
+    end
+    for i = 1 : num_results
         result = app.results{app.ResultsListBox.Value{i}};
-        waitbar(double(i) / double(num_patches), wb, sprintf("Patching %s (%d / %d)", result.name, i, num_patches));
-        patch_stat(result.path);
+        if dump_robots
+            waitbar(double(i) / double(num_results), wb, sprintf("Dumping robots for %s (%d / %d)", result.name, i, num_results));
+            dump_robots_kernel(result.path);
+        else
+            waitbar(double(i) / double(num_results), wb, sprintf("Patching %s (%d / %d)", result.name, i, num_results));
+            patch_stat(result.path);
+        end
     end
     close(wb);
     refresh_result_list(app);
@@ -125,4 +139,21 @@ function patch_stat(result_path)
     if need_to_save
         save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
     end
+end
+
+function dump_robots_kernel(result_path)
+    robots_dump = {};
+    evo_params = load_evo_params(result_path);
+    nb_gen = evo_params.nb_gen;
+    for i = 0 : nb_gen
+        curr_gen_robot = readmatrix(fullfile(result_path, strcat('/robots/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+        curr_gen_robot = sortrows(curr_gen_robot, 2);
+        tmp_gen = {};
+        for j = 1 : size(curr_gen_robot, 1)
+            dv = curr_gen_robot(j, 12:end);
+            tmp_gen{j} = dv(~isnan(dv));
+        end
+        robots_dump{i + 1} = tmp_gen;
+    end
+    save(fullfile(result_path, 'robots_dump.mat'), 'robots_dump', '-v7.3');
 end

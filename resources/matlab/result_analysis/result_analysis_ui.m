@@ -7,6 +7,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        DumpRobotsCheckBox             matlab.ui.control.CheckBox
         PackSelectedResultsButton      matlab.ui.control.Button
         ExportArchiveMapButton         matlab.ui.control.Button
         SanitizeArchiveCheckBox        matlab.ui.control.CheckBox
@@ -745,21 +746,21 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BuildPackExportAllButton.ButtonPushedFcn = createCallbackFcn(app, @BuildPackExportAllButtonPushed, true);
             app.BuildPackExportAllButton.Tag = 'loadresult';
             app.BuildPackExportAllButton.WordWrap = 'on';
-            app.BuildPackExportAllButton.Position = [280 354 62 50];
+            app.BuildPackExportAllButton.Position = [280 332 62 50];
             app.BuildPackExportAllButton.Text = 'Build Pack Export All';
 
             % Create BuildSelectedResultStatButton
             app.BuildSelectedResultStatButton = uibutton(app.SingleResultsPanel, 'push');
             app.BuildSelectedResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildSelectedResultStatButtonPushed, true);
             app.BuildSelectedResultStatButton.Tag = 'loadresult';
-            app.BuildSelectedResultStatButton.Position = [280 472 62 22];
+            app.BuildSelectedResultStatButton.Position = [280 450 62 22];
             app.BuildSelectedResultStatButton.Text = 'Build';
 
             % Create PatchResultStatButton
             app.PatchResultStatButton = uibutton(app.SingleResultsPanel, 'push');
             app.PatchResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @PatchResultStatButtonPushed, true);
             app.PatchResultStatButton.Tag = 'loadresult';
-            app.PatchResultStatButton.Position = [280 329 62 22];
+            app.PatchResultStatButton.Position = [280 307 62 22];
             app.PatchResultStatButton.Text = 'Patch';
 
             % Create LoadResultGroupButton
@@ -776,7 +777,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AddResultToCompareButton.WordWrap = 'on';
             app.AddResultToCompareButton.FontSize = 14;
             app.AddResultToCompareButton.FontWeight = 'bold';
-            app.AddResultToCompareButton.Position = [280 265 61 45];
+            app.AddResultToCompareButton.Position = [280 243 61 45];
             app.AddResultToCompareButton.Text = 'Add to Plot';
 
             % Create ResultNameLabel
@@ -1007,7 +1008,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ExportGroupButton.ButtonPushedFcn = createCallbackFcn(app, @ExportGroupButtonPushed, true);
             app.ExportGroupButton.WordWrap = 'on';
             app.ExportGroupButton.FontSize = 11;
-            app.ExportGroupButton.Position = [280 410 62 33];
+            app.ExportGroupButton.Position = [280 388 62 33];
             app.ExportGroupButton.Text = 'Export Group';
 
             % Create ExportRobotButton
@@ -1036,8 +1037,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PackSelectedResultsButton.ButtonPushedFcn = createCallbackFcn(app, @PackSelectedResultsButtonPushed, true);
             app.PackSelectedResultsButton.Tag = 'loadresult';
             app.PackSelectedResultsButton.WordWrap = 'on';
-            app.PackSelectedResultsButton.Position = [280 445 62 22];
+            app.PackSelectedResultsButton.Position = [280 423 62 22];
             app.PackSelectedResultsButton.Text = 'Pack';
+
+            % Create DumpRobotsCheckBox
+            app.DumpRobotsCheckBox = uicheckbox(app.SingleResultsPanel);
+            app.DumpRobotsCheckBox.Text = 'Dump Robots';
+            app.DumpRobotsCheckBox.Position = [282 474 95 22];
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);

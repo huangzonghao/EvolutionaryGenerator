@@ -12,6 +12,14 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     % data goes into the table is guaranteed to be sorted
     robots = zeros(evo_params.gen_size, 9, nb_gen + 1);
 
+    % robots dump format:
+    % Each generation is a cell containing all robots of that generation in the order of id
+    % Each robot is a an array of genome
+    dump_robots = app.DumpRobotsCheckBox.Value;
+    if dump_robots
+        robots_dump = {};
+    end
+
     % Parentage
     stat.has_parentage = false;
     bag_file_path = fullfile(result_path, 'Bag_*.json');
@@ -155,15 +163,28 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         end
 
         % Load robots
-        % robots format from file: gen_id, id, p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness
+        % robots format from file: gen_id, id, p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness, robot_gene
         curr_gen_robot = readmatrix(fullfile(result_path, strcat('/robots/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
         % sort entries to make them in the order of id -- need to do this because of a stupid bug I made
         %     in the training code that caused the results to be recorded in the randomized parent order
         curr_gen_robot = sortrows(curr_gen_robot, 2);
         robots(:, 1:9, i + 1) = curr_gen_robot(:, 3:11);
+        if dump_robots
+            tmp_gen = {};
+            for j = 1 : size(curr_gen_robot, 1)
+                dv = curr_gen_robot(j, 12:end);
+                tmp_gen{j} = dv(~isnan(dv));
+            end
+            robots_dump{i + 1} = tmp_gen;
+        end
         pop_fitness = curr_gen_robot(:, 11);
         stat.population_fits(i + 1) = mean(pop_fitness);
         stat.robot_fitness(:, i + 1) = pop_fitness;
+        if dump_robots
+            gen_robot_dump = curr_gen_robot(:, );
+            dv = robot_file_buffer(robot_file_buffer(:, 2)==id, 12:end);
+            dv = dv(~isnan(dv));
+        end
 
         if stat.has_parentage
             % Update parentage
@@ -208,5 +229,9 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
     save(fullfile(result_path, 'robots.mat'), 'robots', '-v7.3');
     save(fullfile(result_path, 'archive.mat'), 'archive', '-v7.3');
+    if dump_robots
+        save(fullfile(result_path, 'robots_dump.mat'), 'robots_dump', '-v7.3');
+    end
+
     stat_loaded = true;
 end
