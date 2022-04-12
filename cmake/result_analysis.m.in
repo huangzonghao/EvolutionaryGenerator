@@ -6,6 +6,6 @@ function result_analysis()
 
 addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'tools'));
 addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'result_analysis'));
-result_analysis_ui('@EVOGEN_EXE_PATH@', '@RESULT_OUTPUT_DIR@')
+result_analysis_ui('@EVOGEN_PYTHON_SCRIPTS_PATH@', '@EVOGEN_EXE_PATH@', '@RESULT_OUTPUT_DIR@')
 
 end % function

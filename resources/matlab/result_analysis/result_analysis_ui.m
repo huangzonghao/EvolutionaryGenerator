@@ -7,6 +7,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        ExportPickleButton             matlab.ui.control.Button
         DumpRobotsCheckBox             matlab.ui.control.CheckBox
         PackSelectedResultsButton      matlab.ui.control.Button
         ExportArchiveMapButton         matlab.ui.control.Button
@@ -101,6 +102,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
     properties (Access = public)
         % Constants
+        evogen_python_path
         evogen_exe_path
         evogen_results_path
         gen_step = 500
@@ -131,7 +133,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
     methods (Access = private)
 
         % Code that executes after component creation
-        function startupFcn(app, evogen_exe_path, evogen_results_path)
+        function startupFcn(app, evogen_python_path, evogen_exe_path, evogen_results_path)
+            app.evogen_python_path = evogen_python_path;
             app.evogen_exe_path = evogen_exe_path;
             app.evogen_results_path = evogen_results_path;
             result_analysis_init(app);
@@ -215,6 +218,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: ExportGroupButton
         function ExportGroupButtonPushed(app, event)
             export_group(app);
+        end
+
+        % Button pushed function: ExportPickleButton
+        function ExportPickleButtonPushed(app, event)
+            export_pickle_for_group(app);
         end
 
         % Button pushed function: AddResultToCompareButton
@@ -746,7 +754,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.BuildPackExportAllButton.ButtonPushedFcn = createCallbackFcn(app, @BuildPackExportAllButtonPushed, true);
             app.BuildPackExportAllButton.Tag = 'loadresult';
             app.BuildPackExportAllButton.WordWrap = 'on';
-            app.BuildPackExportAllButton.Position = [280 332 62 50];
+            app.BuildPackExportAllButton.Position = [280 289 62 50];
             app.BuildPackExportAllButton.Text = 'Build Pack Export All';
 
             % Create BuildSelectedResultStatButton
@@ -760,7 +768,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PatchResultStatButton = uibutton(app.SingleResultsPanel, 'push');
             app.PatchResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @PatchResultStatButtonPushed, true);
             app.PatchResultStatButton.Tag = 'loadresult';
-            app.PatchResultStatButton.Position = [280 307 62 22];
+            app.PatchResultStatButton.Position = [280 264 62 22];
             app.PatchResultStatButton.Text = 'Patch';
 
             % Create LoadResultGroupButton
@@ -777,7 +785,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.AddResultToCompareButton.WordWrap = 'on';
             app.AddResultToCompareButton.FontSize = 14;
             app.AddResultToCompareButton.FontWeight = 'bold';
-            app.AddResultToCompareButton.Position = [280 243 61 45];
+            app.AddResultToCompareButton.Position = [280 200 61 45];
             app.AddResultToCompareButton.Text = 'Add to Plot';
 
             % Create ResultNameLabel
@@ -1044,6 +1052,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.DumpRobotsCheckBox = uicheckbox(app.SingleResultsPanel);
             app.DumpRobotsCheckBox.Text = 'Dump Robots';
             app.DumpRobotsCheckBox.Position = [282 474 95 22];
+
+            % Create ExportPickleButton
+            app.ExportPickleButton = uibutton(app.SingleResultsPanel, 'push');
+            app.ExportPickleButton.ButtonPushedFcn = createCallbackFcn(app, @ExportPickleButtonPushed, true);
+            app.ExportPickleButton.WordWrap = 'on';
+            app.ExportPickleButton.FontSize = 11;
+            app.ExportPickleButton.Position = [280 349 62 33];
+            app.ExportPickleButton.Text = 'Export Pickle';
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);
