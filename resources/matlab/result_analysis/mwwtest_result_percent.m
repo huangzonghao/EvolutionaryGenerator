@@ -17,25 +17,25 @@ function report = mwwtest_result_percent(app, result1, result2, performance_perc
     report.raw = samples;
 
     [report.P1, report.H1] = ranksum(samples{1}.fit_gen, samples{2}.fit_gen);
-    [report.P2, report.H2] = ranksum(samples{1}.elite_fit_gen, samples{2}.elite_fit_gen);
+    [report.P2, report.H2] = ranksum(samples{1}.best_fit_gen, samples{2}.best_fit_gen);
 end
 
 function sample = sample_result(app, result, performance_percent)
     % first get the avg fits of the final gen
     sample.fit_gen = [];
-    sample.elite_fit_gen = [];
+    sample.best_fit_gen = [];
     final_fits = [];
-    final_elite_fits = [];
+    final_best_fits = [];
     for i = 1 : result.num_results
         child_result = load_target_result(app, false, result.ids(i));
         final_fits(i) = child_result.stat.archive_fits(end);
-        final_elite_fits(i) = child_result.stat.elite_archive_fits(end);
+        final_best_fits(i) = child_result.stat.best_fits(end);
     end
     sample.avg_final_fits = mean(final_fits);
-    sample.avg_final_elite_fits = mean(final_elite_fits);
+    sample.avg_final_best_fits = mean(final_best_fits);
 
     fit_thresh = sample.avg_final_fits * performance_percent;
-    elite_fit_thresh = sample.avg_final_elite_fits * performance_percent;
+    best_fit_thresh = sample.avg_final_best_fits * performance_percent;
 
     for i = 1 : result.num_results
         child_result = load_target_result(app, false, result.ids(i));
@@ -47,14 +47,14 @@ function sample = sample_result(app, result, performance_percent)
         else
             fit_gen = fit_gen + 24;
         end
-        elite_fit_gen = find(child_result.stat.elite_archive_fits(26:end) > elite_fit_thresh, 1);
-        if isempty(elite_fit_gen)
-            elite_fit_gen = length(child_result.stat.elite_archive_fits) - 1;
+        best_fit_gen = find(child_result.stat.best_fits(26:end) > best_fit_thresh, 1);
+        if isempty(best_fit_gen)
+            best_fit_gen = length(child_result.stat.best_fits) - 1;
         else
-            elite_fit_gen = elite_fit_gen + 24;
+            best_fit_gen = best_fit_gen + 24;
         end
 
         sample.fit_gen(i) = fit_gen;
-        sample.elite_fit_gen(i) = elite_fit_gen;
+        sample.best_fit_gen(i) = best_fit_gen;
     end
 end
