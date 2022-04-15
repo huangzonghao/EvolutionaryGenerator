@@ -7,6 +7,8 @@ function generate_paper_plot3(app)
     end
 
     fig = figure('units','normalized','outerposition',[.05 .05 .9 .9]);
+    set(fig, 'units', 'inches', 'position', [0 0 16 6])
+
     if ~isempty(app.CompPlotNameField.Value)
         sgtitle(app.CompPlotNameField.Value, 'Interpreter', 'none');
     end
@@ -131,8 +133,6 @@ function generate_paper_plot3(app)
     if ~isempty(app.CompPlotNameField.Value)
         sgtitle(app.CompPlotNameField.Value, 'Interpreter', 'none', 'FontName', 'Times New Roman', 'FontSize', 12, 'FontWeight', 'Bold');
     end
-
-    set(fig, 'units', 'inches', 'position', [0 0 4 6], 'papersize', [4 6])
 
     % Save
     if ~isempty(app.CompPlotNameField.Value)
