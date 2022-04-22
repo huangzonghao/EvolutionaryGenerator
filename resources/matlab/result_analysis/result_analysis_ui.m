@@ -76,6 +76,10 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparisonPlotsTestsPanel      matlab.ui.container.Panel
+        VideoGenFitnessButton          matlab.ui.control.Button
+        VideoGenIDField                matlab.ui.control.NumericEditField
+        GenEditFieldLabel              matlab.ui.control.Label
+        SimulateforVideoButton         matlab.ui.control.Button
         PaperPlot3Button               matlab.ui.control.Button
         PaperPlot2Button               matlab.ui.control.Button
         PaperPlot1Button               matlab.ui.control.Button
@@ -445,6 +449,16 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function PaperPlot3ButtonPushed(app, event)
             generate_paper_plot3(app);
         end
+
+        % Button pushed function: SimulateforVideoButton
+        function SimulateforVideoButtonPushed(app, event)
+            simulate_for_video(app);
+        end
+
+        % Button pushed function: VideoGenFitnessButton
+        function VideoGenFitnessButtonPushed(app, event)
+            generate_video_fitness_plot(app);
+        end
     end
 
     % Component initialization
@@ -606,6 +620,32 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.PaperPlot3Button.WordWrap = 'on';
             app.PaperPlot3Button.Position = [279 351 84 41];
             app.PaperPlot3Button.Text = 'archive comparison';
+
+            % Create SimulateforVideoButton
+            app.SimulateforVideoButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.SimulateforVideoButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateforVideoButtonPushed, true);
+            app.SimulateforVideoButton.Tag = 'loadresult';
+            app.SimulateforVideoButton.WordWrap = 'on';
+            app.SimulateforVideoButton.Position = [283 255 82 39];
+            app.SimulateforVideoButton.Text = 'Simulate for Video';
+
+            % Create GenEditFieldLabel
+            app.GenEditFieldLabel = uilabel(app.ComparisonPlotsTestsPanel);
+            app.GenEditFieldLabel.HorizontalAlignment = 'right';
+            app.GenEditFieldLabel.FontWeight = 'bold';
+            app.GenEditFieldLabel.Position = [283 303 33 22];
+            app.GenEditFieldLabel.Text = 'Gen:';
+
+            % Create VideoGenIDField
+            app.VideoGenIDField = uieditfield(app.ComparisonPlotsTestsPanel, 'numeric');
+            app.VideoGenIDField.Position = [321 303 44 22];
+
+            % Create VideoGenFitnessButton
+            app.VideoGenFitnessButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.VideoGenFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @VideoGenFitnessButtonPushed, true);
+            app.VideoGenFitnessButton.WordWrap = 'on';
+            app.VideoGenFitnessButton.Position = [283 213 86 35];
+            app.VideoGenFitnessButton.Text = 'Video Gen Fitness';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);

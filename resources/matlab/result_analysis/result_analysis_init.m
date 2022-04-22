@@ -21,6 +21,8 @@ function result_analysis_init(app)
 
     app.SimTimeEditField.Value = 30;
     app.DumpRobotsCheckBox.Value = false;
+    app.VideoGenIDField.Value = 0;
+    app.VideoGenIDField.Limits = [0, 2000];
 
     refresh_result_list(app);
 end
