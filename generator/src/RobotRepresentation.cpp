@@ -64,7 +64,7 @@ double RobotRepresentation::get_leg_pos(int leg_id) const {
 }
 
 std::string RobotRepresentation::get_urdf_string_mesh() const {
-    double mass_tmp = 0;
+
     const std::string mesh_ext = ".obj";
     std::ostringstream oss;
 
@@ -95,8 +95,7 @@ std::string RobotRepresentation::get_urdf_string_mesh() const {
     oss << " </collision>" << std::endl;
     oss << " <inertial>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-    mass_tmp = chassis_x * chassis_y * chassis_z * density_;
-    oss << "  <mass value = \"" << mass_tmp << "\" />" << std::endl;
+    oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
     oss << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
     oss << " </inertial>" << std::endl;
     oss << "</link>" << std::endl;
@@ -184,8 +183,7 @@ std::string RobotRepresentation::get_urdf_string_mesh() const {
 
             oss << " <inertial>" << std::endl;
             oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-            mass_tmp = part_size[0] * part_size[1] * link_length * density_;
-            oss << "  <mass value = \"" << mass_tmp << "\" />" << std::endl;
+            oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
             oss << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
             oss << " </inertial>" << std::endl;
             oss << "</link>" << std::endl;
@@ -281,7 +279,6 @@ Body body_selector(double body_id_gene) {
 }
 
 std::string RobotRepresentation::get_urdf_string_primitive() const {
-    double mass_tmp = 0;
     std::ostringstream oss;
 
     oss << "<?xml verison=\"1.0\"?>" << std::endl;
@@ -308,8 +305,7 @@ std::string RobotRepresentation::get_urdf_string_primitive() const {
     oss << " </collision>" << std::endl;
     oss << " <inertial>" << std::endl;
     oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-    mass_tmp = chassis.x * chassis.y * chassis.z * density_;
-    oss << "  <mass value = \"" << mass_tmp << "\" />" << std::endl;
+    oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
     oss << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
     oss << " </inertial>" << std::endl;
     oss << "</link>" << std::endl;
@@ -357,8 +353,7 @@ std::string RobotRepresentation::get_urdf_string_primitive() const {
             }
             oss << " <inertial>" << std::endl;
             oss << "  <origin rpy = \"0 0 0\" xyz = \"0 0 0\" />" << std::endl;
-            mass_tmp = bodies[j].x * bodies[j].y * bodies[j].z * density_;
-            oss << "  <mass value = \"" << mass_tmp << "\" />" << std::endl;
+            oss << "  <mass value = \"" << "1" << "\" />" << std::endl;
             oss << "  <inertia ixx = \"" << "1" << "\" ixy = \"" << "0" << "\" ixz = \"" << "0" << "\" iyy = \"" << "1" << "\" iyz = \"" << "0" << "\" izz = \"" << "1" << "\" />" << std::endl;
             oss << " </inertial>" << std::endl;
             oss << "</link>" << std::endl;
