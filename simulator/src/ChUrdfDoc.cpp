@@ -191,7 +191,10 @@ std::shared_ptr<ChBody> ChUrdfDoc::convert_links(const urdf::LinkConstSharedPtr&
                                                            u_visual->origin.rotation.y,
                                                            u_visual->origin.rotation.z));
 
-            if (u_visual->material){
+            // user specified color presides the urdf color
+            if (robot_color_[0]) {
+                ch_body->AddAsset(chrono_types::make_shared<ChColorAsset>(ChColor(robot_color_[1], robot_color_[2], robot_color_[3], 1)));
+            } else if (u_visual->material){
                 const ChMatPair& ch_vis_mat = GetMaterial(u_visual->material_name);
                 if (ch_vis_mat.color) {
                     // currently the SetColor method doesn't work, waiting for response from chrono team

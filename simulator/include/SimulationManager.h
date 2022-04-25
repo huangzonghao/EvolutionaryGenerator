@@ -58,10 +58,14 @@ class  SimulationManager {
 
     const std::shared_ptr<SimMotor> GetMotor(int motor_idx) const { return motors_[motor_idx];}
 
+    void SetCamera(std::vector<double> camera_pos);
     void SetCamera(double from_x, double from_y, double from_z,
                    double to_x, double to_y, double to_z);
     void SetVisualization(bool do_viz=true) { do_viz_ = do_viz; }
     void SetRealTime(bool do_realtime=true) { do_realtime_ = do_realtime; }
+    void SetCanvasSize(int width, int height) { canvas_size_[0] = width; canvas_size_[1] = height; }
+    void SetCanvasSize(std::vector<int> canvas_size) { SetCanvasSize(canvas_size[0], canvas_size[1]); }
+    void SetRobotColor(std::vector<double> robot_color);
 
     bool RunSimulation();
     const std::string& GetUrdfFileName();
@@ -114,6 +118,8 @@ class  SimulationManager {
     double step_size_;
     double timeout_;
     double camera_pos_[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)
+    double canvas_size_[2] = {1280, 720};
+    double robot_color_[4] = {0, 0, 0, 0}; // enable, r, g, b
 
     std::string env_file_;
     // unit: m

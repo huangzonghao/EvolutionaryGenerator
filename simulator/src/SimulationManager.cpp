@@ -123,6 +123,14 @@ void SimulationManager::AddWaypoints(const std::shared_ptr<const Eigen::MatrixXd
     }
 }
 
+void SimulationManager::SetCamera(std::vector<double> camera_pos) {
+    if (camera_pos.size() != 6)
+        return;
+
+    SetCamera(camera_pos[0], camera_pos[1], camera_pos[2],
+              camera_pos[3], camera_pos[4], camera_pos[5]);
+}
+
 void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
                                   double to_x, double to_y, double to_z) {
     camera_pos_[0] = from_x;
@@ -131,6 +139,16 @@ void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
     camera_pos_[3] = to_x;
     camera_pos_[4] = to_y;
     camera_pos_[5] = to_z;
+}
+
+void SimulationManager::SetRobotColor(std::vector<double> robot_color) {
+    if (robot_color.size() != 3)
+        return;
+
+    robot_color_[0] = 1;
+    robot_color_[1] = robot_color[0];
+    robot_color_[2] = robot_color[1];
+    robot_color_[3] = robot_color[2];
 }
 
 bool SimulationManager::RunSimulation() {
@@ -159,6 +177,9 @@ bool SimulationManager::RunSimulation() {
     if (!auxrefs_->empty()) robot_doc_->SetAuxRef(auxrefs_);
 
     robot_self_collided_ = false;
+
+    if (robot_color_[0])
+        robot_doc_->SetRobotColor(robot_color_[1], robot_color_[2], robot_color_[3]);
     bool add_ok = false;
     if (!ch_waypoints_.empty())
         add_ok = robot_doc_->AddtoSystem(ch_system_, ch_waypoints_[0]);
@@ -219,9 +240,9 @@ bool SimulationManager::RunSimulation() {
         using namespace irr::core;
         ChIrrApp vis_app(ch_system_.get(),
                          L"Evolutionary Algorithm Simulation",
-                         dimension2d<irr::u32>(1280, 720), false);
+                         dimension2d<irr::u32>(canvas_size_[0], canvas_size_[1]), false);
 
-        vis_app.AddTypicalLogo();
+        // vis_app.AddTypicalLogo();
         vis_app.AddTypicalSky();
         vis_app.AddTypicalLights(vector3df(0., 0., 50.), vector3df(0., 0., -50));
         vis_app.AddTypicalCamera(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]),

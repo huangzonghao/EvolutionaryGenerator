@@ -46,7 +46,12 @@ class ChRobot {
     const chrono::ChVector<>& GetMaxPos() const {return max_pos_;}
     const chrono::ChVector<>& GetMinPos() const {return min_pos_;}
     chrono::ChVector<> GetBBoxSize() const {return max_pos_ - min_pos_;}
-
+    void SetRobotColor(double r, double g, double b) {
+        robot_color_[0] = 1;
+        robot_color_[1] = r;
+        robot_color_[2] = g;
+        robot_color_[3] = b;
+    }
 
   protected:
     std::string robot_file_;
@@ -58,6 +63,7 @@ class ChRobot {
     std::shared_ptr<std::unordered_set<std::string>> auxrefs_;
     chrono::ChVector<> max_pos_ = {std::numeric_limits<double>::lowest()};
     chrono::ChVector<> min_pos_ = {std::numeric_limits<double>::max()};
+    double robot_color_[4] = {0, 0, 0, 0}; // enable, r, g, b
 };
 
 } // namespace chrono
