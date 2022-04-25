@@ -181,6 +181,12 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 set(JSON_Install OFF CACHE INTERNAL "")
 add_subdirectory(thirdparty/nlohmann_json)
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cxxopts/.git)
+    execute_process(COMMAND git submodule update --init --depth 1 -- thirdparty/cxxopts
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+add_subdirectory(thirdparty/cxxopts)
+
 if (ENABLE_ROBOGAMI)
     if(NOT DEFINED ROBOGAMI_DATA_PATH)
         if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Robogami/Data/.git)
@@ -331,7 +337,7 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/src/visualizer_main.cpp
 )
 add_executable(${CURRENT_TARGET_NAME} ${Headers} ${Sources})
-target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator)
+target_link_libraries(${CURRENT_TARGET_NAME} Generator Simulator cxxopts)
 target_include_directories(${CURRENT_TARGET_NAME} PRIVATE ${PROJECT_IN_FILE_OUTPUT_DIR})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     file(GLOB CURRENT_TARGET_DEP_DLLS "${PROJECT_DEP_INSTALL_DIR}/bin/*.dll")

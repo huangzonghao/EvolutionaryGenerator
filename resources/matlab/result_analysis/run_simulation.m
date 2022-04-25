@@ -30,8 +30,10 @@ function run_simulation(app)
     if time_out < 0
         msgbox("Error: negative simulation time");
     end
-    cmd_str = "start " + fullfile(app.evogen_exe_path, app.simulator_name) + " mesh " + ...
-              fullfile(result.path, app.sim_params_filename) + " " + num2str(time_out) + " " + ...
-              num2str(dv);
+    dv_str = num2str(dv, '%d,');
+    dv_str = dv_str(1:end-1);
+    cmd_str = "start " + fullfile(app.evogen_exe_path, app.simulator_name) + " --robot_type mesh " + ...
+              " --sim_param " + fullfile(result.path, app.sim_params_filename) + " --sim_time " + num2str(time_out) + ...
+              " --design_vector=" + dv_str;
     system(cmd_str);
 end

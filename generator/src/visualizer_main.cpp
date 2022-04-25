@@ -7,6 +7,7 @@
 #include "sferes_gen_EvoGenFloat.hpp"
 #include "sferes_phen_EvoGenPhen.hpp"
 #include "sferes_fit_UrdfFitness.hpp"
+#include "cxxopts.hpp"
 
 #include "evo_paths.h"
 
@@ -19,19 +20,34 @@ void debug_pause() {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        std::cout << "Input format: <RobotType: primitive/mesh> <path/to/sim_params.xml> <Simulation Time> <Design Vector>" << std::endl;
+    cxxopts::Options options("Genotype Visualizer", "Visualizing the performance of genomes");
+    options.add_options()
+        ("robot_type", "Type of robot, primitive/mesh(default)", cxxopts::value<std::string>()->default_value("mesh"))
+        ("sim_param", "Path to sim_params.xml", cxxopts::value<std::string>())
+        ("sim_time", "Simulation time. Default 0, to use the sim time in sim_param", cxxopts::value<double>()->default_value("0.0"))
+        ("do_realtime", "Run real time simulation (normally slower than none-realtime simualtion)", cxxopts::value<bool>()->default_value("false"))
+        ("design_vector", "Design vector of robot", cxxopts::value<std::vector<double>>())
+        ("h,help", "Print usage")
+    ;
+    auto arg_parsed = options.parse(argc, argv);
+
+    if (arg_parsed.count("sim_param") == 0 ||
+        arg_parsed.count("design_vector") == 0)
+    {
+        std::cout << "Insufficient input. Make sure the sim_param file and design_vector" << std::endl;
+        std::cout << options.help() << std::endl;
+        return 1;
+    }
+
+    if (arg_parsed.count("help")) {
+        std::cout << options.help() << std::endl;
         return 0;
     }
 
-    // arg_cursor = 0 is the exe name
-    int arg_cursor = 1;
-    std::string robot_type(argv[arg_cursor++]);
-    std::string sim_filename(argv[arg_cursor++]);
-    double time_out = std::atof(argv[arg_cursor++]);
-    std::vector<double> gene;
-    for (int i = arg_cursor; i < argc; ++i)
-        gene.push_back(std::atof(argv[arg_cursor++]));
+    std::string robot_type(arg_parsed["robot_type"].as<std::string>());
+    std::string sim_filename(arg_parsed["sim_param"].as<std::string>());
+    double time_out = arg_parsed["sim_time"].as<double>();
+    std::vector<double> gene = arg_parsed["design_vector"].as<std::vector<double>>();
 
     std::string result_dir = std::filesystem::path(sim_filename).parent_path().string();
     // If the result dir contains parts lib, use it
@@ -61,7 +77,7 @@ int main(int argc, char **argv) {
                  sim_params.camera_pos[4],
                  sim_params.camera_pos[5]);
     for (auto& wp : sim_params.GetWaypoints())
-        sm.AddWaypoint(wp[0], wp[1], wp[2]);
+         sm.AddWaypoint(wp[0], wp[1], wp[2]);
 
     sm.SetEnv(sim_params.GetEnv(),
               sim_params.env_dim[0],
@@ -74,7 +90,7 @@ int main(int argc, char **argv) {
 
     sm.EnableEarlyTermination();
     sm.SetVisualization(true);
-    // sm.SetRealTime(true);
+    sm.SetRealTime(arg_parsed["do_realtime"].as<bool>());
 
     auto& fit = phen.fit();
     fit.eval(phen, sm);
