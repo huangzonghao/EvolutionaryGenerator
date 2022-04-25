@@ -13,18 +13,10 @@ function export_compare_plot_data(app)
 
     plot_data = {};
     for i_target_to_compare = 1 : length(app.targets_to_compare)
+        result = load_target_result(app, app.targets_to_compare{i_target_to_compare}.isgroup, app.targets_to_compare{i_target_to_compare}.id);
         new_data = {};
-        if app.targets_to_compare{i_target_to_compare}.isgroup
-            result = app.virtual_results{app.targets_to_compare{i_target_to_compare}.id};
-        else
-            result = app.results{app.targets_to_compare{i_target_to_compare}.id};
-        end
         new_data.name = result.name;
         if ~result.isgroup
-            if ~result.loaded
-                load_result(app, result.id);
-                result = app.results{result.id};
-            end
             if do_clean_plot
                 new_data.archive_fits = result.stat.clean_archive_fits;
                 new_data.archive_elite_fits = result.stat.clean_elite_archive_fits;
@@ -45,11 +37,7 @@ function export_compare_plot_data(app)
             archive_parentage = [];
 
             for i_virtual_result = 1 : result.num_results
-                child_result = app.results{result.ids(i_virtual_result)};
-                if ~app.results{child_result.id}.loaded
-                    load_result(app, child_result.id);
-                    child_result = app.results{child_result.id};
-                end
+                child_result = load_target_result(app, false, result.ids(i_virtual_result));
                 coverage(end + 1, :) = child_result.stat.coverage;
                 archive_fits(end + 1, :) = child_result.stat.archive_fits;
                 elite_archive_fits(end + 1, :) = child_result.stat.elite_archive_fits;

@@ -57,11 +57,7 @@ function generate_paper_plot3(app)
         % clean_archive_fits = [];
 
         for i_virtual_result = 1 : result.num_results
-            child_result = app.results{result.ids(i_virtual_result)};
-            if ~app.results{child_result.id}.loaded
-                load_result(app, child_result.id);
-                child_result = app.results{child_result.id};
-            end
+            child_result = load_target_result(app, false, result.ids(i_virtual_result));
             coverage(end + 1, :) = child_result.stat.coverage;
             best_fits(end + 1, :) = child_result.stat.best_fits;
             qd_score(end + 1, :) = child_result.stat.qd_score;

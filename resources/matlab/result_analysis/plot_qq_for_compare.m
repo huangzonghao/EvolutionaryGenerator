@@ -20,21 +20,13 @@ function plot_qq_for_compare(app)
     fitness2 = [];
     % gather all fitness and genearte the qq plot
     for i = 1 : result1.num_results
-        child_result = app.results{result1.ids(i)};
-        if ~app.results{child_result.id}.loaded
-            load_result(app, child_result.id);
-            child_result = app.results{child_result.id};
-        end
+        child_result = load_target_result(app, false, result1.ids(i));
         gen_archive = child_result.archive{2000};
         final_fits = gen_archive(:, 5);
         fitness1 = [fitness1; final_fits];
     end
     for i = 1 : result2.num_results
-        child_result = app.results{result2.ids(i)};
-        if ~app.results{child_result.id}.loaded
-            load_result(app, child_result.id);
-            child_result = app.results{child_result.id};
-        end
+        child_result = load_target_result(app, false, result2.ids(i));
         gen_archive = child_result.archive{2000};
         final_fits = gen_archive(:, 5);
         fitness2 = [fitness2; final_fits];

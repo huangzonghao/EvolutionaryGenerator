@@ -8,11 +8,7 @@ function select_result(app)
     end
 
     % Select the first of the mulitple select
-    result_idx = app.ResultsListBox.Value{1};
-    if ~app.results{result_idx}.loaded
-        load_result(app, result_idx);
-    end
-    result = app.results{result_idx};
+    result = load_target_result(app, false, app.ResultsListBox.Value{1});
 
     app.ResultInfoTextLabel.Text = ...
         sprintf(['# of Gen Finished: %d/%d\n', ...

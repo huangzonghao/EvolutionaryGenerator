@@ -15,11 +15,7 @@ function plot_group_stat(app)
     top15_hp_fitness = [];
     top15_lp_fitness = [];
     for i = 1 : result.num_results
-        child_result = app.results{result.ids(i)};
-        if ~app.results{child_result.id}.loaded
-            load_result(app, child_result.id);
-            child_result = app.results{child_result.id};
-        end
+        child_result = load_target_result(app, false, result.ids(i));
         if child_result.stat.has_parentage
             pop_hp_fitness(end + 1, :) = child_result.stat.pop_hp_fitness;
             pop_lp_fitness(end + 1, :) = child_result.stat.pop_lp_fitness;

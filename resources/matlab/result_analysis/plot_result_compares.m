@@ -58,18 +58,10 @@ function plot_result_compares(app, do_clean_plot)
                    % 0.6350 0.0780 0.1840];
 
     for i_target_to_compare = 1 : length(app.targets_to_compare)
-        if app.targets_to_compare{i_target_to_compare}.isgroup
-            result = app.virtual_results{app.targets_to_compare{i_target_to_compare}.id};
-        else
-            result = app.results{app.targets_to_compare{i_target_to_compare}.id};
-        end
+        result = load_target_result(app, app.targets_to_compare{i_target_to_compare}.isgroup, app.targets_to_compare{i_target_to_compare}.id);
         % plot_color = plot_colors(rem(i_target_to_compare, length(plot_colors)) + 1);
         plot_color = plot_colors(rem(i_target_to_compare - 1, size(plot_colors, 1)) + 1, :);
         if ~result.isgroup
-            if ~result.loaded
-                load_result(app, result.id);
-                result = app.results{result.id};
-            end
             if do_clean_plot
                 plot(p1, result.stat.clean_archive_fits, 'Color', plot_color, 'DisplayName', result.name);
             else
@@ -86,11 +78,7 @@ function plot_result_compares(app, do_clean_plot)
             clean_archive_fits = [];
 
             for i_virtual_result = 1 : result.num_results
-                child_result = app.results{result.ids(i_virtual_result)};
-                if ~app.results{child_result.id}.loaded
-                    load_result(app, child_result.id);
-                    child_result = app.results{child_result.id};
-                end
+                child_result = load_target_result(app, false, result.ids(i_virtual_result));
                 coverage(end + 1, :) = child_result.stat.coverage;
                 best_fits(end + 1, :) = child_result.stat.best_fits;
                 qd_score(end + 1, :) = child_result.stat.qd_score;

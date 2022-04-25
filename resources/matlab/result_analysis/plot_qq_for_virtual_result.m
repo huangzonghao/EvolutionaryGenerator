@@ -31,11 +31,7 @@ function plot_qq_for_virtual_result(app)
     fit1 = [];
     % gather all fitness and genearte the qq plot
     for i = 1 : result.num_results
-        child_result = app.results{result.ids(i)};
-        if ~app.results{child_result.id}.loaded
-            load_result(app, child_result.id);
-            child_result = app.results{child_result.id};
-        end
+        child_result = load_target_result(app, false, result.ids(i));
         gen_archive = child_result.archive{2000};
         result_fits = gen_archive(:, 5);
         if i == 1

@@ -10,11 +10,7 @@ function generate_all_single_result_plots(app)
         mkdir(root_dir);
     end
     for i = 1 : num_results
-        result = app.results{app.ResultsListBox.Value{i}};
-        if ~result.loaded
-            load_result(app, app.ResultsListBox.Value{i});
-            result = app.results{app.ResultsListBox.Value{i}};
-        end
+        result = load_target_result(app, false, app.ResultsListBox.Value{i});
         waitbar((double(i) - 0.5) / double(num_results), wb, sprintf("Generating plots for %s (%d / %d)", result.name, i, num_results));
         generate_all_plots_for_this_result(app, result, root_dir);
     end
