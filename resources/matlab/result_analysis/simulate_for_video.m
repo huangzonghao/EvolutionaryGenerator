@@ -1,21 +1,72 @@
 function simulate_for_video(app)
-    if length(app.targets_to_compare) == 0 || app.targets_to_compare{1}.isgroup
+% Testing mode when only one result added to comparison target
+% Production mode when multiple results added
+
+    plot_colors = [1, 0, 0;
+                   1, .6, 0;
+                   0, .75, 0;
+                   0, .75, .75;
+                   0, 0, 1];
+    gen_order = [0, 500, 1000, 1500, 2000];
+
+    if length(app.targets_to_compare) == 0
         msgbox('Add a single result to comparison target to run video simulation');
         return
     end
-    current_gen = app.VideoGenIDField.Value;
-    if current_gen > 2000 || current_gen < 0
-        msgbox('Enter a gen number in range [0, 2000]');
-        return
+
+    for i = 1 : length(app.targets_to_compare)
+        if app.targets_to_compare{i}.isgroup
+            msgbox('There are virutal results in the comporison targets, abort.');
+            return
+        end
     end
 
-    result = load_target_result(app, false, app.targets_to_compare{1}.id);
+    if length(app.targets_to_compare) == 1
+        % Testing mode when only one result added
+        gen_id = app.VideoGenIDField.Value;
+        if gen_id > 2000 || gen_id < 0
+            msgbox('Enter a gen number in range [0, 2000]');
+            return
+        end
+        robot_info = simulate_for_one(app, app.targets_to_compare{1}.id, plot_colors(1,:), gen_id, true);
+        disp(sprintf("Simulated robot: result %s, gen %d, id %d, fitness %d, fid1 %d, fid2 %d", robot_info.result_name, robot_info.gen, robot_info.id, robot_info.fitness, robot_info.fid1, robot_info.fid2));
+    else
+        video_report = {};
+        for i_gen = 1 : length(gen_order)
+            new_gen = {};
+            gen_id = gen_order(i_gen);
+            new_gen.id = gen_id;
+            fig = figure();
+            ax = axes(fig);
+            xlim(ax, [-0.05, 1.05]);
+            ylim(ax, [-0.05, 1.05]);
+            hold on
+            for i_target = 1 : length(app.targets_to_compare)
+                robot_info = simulate_for_one(app, app.targets_to_compare{i_target}.id, plot_colors(i_target,:), gen_id, false);
+                new_gen.(['robot_', num2str(i_target)]) = robot_info;
+                plot(ax, robot_info.f2, robot_info.f1, '.', 'MarkerSize', 30, 'Color', plot_colors(i_target,:));
+                pause(1); % delay one second, so that the screen recorder has some time to response
+            end
+            video_report.(['gen_', num2str(gen_id)]) = new_gen;
+            exportgraphics(fig, [app.CompPlotNameField.Value '_video_archive_gen_', num2str(gen_id), '_.png']);
+        end
+        % Dump files
+        video_report.timestamp = datestr(now,'yyyy-mm-dd HH:MM:SS');
+        filename = strcat('./video_report_', datestr(now, 'yyyymmdd_HHMMSS'), '.json');
+        new_file_spec = fopen(filename, "wt");
+        fprintf(new_file_spec, jsonencode(video_report, 'PrettyPrint', true));
+        fclose(new_file_spec);
+    end
+end
+
+function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, async)
+    result = load_target_result(app, false, result_id);
     robot_info = {};
     robot_info.result_name = result.name;
-    robot_info.archive_gen = current_gen;
+    robot_info.archive_gen = gen_id;
 
-    % now load the best robot of that current_gen
-    current_gen_archive = result.archive{current_gen + 1};
+    % now load the best robot of that gen_id
+    current_gen_archive = result.archive{gen_id + 1};
     clean_gen_archive = current_gen_archive(current_gen_archive(:,3) ~= 0, :);
     clean_fitness = clean_gen_archive(:, 5);
     [clean_max_fitness, clean_max_idx] = max(clean_fitness);
@@ -31,13 +82,6 @@ function simulate_for_video(app)
     robot_info.f1 = current_robot(9);
     robot_info.f2 = current_robot(10);
 
-    % Dump files
-    disp(sprintf("simulating robot of %s, gen %d, id %d, fitness %d, fid1 %d, fid2 %d", robot_info.result_name, robot_info.gen, robot_info.id, robot_info.fitness, robot_info.fid1, robot_info.fid2));
-    filename = strcat('./', robot_info.result_name, '_', num2str(robot_info.archive_gen), '_best_robot_info.json');
-    new_file_spec = fopen(filename, "wt");
-    fprintf(new_file_spec, jsonencode(robot_info, 'PrettyPrint', true));
-    fclose(new_file_spec);
-
     % Run simulation
     dv = current_robot(12:end);
     dv = dv(~isnan(dv));
@@ -48,13 +92,17 @@ function simulate_for_video(app)
     canvas_str = num2str([960, 360], '%d,');
     canvas_str = canvas_str(1:end-1);
     canvas_str = canvas_str(~isspace(canvas_str));
-    color_str = num2str([0.8, 0.8, 0.8], '%.5f,');
+    color_str = num2str(robot_color, '%.5f,');
     color_str = color_str(1:end-1);
     color_str = color_str(~isspace(color_str));
     camera_str = num2str([0, -12, 10, 0, 0, 0], '%.2f,');
     camera_str = camera_str(1:end-1);
     camera_str = camera_str(~isspace(camera_str));
-    cmd_str = "start " + fullfile(app.evogen_exe_path, app.simulator_name) + ...
+    cmd_str = "";
+    if async
+        cmd_str = "start ";
+    end
+    cmd_str = cmd_str + fullfile(app.evogen_exe_path, app.simulator_name) + ...
               " --robot_type mesh " + ...
               " --sim_param " + fullfile(result.path, app.sim_params_filename) + ...
               " --sim_time " + num2str(time_out) + ...
