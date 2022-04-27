@@ -1,12 +1,10 @@
 function simulate_for_video(app)
 % Testing mode when only one result added to comparison target
 % Production mode when multiple results added
-
-    plot_colors = [1, 0, 0;
-                   1, .6, 0;
-                   0, .75, 0;
-                   0, .75, .75;
-                   0, 0, 1];
+    plot_colors = [  1,   0,   0;
+                   0.7, 0.4,   0;
+                     0,   1,   0;
+                     0,   0,   1];
     gen_order = [0, 500, 1000, 1500, 2000];
 
     if length(app.targets_to_compare) == 0
