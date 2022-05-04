@@ -23,9 +23,6 @@ function generate_paper_plot2(app)
         p{i} = subplot(2, 2, i);
     end
 
-    title(p{3}, 'Global Reality');
-    title(p{4}, 'Global Precision');
-
     % Final QD-Score
     qd_score_mat = [];
     global_performance_mat = [];
