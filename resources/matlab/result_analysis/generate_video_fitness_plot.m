@@ -4,10 +4,10 @@ function generate_video_fitness_plot(app)
         return
     end
 
-    plot_colors = [1,   0,   0;
-                   0.7,  0.4,   0;
-                   0, 1,   0;
-                   0,   0,   1];
+    plot_colors = [  1,   0,   0;
+                   0.7, 0.4,   0;
+                     0,   1,   0;
+                     0,   0,   1];
 
     if app.targets_to_compare{1}.isgroup
         fig = generate_for_virtual_results(app, plot_colors);
@@ -60,14 +60,37 @@ function mean_fig = generate_for_virtual_results(app, plot_colors)
 end
 
 function best_fig = generate_for_single_results(app, plot_colors)
+    result_name = {'H0', 'H15', 'H25', 'H30'};
+    gen_order = [0, 500, 1000, 1500, 2000];
+    for i_gen = 1 : length(gen_order)
+      gen = gen_order(i_gen);
 
-    best_fig = figure('Position', [100, 100, 960, 360]);
-    ax = axes(best_fig);
-    hold on
-    for i = 1 : length(app.targets_to_compare)
-        plot_color = plot_colors(rem(i - 1, size(plot_colors, 1)) + 1, :);
-        result = load_target_result(app, false, app.targets_to_compare{i}.id);
-        plot(ax, result.stat.best_fits, 'color', plot_color)
+      legend_entries = {};
+      legend_handles = [];
+      best_fig = figure('Position', [100, 100, 580, 540]);
+      ax = axes(best_fig);
+      ax.NextPlot = 'add';
+      ax.XLim = [-50, 2050];
+      ax.FontSize = 20;
+      ax.FontName = 'Times New Roman';
+      ax.XLabel.String = '\bf Iterations';
+      ax.XLabel.FontSize = 25;
+      ax.YLabel.String = '\bf Best Fitness';
+      ax.YLabel.FontSize = 25;
+      for i_target = 1 : length(app.targets_to_compare)
+        plot_color = plot_colors(rem(i_target - 1, size(plot_colors, 1)) + 1, :);
+        result = load_target_result(app, false, app.targets_to_compare{i_target}.id);
+        h = plot(ax, result.stat.best_fits, 'Color', plot_color, 'LineWidth', 4);
+
+        legend_entries{end+1} = result_name{i_target};
+        legend_handles(end+1) = h;
+      end
+      plot(ax, [gen, gen], ax.YLim, 'k', 'LineWidth', 5, 'DisplayName', 'Gen');
+      % leg = legend(legend_handles, legend_entries, 'location','southeast','orientation','vertical', 'fontsize', 15);
+      % leg.ItemTokenSize = [20, 18];
+      if ~isempty(app.CompPlotNameField.Value)
+        % print(fig, [app.CompPlotNameField.Value '_compare.pdf'],'-dpdf','-painters');
+        exportgraphics(best_fig, [app.CompPlotNameField.Value '_group_video_fitness_', num2str(gen), '_best_.png']);
+      end
     end
-    plot(ax, [app.VideoGenIDField.Value, app.VideoGenIDField.Value], ax.YLim, 'k', 'LineWidth', 2, 'DisplayName', 'Gen');
 end
