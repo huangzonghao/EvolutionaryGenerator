@@ -77,6 +77,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparisonPlotsTestsPanel      matlab.ui.container.Panel
+        CombinedArchiveMapButton       matlab.ui.control.Button
         VideoGenFitnessButton          matlab.ui.control.Button
         VideoGenIDField                matlab.ui.control.NumericEditField
         GenEditFieldLabel              matlab.ui.control.Label
@@ -460,6 +461,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function VideoGenFitnessButtonPushed(app, event)
             generate_video_fitness_plot(app);
         end
+
+        % Button pushed function: CombinedArchiveMapButton
+        function CombinedArchiveMapButtonPushed(app, event)
+            generate_combined_archive_map(app);
+        end
     end
 
     % Component initialization
@@ -647,6 +653,13 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.VideoGenFitnessButton.WordWrap = 'on';
             app.VideoGenFitnessButton.Position = [283 213 86 35];
             app.VideoGenFitnessButton.Text = 'Video Gen Fitness';
+
+            % Create CombinedArchiveMapButton
+            app.CombinedArchiveMapButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.CombinedArchiveMapButton.ButtonPushedFcn = createCallbackFcn(app, @CombinedArchiveMapButtonPushed, true);
+            app.CombinedArchiveMapButton.WordWrap = 'on';
+            app.CombinedArchiveMapButton.Position = [283 174 86 36];
+            app.CombinedArchiveMapButton.Text = 'Combined Archive Map';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
