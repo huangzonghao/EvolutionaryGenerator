@@ -21,4 +21,4 @@
 	url = https://github.com/nlohmann/json.git
 [submodule "thirdparty/cxxopts"]
 	path = thirdparty/cxxopts
-	url = https://github.com/jarro2783/cxxopts.git
+	url = https://github.com/huangzonghao/cxxopts.git

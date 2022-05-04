@@ -1137,7 +1137,10 @@ test_btn_e.addEventListener('click', onTestButtonClick);
 function onTestButtonClick(event) {
     robot.compile_dv();
     let anchor = document.createElement('a');
-    anchor.href = "evogen-uisim:" + robot.env + "," + robot.dv;
+    anchor.href = "evogen-uisim: " +
+                  " --mode user_study " +
+                  " --environment " + robot.env +
+                  " --design_vector=" + robot.dv;
     anchor.click();
 
     if (user_study.in_user_study) {
