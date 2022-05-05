@@ -66,6 +66,7 @@ class  SimulationManager {
     void SetCanvasSize(int width, int height) { canvas_size_[0] = width; canvas_size_[1] = height; }
     void SetCanvasSize(std::vector<int> canvas_size) { SetCanvasSize(canvas_size[0], canvas_size[1]); }
     void SetRobotColor(std::vector<double> robot_color);
+    void SetEnvColor(std::vector<double> env_color);
 
     bool RunSimulation();
     const std::string& GetUrdfFileName();
@@ -120,6 +121,7 @@ class  SimulationManager {
     double camera_pos_[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)
     double canvas_size_[2] = {1280, 720};
     double robot_color_[4] = {0, 0, 0, 0}; // enable, r, g, b
+    double env_color_[3] = {0.2, 0.2, 0.2}; // r, g, b
 
     std::string env_file_;
     // unit: m

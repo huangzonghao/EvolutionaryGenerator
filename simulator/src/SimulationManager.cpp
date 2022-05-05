@@ -151,6 +151,15 @@ void SimulationManager::SetRobotColor(std::vector<double> robot_color) {
     robot_color_[3] = robot_color[2];
 }
 
+void SimulationManager::SetEnvColor(std::vector<double> env_color) {
+    if (env_color.size() != 3)
+        return;
+
+    env_color_[0] = env_color[0];
+    env_color_[1] = env_color[1];
+    env_color_[2] = env_color[2];
+}
+
 bool SimulationManager::RunSimulation() {
     if(!robot_doc_){
         std::cerr << "Error: No Robot loaded." << std::endl;
@@ -377,7 +386,7 @@ void SimulationManager::load_map(){
         flat_ground->SetPos(ChVector<>(0, 0, robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01));
         flat_ground->SetBodyFixed(true);
         auto ground_texture = chrono_types::make_shared<ChColorAsset>();
-        ground_texture->SetColor(ChColor(0.2f, 0.2f, 0.2f));
+        ground_texture->SetColor(ChColor(env_color_[0], env_color_[1], env_color_[2]));
         flat_ground->AddAsset(ground_texture);
         ch_system_->AddBody(flat_ground);
     } else if (env_file_.find(".urdf") != std::string::npos){
@@ -392,7 +401,7 @@ void SimulationManager::load_map(){
                                                               robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01),
                                                     QUNIT),
                                       env_file_, "ground_mesh", env_x_, env_y_, 0, env_z_);
-        patch->SetColor(ChColor(0.2, 0.2, 0.2));
+        patch->SetColor(ChColor(env_color_[0], env_color_[1], env_color_[2]));
         terrain.Initialize();
     } else if (env_file_.find(".obj") != std::string::npos){
         // TODO: the position and dimension set up doesn't seem to be right
@@ -448,7 +457,7 @@ void SimulationManager::load_map(){
                                            // tmp_urdf_mesh_ptr->scale.y,
                                            // tmp_urdf_mesh_ptr->scale.z));
         ch_body->AddAsset(trimesh_shape);
-        ch_body->AddAsset(chrono_types::make_shared<ChColorAsset>(0.2f, 0.2f, 0.2f));
+        ch_body->AddAsset(chrono_types::make_shared<ChColorAsset>(env_color_[0], env_color_[1], env_color_[2]));
 
         // colision
         auto collision_material_ = chrono_types::make_shared<ChMaterialSurfaceNSC>();
@@ -506,5 +515,4 @@ void SimulationManager::load_map(){
         std::cerr << "Map file " << env_file_ << " not recognized, exiting" << std::endl;
         exit(EXIT_FAILURE);
     }
-
 }
