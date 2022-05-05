@@ -26,27 +26,52 @@ function simulate_for_video(app)
             msgbox('Enter a gen number in range [0, 2000]');
             return
         end
-        robot_info = simulate_for_one(app, app.targets_to_compare{1}.id, plot_colors(1,:), gen_id, true);
+        robot_info = simulate_for_one(app, app.targets_to_compare{1}.id, plot_colors(1,:), gen_id, false);
         disp(sprintf("Simulated robot: result %s, gen %d, id %d, fitness %d, fid1 %d, fid2 %d", robot_info.result_name, robot_info.gen, robot_info.id, robot_info.fitness, robot_info.fid1, robot_info.fid2));
     else
+        % Somehow the following code won't work, as matlab wouldn't let me create
+        % an axes on top of the existing heatmap chart
+        % % fig = generate_combined_archive_map(app);
+        % fig = gcf;
+        % fig.Position(3:4) = [580, 540]; % manually picked value so that the two plots overlap perfectly.
+        % colormap(fig, flipud(gray))
+        % ax = axes(fig);
+
+        source_hm = gca;
+        fig = figure();
+        fig.Position = [100, 100, 580, 540]; % manually picked value so that the two plots overlap perfectly.
+        copyobj(source_hm, fig);
+        colormap(fig, flipud(gray))
+        hm = fig.Children(1);
+        hm.NodeChildren(3).YDir='normal';
+        hm_s = struct(hm);
+        hm_s.XAxis.TickLabelRotation = 0; % undocumented function
+        ax = axes(fig);
         video_report = {};
         for i_gen = 1 : length(gen_order)
             new_gen = {};
             gen_id = gen_order(i_gen);
             new_gen.id = gen_id;
-            fig = figure();
-            ax = axes(fig);
-            xlim(ax, [-0.05, 1.05]);
-            ylim(ax, [-0.05, 1.05]);
-            hold on
             for i_target = 1 : length(app.targets_to_compare)
                 robot_info = simulate_for_one(app, app.targets_to_compare{i_target}.id, plot_colors(i_target,:), gen_id, false);
                 new_gen.(['robot_', num2str(i_target)]) = robot_info;
-                plot(ax, robot_info.f2, robot_info.f1, '.', 'MarkerSize', 30, 'Color', plot_colors(i_target,:));
-                pause(1); % delay one second, so that the screen recorder has some time to response
+                plot(ax, robot_info.f2, robot_info.f1, '.', 'MarkerSize', 45, 'Color', plot_colors(i_target,:));
+                if i_target == 1
+                  ax.Color = 'none';
+                  ax.Position(3) = 0.72;
+                  ax.XLim = [-0.05, 1.05];
+                  ax.YLim = [-0.05, 1.05];
+                  ax.XTick = [];
+                  ax.YTick = [];
+                  ax.Box = 'on';
+                  % ax.BoxStyle = 'full'; % enable this to find a perfect figure size that overlaps two axes
+                  ax.NextPlot = 'add';
+                end
+                pause(1); % delay for one second, so that the screen recorder has some time to response
             end
             video_report.(['gen_', num2str(gen_id)]) = new_gen;
-            exportgraphics(fig, [app.CompPlotNameField.Value '_video_archive_gen_', num2str(gen_id), '_.png']);
+            % exportgraphics(fig, [app.CompPlotNameField.Value '_video_archive_gen_', num2str(gen_id), '_.png']);
+            ax.NextPlot = 'replace';
         end
         % Dump files
         video_report.timestamp = datestr(now,'yyyy-mm-dd HH:MM:SS');
@@ -83,17 +108,20 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
     % Run simulation
     dv = current_robot(12:end);
     dv = dv(~isnan(dv));
-    time_out = 30; % TODO: should read from sim_params.xml
+    time_out = 60; % TODO: should read from sim_params.xml
     dv_str = num2str(dv, '%.5f,');
     dv_str = dv_str(1:end-1);
     dv_str = dv_str(~isspace(dv_str));
-    canvas_str = num2str([960, 360], '%d,');
+    canvas_str = num2str([1340, 270], '%d,');
     canvas_str = canvas_str(1:end-1);
     canvas_str = canvas_str(~isspace(canvas_str));
     color_str = num2str(robot_color, '%.5f,');
     color_str = color_str(1:end-1);
     color_str = color_str(~isspace(color_str));
-    camera_str = num2str([0, -12, 10, 0, 0, 0], '%.2f,');
+    env_color_str = num2str([0.3, 0.3, 0.3], '%.5f,');
+    env_color_str = env_color_str(1:end-1);
+    env_color_str = env_color_str(~isspace(env_color_str));
+    camera_str = num2str([7, -5, 5, 7, 0, 0], '%.2f,');
     camera_str = camera_str(1:end-1);
     camera_str = camera_str(~isspace(camera_str));
     cmd_str = "";
@@ -105,6 +133,7 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
               " --sim_param " + fullfile(result.path, app.sim_params_filename) + ...
               " --sim_time " + num2str(time_out) + ...
               " --color=" + color_str + ...
+              " --env_color=" + env_color_str + ...
               " --camera=" + camera_str + ...
               " --canvas_size=" + canvas_str + ...
               " --design_vector=" + dv_str;
