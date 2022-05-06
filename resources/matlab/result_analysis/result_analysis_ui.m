@@ -7,6 +7,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        NextResultButton               matlab.ui.control.Button
+        PrevResultButton               matlab.ui.control.Button
         ExportforPublishingButton      matlab.ui.control.Button
         ExportPickleButton             matlab.ui.control.Button
         DumpRobotsCheckBox             matlab.ui.control.CheckBox
@@ -146,9 +148,19 @@ classdef result_analysis_ui < matlab.apps.AppBase
             result_analysis_init(app);
         end
 
+        % Button pushed function: PrevResultButton
+        function PrevResultButtonPushed(app, event)
+            select_result(app, 'prev');
+        end
+
         % Button pushed function: SelectResultButton
         function SelectResultButtonPushed(app, event)
-            select_result(app);
+            select_result(app, 'user');
+        end
+
+        % Button pushed function: NextResultButton
+        function NextResultButtonPushed(app, event)
+            select_result(app, 'next');
         end
 
         % Button pushed function: LoadNextButton
@@ -1052,7 +1064,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.SelectResultButton = uibutton(app.SingleResultsPanel, 'push');
             app.SelectResultButton.ButtonPushedFcn = createCallbackFcn(app, @SelectResultButtonPushed, true);
             app.SelectResultButton.Tag = 'loadresult';
-            app.SelectResultButton.Position = [460 532 71 22];
+            app.SelectResultButton.Position = [450 525 56 29];
             app.SelectResultButton.Text = 'Select';
 
             % Create SimTimeEditFieldLabel
@@ -1121,6 +1133,20 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ExportforPublishingButton.FontSize = 11;
             app.ExportforPublishingButton.Position = [280 348 62 33];
             app.ExportforPublishingButton.Text = 'Export for Publishing';
+
+            % Create PrevResultButton
+            app.PrevResultButton = uibutton(app.SingleResultsPanel, 'push');
+            app.PrevResultButton.ButtonPushedFcn = createCallbackFcn(app, @PrevResultButtonPushed, true);
+            app.PrevResultButton.Tag = 'loadresult';
+            app.PrevResultButton.Position = [388 525 56 29];
+            app.PrevResultButton.Text = 'Up';
+
+            % Create NextResultButton
+            app.NextResultButton = uibutton(app.SingleResultsPanel, 'push');
+            app.NextResultButton.ButtonPushedFcn = createCallbackFcn(app, @NextResultButtonPushed, true);
+            app.NextResultButton.Tag = 'loadresult';
+            app.NextResultButton.Position = [512 525 56 29];
+            app.NextResultButton.Text = 'Dn';
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);

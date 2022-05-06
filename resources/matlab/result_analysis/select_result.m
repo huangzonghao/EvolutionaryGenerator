@@ -1,14 +1,41 @@
-function select_result(app)
+function select_result(app, mode)
 % extra field in app.current_result
 %     plot_to_file: bool telling if the plots of this result should go to a file
+%     mode: prev, user, next
 
-    if length(app.ResultsListBox.Value) == 0
-        msgbox('Select a result in the result explorer');
+    if isempty(app.results)
+        msgbox('Load a result group first');
         return
     end
 
-    % Select the first of the mulitple select
-    result = load_target_result(app, false, app.ResultsListBox.Value{1});
+    result_id = 1;
+    if mode == 'prev'
+        if ~isempty(app.current_result)
+            result_id = app.current_result.id - 1;
+            if result_id < 1
+                msgbox('Already at the first result');
+                return
+            end
+        end
+    elseif mode == 'next'
+        if ~isempty(app.current_result)
+            result_id = app.current_result.id + 1;
+            if result_id > length(app.results)
+                msgbox('Already at the last result');
+                return
+            end
+        end
+    else
+        if length(app.ResultsListBox.Value) == 0
+            msgbox('Select a result in the result explorer');
+            return
+        end
+        % Select the first of the mulitple select
+        result_id = app.ResultsListBox.Value{1};
+    end
+
+    result = load_target_result(app, false, result_id);
+    app.ResultsListBox.Value = {result_id};
 
     app.ResultInfoTextLabel.Text = ...
         sprintf(['# of Gen Finished: %d/%d\n', ...
