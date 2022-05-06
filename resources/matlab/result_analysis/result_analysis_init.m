@@ -19,6 +19,7 @@ function result_analysis_init(app)
     end
     app.TTestOptionDropDown.Value = 1;
 
+    app.GenIDField.Value = '0';
     app.SimTimeEditField.Value = 30;
     app.DumpRobotsCheckBox.Value = false;
     app.VideoGenIDField.Value = 0;

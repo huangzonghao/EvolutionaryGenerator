@@ -31,5 +31,5 @@ function select_result(app)
     app.current_result.plot_to_file = false;
     app.current_gen = -1;
 
-    load_gen(app, 0);
+    load_gen(app, str2double(app.GenIDField.Value));
 end
