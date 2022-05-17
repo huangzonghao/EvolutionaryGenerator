@@ -252,7 +252,21 @@ bool SimulationManager::RunSimulation() {
                          dimension2d<irr::u32>(canvas_size_[0], canvas_size_[1]), false);
 
         // vis_app.AddTypicalLogo();
-        vis_app.AddTypicalSky();
+        // vis_app.AddTypicalSky();
+        // Manually add a Z-up sky
+        std::string mtexturedir = GetChronoDataFile("skybox/");
+        std::string str_lf = mtexturedir + "sky_lf.jpg";
+        std::string str_up = mtexturedir + "sky_up.jpg";
+        std::string str_dn = mtexturedir + "sky_dn.jpg";
+        irr::video::ITexture* map_skybox_side = vis_app.GetVideoDriver()->getTexture(str_lf.c_str());
+        auto scene_mgr = vis_app.GetSceneManager();
+        irr::scene::ISceneNode* mbox = scene_mgr->addSkyBoxSceneNode(
+                vis_app.GetVideoDriver()->getTexture(str_up.c_str()), vis_app.GetVideoDriver()->getTexture(str_dn.c_str()), map_skybox_side,
+                map_skybox_side, map_skybox_side, map_skybox_side);
+        ChMatrix33<> A = ChMatrix33<>(Q_from_AngX(-CH_C_PI_2));
+        auto angles = CH_C_RAD_TO_DEG * A.Get_A_Rxyz();
+        mbox->setRotation(irr::core::vector3dfCH(angles));
+
         vis_app.AddTypicalLights(vector3df(0., 0., 50.), vector3df(0., 0., -50));
         vis_app.AddTypicalCamera(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]),
                                  vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
