@@ -124,6 +124,9 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
     camera_str = num2str([7, -5, 5, 7, 0, 0], '%.2f,');
     camera_str = camera_str(1:end-1);
     camera_str = camera_str(~isspace(camera_str));
+    light_str = num2str([0, -50, 50, 0, 0, 0], '%.2f,'); % for ground
+    light_str = light_str(1:end-1);
+    light_str = light_str(~isspace(light_str));
     cmd_str = "";
     if async
         cmd_str = "start ";
@@ -135,6 +138,7 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
               " --color=" + color_str + ...
               " --env_color=" + env_color_str + ...
               " --camera=" + camera_str + ...
+              " --light=" + light_str + ...
               " --canvas_size=" + canvas_str + ...
               " --design_vector=" + dv_str;
     system(cmd_str);

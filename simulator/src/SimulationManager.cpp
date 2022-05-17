@@ -141,6 +141,24 @@ void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
     camera_pos_[5] = to_z;
 }
 
+void SimulationManager::SetLight(std::vector<double> light_pos) {
+    if (light_pos.size() != 6)
+        return;
+
+    SetLight(light_pos[0], light_pos[1], light_pos[2],
+             light_pos[3], light_pos[4], light_pos[5]);
+}
+
+void SimulationManager::SetLight(double from_x, double from_y, double from_z,
+                                 double to_x, double to_y, double to_z) {
+    light_pos_[0] = from_x;
+    light_pos_[1] = from_y;
+    light_pos_[2] = from_z;
+    light_pos_[3] = to_x;
+    light_pos_[4] = to_y;
+    light_pos_[5] = to_z;
+}
+
 void SimulationManager::SetRobotColor(std::vector<double> robot_color) {
     if (robot_color.size() != 3)
         return;
@@ -267,7 +285,8 @@ bool SimulationManager::RunSimulation() {
         auto angles = CH_C_RAD_TO_DEG * A.Get_A_Rxyz();
         mbox->setRotation(irr::core::vector3dfCH(angles));
 
-        vis_app.AddTypicalLights(vector3df(0., 0., 50.), vector3df(0., 0., -50));
+        vis_app.AddTypicalLights(vector3df(light_pos_[0], light_pos_[1], light_pos_[2]),
+                                 vector3df(light_pos_[3], light_pos_[4], light_pos_[5]));
         vis_app.AddTypicalCamera(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]),
                                  vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
 

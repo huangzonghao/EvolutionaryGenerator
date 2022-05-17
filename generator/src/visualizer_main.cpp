@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
         ("env_color", "Color of environment, in RGB", cxxopts::value<std::vector<double>>())
         ("canvas_size", "Size of canvas, [width, height]", cxxopts::value<std::vector<int>>())
         ("camera", "Six doubles that defines the camera angle", cxxopts::value<std::vector<double>>())
+        ("light", "Six doubles that defines the light angle", cxxopts::value<std::vector<double>>())
         ("design_vector", "Design vector of robot", cxxopts::value<std::vector<double>>())
         ("h,help", "Print usage")
     ;
@@ -134,6 +135,9 @@ int main(int argc, char **argv) {
                      sim_params.camera_pos[3],
                      sim_params.camera_pos[4],
                      sim_params.camera_pos[5]);
+    }
+    if (arg_result.count("light")) {
+        sm.SetLight(arg_result["light"].as<std::vector<double>>());
     }
     for (auto& wp : sim_params.GetWaypoints())
          sm.AddWaypoint(wp[0], wp[1], wp[2]);
