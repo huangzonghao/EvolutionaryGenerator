@@ -4,6 +4,7 @@
 #include <chrono/physics/ChBodyEasy.h>
 #include <chrono_irrlicht/ChIrrApp.h>
 #include <chrono_vehicle/terrain/RigidTerrain.h>
+// #include <chrono_opengl/ChOpenGLWindow.h>
 
 #include "SimulationManager.h"
 #include "ChUrdfDoc.h"
@@ -263,6 +264,38 @@ bool SimulationManager::RunSimulation() {
 
     init_stats();
     if(do_viz_) {
+        // // OpenGL Visualization Code
+        // opengl::ChOpenGLWindow& gl_window = opengl::ChOpenGLWindow::getInstance();
+        // gl_window.Initialize(1280, 720, "Inverted Pendulum", ch_system_.get());
+        // gl_window.SetCamera(ChVector<>(camera_pos_[0], camera_pos_[1], camera_pos_[2]),
+                            // ChVector<>(camera_pos_[3], camera_pos_[4], camera_pos_[5]), ChVector<>(0, 0, 1));
+        // gl_window.SetRenderMode(opengl::WIREFRAME);
+        // ChRealtimeStepTimer realtime_timer;
+
+        // bool device_running = true;
+        // while (ch_system_->GetChTime() < timeout_ && !task_done_ ) {
+            // device_running = gl_window.Active(); // TODO: not sure what's the difference between Active() and Running()
+            // if (early_termination_enabled_ && !device_running) {
+                // std::cout << "User closed" << std::endl;
+                // break;
+            // }
+            // if (gl_window.Running()) {
+                // // Advance system and controller states
+                // ch_system_->DoStepDynamics(step_size_);
+                // task_done_ = controller->Update();
+                // update_stats();
+
+                // // Enforce soft real-time
+                // if (do_realtime_) realtime_timer.Spin(step_size_);
+                // if (check_termination()) {
+                    // std::cout << "Simulation Cut: Early termination condition met"  << std::endl;
+                    // break;
+                // }
+            // }
+
+            // gl_window.Render();
+        // }
+
         ChRealtimeStepTimer realtime_timer;
         using namespace chrono::irrlicht;
         using namespace irr::core;
