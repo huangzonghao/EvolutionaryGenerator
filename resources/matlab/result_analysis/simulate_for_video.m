@@ -105,6 +105,21 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
     robot_info.f1 = current_robot(9);
     robot_info.f2 = current_robot(10);
 
+    % ground video settings
+    % env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for ground
+    % camera_str = num2str([7, -8, 6, 7, 0, 0], '%.2f,'); % for ground
+    % light_str = num2str([0, -50, 50, 0, 0, 0], '%.2f,'); % for ground
+    % sine video settings
+    % env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for sine
+    % camera_str = num2str([0, -8, 6, 0, 0, 0], '%.2f,'); % for sine
+    % light_str = num2str([-40, 0, 40, 0, 0, 0], '%.2f,'); % for sine (point light)
+    % valley video settings
+    env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for sine
+    camera_str = num2str([0, -8, 6, 0, 0, 0], '%.2f,'); % for sine
+    light_str = num2str([-40, 0, 40, 0, 0, 0], '%.2f,'); % for sine (point light)
+
+    % camera_str = num2str([7, -5, 1, 7, 0, 0], '%.2f,'); % for ground
+    % camera_str = num2str([2.5, -4, 4, 2.5, 0, 0], '%.2f,'); % for valley
     % Run simulation
     dv = current_robot(12:end);
     dv = dv(~isnan(dv));
@@ -112,19 +127,16 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
     dv_str = num2str(dv, '%.5f,');
     dv_str = dv_str(1:end-1);
     dv_str = dv_str(~isspace(dv_str));
-    canvas_str = num2str([1340, 270], '%d,');
+    canvas_str = num2str([1600, 270], '%d,');
     canvas_str = canvas_str(1:end-1);
     canvas_str = canvas_str(~isspace(canvas_str));
     color_str = num2str(robot_color, '%.5f,');
     color_str = color_str(1:end-1);
     color_str = color_str(~isspace(color_str));
-    env_color_str = num2str([0.3, 0.3, 0.3], '%.5f,');
     env_color_str = env_color_str(1:end-1);
     env_color_str = env_color_str(~isspace(env_color_str));
-    camera_str = num2str([7, -5, 5, 7, 0, 0], '%.2f,');
     camera_str = camera_str(1:end-1);
     camera_str = camera_str(~isspace(camera_str));
-    light_str = num2str([0, -50, 50, 0, 0, 0], '%.2f,'); % for ground
     light_str = light_str(1:end-1);
     light_str = light_str(~isspace(light_str));
     cmd_str = "";
