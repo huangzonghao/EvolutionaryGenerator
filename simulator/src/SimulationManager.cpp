@@ -7,6 +7,7 @@
 
 #include "SimulationManager.h"
 #include "ChUrdfDoc.h"
+#include "ChIrrEvoGenCamera.h"
 // #include "ChRobogami.h"
 
 using namespace chrono;
@@ -287,8 +288,17 @@ bool SimulationManager::RunSimulation() {
 
         vis_app.AddTypicalLights(vector3df(light_pos_[0], light_pos_[1], light_pos_[2]),
                                  vector3df(light_pos_[3], light_pos_[4], light_pos_[5]));
-        vis_app.AddTypicalCamera(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]),
-                                 vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
+        // vis_app.AddTypicalCamera(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]),
+                                 // vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
+        // Manually add camera here
+        std::shared_ptr<EvoGenCamera> camera =
+            std::make_shared<EvoGenCamera>(device, scene_mgr->getRootSceneNode(),
+                                           scene_mgr, -1, -160.0f, 1.0f, 0.003f);
+        camera->bindTargetAndRotation(false);
+        camera->setPosition(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]));
+        camera->setTarget(vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
+        camera->setNearValue(0.1f);
+        camera->setMinZoom(0.6f);
 
         vis_app.AssetBindAll();
         vis_app.AssetUpdateAll();

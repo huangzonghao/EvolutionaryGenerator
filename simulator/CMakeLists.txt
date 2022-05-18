@@ -129,6 +129,7 @@ set(CURRENT_TARGET_NAME Simulator)
 set(Headers
     include/ChRobot.h
     include/ChUrdfDoc.h
+    include/ChIrrEvoGenCamera.h
     # include/ChRobogami.h
     include/RobotController.h
     include/SimMotor.h
@@ -136,6 +137,7 @@ set(Headers
 set(Sources
     src/ChUrdfDoc.cpp
     # src/ChRobogami.cpp
+    src/ChIrrEvoGenCamera.cpp
     src/RobotController.cpp
     src/SimMotor.cpp
     src/SimulationManager.cpp)
