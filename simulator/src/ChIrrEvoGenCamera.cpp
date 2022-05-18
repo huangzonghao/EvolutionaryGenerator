@@ -471,9 +471,9 @@ void EvoGenCamera::animate() {
     Pos.rotateXZBy(-nRotX, Target);
 
     // Correct Rotation Error
-    UpVector.set(0, 1, 0);
-    UpVector.rotateXYBy(-nRotY, core::vector3df(0, 0, 0));
-    UpVector.rotateXZBy(-nRotX + 180.f, core::vector3df(0, 0, 0));
+    // UpVector.set(0, 0, 1);
+    // UpVector.rotateXYBy(-nRotY, core::vector3df(0, 0, 0));
+    // UpVector.rotateXZBy(-nRotX + 180.f, core::vector3df(0, 0, 0));
 }
 
 void EvoGenCamera::updateAnimationState() {

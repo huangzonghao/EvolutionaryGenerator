@@ -295,6 +295,7 @@ bool SimulationManager::RunSimulation() {
             std::make_shared<EvoGenCamera>(device, scene_mgr->getRootSceneNode(),
                                            scene_mgr, -1, -160.0f, 1.0f, 0.003f);
         camera->bindTargetAndRotation(false);
+        camera->setUpVector(vector3df(0, 0, 1));
         camera->setPosition(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]));
         camera->setTarget(vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
         camera->setNearValue(0.1f);
