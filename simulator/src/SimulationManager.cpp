@@ -298,6 +298,7 @@ bool SimulationManager::RunSimulation() {
         camera->setUpVector(vector3df(0, 0, 1));
         camera->setPosition(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]));
         camera->setTarget(vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
+        camera->setFOV(60.0f / 180.0f * PI);
         camera->setNearValue(0.1f);
         camera->setMinZoom(0.6f);
 
