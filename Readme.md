@@ -302,3 +302,5 @@ The Matlab tool that helps user deal with the training results.
     and robots simualtion. This much smaller and condensed copy can be easily
     transferred to another location. 
 
+## Todo
+* Unified config file
