@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
         ("env_color", "Color of environment, in RGB", cxxopts::value<std::vector<double>>())
         ("canvas_size", "Size of canvas, [width, height]", cxxopts::value<std::vector<int>>())
         ("camera", "Six doubles that defines the camera angle", cxxopts::value<std::vector<double>>())
-        ("light", "Six doubles that defines the light angle", cxxopts::value<std::vector<double>>())
+        ("light", "Three doubles that specify the vector for light direction", cxxopts::value<std::vector<double>>())
         ("design_vector", "Design vector of robot", cxxopts::value<std::vector<double>>())
         ("h,help", "Print usage")
     ;

@@ -144,21 +144,16 @@ void SimulationManager::SetCamera(double from_x, double from_y, double from_z,
 }
 
 void SimulationManager::SetLight(std::vector<double> light_pos) {
-    if (light_pos.size() != 6)
+    if (light_pos.size() != 3)
         return;
 
-    SetLight(light_pos[0], light_pos[1], light_pos[2],
-             light_pos[3], light_pos[4], light_pos[5]);
+    SetLight(light_pos[0], light_pos[1], light_pos[2]);
 }
 
-void SimulationManager::SetLight(double from_x, double from_y, double from_z,
-                                 double to_x, double to_y, double to_z) {
-    light_pos_[0] = from_x;
-    light_pos_[1] = from_y;
-    light_pos_[2] = from_z;
-    light_pos_[3] = to_x;
-    light_pos_[4] = to_y;
-    light_pos_[5] = to_z;
+void SimulationManager::SetLight(double x, double y, double z) {
+    light_pos_[0] = x;
+    light_pos_[1] = y;
+    light_pos_[2] = z;
 }
 
 void SimulationManager::SetRobotColor(std::vector<double> robot_color) {
@@ -322,18 +317,14 @@ bool SimulationManager::RunSimulation() {
         auto device = vis_app.GetDevice();
         // vis_app.AddTypicalLights(vector3df(light_pos_[0], light_pos_[1], light_pos_[2]),
                                  // vector3df(light_pos_[3], light_pos_[4], light_pos_[5]));
-        // Manually add lights
-        irr::scene::ILightSceneNode* light = device->getSceneManager()->addLightSceneNode(0, vector3df(light_pos_[0], light_pos_[1], light_pos_[2]));
-        // TODO: get this directional light thing work
-        // currently use a lighth with large radius
-        // light->setLightType(irr::video::ELT_DIRECTIONAL);
-        // how to figure out the appropriate rotation?kj
-        // ChQuaternion<> rot_q = Q_from_Vect_to_Vect(VECT_Z, ChVector<>(light_pos_[3], light_pos_[4], light_pos_[5]));
-        // ChVector<> light_rot_angles = rot_q.Q_to_Euler123();
-        // light->setRotation(vector3df(light_rot_angles[0], light_rot_angles[1], light_rot_angles[2])); // for directional light, the rotation from positive z controls its direction.
-        // light->setRotation(vector3df(light_pos_[3], light_pos_[4], light_pos_[5])); // for directional light, the rotation from positive z controls its direction.
-        // vector3df light_dir(light_pos_[3] - light_pos_[0], light_pos_[4] - light_pos_[1], light_pos_[5] - light_pos_[2]);
-        // light->setRotation(light_dir.getHorizontalAngle()); // for directional light, the rotation from positive z controls its direction.
+        // Manually add a directional light
+        irr::scene::ILightSceneNode* light = scene_mgr->addLightSceneNode(0); // Note: directional light doesn't care about position
+        light->setLightType(irr::video::ELT_DIRECTIONAL);
+        vector3df light_dir(light_pos_[0], light_pos_[1], light_pos_[2]);
+        // std::cout << "Light direction: " << light_dir.X << ", " << light_dir.Y << ", " << light_dir.Z << std::endl;
+        // auto rot_angles = light_dir.getHorizontalAngle();
+        // std::cout << "Rotation angles: " << rot_angles.X << ", " << rot_angles.Y << ", " << rot_angles.Z << std::endl;
+        light->setRotation(light_dir.getHorizontalAngle()); // for directional light, use the rotation from positive z to express its direction.
 
         // vis_app.AddTypicalCamera(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]),
                                  // vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));

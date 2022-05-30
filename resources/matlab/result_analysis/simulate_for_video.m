@@ -108,15 +108,15 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
     % ground video settings
     % env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for ground
     % camera_str = num2str([7, -8, 6, 7, 0, 0], '%.2f,'); % for ground
-    % light_str = num2str([0, -50, 50, 0, 0, 0], '%.2f,'); % for ground
+    % light_str = num2str([0, 0, -1], '%.2f,');
     % sine video settings
     % env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for sine
     % camera_str = num2str([0, -8, 6, 0, 0, 0], '%.2f,'); % for sine
-    % light_str = num2str([-40, 0, 40, 0, 0, 0], '%.2f,'); % for sine (point light)
+    % light_str = num2str([0, 0, -1], '%.2f,');
     % valley video settings
     env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for sine
     camera_str = num2str([0, -8, 6, 0, 0, 0], '%.2f,'); % for sine
-    light_str = num2str([-40, 0, 40, 0, 0, 0], '%.2f,'); % for sine (point light)
+    light_str = num2str([0, 0, -1], '%.2f,');
 
     % camera_str = num2str([7, -5, 1, 7, 0, 0], '%.2f,'); % for ground
     % camera_str = num2str([2.5, -4, 4, 2.5, 0, 0], '%.2f,'); % for valley

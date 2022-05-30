@@ -62,8 +62,7 @@ class  SimulationManager {
     void SetCamera(double from_x, double from_y, double from_z,
                    double to_x, double to_y, double to_z);
     void SetLight(std::vector<double> camera_pos);
-    void SetLight(double from_x, double from_y, double from_z,
-                  double to_x, double to_y, double to_z);
+    void SetLight(double x, double y, double z);
     void SetVisualization(bool do_viz=true) { do_viz_ = do_viz; }
     void SetRealTime(bool do_realtime=true) { do_realtime_ = do_realtime; }
     void SetCanvasSize(int width, int height) { canvas_size_[0] = width; canvas_size_[1] = height; }
@@ -122,7 +121,7 @@ class  SimulationManager {
     double step_size_;
     double timeout_;
     double camera_pos_[6] = {0, -1, 1, 0, 0, 0}; // from (0, -1, 1) to (0, 0, 0)
-    double light_pos_[6] = {0, 0, 50, 0, 0, 0}; // from (0, 0, 50) to (0, 0, 0)
+    double light_pos_[3] = {0, 0, -1}; // three numbers specify the direction of the light
     double canvas_size_[2] = {1280, 720};
     double robot_color_[4] = {0, 0, 0, 0}; // enable, r, g, b
     double env_color_[3] = {0.2, 0.2, 0.2}; // r, g, b
