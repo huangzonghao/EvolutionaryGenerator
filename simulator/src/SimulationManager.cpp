@@ -156,6 +156,10 @@ void SimulationManager::SetLight(double x, double y, double z) {
     light_pos_[2] = z;
 }
 
+void SimulationManager::SetFOV(double fov) {
+    fov_ = fov;
+}
+
 void SimulationManager::SetRobotColor(std::vector<double> robot_color) {
     if (robot_color.size() != 3)
         return;
@@ -340,7 +344,7 @@ bool SimulationManager::RunSimulation() {
         camera->setUpVector(vector3df(0, 0, 1));
         camera->setPosition(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]));
         camera->setTarget(vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
-        camera->setFOV(60.0f / 180.0f * PI);
+        camera->setFOV(fov_ * irr::core::DEGTORAD);
         camera->setNearValue(0.1f);
         camera->setMinZoom(0.6f);
 

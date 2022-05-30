@@ -106,20 +106,23 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
     robot_info.f2 = current_robot(10);
 
     % ground video settings
-    % env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for ground
-    % camera_str = num2str([7, -8, 6, 7, 0, 0], '%.2f,'); % for ground
-    % light_str = num2str([0, 0, -1], '%.2f,');
-    % sine video settings
-    % env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for sine
-    % camera_str = num2str([0, -8, 6, 0, 0, 0], '%.2f,'); % for sine
-    % light_str = num2str([0, 0, -1], '%.2f,');
-    % valley video settings
-    env_color_str = num2str([0.5, 0.5, 0.5], '%.5f,'); % for sine
-    camera_str = num2str([0, -8, 6, 0, 0, 0], '%.2f,'); % for sine
+    env_color_str = num2str([0.9, 0.9, 0.9], '%.5f,'); % for ground
+    camera_str = num2str([7, -22, 12, 7, 0, 0], '%.2f,'); % for ground
     light_str = num2str([0, 0, -1], '%.2f,');
+    fov = 20;
 
-    % camera_str = num2str([7, -5, 1, 7, 0, 0], '%.2f,'); % for ground
-    % camera_str = num2str([2.5, -4, 4, 2.5, 0, 0], '%.2f,'); % for valley
+    % sine video settings
+    % env_color_str = num2str([0.8, 0.8, 0.8], '%.5f,'); % for sine
+    % camera_str = num2str([0, -22, 5, 0, 0, 0], '%.2f,'); % for ground
+    % light_str = num2str([1, 0, -2], '%.2f,');
+    % fov = 20;
+
+    % valley video settings
+    % env_color_str = num2str([0.8, 0.8, 0.8], '%.5f,'); % for sine
+    % camera_str = num2str([0, -16, 22, 0, 0, 0], '%.2f,'); % for ground
+    % light_str = num2str([0, 0, -1], '%.2f,');
+    % fov = 20;
+
     % Run simulation
     dv = current_robot(12:end);
     dv = dv(~isnan(dv));
@@ -127,7 +130,7 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
     dv_str = num2str(dv, '%.5f,');
     dv_str = dv_str(1:end-1);
     dv_str = dv_str(~isspace(dv_str));
-    canvas_str = num2str([1600, 270], '%d,');
+    canvas_str = num2str([1380, 270], '%d,');
     canvas_str = canvas_str(1:end-1);
     canvas_str = canvas_str(~isspace(canvas_str));
     color_str = num2str(robot_color, '%.5f,');
@@ -151,6 +154,7 @@ function robot_info = simulate_for_one(app, result_id, robot_color, gen_id, asyn
               " --env_color=" + env_color_str + ...
               " --camera=" + camera_str + ...
               " --light=" + light_str + ...
+              " --fov=" + num2str(fov) + ...
               " --canvas_size=" + canvas_str + ...
               " --design_vector=" + dv_str;
     system(cmd_str);

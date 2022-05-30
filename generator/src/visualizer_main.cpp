@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
         ("canvas_size", "Size of canvas, [width, height]", cxxopts::value<std::vector<int>>())
         ("camera", "Six doubles that defines the camera angle", cxxopts::value<std::vector<double>>())
         ("light", "Three doubles that specify the vector for light direction", cxxopts::value<std::vector<double>>())
+        ("fov", "A double that define the camera field of view in simulation", cxxopts::value<double>())
         ("design_vector", "Design vector of robot", cxxopts::value<std::vector<double>>())
         ("h,help", "Print usage")
     ;
@@ -138,6 +139,9 @@ int main(int argc, char **argv) {
     }
     if (arg_result.count("light")) {
         sm.SetLight(arg_result["light"].as<std::vector<double>>());
+    }
+    if (arg_result.count("fov")) {
+        sm.SetFOV(arg_result["fov"].as<double>());
     }
     for (auto& wp : sim_params.GetWaypoints())
          sm.AddWaypoint(wp[0], wp[1], wp[2]);
