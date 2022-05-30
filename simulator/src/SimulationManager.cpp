@@ -298,6 +298,10 @@ bool SimulationManager::RunSimulation() {
                          L"Evolutionary Algorithm Simulation",
                          dimension2d<irr::u32>(canvas_size_[0], canvas_size_[1]), false);
 
+        auto device = vis_app.GetDevice();
+        auto scene_mgr = device->getSceneManager();
+        auto driver = device->getVideoDriver();
+
         // vis_app.AddTypicalLogo();
         // vis_app.AddTypicalSky();
         // Manually add a Z-up sky
@@ -305,16 +309,16 @@ bool SimulationManager::RunSimulation() {
         std::string str_lf = mtexturedir + "sky_lf.jpg";
         std::string str_up = mtexturedir + "sky_up.jpg";
         std::string str_dn = mtexturedir + "sky_dn.jpg";
-        irr::video::ITexture* map_skybox_side = vis_app.GetVideoDriver()->getTexture(str_lf.c_str());
-        auto scene_mgr = vis_app.GetSceneManager();
-        irr::scene::ISceneNode* mbox = scene_mgr->addSkyBoxSceneNode(
-                vis_app.GetVideoDriver()->getTexture(str_up.c_str()), vis_app.GetVideoDriver()->getTexture(str_dn.c_str()), map_skybox_side,
-                map_skybox_side, map_skybox_side, map_skybox_side);
+        irr::video::ITexture* map_skybox_side = driver->getTexture(str_lf.c_str());
+        irr::scene::ISceneNode* skybox =
+            scene_mgr->addSkyBoxSceneNode(driver->getTexture(str_up.c_str()),
+                                          driver->getTexture(str_dn.c_str()),
+                                          map_skybox_side, map_skybox_side,
+                                          map_skybox_side, map_skybox_side);
         ChMatrix33<> A = ChMatrix33<>(Q_from_AngX(-CH_C_PI_2));
         auto sky_rot_angles = CH_C_RAD_TO_DEG * A.Get_A_Rxyz();
-        mbox->setRotation(irr::core::vector3dfCH(sky_rot_angles));
+        skybox->setRotation(irr::core::vector3dfCH(sky_rot_angles));
 
-        auto device = vis_app.GetDevice();
         // vis_app.AddTypicalLights(vector3df(light_pos_[0], light_pos_[1], light_pos_[2]),
                                  // vector3df(light_pos_[3], light_pos_[4], light_pos_[5]));
         // Manually add a directional light
@@ -385,6 +389,8 @@ bool SimulationManager::RunSimulation() {
         }
         tok = std::chrono::steady_clock::now();
     }
+
+    // TODO: potentially need to release some resources here
 
     last_sim_time_ = (tok - tik).count();
     return true;
