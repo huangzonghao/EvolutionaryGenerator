@@ -70,7 +70,7 @@ function simulate_for_video(app)
                 sim_configs.gen_id = gen_id;
                 sim_configs.async = false;
                 sim_configs.record_frame = true;
-                sim_configs.frame_output_name = strcat(result_names{i_target}, '_g', num2str(gen_order(i_gen)));
+                sim_configs.frame_output_name = strcat('g', num2str(gen_order(i_gen)), '_', result_names{i_target});
                 robot_info = simulate_for_one(app, sim_configs);
                 new_gen.(['robot_', num2str(i_target)]) = robot_info;
                 plot(ax, robot_info.f2, robot_info.f1, '.', 'MarkerSize', 45, 'Color', plot_colors(i_target,:));

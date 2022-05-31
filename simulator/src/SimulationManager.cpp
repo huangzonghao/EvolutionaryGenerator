@@ -391,7 +391,7 @@ bool SimulationManager::RunSimulation() {
                     irr::video::IImage* image = driver->createScreenShot();
                     if (image) {
                         char filename[100];
-                        sprintf(filename, "%04d.png", (video_frame_counter_ + 1) / video_frame_interval_);
+                        sprintf(filename, "%s_%04d.png", video_frame_output_name_,  (video_frame_counter_ + 1) / video_frame_interval_);
                         driver->writeImageToFile(image, std::string(video_frame_output_path + "/" + filename).c_str());
                         image->drop();
                     }
