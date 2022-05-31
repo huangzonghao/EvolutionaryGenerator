@@ -41,6 +41,8 @@ int main(int argc, char **argv) {
         ("camera", "Six doubles that defines the camera angle", cxxopts::value<std::vector<double>>())
         ("light", "Three doubles that specify the vector for light direction", cxxopts::value<std::vector<double>>())
         ("fov", "A double that define the camera field of view in simulation", cxxopts::value<double>())
+        ("frame_output_name", "Name of the exported video frames", cxxopts::value<std::string>())
+        ("frame_interval", "Interval of the frames to record, only valid when frame_output_name is set", cxxopts::value<int>()->default_value("20"))
         ("design_vector", "Design vector of robot", cxxopts::value<std::vector<double>>())
         ("h,help", "Print usage")
     ;
@@ -142,6 +144,10 @@ int main(int argc, char **argv) {
     }
     if (arg_result.count("fov")) {
         sm.SetFOV(arg_result["fov"].as<double>());
+    }
+    if (arg_result.count("frame_output_name")) {
+        sm.RecordVideoFrames(arg_result["frame_interval"].as<int>(),
+                             arg_result["frame_output_name"].as<std::string>());
     }
     for (auto& wp : sim_params.GetWaypoints())
          sm.AddWaypoint(wp[0], wp[1], wp[2]);

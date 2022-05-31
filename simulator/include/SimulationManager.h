@@ -70,6 +70,7 @@ class  SimulationManager {
     void SetCanvasSize(std::vector<int> canvas_size) { SetCanvasSize(canvas_size[0], canvas_size[1]); }
     void SetRobotColor(std::vector<double> robot_color);
     void SetEnvColor(std::vector<double> env_color);
+    void RecordVideoFrames(int frame_interval, const std::string& output_name=""); // set frame_interval = -1 to disable
 
     bool RunSimulation();
     const std::string& GetUrdfFileName();
@@ -127,6 +128,10 @@ class  SimulationManager {
     double canvas_size_[2] = {1280, 720};
     double robot_color_[4] = {0, 0, 0, 0}; // enable, r, g, b
     double env_color_[3] = {0.2, 0.2, 0.2}; // r, g, b
+    bool save_video_frames_ = false;
+    int video_frame_interval_ = 20; // Video renedred at 200 Hz with step_size_ == 0.005
+    int video_frame_counter_ = 0;
+    std::string video_frame_output_name_;
 
     std::string env_file_;
     // unit: m

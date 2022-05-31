@@ -179,6 +179,18 @@ void SimulationManager::SetEnvColor(std::vector<double> env_color) {
     env_color_[2] = env_color[2];
 }
 
+void SimulationManager::RecordVideoFrames(int frame_interval, const std::string& output_name) {
+    std::cout << "frame interval " << frame_interval << ", outputname  " << output_name << std::endl;
+    if(frame_interval < 1) {
+        save_video_frames_ = false;
+        return;
+    }
+
+    save_video_frames_ = true;
+    video_frame_interval_ = frame_interval;
+    video_frame_output_name_ = output_name;
+}
+
 bool SimulationManager::RunSimulation() {
     if(!robot_doc_){
         std::cerr << "Error: No Robot loaded." << std::endl;
@@ -354,6 +366,11 @@ bool SimulationManager::RunSimulation() {
 
         tik = std::chrono::steady_clock::now();
         bool device_running = true;
+        std::string video_frame_output_path;
+        if (save_video_frames_) {
+            video_frame_output_path = "video_capture/" + video_frame_output_name_;
+            std::filesystem::create_directories(video_frame_output_path);
+        }
         // while (ch_system_->GetChTime() < timeout_ && !task_done_ && vis_app.GetDevice()->run()) {
         while (ch_system_->GetChTime() < timeout_ && !task_done_ ) {
             device_running = vis_app.GetDevice()->run(); // this should have been checked as one of the
@@ -368,6 +385,20 @@ bool SimulationManager::RunSimulation() {
             vis_app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             // vis_app.GetSceneManager()->getActiveCamera()->setTarget(vector3dfCH(camera_body->GetPos()));
             vis_app.DrawAll();
+
+            if (save_video_frames_) {
+                if (video_frame_counter_ % video_frame_interval_ == 0) {
+                    irr::video::IImage* image = driver->createScreenShot();
+                    if (image) {
+                        char filename[100];
+                        sprintf(filename, "%04d.png", (video_frame_counter_ + 1) / video_frame_interval_);
+                        driver->writeImageToFile(image, std::string(video_frame_output_path + "/" + filename).c_str());
+                        image->drop();
+                    }
+                }
+                video_frame_counter_++;
+            }
+
             vis_app.DoStep();
             vis_app.EndScene();
 
