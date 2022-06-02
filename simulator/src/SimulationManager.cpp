@@ -234,7 +234,10 @@ bool SimulationManager::RunSimulation() {
     }
 
     // Make sure env shows up under the robot
-    if (load_map_) load_map();
+    double env_pos_z = 0;
+    if (load_map_) {
+        env_pos_z = load_map();
+    }
 
     // add waypoint markers
     auto wp_color = chrono_types::make_shared<ChColorAsset>();
@@ -354,8 +357,8 @@ bool SimulationManager::RunSimulation() {
                                            scene_mgr, -1, -160.0f, 1.0f, 0.003f);
         camera->bindTargetAndRotation(false);
         camera->setUpVector(vector3df(0, 0, 1));
-        camera->setPosition(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2]));
-        camera->setTarget(vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5]));
+        camera->setPosition(vector3df(camera_pos_[0], camera_pos_[1], camera_pos_[2] + env_pos_z));
+        camera->setTarget(vector3df(camera_pos_[3], camera_pos_[4], camera_pos_[5] + env_pos_z));
         camera->setFOV(fov_ * irr::core::DEGTORAD);
         camera->setNearValue(0.1f);
         camera->setMinZoom(0.6f);
@@ -495,7 +498,10 @@ void SimulationManager::update_stats() {
 // TODO: right now using greedy method to place the env under the robot, that the
 // lowest point of the robot is higher than the highest point of the env, which may
 // not be necessary. need to make it more accurate
-void SimulationManager::load_map(){
+// Return vertical position of the map, so that the camera could be adjusted correspondingly
+double SimulationManager::load_map(){
+    double pos_z = 0;
+
     auto ground_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     ground_mat->SetSfriction(s_friction_);
     ground_mat->SetKfriction(k_friction_);
@@ -507,7 +513,8 @@ void SimulationManager::load_map(){
         // ground body
         auto flat_ground = chrono_types::make_shared<ChBodyEasyBox>(env_x_, env_y_, env_z_, 1.0, true, true, ground_mat);
         flat_ground->SetRot(env_rot_);
-        flat_ground->SetPos(ChVector<>(0, 0, robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01));
+        pos_z = robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01;
+        flat_ground->SetPos(ChVector<>(0, 0, pos_z));
         flat_ground->SetBodyFixed(true);
         auto ground_texture = chrono_types::make_shared<ChColorAsset>();
         ground_texture->SetColor(ChColor(env_color_[0], env_color_[1], env_color_[2]));
@@ -519,11 +526,10 @@ void SimulationManager::load_map(){
         // urdf_map_doc.AddtoSystem(ch_system_, 0, 0, env_z_ / 2, 0, 0, 0);
     } else if (env_file_.find(".bmp") != std::string::npos){
         vehicle::RigidTerrain terrain(ch_system_.get());
+        pos_z = robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01;
         auto patch = terrain.AddPatch(ground_mat,
-                                      ChCoordsys<>(ChVector<>(env_x_ / 2,
-                                                              env_y_ / 2,
-                                                              robot_doc_->GetMinPos().z() - env_z_ * 0.5 - 0.01),
-                                                    QUNIT),
+                                      ChCoordsys<>(ChVector<>(env_x_ / 2, env_y_ / 2, pos_z),
+                                                   QUNIT),
                                       env_file_, "ground_mesh", env_x_, env_y_, 0, env_z_);
         patch->SetColor(ChColor(env_color_[0], env_color_[1], env_color_[2]));
         terrain.Initialize();
@@ -532,10 +538,10 @@ void SimulationManager::load_map(){
         // Need to use trimesh or other method the get the height and width of
         // the mesh
         // set obj terrain as a mesh object
-        ChCoordsys<> mesh_pos (ChVector<>(0, 0, robot_doc_->GetMinPos().z() - 1), QUNIT);
         auto ch_body = chrono_types::make_shared<ChBody>();
         ch_body->SetBodyFixed(true);
-        ch_body->SetCoord(mesh_pos);
+        pos_z = robot_doc_->GetMinPos().z() - 1;
+        ch_body->SetCoord(ChCoordsys<>(ChVector<>(0, 0, pos_z), QUNIT));
 
         // first load mesh
         std::shared_ptr<geometry::ChTriangleMeshConnected> trimesh;
@@ -639,4 +645,6 @@ void SimulationManager::load_map(){
         std::cerr << "Map file " << env_file_ << " not recognized, exiting" << std::endl;
         exit(EXIT_FAILURE);
     }
+
+    return pos_z;
 }

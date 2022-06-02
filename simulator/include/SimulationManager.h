@@ -92,7 +92,7 @@ class  SimulationManager {
     ControllerType controller_type_ = EvoGen;
     // map is enabled as flat ground by default.
     bool load_map_ = true;
-    void load_map();
+    double load_map();
     bool early_termination_enabled_ = false;
     bool check_termination();
     double fall_down_thresh = 0;
