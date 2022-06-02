@@ -151,7 +151,7 @@ function robot_info = simulate_for_one(app, sim_configs)
     % Run simulation
     dv = current_robot(12:end);
     dv = dv(~isnan(dv));
-    time_out = 60; % TODO: should read from sim_params.xml
+    time_out = 30; % TODO: should read from sim_params.xml
     dv_str = num2str(dv, '%.5f,');
     dv_str = dv_str(1:end-1);
     dv_str = dv_str(~isspace(dv_str));
