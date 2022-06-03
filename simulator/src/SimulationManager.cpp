@@ -390,7 +390,7 @@ bool SimulationManager::RunSimulation() {
             vis_app.DrawAll();
 
             if (save_video_frames_) {
-                if (video_frame_counter_ % video_frame_interval_ == 0) {
+                if (video_frame_counter_ % video_frame_interval_ == 0 && video_frame_counter_ != 0) { // the first frame is always white
                     irr::video::IImage* image = driver->createScreenShot();
                     if (image) {
                         char filename[100];
