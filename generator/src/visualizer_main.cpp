@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
         ("fov", "A double that define the camera field of view in simulation", cxxopts::value<double>())
         ("frame_output_name", "Name of the exported video frames", cxxopts::value<std::string>())
         ("frame_interval", "Interval of the frames to record, only valid when frame_output_name is set", cxxopts::value<int>()->default_value("20"))
+        ("fitness_file", "File path to save the evaluated fitness", cxxopts::value<std::string>())
         ("design_vector", "Design vector of robot", cxxopts::value<std::vector<double>>())
         ("h,help", "Print usage")
     ;
@@ -181,6 +182,13 @@ int main(int argc, char **argv) {
                   << "=========================================================" << std::endl
                   << "The fitness of this robot: " << fit.value() << std::endl
                   << "=========================================================" << std::endl;
+    }
+
+    // Save the fitness to the path
+    if (arg_result.count("fitness_file")) {
+        std::ofstream ofs(arg_result["fitness_file"].as<std::string>(), std::ofstream::out | std::ofstream::app);
+        ofs << fit.value() << std::endl;
+        ofs.close();
     }
 
     if (arg_result["mode"].as<std::string>() == "user_study") {

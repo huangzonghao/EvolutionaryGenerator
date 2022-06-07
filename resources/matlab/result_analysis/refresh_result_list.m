@@ -4,6 +4,7 @@ function refresh_result_list(app, varargin)
 %     path: full path to result dir
 %     basename: basename of result dir
 %     name: nickname or basename (when nickname not available)
+%     env: the environment that the result is trained on
 %     loaded: whether the result has been fully loaded
 
     params = inputParser;
@@ -56,8 +57,16 @@ function refresh_result_list(app, varargin)
             new_result.basename = basename;
             new_result.name = basename;
             [nickname, nickname_loaded] = load_nickname(tmp_path);
+            new_result.env = 'other';
             if nickname_loaded
                 new_result.name = nickname;
+                tmp_env = extractBefore(nickname, '_');
+                if strcmp(tmp_env, 'sine2')
+                    tmp_env = 'sine';
+                elseif strcmp(tmp_env, 'valley5')
+                    tmp_env = 'valley';
+                end
+                new_result.env = tmp_env;
             end
             new_result.path = tmp_path;
             new_result.loaded = false;
