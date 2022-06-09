@@ -281,7 +281,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: SimulateRobotButton
         function SimulateRobotButtonPushed(app, event)
-            run_simulation(app);
+            simulate_from_archive_map(app);
         end
 
         % Value changed function: GenIDField
