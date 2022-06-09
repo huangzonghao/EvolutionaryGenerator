@@ -204,6 +204,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
             export_archive_map(app);
         end
 
+        % Value changed function: SanitizeArchiveCheckBox
+        function SanitizeArchiveCheckBoxValueChanged(app, event)
+            plot_gen_all(app);
+        end
+
         % Button pushed function: ComparePlotButton
         function ComparePlotButtonPushed(app, event)
             plot_result_compares(app, false);
@@ -1109,6 +1114,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
             % Create SanitizeArchiveCheckBox
             app.SanitizeArchiveCheckBox = uicheckbox(app.SingleResultsPanel);
+            app.SanitizeArchiveCheckBox.ValueChangedFcn = createCallbackFcn(app, @SanitizeArchiveCheckBoxValueChanged, true);
             app.SanitizeArchiveCheckBox.Text = 'Sanitize Archive';
             app.SanitizeArchiveCheckBox.Position = [487 157 107 22];
 
