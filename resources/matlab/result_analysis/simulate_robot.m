@@ -17,9 +17,14 @@ function sim_report = simulate_robot(app, sim_configs)
         current_robot = robot_file_buffer(robot_file_buffer(:, 2)==sim_configs.robot_id, :);
         dv = current_robot(12:end);
     elseif isfile(fullfile(result.path, '/robots_dump.mat'));
-        msgbox('Simulate with robots_dump.mat has not been implemented');
-        sim_report.done = false;
-        return
+        if isfield(result, 'robots_dump')
+            robots_dump = result.robots_dump;
+        else
+            robots_dump_container = load(fullfile(result.path, 'robots_dump.mat'));
+            app.results{result.id}.result.robots_dump = robots_dump_container.robots_dump;
+            robots_dump = robots_dump_container.robots_dump;
+        end
+        dv = robots_dump{sim_configs.gen_id + 1}{sim_configs.robot_id + 1};
     else
         sim_report.done = false;
         disp(['Simulation Error: cannot find robot information in ', result.path]);
