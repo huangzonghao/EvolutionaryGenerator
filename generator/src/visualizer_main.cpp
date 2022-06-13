@@ -26,10 +26,12 @@ void debug_pause(bool use_delay = true) {
     }
 }
 
+enum MODE {NORMAL, USER_STUDY, NO_VIS};
+
 int main(int argc, char **argv) {
     cxxopts::Options options("Genotype Visualizer", "Visualizing the performance of genomes");
     options.add_options()
-        ("mode", "Mode of visualization, normal(default)/user_study", cxxopts::value<std::string>()->default_value("normal"))
+        ("mode", "Mode of visualization, normal(default)/user_study/no_visualization", cxxopts::value<std::string>()->default_value("normal"))
         ("robot_type", "Type of robot, primitive/mesh(default)", cxxopts::value<std::string>()->default_value("mesh"))
         ("environment", "Environemnt to use. Only respected in user_study mode", cxxopts::value<std::string>()->default_value("ground"))
         ("sim_param", "Path to sim_params.xml", cxxopts::value<std::string>())
@@ -85,6 +87,15 @@ int main(int argc, char **argv) {
         return 0;
     }
 
+    int mode = 0;
+    if (arg_result["mode"].as<std::string>() == "user_study") {
+        mode = USER_STUDY;
+    } else if (arg_result["mode"].as<std::string>() == "no_visualization") {
+        mode = NO_VIS;
+    } else {
+        mode = NORMAL;
+    }
+
     std::string robot_type(arg_result["robot_type"].as<std::string>());
 
     std::string env_dir = EvoGen_Maps_Dir;
@@ -112,7 +123,7 @@ int main(int argc, char **argv) {
 
     sim_params.env_dir = env_dir;
 
-    if (arg_result["mode"].as<std::string>() == "user_study") {
+    if (mode == USER_STUDY) {
         sim_params.SetEnv(arg_result["environment"].as<std::string>());
     }
 
@@ -130,26 +141,6 @@ int main(int argc, char **argv) {
         time_out = sim_params.time_out;
     sm.SetTimeout(time_out);
 
-    if (arg_result.count("camera")) {
-        sm.SetCamera(arg_result["camera"].as<std::vector<double>>());
-    } else {
-        sm.SetCamera(sim_params.camera_pos[0],
-                     sim_params.camera_pos[1],
-                     sim_params.camera_pos[2],
-                     sim_params.camera_pos[3],
-                     sim_params.camera_pos[4],
-                     sim_params.camera_pos[5]);
-    }
-    if (arg_result.count("light")) {
-        sm.SetLight(arg_result["light"].as<std::vector<double>>());
-    }
-    if (arg_result.count("fov")) {
-        sm.SetFOV(arg_result["fov"].as<double>());
-    }
-    if (arg_result.count("frame_output_name")) {
-        sm.RecordVideoFrames(arg_result["frame_interval"].as<int>(),
-                             arg_result["frame_output_name"].as<std::string>());
-    }
     for (auto& wp : sim_params.GetWaypoints())
          sm.AddWaypoint(wp[0], wp[1], wp[2]);
 
@@ -163,14 +154,35 @@ int main(int argc, char **argv) {
                  sim_params.env_rot[3]);
 
     sm.EnableEarlyTermination();
-    sm.SetVisualization(true);
-    if (arg_result.count("color")) // Note the count for vector is the number of vector, not the number of elements!
-        sm.SetRobotColor(arg_result["color"].as<std::vector<double>>());
-    if (arg_result.count("env_color"))
-        sm.SetEnvColor(arg_result["env_color"].as<std::vector<double>>());
-    if (arg_result.count("canvas_size"))
-        sm.SetCanvasSize(arg_result["canvas_size"].as<std::vector<int>>());
-    sm.SetRealTime(arg_result["do_realtime"].as<bool>());
+    if (mode == NO_VIS) {
+        sm.SetVisualization(false);
+    } else {
+        if (arg_result.count("camera")) {
+            sm.SetCamera(arg_result["camera"].as<std::vector<double>>());
+        } else {
+            sm.SetCamera(sim_params.camera_pos[0],
+                         sim_params.camera_pos[1],
+                         sim_params.camera_pos[2],
+                         sim_params.camera_pos[3],
+                         sim_params.camera_pos[4],
+                         sim_params.camera_pos[5]);
+        }
+        if (arg_result.count("light"))
+            sm.SetLight(arg_result["light"].as<std::vector<double>>());
+        if (arg_result.count("fov"))
+            sm.SetFOV(arg_result["fov"].as<double>());
+        if (arg_result.count("frame_output_name"))
+            sm.RecordVideoFrames(arg_result["frame_interval"].as<int>(),
+                                 arg_result["frame_output_name"].as<std::string>());
+        if (arg_result.count("color")) // Note the count for vector is the number of vector, not the number of elements!
+            sm.SetRobotColor(arg_result["color"].as<std::vector<double>>());
+        if (arg_result.count("env_color"))
+            sm.SetEnvColor(arg_result["env_color"].as<std::vector<double>>());
+        if (arg_result.count("canvas_size"))
+            sm.SetCanvasSize(arg_result["canvas_size"].as<std::vector<int>>());
+        sm.SetRealTime(arg_result["do_realtime"].as<bool>());
+        sm.SetVisualization(true);
+    }
 
     auto& fit = phen.fit();
     fit.eval(phen, sm);
@@ -191,7 +203,7 @@ int main(int argc, char **argv) {
         ofs.close();
     }
 
-    if (arg_result["mode"].as<std::string>() == "user_study") {
+    if (mode == USER_STUDY) {
         debug_pause();
     }
 

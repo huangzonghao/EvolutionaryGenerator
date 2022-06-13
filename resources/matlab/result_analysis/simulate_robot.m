@@ -5,11 +5,12 @@ function sim_report = simulate_robot(app, sim_configs)
 % the post-generated mat dump.
 % sim_configs:
 %     result_id
-%     gen_id
-%     robot_id
+%     gen_id: use c++ numbering, starts from 0
+%     robot_id: use c++ numbering, starts from 0
 %     other simulation params
 
     sim_report = {};
+    sim_report.done = false;
     % First try to gather required information for simulation
     result = load_target_result(app, false, sim_configs.result_id);
     if isfolder(fullfile(result.path, '/robots'))
@@ -26,7 +27,6 @@ function sim_report = simulate_robot(app, sim_configs)
         end
         dv = robots_dump{sim_configs.gen_id + 1}{sim_configs.robot_id + 1};
     else
-        sim_report.done = false;
         disp(['Simulation Error: cannot find robot information in ', result.path]);
         return
     end
@@ -41,6 +41,10 @@ function sim_report = simulate_robot(app, sim_configs)
         cmd_str = "start " + cmd_str;
     else
         sim_configs.async = false;
+    end
+
+    if isfield(sim_configs, 'mode')
+        cmd_str = cmd_str + " --mode=" + sim_configs.mode;
     end
 
     if isfield(sim_configs, 'canvas_size')
@@ -102,7 +106,9 @@ function sim_report = simulate_robot(app, sim_configs)
     % Generate simulation report
     if ~sim_configs.async
         fitness_cell = regexp(cmdout, 'The fitness of this robot: (-?\d*\.\d*)', 'tokens');
-        sim_report.visual_fitness = str2double(fitness_cell{1});
+        if ~isempty(fitness_cell)
+            sim_report.fitness = str2double(fitness_cell{1});
+            sim_report.done = true;
+        end
     end
-    sim_report.done = true;
 end

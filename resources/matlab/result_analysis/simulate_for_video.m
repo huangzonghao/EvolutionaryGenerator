@@ -75,7 +75,7 @@ function simulate_for_video(app)
             sim_report = simulate_robot(app, sim_configs);
 
             if production_mode
-                robot_info.visual_fitness = sim_report.visual_fitness;
+                robot_info.visual_fitness = sim_report.fitness;
                 gen_reports{i_gen}.(['robot_', num2str(i_target)]) = robot_info;
             end
         end

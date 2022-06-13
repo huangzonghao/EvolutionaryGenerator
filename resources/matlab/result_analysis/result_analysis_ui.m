@@ -2,111 +2,115 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MainFigure                      matlab.ui.Figure
-        DebugPanel                      matlab.ui.container.Panel
-        CLCButton                       matlab.ui.control.Button
-        RehashButton                    matlab.ui.control.Button
-        SingleResultsPanel              matlab.ui.container.Panel
-        NextResultButton                matlab.ui.control.Button
-        PrevResultButton                matlab.ui.control.Button
-        ExportforPublishingButton       matlab.ui.control.Button
-        ExportPickleButton              matlab.ui.control.Button
-        DumpRobotsCheckBox              matlab.ui.control.CheckBox
-        PackSelectedResultsButton       matlab.ui.control.Button
-        ExportArchiveMapButton          matlab.ui.control.Button
-        SanitizeArchiveCheckBox         matlab.ui.control.CheckBox
-        ExportRobotButton               matlab.ui.control.Button
-        ExportforPlottingButton         matlab.ui.control.Button
-        SimTimeEditField                matlab.ui.control.NumericEditField
-        SimTimeEditFieldLabel           matlab.ui.control.Label
-        SelectResultButton              matlab.ui.control.Button
+        MainFigure                     matlab.ui.Figure
+        DebugPanel                     matlab.ui.container.Panel
+        CLCButton                      matlab.ui.control.Button
+        RehashButton                   matlab.ui.control.Button
+        SingleResultsPanel             matlab.ui.container.Panel
+        NextResultButton               matlab.ui.control.Button
+        PrevResultButton               matlab.ui.control.Button
+        ExportforPublishingButton      matlab.ui.control.Button
+        ExportPickleButton             matlab.ui.control.Button
+        DumpRobotsCheckBox             matlab.ui.control.CheckBox
+        PackSelectedResultsButton      matlab.ui.control.Button
+        ExportArchiveMapButton         matlab.ui.control.Button
+        SanitizeArchiveCheckBox        matlab.ui.control.CheckBox
+        ExportRobotButton              matlab.ui.control.Button
+        ExportforPlottingButton        matlab.ui.control.Button
+        SimTimeEditField               matlab.ui.control.NumericEditField
+        SimTimeEditFieldLabel          matlab.ui.control.Label
+        SelectResultButton             matlab.ui.control.Button
         GenerateAllSingleResultPlotsButton  matlab.ui.control.Button
-        NickNameField                   matlab.ui.control.EditField
-        NicknameLabel                   matlab.ui.control.Label
-        NickNameSaveButton              matlab.ui.control.Button
-        OpenFolderButton                matlab.ui.control.Button
-        ParentageTreeButton             matlab.ui.control.Button
-        RobotIDYField                   matlab.ui.control.EditField
-        RobotIDXField                   matlab.ui.control.EditField
-        SimulateRobotButton             matlab.ui.control.Button
-        LongevityofGenButton            matlab.ui.control.Button
-        ParentagePlotsButton            matlab.ui.control.Button
-        ParentageStatButton             matlab.ui.control.Button
-        AvgAgeofMapButton               matlab.ui.control.Button
-        BinUpdatesButton                matlab.ui.control.Button
-        StatPlotButton                  matlab.ui.control.Button
-        ToLabel                         matlab.ui.control.Label
-        StatEndGenField                 matlab.ui.control.EditField
-        FromLabel                       matlab.ui.control.Label
-        StatStartGenField               matlab.ui.control.EditField
-        GenLabel                        matlab.ui.control.Label
-        GenIDField                      matlab.ui.control.EditField
-        ResultInfoTextLabel             matlab.ui.control.Label
-        ResultInfoLabel                 matlab.ui.control.Label
-        PlotGenButton                   matlab.ui.control.Button
-        GenStepField                    matlab.ui.control.EditField
-        LoadFirstButton                 matlab.ui.control.Button
-        LoadLastButton                  matlab.ui.control.Button
-        LoadPrevStepButton              matlab.ui.control.Button
-        LoadNextStepButton              matlab.ui.control.Button
-        LoadPrevButton                  matlab.ui.control.Button
-        LoadNextButton                  matlab.ui.control.Button
-        ResultNameLabel                 matlab.ui.control.Label
-        AddResultToCompareButton        matlab.ui.control.Button
-        LoadResultGroupButton           matlab.ui.control.Button
-        PatchResultStatButton           matlab.ui.control.Button
-        BuildSelectedResultStatButton   matlab.ui.control.Button
-        BuildPackExportAllButton        matlab.ui.control.Button
-        RefreshResultListButton         matlab.ui.control.Button
-        ResultGroupLabel                matlab.ui.control.Label
-        ResultsListBox                  matlab.ui.control.ListBox
-        VirtualResultsPanel             matlab.ui.container.Panel
-        ComputeBenchmarkButton          matlab.ui.control.Button
+        NickNameField                  matlab.ui.control.EditField
+        NicknameLabel                  matlab.ui.control.Label
+        NickNameSaveButton             matlab.ui.control.Button
+        OpenFolderButton               matlab.ui.control.Button
+        ParentageTreeButton            matlab.ui.control.Button
+        RobotIDYField                  matlab.ui.control.EditField
+        RobotIDXField                  matlab.ui.control.EditField
+        SimulateRobotButton            matlab.ui.control.Button
+        LongevityofGenButton           matlab.ui.control.Button
+        ParentagePlotsButton           matlab.ui.control.Button
+        ParentageStatButton            matlab.ui.control.Button
+        AvgAgeofMapButton              matlab.ui.control.Button
+        BinUpdatesButton               matlab.ui.control.Button
+        StatPlotButton                 matlab.ui.control.Button
+        ToLabel                        matlab.ui.control.Label
+        StatEndGenField                matlab.ui.control.EditField
+        FromLabel                      matlab.ui.control.Label
+        StatStartGenField              matlab.ui.control.EditField
+        GenLabel                       matlab.ui.control.Label
+        GenIDField                     matlab.ui.control.EditField
+        ResultInfoTextLabel            matlab.ui.control.Label
+        ResultInfoLabel                matlab.ui.control.Label
+        PlotGenButton                  matlab.ui.control.Button
+        GenStepField                   matlab.ui.control.EditField
+        LoadFirstButton                matlab.ui.control.Button
+        LoadLastButton                 matlab.ui.control.Button
+        LoadPrevStepButton             matlab.ui.control.Button
+        LoadNextStepButton             matlab.ui.control.Button
+        LoadPrevButton                 matlab.ui.control.Button
+        LoadNextButton                 matlab.ui.control.Button
+        ResultNameLabel                matlab.ui.control.Label
+        AddResultToCompareButton       matlab.ui.control.Button
+        LoadResultGroupButton          matlab.ui.control.Button
+        PatchResultStatButton          matlab.ui.control.Button
+        BuildSelectedResultStatButton  matlab.ui.control.Button
+        BuildPackExportAllButton       matlab.ui.control.Button
+        RefreshResultListButton        matlab.ui.control.Button
+        ResultGroupLabel               matlab.ui.control.Label
+        ResultsListBox                 matlab.ui.control.ListBox
+        VirtualResultsPanel            matlab.ui.container.Panel
+        ComputeBenchmarkButton         matlab.ui.control.Button
         MannWhitneyTestCoverageAllButton  matlab.ui.control.Button
-        mwwPercentEditField             matlab.ui.control.NumericEditField
-        mwwLabel                        matlab.ui.control.Label
+        mwwPercentEditField            matlab.ui.control.NumericEditField
+        mwwLabel                       matlab.ui.control.Label
         MannWhitneyTestPercentAllButton  matlab.ui.control.Button
-        MannWhitneyTestAllButton        matlab.ui.control.Button
-        mwwGenEditField                 matlab.ui.control.NumericEditField
-        mwwGenEditFieldLabel            matlab.ui.control.Label
-        QQPlotForVirtualButton          matlab.ui.control.Button
-        VirtualResultNameField          matlab.ui.control.EditField
-        GroupNameLabel                  matlab.ui.control.Label
-        AddVirtualToCompareButton       matlab.ui.control.Button
-        DeleteVirtualResultButton       matlab.ui.control.Button
-        AddVirtualResultButton          matlab.ui.control.Button
-        VirtualResultsListBox           matlab.ui.control.ListBox
-        GroupStatButton                 matlab.ui.control.Button
+        MannWhitneyTestAllButton       matlab.ui.control.Button
+        mwwGenEditField                matlab.ui.control.NumericEditField
+        mwwGenEditFieldLabel           matlab.ui.control.Label
+        QQPlotForVirtualButton         matlab.ui.control.Button
+        VirtualResultNameField         matlab.ui.control.EditField
+        GroupNameLabel                 matlab.ui.control.Label
+        AddVirtualToCompareButton      matlab.ui.control.Button
+        DeleteVirtualResultButton      matlab.ui.control.Button
+        AddVirtualResultButton         matlab.ui.control.Button
+        VirtualResultsListBox          matlab.ui.control.ListBox
+        GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
-        ComparisonPlotsTestsPanel       matlab.ui.container.Panel
-        FitnesswithVisualizationButton  matlab.ui.control.Button
-        CombinedArchiveMapButton        matlab.ui.control.Button
-        VideoGenFitnessButton           matlab.ui.control.Button
-        VideoGenIDField                 matlab.ui.control.NumericEditField
-        GenEditFieldLabel               matlab.ui.control.Label
-        SimulateforVideoButton          matlab.ui.control.Button
-        PaperPlot3Button                matlab.ui.control.Button
-        PaperPlot2Button                matlab.ui.control.Button
-        PaperPlot1Button                matlab.ui.control.Button
-        ExportComparePlotDataButton     matlab.ui.control.Button
-        MannWhitneyTestButton           matlab.ui.control.Button
-        QQPlotForCompareButton          matlab.ui.control.Button
-        TTestOptionDropDown             matlab.ui.control.DropDown
-        TTestOptionDropDownLabel        matlab.ui.control.Label
-        TTestAllButton                  matlab.ui.control.Button
-        VarTestButton                   matlab.ui.control.Button
-        ANOVAButton                     matlab.ui.control.Button
-        TTestButton                     matlab.ui.control.Button
-        CompPlotNameField               matlab.ui.control.EditField
-        PlotNameLabel                   matlab.ui.control.Label
-        CleanCompareButton              matlab.ui.control.Button
-        ComparePlotButton               matlab.ui.control.Button
-        MoveCompareDownButton           matlab.ui.control.Button
-        MoveCompareUpButton             matlab.ui.control.Button
-        RemoveAllCompareButton          matlab.ui.control.Button
-        RemoveCompareButton             matlab.ui.control.Button
-        CompareListBox                  matlab.ui.control.ListBox
-        GenerateAllComparePlotsButton   matlab.ui.control.Button
+        ComparisonPlotsTestsPanel      matlab.ui.container.Panel
+        ReEvaluationType               matlab.ui.container.ButtonGroup
+        BestofGenButton                matlab.ui.control.RadioButton
+        AllButton                      matlab.ui.control.RadioButton
+        WithVisualizationCheckBox      matlab.ui.control.CheckBox
+        ReevaluateFitnessButton        matlab.ui.control.Button
+        CombinedArchiveMapButton       matlab.ui.control.Button
+        VideoGenFitnessButton          matlab.ui.control.Button
+        VideoGenIDField                matlab.ui.control.NumericEditField
+        GenEditFieldLabel              matlab.ui.control.Label
+        SimulateforVideoButton         matlab.ui.control.Button
+        PaperPlot3Button               matlab.ui.control.Button
+        PaperPlot2Button               matlab.ui.control.Button
+        PaperPlot1Button               matlab.ui.control.Button
+        ExportComparePlotDataButton    matlab.ui.control.Button
+        MannWhitneyTestButton          matlab.ui.control.Button
+        QQPlotForCompareButton         matlab.ui.control.Button
+        TTestOptionDropDown            matlab.ui.control.DropDown
+        TTestOptionDropDownLabel       matlab.ui.control.Label
+        TTestAllButton                 matlab.ui.control.Button
+        VarTestButton                  matlab.ui.control.Button
+        ANOVAButton                    matlab.ui.control.Button
+        TTestButton                    matlab.ui.control.Button
+        CompPlotNameField              matlab.ui.control.EditField
+        PlotNameLabel                  matlab.ui.control.Label
+        CleanCompareButton             matlab.ui.control.Button
+        ComparePlotButton              matlab.ui.control.Button
+        MoveCompareDownButton          matlab.ui.control.Button
+        MoveCompareUpButton            matlab.ui.control.Button
+        RemoveAllCompareButton         matlab.ui.control.Button
+        RemoveCompareButton            matlab.ui.control.Button
+        CompareListBox                 matlab.ui.control.ListBox
+        GenerateAllComparePlotsButton  matlab.ui.control.Button
     end
 
     properties (Access = public)
@@ -485,9 +489,9 @@ classdef result_analysis_ui < matlab.apps.AppBase
             generate_combined_archive_map(app);
         end
 
-        % Button pushed function: FitnesswithVisualizationButton
-        function FitnesswithVisualizationButtonPushed(app, event)
-            evaluate_with_visualization(app);
+        % Button pushed function: ReevaluateFitnessButton
+        function ReevaluateFitnessButtonPushed(app, event)
+            reevaluate_fitness(app);
         end
     end
 
@@ -684,13 +688,34 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CombinedArchiveMapButton.Position = [283 174 86 36];
             app.CombinedArchiveMapButton.Text = 'Combined Archive Map';
 
-            % Create FitnesswithVisualizationButton
-            app.FitnesswithVisualizationButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
-            app.FitnesswithVisualizationButton.ButtonPushedFcn = createCallbackFcn(app, @FitnesswithVisualizationButtonPushed, true);
-            app.FitnesswithVisualizationButton.Tag = 'loadresult';
-            app.FitnesswithVisualizationButton.WordWrap = 'on';
-            app.FitnesswithVisualizationButton.Position = [283 125 82 39];
-            app.FitnesswithVisualizationButton.Text = 'Fitness with Visualization';
+            % Create ReevaluateFitnessButton
+            app.ReevaluateFitnessButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.ReevaluateFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @ReevaluateFitnessButtonPushed, true);
+            app.ReevaluateFitnessButton.Tag = 'loadresult';
+            app.ReevaluateFitnessButton.WordWrap = 'on';
+            app.ReevaluateFitnessButton.Position = [283 125 82 39];
+            app.ReevaluateFitnessButton.Text = 'Re-evaluate Fitness';
+
+            % Create WithVisualizationCheckBox
+            app.WithVisualizationCheckBox = uicheckbox(app.ComparisonPlotsTestsPanel);
+            app.WithVisualizationCheckBox.Text = 'w/ Visualization';
+            app.WithVisualizationCheckBox.Position = [273 104 105 22];
+
+            % Create ReEvaluationType
+            app.ReEvaluationType = uibuttongroup(app.ComparisonPlotsTestsPanel);
+            app.ReEvaluationType.Title = 'Eval Type';
+            app.ReEvaluationType.Position = [274 40 100 65];
+
+            % Create AllButton
+            app.AllButton = uiradiobutton(app.ReEvaluationType);
+            app.AllButton.Text = 'All';
+            app.AllButton.Position = [11 19 58 22];
+            app.AllButton.Value = true;
+
+            % Create BestofGenButton
+            app.BestofGenButton = uiradiobutton(app.ReEvaluationType);
+            app.BestofGenButton.Text = 'Best of Gen';
+            app.BestofGenButton.Position = [11 -3 85 22];
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);

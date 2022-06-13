@@ -1,5 +1,13 @@
 % TODO: why not make a stat class so that each different stat would be clear to see
 % TODO: if there is archive.mat, should read it directly and build the stat
+% archive.mat - archive:
+%     each row: [gen_id, id, f_id1, f_id2, fitness]
+%     each gen is a matrix stored in a cell. i.e. archive{1} for gen 0
+% robots.mat - robots:
+%     each row: [p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness]
+%     robots is a 3d matrix: gen_size x 9 x nb_gen + 1
+% robots_dump.mat - robots_dump
+%     design_vector only, stored in 2d cell array. i.e. dv = robots_dump{i_gen}{i_robot}
 function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, orig_stat_loaded)
     [~, result_basename, ~] = fileparts(result_path);
     nb_gen = evo_params.nb_gen;
