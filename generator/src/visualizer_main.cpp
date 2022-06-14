@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
         ("robot_type", "Type of robot, primitive/mesh(default)", cxxopts::value<std::string>()->default_value("mesh"))
         ("environment", "Environemnt to use. Only respected in user_study mode", cxxopts::value<std::string>()->default_value("ground"))
         ("sim_param", "Path to sim_params.xml", cxxopts::value<std::string>())
-        ("sim_time", "Simulation time. Default 0, to use the sim time in sim_param", cxxopts::value<double>()->default_value("0.0"))
+        ("sim_time", "Simulation time. Default to use the sim time in sim_param", cxxopts::value<double>())
         ("do_realtime", "Run real time simulation (normally slower than none-realtime simualtion)", cxxopts::value<bool>()->default_value("false"))
         ("color", "Color of robot, in RGB", cxxopts::value<std::vector<double>>())
         ("env_color", "Color of environment, in RGB", cxxopts::value<std::vector<double>>())
@@ -136,10 +136,11 @@ int main(int argc, char **argv) {
 
     SimulationManager sm;
 
-    double time_out = arg_result["sim_time"].as<double>();
-    if (time_out == 0)
-        time_out = sim_params.time_out;
-    sm.SetTimeout(time_out);
+    // user specified sim_time presides the defaults in the sim_params
+    if (arg_result.count("sim_time"))
+        sm.SetTimeout(arg_result["sim_time"].as<double>());
+    else
+        sm.SetTimeout(sim_params.time_out);
 
     for (auto& wp : sim_params.GetWaypoints())
          sm.AddWaypoint(wp[0], wp[1], wp[2]);
