@@ -38,7 +38,12 @@ function simulate_from_archive_map(app)
     sim_configs.robot_color = [1, 0.0, 0.0];
     % sim_configs.canvas_size = [960, 360];
     % sim_configs.camera = [0, -12, 10, 0, 0, 0];
-    sim_configs.async = true;
+    % sim_configs.async = true;
 
     sim_report = simulate_robot(app, sim_configs);
+    if sim_report.done
+        msgbox(['Fitness: ', num2str(sim_report.fitness)]);
+    else
+        msgbox('No fitness reported');
+    end
 end
