@@ -2,10 +2,10 @@ function plot_gen_all(app)
 % Plot all plots related to a specific generation
 
     % Configure panels here
-    if ~isfield(app.gen_plot, 'handle') || ~ishandle(app.gen_plot.handle)
+    if ~isfield(app.plot_handles.gen_plot, 'handle') || ~ishandle(app.plot_handles.gen_plot.handle)
         return
     elseif ~app.current_result.plot_to_file
-        figure(app.gen_plot.handle);
+        figure(app.plot_handles.gen_plot.handle);
     end
 
     % if we can create a handle then it's guaranteed that we have a current_result
@@ -43,27 +43,27 @@ function plot_gen_all(app)
     surf_archive_map = zeros(size(archive_map));
     tmp_idx = ~isnan(archive_map);
     surf_archive_map(tmp_idx) = archive_map(tmp_idx);
-    app.gen_plot.archive_surf.ZData = surf_archive_map;
-    app.gen_plot.archive_heat.ColorData = archive_map;
-    app.gen_plot.updates_per_bin_heat.ColorData = updates_per_bin;
-    app.gen_plot.parentage_heat.ColorData = parentage_map;
-    app.gen_plot.bin_age_heat.ColorData = age_map;
-    app.gen_plot.archive_hist.Data = fitness;
+    app.plot_handles.gen_plot.archive_surf.ZData = surf_archive_map;
+    app.plot_handles.gen_plot.archive_heat.ColorData = archive_map;
+    app.plot_handles.gen_plot.updates_per_bin_heat.ColorData = updates_per_bin;
+    app.plot_handles.gen_plot.parentage_heat.ColorData = parentage_map;
+    app.plot_handles.gen_plot.bin_age_heat.ColorData = age_map;
+    app.plot_handles.gen_plot.archive_hist.Data = fitness;
     drawnow;
-    app.gen_plot.info_text.String = sprintf("%s - Gen %d / %d, Coverage %d / %d", ...
+    app.plot_handles.gen_plot.info_text.String = sprintf("%s - Gen %d / %d, Coverage %d / %d", ...
                                             result.name, current_gen, result.evo_params.nb_gen, ...
                                             length(fitness), griddim(1) * griddim(2));
     % Reset the title text proterties
     % TODO: for some reason we have to update this title font set up here, and
     % settings in open_gen_all_plot.m won't work.
-    app.gen_plot.archive_surf_title.FontSize = 11;
-    app.gen_plot.archive_surf_title.FontWeight = 'bold';
-    app.gen_plot.archive_hist_title.FontSize = 11;
-    app.gen_plot.archive_hist_title.FontWeight = 'bold';
+    app.plot_handles.gen_plot.archive_surf_title.FontSize = 11;
+    app.plot_handles.gen_plot.archive_surf_title.FontWeight = 'bold';
+    app.plot_handles.gen_plot.archive_hist_title.FontSize = 11;
+    app.plot_handles.gen_plot.archive_hist_title.FontWeight = 'bold';
 
     if result.plot_to_file
         for i_format = 1 : length(result.plot_format)
-            saveas(app.gen_plot.handle, fullfile(result.plot_dir, ['gen_all_', result.name, '_gen', num2str(app.current_gen), '.', result.plot_format{i_format}]));
+            saveas(app.plot_handles.gen_plot.handle, fullfile(result.plot_dir, ['gen_all_', result.name, '_gen', num2str(app.current_gen), '.', result.plot_format{i_format}]));
         end
     else
         % Note the swapping of x, y here

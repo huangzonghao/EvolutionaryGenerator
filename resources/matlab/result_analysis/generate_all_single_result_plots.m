@@ -36,8 +36,8 @@ function generate_all_plots_for_this_result(app, result, root_dir)
     plot_parentage_stat(app);
     plot_result_stat(app);
 
-    if isfield(app.gen_plot, 'handle') && ishandle(app.gen_plot.handle)
-        close(app.gen_plot.handle);
+    if isfield(app.plot_handles.gen_plot, 'handle') && ishandle(app.plot_handles.gen_plot.handle)
+        close(app.plot_handles.gen_plot.handle);
     end
     open_gen_all_plot(app);
     % gen 0
@@ -49,7 +49,7 @@ function generate_all_plots_for_this_result(app, result, root_dir)
     % final gen
     app.current_gen = result.evo_params.nb_gen;
     plot_gen_all(app);
-    close(app.gen_plot.handle);
+    close(app.plot_handles.gen_plot.handle);
 
     app.current_result.plot_to_file = false;
 end

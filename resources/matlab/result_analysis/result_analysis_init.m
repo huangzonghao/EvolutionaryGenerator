@@ -25,5 +25,8 @@ function result_analysis_init(app)
     app.VideoGenIDField.Value = 0;
     app.VideoGenIDField.Limits = [0, 2000];
 
+    app.plot_handles.gen_plot = {};
+    app.plot_handles.fitness_compare = {};
+
     refresh_result_list(app);
 end

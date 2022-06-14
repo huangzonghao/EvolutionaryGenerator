@@ -7,6 +7,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        CompareFitnessButton           matlab.ui.control.Button
         NextResultButton               matlab.ui.control.Button
         PrevResultButton               matlab.ui.control.Button
         ExportforPublishingButton      matlab.ui.control.Button
@@ -135,7 +136,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         current_result = {} % reference to the currently seleceted result
         current_virtual_result = {} % reference to the currently seleceted virtual result
         current_gen = -1
-        gen_plot % containing handles to gen_plot
+        plot_handles % containing handles to plots
         compare_plot_config % struct containing the config for compare plots
 
         % TODO: need to remove the following
@@ -206,6 +207,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: ExportArchiveMapButton
         function ExportArchiveMapButtonPushed(app, event)
             export_archive_map(app);
+        end
+
+        % Button pushed function: CompareFitnessButton
+        function CompareFitnessButtonPushed(app, event)
+            compare_different_version_fitness(app);
         end
 
         % Value changed function: SanitizeArchiveCheckBox
@@ -1192,6 +1198,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.NextResultButton.Tag = 'loadresult';
             app.NextResultButton.Position = [512 525 56 29];
             app.NextResultButton.Text = 'Dn';
+
+            % Create CompareFitnessButton
+            app.CompareFitnessButton = uibutton(app.SingleResultsPanel, 'push');
+            app.CompareFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @CompareFitnessButtonPushed, true);
+            app.CompareFitnessButton.Tag = 'loadresult';
+            app.CompareFitnessButton.WordWrap = 'on';
+            app.CompareFitnessButton.Position = [503 74 63 35];
+            app.CompareFitnessButton.Text = 'Compare Fitness';
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);

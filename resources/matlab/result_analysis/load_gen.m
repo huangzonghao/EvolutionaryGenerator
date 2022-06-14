@@ -9,4 +9,8 @@ function load_gen(app, gen_to_load)
     app.current_gen = gen_to_load;
     app.GenIDField.Value = num2str(app.current_gen);
     plot_gen_all(app);
+    if isfield(app.plot_handles.fitness_compare, 'fig') && ...
+       ishandle(app.plot_handles.fitness_compare.fig)
+        compare_different_version_fitness(app);
+    end
 end
