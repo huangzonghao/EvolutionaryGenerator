@@ -26,9 +26,14 @@ function reevaluate_fitness(app)
         end
     end
 
-    if strcmp(app.ReEvaluationType.SelectedObject.Text, 'All')
+    switch app.ReEvalTypeDropDown.Value
+    case 1
         mode = "all";
-    elseif strcmp(app.ReEvaluationType.SelectedObject.Text, 'Best of Gen')
+        fit_name = "fitness2";
+    case 2
+        mode = "archive";
+        fit_name = "fitness3";
+    case 3
         mode = "best";
     end
 
@@ -57,32 +62,37 @@ function reevaluate_fitness(app)
         end
 
         if mode == "all"
-            if ~isfield(extra_stats, 'fitness2')
-                extra_stats.fitness2 = nan(nb_gen + 1, 30);
-                extra_stats.fitness2_gen = 0;
-                extra_stats.fitness2_robot = 0;
+            starting_gen = 0;
+            starting_id = 0;
+            if ~isfield(extra_stats, fit_name)
+                extra_stats.(fit_name) = nan(nb_gen + 1, 30);
+            % else
+                % % note matlab stores matrix as column vector
+                % [starting_id, starting_gen] = ind2sub(find(isnan(extra_stats.(fit_name)'), 1));
             end
-            wb_gen = waitbar(double(extra_stats.fitness2_gen + 1) / double(nb_gen + 1), ...
-                             ['Processing ', num2str(extra_stats.fitness2_gen + 1), ' / ', num2str(nb_gen + 1)], ...
+
+            wb_gen = waitbar(double(starting_gen + 1) / double(nb_gen + 1), ...
+                             ['Processing ', num2str(starting_gen + 1), ' / ', num2str(nb_gen + 1)], ...
                              'Name', result.name);
-            for gen_id = extra_stats.fitness2_gen : nb_gen % go through every generation
+            for gen_id = starting_gen : nb_gen % go through every generation
                 sim_configs.gen_id = gen_id;
-                wb_robot = waitbar(double(extra_stats.fitness2_robot + 1) / double(gen_size), ...
-                                   ['Processing ', num2str(extra_stats.fitness2_robot + 1), ' / ', num2str(gen_size)], ...
+                wb_robot = waitbar(double(starting_id + 1) / double(gen_size), ...
+                                   ['Processing ', num2str(starting_id + 1), ' / ', num2str(gen_size)], ...
                                    'Name', ['Gen: ', num2str(gen_id)]);
-                for i_robot = extra_stats.fitness2_robot : gen_size - 1
+                for i_robot = starting_id : gen_size - 1
+                    % skip the evaluated robots
+                    if ~isnan(extra_stats.(fit_name)(gen_id + 1, i_robot + 1))
+                        continue
+                    end
                     sim_configs.robot_id = i_robot;
                     sim_report = simulate_robot(app, sim_configs);
                     if sim_report.done
-                        extra_stats.fitness2(gen_id + 1, i_robot + 1) = sim_report.fitness;
+                        extra_stats.(fit_name)(gen_id + 1, i_robot + 1) = sim_report.fitness;
                     end
 
-                    extra_stats.fitness2_robot = i_robot + 1; % in case evaluation is terminated during the loop
                     waitbar(double(i_robot + 2) / double(gen_size), wb_robot, sprintf("Processing %d / %d", i_robot + 2, gen_size));
                 end
 
-                extra_stats.fitness2_robot = 0;
-                extra_stats.fitness2_gen = gen_id + 1;
                 app.results{result.id}.extra_stats = extra_stats;
 
                 % Save results
@@ -93,7 +103,51 @@ function reevaluate_fitness(app)
                 waitbar(double(gen_id + 2) / double(nb_gen + 1), wb_gen, sprintf("Processing %d / %d", gen_id + 2, nb_gen + 1));
             end
             close(wb_gen)
-        elseif mode =="best"
+        elseif mode == "archive"
+            starting_gen = 0;
+            starting_id = 0;
+            if ~isfield(extra_stats, fit_name)
+                extra_stats.(fit_name) = nan(nb_gen + 1, 30);
+            end
+
+            wb_gen = waitbar(double(starting_gen + 1) / double(nb_gen + 1), ...
+                             ['Processing ', num2str(starting_gen + 1), ' / ', num2str(nb_gen + 1)], ...
+                             'Name', result.name);
+            for i_archive_gen = starting_gen : nb_gen % go through every generation
+                current_gen_archive = result.archive{i_archive_gen + 1};
+                gen_ids = current_gen_archive(:, 1);
+                robot_ids = current_gen_archive(:, 2);
+                gen_size = length(gen_ids);
+                wb_robot = waitbar(double(starting_id + 1) / double(gen_size), ...
+                                   ['Processing ', num2str(starting_id + 1), ' / ', num2str(gen_size)], ...
+                                   'Name', ['Gen: ', num2str(i_archive_gen)]);
+                for i = 1 : gen_size
+                    waitbar(double(i_robot + 1) / double(gen_size), wb_robot, sprintf("Processing %d / %d", i_robot + 2, gen_size));
+                    gen_id = gen_ids(i);
+                    robot_id = robot_ids(i);
+                    % skip the evaluated robots
+                    if ~isnan(extra_stats.(fit_name)(gen_id + 1, robot_id + 1))
+                        continue
+                    end
+                    sim_configs.gen_id = gen_id;
+                    sim_configs.robot_id = robot_id;
+                    sim_report = simulate_robot(app, sim_configs);
+                    if sim_report.done
+                        extra_stats.(fit_name)(gen_id + 1, i_robot + 1) = sim_report.fitness;
+                    end
+                end
+
+                app.results{result.id}.extra_stats = extra_stats;
+
+                % Save results
+                if mod(i_archive_gen, 20) == 0
+                    save(fullfile(result.path, 'extra_stats.mat'), 'extra_stats', '-v7.3');
+                end
+                close(wb_robot)
+                waitbar(double(i_archive_gen + 2) / double(nb_gen + 1), wb_gen, sprintf("Processing %d / %d", i_archive_gen + 2, nb_gen + 1));
+            end
+            close(wb_gen)
+        elseif mode == "best"
             gen_start = 0;
             if isfield(result.stat, 'visual_best_fits')
                 gen_start = length(result.stat.visual_best_fits);

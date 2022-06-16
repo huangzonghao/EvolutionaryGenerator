@@ -28,5 +28,9 @@ function result_analysis_init(app)
     app.plot_handles.gen_plot = {};
     app.plot_handles.fitness_compare = {};
 
+    app.ReEvalTypeDropDown.Items = ["All", "Archive All", "Best of Gen"];
+    app.ReEvalTypeDropDown.ItemsData = 1 : length(app.ReEvalTypeDropDown.Items);
+    app.ReEvalTypeDropDown.Value = 1;
+
     refresh_result_list(app);
 end

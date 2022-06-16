@@ -80,9 +80,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparisonPlotsTestsPanel      matlab.ui.container.Panel
-        ReEvaluationType               matlab.ui.container.ButtonGroup
-        BestofGenButton                matlab.ui.control.RadioButton
-        AllButton                      matlab.ui.control.RadioButton
+        ReEvalTypeDropDown             matlab.ui.control.DropDown
+        ReEvalTypeDropDownLabel        matlab.ui.control.Label
         WithVisualizationCheckBox      matlab.ui.control.CheckBox
         ReevaluateFitnessButton        matlab.ui.control.Button
         CombinedArchiveMapButton       matlab.ui.control.Button
@@ -707,21 +706,17 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.WithVisualizationCheckBox.Text = 'w/ Visualization';
             app.WithVisualizationCheckBox.Position = [273 104 105 22];
 
-            % Create ReEvaluationType
-            app.ReEvaluationType = uibuttongroup(app.ComparisonPlotsTestsPanel);
-            app.ReEvaluationType.Title = 'Eval Type';
-            app.ReEvaluationType.Position = [274 40 100 65];
+            % Create ReEvalTypeDropDownLabel
+            app.ReEvalTypeDropDownLabel = uilabel(app.ComparisonPlotsTestsPanel);
+            app.ReEvalTypeDropDownLabel.FontWeight = 'bold';
+            app.ReEvalTypeDropDownLabel.Position = [273 80 87 22];
+            app.ReEvalTypeDropDownLabel.Text = 'Re - Eval Type';
 
-            % Create AllButton
-            app.AllButton = uiradiobutton(app.ReEvaluationType);
-            app.AllButton.Text = 'All';
-            app.AllButton.Position = [11 19 58 22];
-            app.AllButton.Value = true;
-
-            % Create BestofGenButton
-            app.BestofGenButton = uiradiobutton(app.ReEvaluationType);
-            app.BestofGenButton.Text = 'Best of Gen';
-            app.BestofGenButton.Position = [11 -3 85 22];
+            % Create ReEvalTypeDropDown
+            app.ReEvalTypeDropDown = uidropdown(app.ComparisonPlotsTestsPanel);
+            app.ReEvalTypeDropDown.Items = {};
+            app.ReEvalTypeDropDown.Position = [272 58 101 22];
+            app.ReEvalTypeDropDown.Value = {};
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
