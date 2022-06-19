@@ -1,3 +1,5 @@
+% Enable app.UpdateFitAfterSim to update the recorded fitness in database when
+% the evaluated fitness differs the recorded fitness by more than 10%.
 function simulate_from_archive_map(app)
     % Note here in CG, x goes from left to right and y goes from
     % top to bottom -- x is column index, y is row index
@@ -29,6 +31,7 @@ function simulate_from_archive_map(app)
     current_gen_archive = result.archive{current_gen + 1};
     robot_gen = current_gen_archive(id_in_archive, 1);
     robot_id = current_gen_archive(id_in_archive, 2);
+    old_fitness = current_gen_archive(id_in_archive, 5);
 
     sim_configs = video_simulation_configs(result.env);
     sim_configs.result_id = result.id;
@@ -42,7 +45,25 @@ function simulate_from_archive_map(app)
 
     sim_report = simulate_robot(app, sim_configs);
     if sim_report.done
-        msgbox(['Fitness: ', num2str(sim_report.fitness)]);
+        % Only update the evaluated fitness if off by 10%
+        if app.EnableResultEditCheckBox.Value && ...
+           app.UpdateFitAfterSim.Value && ...
+           abs(old_fitness - sim_report.fitness) > abs(old_fitness) * 0.1
+
+            load_result_robots(app, result.id);
+            app.results{result.id}.archive{current_gen + 1}(id_in_archive, 5) = sim_report.fitness;
+            app.results{result.id}.robots(robot_id + 1, 9, robot_gen + 1) = sim_report.fitness;
+            app.current_result.archive = app.results{result.id}.archive;
+            app.current_result.robots = app.results{result.id}.robots;
+            archive = app.current_result.archive;
+            robots = app.current_result.robots;
+            save(fullfile(result.path, 'robots.mat'), 'robots', '-v7.3');
+            save(fullfile(result.path, 'archive.mat'), 'archive', '-v7.3');
+            msgbox(sprintf("Fitness updated from %.4f to %.4f", old_fitness, sim_report.fitness));
+            plot_gen_all(app);
+        else
+            msgbox(['Fitness: ', num2str(sim_report.fitness)]);
+        end
     else
         msgbox('No fitness reported');
     end

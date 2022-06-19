@@ -7,6 +7,8 @@ classdef result_analysis_ui < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        UpdateFitAfterSim              matlab.ui.control.CheckBox
+        EnableResultEditCheckBox       matlab.ui.control.CheckBox
         CompareFitnessButton           matlab.ui.control.Button
         NextResultButton               matlab.ui.control.Button
         PrevResultButton               matlab.ui.control.Button
@@ -910,49 +912,49 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create LoadNextButton
             app.LoadNextButton = uibutton(app.SingleResultsPanel, 'push');
             app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
-            app.LoadNextButton.Position = [472 302 25 22];
+            app.LoadNextButton.Position = [472 311 25 22];
             app.LoadNextButton.Text = '>';
 
             % Create LoadPrevButton
             app.LoadPrevButton = uibutton(app.SingleResultsPanel, 'push');
             app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
-            app.LoadPrevButton.Position = [447 302 25 22];
+            app.LoadPrevButton.Position = [447 311 25 22];
             app.LoadPrevButton.Text = '<';
 
             % Create LoadNextStepButton
             app.LoadNextStepButton = uibutton(app.SingleResultsPanel, 'push');
             app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
-            app.LoadNextStepButton.Position = [494 281 30 22];
+            app.LoadNextStepButton.Position = [494 290 30 22];
             app.LoadNextStepButton.Text = '+';
 
             % Create LoadPrevStepButton
             app.LoadPrevStepButton = uibutton(app.SingleResultsPanel, 'push');
             app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
-            app.LoadPrevStepButton.Position = [423 281 30 22];
+            app.LoadPrevStepButton.Position = [423 290 30 22];
             app.LoadPrevStepButton.Text = '-';
 
             % Create LoadLastButton
             app.LoadLastButton = uibutton(app.SingleResultsPanel, 'push');
             app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
-            app.LoadLastButton.Position = [497 302 25 22];
+            app.LoadLastButton.Position = [497 311 25 22];
             app.LoadLastButton.Text = '>>';
 
             % Create LoadFirstButton
             app.LoadFirstButton = uibutton(app.SingleResultsPanel, 'push');
             app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
-            app.LoadFirstButton.Position = [422 302 25 22];
+            app.LoadFirstButton.Position = [422 311 25 22];
             app.LoadFirstButton.Text = '<<';
 
             % Create GenStepField
             app.GenStepField = uieditfield(app.SingleResultsPanel, 'text');
             app.GenStepField.ValueChangedFcn = createCallbackFcn(app, @GenStepFieldValueChanged, true);
             app.GenStepField.HorizontalAlignment = 'center';
-            app.GenStepField.Position = [454 281 39 22];
+            app.GenStepField.Position = [454 290 39 22];
 
             % Create PlotGenButton
             app.PlotGenButton = uibutton(app.SingleResultsPanel, 'push');
             app.PlotGenButton.ButtonPushedFcn = createCallbackFcn(app, @PlotGenButtonPushed, true);
-            app.PlotGenButton.Position = [506 331 64 22];
+            app.PlotGenButton.Position = [506 335 64 22];
             app.PlotGenButton.Text = 'Plot Gen';
 
             % Create ResultInfoLabel
@@ -972,37 +974,37 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.GenIDField = uieditfield(app.SingleResultsPanel, 'text');
             app.GenIDField.ValueChangedFcn = createCallbackFcn(app, @GenIDFieldValueChanged, true);
             app.GenIDField.HorizontalAlignment = 'center';
-            app.GenIDField.Position = [440 331 58 22];
+            app.GenIDField.Position = [440 335 58 22];
 
             % Create GenLabel
             app.GenLabel = uilabel(app.SingleResultsPanel);
             app.GenLabel.FontSize = 13;
             app.GenLabel.FontWeight = 'bold';
-            app.GenLabel.Position = [407 331 35 22];
+            app.GenLabel.Position = [407 335 35 22];
             app.GenLabel.Text = 'Gen:';
 
             % Create StatStartGenField
             app.StatStartGenField = uieditfield(app.SingleResultsPanel, 'text');
             app.StatStartGenField.HorizontalAlignment = 'center';
-            app.StatStartGenField.Position = [427 249 41 22];
+            app.StatStartGenField.Position = [427 266 41 22];
 
             % Create FromLabel
             app.FromLabel = uilabel(app.SingleResultsPanel);
             app.FromLabel.FontSize = 13;
             app.FromLabel.FontWeight = 'bold';
-            app.FromLabel.Position = [387 249 41 22];
+            app.FromLabel.Position = [387 266 41 22];
             app.FromLabel.Text = 'From:';
 
             % Create StatEndGenField
             app.StatEndGenField = uieditfield(app.SingleResultsPanel, 'text');
             app.StatEndGenField.HorizontalAlignment = 'center';
-            app.StatEndGenField.Position = [494 249 62 22];
+            app.StatEndGenField.Position = [494 266 62 22];
 
             % Create ToLabel
             app.ToLabel = uilabel(app.SingleResultsPanel);
             app.ToLabel.FontSize = 13;
             app.ToLabel.FontWeight = 'bold';
-            app.ToLabel.Position = [473 249 25 22];
+            app.ToLabel.Position = [473 266 25 22];
             app.ToLabel.Text = 'To:';
 
             % Create StatPlotButton
@@ -1029,7 +1031,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageStatButton = uibutton(app.SingleResultsPanel, 'push');
             app.ParentageStatButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageStatButtonPushed, true);
             app.ParentageStatButton.Tag = 'loadresult';
-            app.ParentageStatButton.Position = [493 219 89 22];
+            app.ParentageStatButton.Position = [493 236 89 22];
             app.ParentageStatButton.Text = 'Parentage Stat';
 
             % Create ParentagePlotsButton
@@ -1037,7 +1039,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentagePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @ParentagePlotsButtonPushed, true);
             app.ParentagePlotsButton.Tag = 'loadresult';
             app.ParentagePlotsButton.WordWrap = 'on';
-            app.ParentagePlotsButton.Position = [491 182 95 32];
+            app.ParentagePlotsButton.Position = [491 202 95 32];
             app.ParentagePlotsButton.Text = 'Parentage Plots';
 
             % Create LongevityofGenButton
@@ -1058,12 +1060,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create RobotIDXField
             app.RobotIDXField = uieditfield(app.SingleResultsPanel, 'text');
             app.RobotIDXField.HorizontalAlignment = 'center';
-            app.RobotIDXField.Position = [534 11 39 22];
+            app.RobotIDXField.Position = [534 7 39 22];
 
             % Create RobotIDYField
             app.RobotIDYField = uieditfield(app.SingleResultsPanel, 'text');
             app.RobotIDYField.HorizontalAlignment = 'center';
-            app.RobotIDYField.Position = [492 11 39 22];
+            app.RobotIDYField.Position = [492 7 39 22];
 
             % Create ParentageTreeButton
             app.ParentageTreeButton = uibutton(app.SingleResultsPanel, 'push');
@@ -1115,12 +1117,12 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create SimTimeEditFieldLabel
             app.SimTimeEditFieldLabel = uilabel(app.SingleResultsPanel);
             app.SimTimeEditFieldLabel.HorizontalAlignment = 'right';
-            app.SimTimeEditFieldLabel.Position = [484 40 55 22];
+            app.SimTimeEditFieldLabel.Position = [484 36 55 22];
             app.SimTimeEditFieldLabel.Text = 'Sim Time:';
 
             % Create SimTimeEditField
             app.SimTimeEditField = uieditfield(app.SingleResultsPanel, 'numeric');
-            app.SimTimeEditField.Position = [542 40 40 22];
+            app.SimTimeEditField.Position = [542 36 40 22];
 
             % Create ExportforPlottingButton
             app.ExportforPlottingButton = uibutton(app.SingleResultsPanel, 'push');
@@ -1135,21 +1137,21 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ExportRobotButton.ButtonPushedFcn = createCallbackFcn(app, @ExportRobotButtonPushed, true);
             app.ExportRobotButton.WordWrap = 'on';
             app.ExportRobotButton.FontSize = 11;
-            app.ExportRobotButton.Position = [406 33 65 33];
+            app.ExportRobotButton.Position = [404 38 65 33];
             app.ExportRobotButton.Text = 'Export Robot';
 
             % Create SanitizeArchiveCheckBox
             app.SanitizeArchiveCheckBox = uicheckbox(app.SingleResultsPanel);
             app.SanitizeArchiveCheckBox.ValueChangedFcn = createCallbackFcn(app, @SanitizeArchiveCheckBoxValueChanged, true);
             app.SanitizeArchiveCheckBox.Text = 'Sanitize Archive';
-            app.SanitizeArchiveCheckBox.Position = [487 157 107 22];
+            app.SanitizeArchiveCheckBox.Position = [487 182 107 22];
 
             % Create ExportArchiveMapButton
             app.ExportArchiveMapButton = uibutton(app.SingleResultsPanel, 'push');
             app.ExportArchiveMapButton.ButtonPushedFcn = createCallbackFcn(app, @ExportArchiveMapButtonPushed, true);
             app.ExportArchiveMapButton.Tag = 'loadresult';
             app.ExportArchiveMapButton.WordWrap = 'on';
-            app.ExportArchiveMapButton.Position = [494 115 82 36];
+            app.ExportArchiveMapButton.Position = [494 147 82 36];
             app.ExportArchiveMapButton.Text = 'Export Archive Map';
 
             % Create PackSelectedResultsButton
@@ -1199,8 +1201,21 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.CompareFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @CompareFitnessButtonPushed, true);
             app.CompareFitnessButton.Tag = 'loadresult';
             app.CompareFitnessButton.WordWrap = 'on';
-            app.CompareFitnessButton.Position = [503 74 63 35];
+            app.CompareFitnessButton.Position = [503 111 63 35];
             app.CompareFitnessButton.Text = 'Compare Fitness';
+
+            % Create EnableResultEditCheckBox
+            app.EnableResultEditCheckBox = uicheckbox(app.SingleResultsPanel);
+            app.EnableResultEditCheckBox.Text = 'Enable Result  Edit';
+            app.EnableResultEditCheckBox.WordWrap = 'on';
+            app.EnableResultEditCheckBox.FontSize = 10;
+            app.EnableResultEditCheckBox.Position = [547 70 52 33];
+            % Create UpdateFitAfterSim
+            app.UpdateFitAfterSim = uicheckbox(app.SingleResultsPanel);
+            app.UpdateFitAfterSim.Text = 'Update Fitness After Simulation';
+            app.UpdateFitAfterSim.WordWrap = 'on';
+            app.UpdateFitAfterSim.FontSize = 10;
+            app.UpdateFitAfterSim.Position = [490 61 66 47];
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);
