@@ -8,6 +8,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
         UpdateFitAfterSim              matlab.ui.control.CheckBox
+        RegenerateArchiveButton        matlab.ui.control.Button
         EnableResultEditCheckBox       matlab.ui.control.CheckBox
         CompareFitnessButton           matlab.ui.control.Button
         NextResultButton               matlab.ui.control.Button
@@ -288,6 +289,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         % Button pushed function: OpenFolderButton
         function OpenFolderButtonPushed(app, event)
             open_folder(app);
+        end
+
+        % Button pushed function: RegenerateArchiveButton
+        function RegenerateArchiveButtonPushed(app, event)
+            regenerate_archive_map(app);
         end
 
         % Button pushed function: ExportRobotButton
@@ -1010,21 +1016,21 @@ classdef result_analysis_ui < matlab.apps.AppBase
             % Create StatPlotButton
             app.StatPlotButton = uibutton(app.SingleResultsPanel, 'push');
             app.StatPlotButton.ButtonPushedFcn = createCallbackFcn(app, @StatPlotButtonPushed, true);
-            app.StatPlotButton.Position = [403 219 64 22];
+            app.StatPlotButton.Position = [403 236 64 22];
             app.StatPlotButton.Text = 'Statistics';
 
             % Create BinUpdatesButton
             app.BinUpdatesButton = uibutton(app.SingleResultsPanel, 'push');
             app.BinUpdatesButton.ButtonPushedFcn = createCallbackFcn(app, @BinUpdatesButtonPushed, true);
             app.BinUpdatesButton.Tag = 'loadresult';
-            app.BinUpdatesButton.Position = [398 173 76 22];
+            app.BinUpdatesButton.Position = [398 190 76 22];
             app.BinUpdatesButton.Text = 'Bin Updates';
 
             % Create AvgAgeofMapButton
             app.AvgAgeofMapButton = uibutton(app.SingleResultsPanel, 'push');
             app.AvgAgeofMapButton.ButtonPushedFcn = createCallbackFcn(app, @AvgAgeofMapButtonPushed, true);
             app.AvgAgeofMapButton.Tag = 'loadresult';
-            app.AvgAgeofMapButton.Position = [388 196 100 22];
+            app.AvgAgeofMapButton.Position = [388 213 100 22];
             app.AvgAgeofMapButton.Text = 'Avg Age of Map';
 
             % Create ParentageStatButton
@@ -1047,14 +1053,15 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.LongevityofGenButton.ButtonPushedFcn = createCallbackFcn(app, @LongevityofGenButtonPushed, true);
             app.LongevityofGenButton.Tag = 'loadresult';
             app.LongevityofGenButton.WordWrap = 'on';
-            app.LongevityofGenButton.Position = [396 134 82 36];
+            app.LongevityofGenButton.Position = [396 151 82 36];
             app.LongevityofGenButton.Text = 'Longevity of Gen';
 
             % Create SimulateRobotButton
             app.SimulateRobotButton = uibutton(app.SingleResultsPanel, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
             app.SimulateRobotButton.Tag = 'loadresult';
-            app.SimulateRobotButton.Position = [413 8 55 22];
+            app.SimulateRobotButton.FontSize = 14;
+            app.SimulateRobotButton.Position = [405 2 70 35];
             app.SimulateRobotButton.Text = 'Simulate';
 
             % Create RobotIDXField
@@ -1072,7 +1079,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ParentageTreeButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageTreeButtonPushed, true);
             app.ParentageTreeButton.Tag = 'loadresult';
             app.ParentageTreeButton.WordWrap = 'on';
-            app.ParentageTreeButton.Position = [400 71 78 34];
+            app.ParentageTreeButton.Position = [399 115 78 34];
             app.ParentageTreeButton.Text = 'Parentage Tree';
 
             % Create OpenFolderButton
@@ -1210,6 +1217,15 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.EnableResultEditCheckBox.WordWrap = 'on';
             app.EnableResultEditCheckBox.FontSize = 10;
             app.EnableResultEditCheckBox.Position = [547 70 52 33];
+
+            % Create RegenerateArchiveButton
+            app.RegenerateArchiveButton = uibutton(app.SingleResultsPanel, 'push');
+            app.RegenerateArchiveButton.ButtonPushedFcn = createCallbackFcn(app, @RegenerateArchiveButtonPushed, true);
+            app.RegenerateArchiveButton.Tag = 'loadresult';
+            app.RegenerateArchiveButton.WordWrap = 'on';
+            app.RegenerateArchiveButton.Position = [401 75 78 36];
+            app.RegenerateArchiveButton.Text = 'Regenerate Archive';
+
             % Create UpdateFitAfterSim
             app.UpdateFitAfterSim = uicheckbox(app.SingleResultsPanel);
             app.UpdateFitAfterSim.Text = 'Update Fitness After Simulation';
