@@ -12,11 +12,8 @@ function result_analysis_init(app)
 
     % init ui assets
     app.GenStepField.Value = num2str(app.gen_step);
-    app.TTestOptionDropDown.Items{1} = 'All Robots';
-    app.TTestOptionDropDown.Items{2} = 'Result Stats';
-    for i = 1 : length(app.TTestOptionDropDown.Items)
-        app.TTestOptionDropDown.ItemsData(i) = i;
-    end
+    app.TTestOptionDropDown.Items = ["All Robots", "result Stats"];
+    app.TTestOptionDropDown.ItemsData = 1 : length(app.TTestOptionDropDown.Items);
     app.TTestOptionDropDown.Value = 1;
 
     app.GenIDField.Value = '0';
