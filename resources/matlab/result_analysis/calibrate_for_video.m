@@ -10,10 +10,10 @@
 %     update its fitness if necessary, until the recorded fitness and the simualted
 %     fitess don't differ for more than 5%
 function calibrate_for_video(app)
-    plot_colors = [  1,   0,   0;
-                   0.7, 0.4,   0;
-                     0,   1,   0;
-                     0,   0,   1];
+    % plot_colors = [  1,   0,   0;
+                   % 0.7, 0.4,   0;
+                     % 0,   1,   0;
+                     % 0,   0,   1];
     gen_order = [0, 500, 1000, 1500, 2000];
     result_names = {'H0', 'H15', 'H25', 'H30'};
 
@@ -41,7 +41,7 @@ function calibrate_for_video(app)
                 sprintf("Processing %d / %d (Curr: %s)", i_target, num_results, result.name));
         sim_configs = video_simulation_configs(result.env);
         sim_configs.result_id = result.id;
-        sim_configs.robot_color = plot_colors(i_target,:);
+        % sim_configs.robot_color = plot_colors(i_target,:);
         sim_configs.mode = 'no_visualization';
         wb_gen = waitbar(double(0), '', 'Name', result.name);
         for i_gen = 1 : length(gen_order)
