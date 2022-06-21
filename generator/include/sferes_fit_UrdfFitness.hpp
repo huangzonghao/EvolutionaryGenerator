@@ -28,6 +28,8 @@ class UrdfFitness {
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
         if (!ind.valid()) {
+            _desc[0] = -2;
+            _desc[1] = -2;
             _dead = true;
             return;
         }
@@ -48,6 +50,8 @@ class UrdfFitness {
         sm.LoadUrdfString(robot.get_urdf_string());
         sm.RunSimulation();
         if (sm.CheckRobotSelfCollision() == true) {
+            _desc[0] = -3;
+            _desc[1] = -3;
             _dead = true;
             return;
         }
@@ -97,7 +101,7 @@ class UrdfFitness {
     //     * Gene is invalid (too short)
     //     * Self-collided at initial pose
     bool _dead = false;
-    std::vector<double> _desc = {0.0, 0.0};
+    std::vector<double> _desc = {-1.0, -1.0};
     double _novelty = -std::numeric_limits<double>::infinity();
     double _curiosity = 0;
     double _lq = 0;

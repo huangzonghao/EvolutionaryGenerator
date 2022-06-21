@@ -276,6 +276,20 @@ Inside the result folder, we have the following.
     * Note when inspecting these two files, use a non-blocking editor/viewer. If the
         trainer find it unable to update any of the files, the training would stop.
 
+### Data Recording Format
+* For each genome/phen, the system would record its fitness, descriptor and grid ID.
+    The descriptor is a vector with all of its elements in [0, 1]. And the grid ID is
+    the index of cell that the genome is assigned to, which makes it non-negative.
+    And the follow information are encoded into descriptor and grid ID with negative
+    values
+    * 1) Descriptor be -2: The genome is invalid and cannot be developed
+        into a phen.
+    * 1) Descriptor be -3: The genome is valid, but the developed robot
+        is self-colliding.
+    * 1) Grid ID be -1: The genome is valid, developed
+        robot has been evaluated, but was not added into the archive due to fitness
+        competition.
+
 ## Result Analyzer
 The Matlab tool that helps user deal with the training results.
 
