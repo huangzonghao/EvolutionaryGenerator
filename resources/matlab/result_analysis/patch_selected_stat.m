@@ -113,6 +113,7 @@ function patch_stat(result_path)
     % end
 
     % % Get the best fitness of each generation
+    % % Also redo best fitness based on result.archive -- use this after regenerating archive
     % archive_file = load(fullfile(result_path, 'archive.mat'));
     % stat.best_fits = zeros(1, nb_gen + 1); % best fitness of archive
     % for i = 0 : nb_gen
