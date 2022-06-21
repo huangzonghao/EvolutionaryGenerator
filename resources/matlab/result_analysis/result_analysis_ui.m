@@ -83,6 +83,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
         GroupStatButton                matlab.ui.control.Button
         GenerateAllVirtualResultPlotsButton  matlab.ui.control.Button
         ComparisonPlotsTestsPanel      matlab.ui.container.Panel
+        CalibrateForVideoButton        matlab.ui.control.Button
         ReEvalTypeDropDown             matlab.ui.control.DropDown
         ReEvalTypeDropDownLabel        matlab.ui.control.Label
         WithVisualizationCheckBox      matlab.ui.control.CheckBox
@@ -506,6 +507,11 @@ classdef result_analysis_ui < matlab.apps.AppBase
         function ReevaluateFitnessButtonPushed(app, event)
             reevaluate_fitness(app);
         end
+
+        % Button pushed function: CalibrateForVideoButton
+        function CalibrateForVideoButtonPushed(app, event)
+            calibrate_for_video(app);
+        end
     end
 
     % Component initialization
@@ -725,6 +731,14 @@ classdef result_analysis_ui < matlab.apps.AppBase
             app.ReEvalTypeDropDown.Items = {};
             app.ReEvalTypeDropDown.Position = [272 58 101 22];
             app.ReEvalTypeDropDown.Value = {};
+
+            % Create CalibrateForVideoButton
+            app.CalibrateForVideoButton = uibutton(app.ComparisonPlotsTestsPanel, 'push');
+            app.CalibrateForVideoButton.ButtonPushedFcn = createCallbackFcn(app, @CalibrateForVideoButtonPushed, true);
+            app.CalibrateForVideoButton.Tag = 'loadresult';
+            app.CalibrateForVideoButton.WordWrap = 'on';
+            app.CalibrateForVideoButton.Position = [283 10 82 39];
+            app.CalibrateForVideoButton.Text = 'Calibrate For Video';
 
             % Create VirtualResultsPanel
             app.VirtualResultsPanel = uipanel(app.MainFigure);
