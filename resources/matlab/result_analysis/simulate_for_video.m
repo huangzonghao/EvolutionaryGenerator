@@ -66,8 +66,8 @@ function simulate_for_video(app)
                 robot_info.fitness = clean_max_fitness;
                 robot_info.fid1 = clean_gen_archive(clean_max_idx, 3);
                 robot_info.fid2 = clean_gen_archive(clean_max_idx, 4);
-                robot_info.f1 = result.robots(robot_id, 7, gen);
-                robot_info.f2 = result.robots(robot_id, 8, gen);
+                robot_info.f1 = result.robots(robot_id, 7, gen + 1);
+                robot_info.f2 = result.robots(robot_id, 8, gen + 1);
             end
 
             sim_configs.gen_id = robot_gen;
