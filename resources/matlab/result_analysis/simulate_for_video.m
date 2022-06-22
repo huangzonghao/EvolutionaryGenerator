@@ -41,6 +41,7 @@ function simulate_for_video(app)
     end
 
     for i_target = 1 : num_results
+        load_result_robots(app, app.targets_to_compare{i_target}.id);
         result = load_target_result(app, false, app.targets_to_compare{i_target}.id);
         sim_configs = video_simulation_configs(result.env);
         sim_configs.result_id = result.id;
@@ -66,8 +67,8 @@ function simulate_for_video(app)
                 robot_info.fitness = clean_max_fitness;
                 robot_info.fid1 = clean_gen_archive(clean_max_idx, 3);
                 robot_info.fid2 = clean_gen_archive(clean_max_idx, 4);
-                robot_info.f1 = result.robots(robot_id, 7, gen + 1);
-                robot_info.f2 = result.robots(robot_id, 8, gen + 1);
+                robot_info.f1 = result.robots(robot_id + 1, 7, robot_gen + 1);
+                robot_info.f2 = result.robots(robot_id + 1, 8, robot_gen + 1);
             end
 
             sim_configs.gen_id = robot_gen;
