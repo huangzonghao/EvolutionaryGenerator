@@ -37,15 +37,18 @@ function plot_result_stat(app)
     % Fitness Plot
     subplot(num_subplots, 1, 1);
     hold on;
-    p1 = plot(start_gen : end_gen, stat.archive_fits(start_gen + 1 : end_gen + 1), 'b');
-    plot(start_gen: end_gen, stat.elite_archive_fits(start_gen + 1 : end_gen + 1), 'r');
-    plot(start_gen : end_gen, stat.population_fits(start_gen + 1 : end_gen + 1), 'g');
-    plot(start_gen : end_gen, stat.best_fits(start_gen + 1 : end_gen + 1), 'c');
+    p1 = plot(start_gen : end_gen, stat.archive_fits(start_gen + 1 : end_gen + 1), 'LineWidth', 2, 'DisplayName', 'Archive Mean');
+    plot(start_gen: end_gen, stat.elite_archive_fits(start_gen + 1 : end_gen + 1), 'LineWidth', 2, 'DisplayName', 'Top 10% Archive Mean');
+    plot(start_gen : end_gen, stat.population_fits(start_gen + 1 : end_gen + 1), 'LineWidth', 2, 'DisplayName', 'Population Mean');
+    plot(start_gen : end_gen, stat.best_fits(start_gen + 1 : end_gen + 1), 'LineWidth', 2, 'DisplayName', 'Best of Gen');
+    if isfield(stat, 'visual_best_fits')
+        plot(start_gen : end_gen, stat.visual_best_fits(start_gen + 1 : end_gen + 1), 'LineWidth', 2, 'DisplayName', 'Best of Gen - Visual');
+    end
     hold off;
     title('Fitness');
     xlabel('generation');
     ylabel('fitness');
-    legend('archive mean', 'top 10% archive mean', 'pop mean', 'best of gen', 'Location', 'best');
+    legend('Location', 'best');
 
     % Change in Archive Fitness
     subplot(num_subplots, 1, 2);
