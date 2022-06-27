@@ -1139,6 +1139,12 @@ function onTestButtonClick(event) {
     let anchor = document.createElement('a');
     anchor.href = "evogen-uisim: " +
                   " --mode user_study " +
+                  " --light=0,0,-1" +
+                  " --env_color=0.8,0.8,0.8" +
+                  " --canvas_size=1380,270" +
+                  " --fov 20" +
+                  " --camera=5,-18,8,5,0,0" +
+                  " --do_realtime 0" +
                   " --environment " + robot.env +
                   " --design_vector=" + robot.dv;
     anchor.click();
