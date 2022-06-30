@@ -19,7 +19,7 @@ function plot_gen_all(app)
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
-    if app.SanitizeArchiveCheckBox.Value == true
+    if app.SanitizeArchiveCheckBox.Value == true && length(fitness) == length(archive_map(:))
         % sanitize the second dimension (here griddim(1) gives the size of first dimension)
         fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
     end
