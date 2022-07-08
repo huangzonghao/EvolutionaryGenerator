@@ -19,8 +19,9 @@ function generate_paper_plot2(app)
     % Subplot handles
     p = {};
 
-    for i = 1 : 4
-        p{i} = subplot(2, 2, i);
+    % for i = 1 : 4
+    for i = 1 : 3
+        p{i} = subplot(3, 1, i);
     end
 
     % Final QD-Score
@@ -64,17 +65,18 @@ function generate_paper_plot2(app)
     title(p{2}, 'Global Performance', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
 
     boxplot(p{3}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
-    title(p{3}, 'Reliabilitiy', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    title(p{3}, 'Reliabilitiy / Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
 
-    boxplot(p{4}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
-    title(p{4}, 'Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    % boxplot(p{4}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    % title(p{4}, 'Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
 
-    plot_height = p{1}.Position(3);
-    plot_width = p{1}.Position(4);
-    p{1}.Position(2) = p{2}.Position(2);
-    for i = 1 : 4
-        p{i}.Position(3) = plot_height;
-        p{i}.Position(4) = plot_width;
+    % plot_height = p{1}.Position(3);
+    % plot_width = p{1}.Position(4);
+    % p{1}.Position(2) = p{2}.Position(2);
+    % for i = 1 : 4
+    for i = 1 : 3
+        % p{i}.Position(3) = plot_height;
+        % p{i}.Position(4) = plot_width;
     end
 
     % Save

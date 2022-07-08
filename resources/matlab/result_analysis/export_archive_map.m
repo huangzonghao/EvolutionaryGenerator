@@ -13,6 +13,13 @@ function export_archive_map(app)
         mkdir(root_dir);
     end
     output_filename = fullfile(root_dir, [result.name, '_gen_', num2str(app.current_gen), '_archive_map.mat']);
-    save(output_filename, 'archive_map', '-v7.3');
+    % save(output_filename, 'archive_map', '-v7.3');
     msgbox(sprintf("Archive map data file write to %s", output_filename));
+
+    figure();
+    archive_heat = heatmap(archive_map);
+    archive_heat.NodeChildren(3).YDir='normal';
+    archive_heat.MissingDataLabel = 'Nan';
+    archive_heat.MissingDataColor = [1, 1, 1];
+    colormap(archive_heat, 'jet');
 end
