@@ -1,26 +1,28 @@
-function report = mwwtest_result_percent(app, result1, result2, performance_percent)
-% Assuming result1 and result2 are virtual results
+function report = mwwtest_fitness_percentage(app, v_result_1, v_result_2, avg_fitness_percentage)
+% mwwtest on the number of generations that the average archive fitness reaches certain
+%     percentage of the average of verage fitness of the final generation of all repeated test.
+% v_result_1 and v_result_2 are virtual results
 
-    % check if result1 and result2 are virtual results
-    if ~result1.isgroup || ~result2.isgroup
+    % check if v_result_1 and v_result_2 are virtual results
+    if ~v_result_1.isgroup || ~v_result_2.isgroup
         report.valid = false;
         return
     end
 
-    if performance_percent > 1 || performance_percent < 0
-        disp(sprintf('Error: performance_percent %d', performance_percent));
+    if avg_fitness_percentage > 1 || avg_fitness_percentage < 0
+        disp(sprintf('Error: avg_fitness_percentage %d', avg_fitness_percentage));
     end
 
     samples = {};
-    samples{1} = sample_result(app, result1, performance_percent);
-    samples{2} = sample_result(app, result2, performance_percent);
+    samples{1} = sample_result(app, v_result_1, avg_fitness_percentage);
+    samples{2} = sample_result(app, v_result_2, avg_fitness_percentage);
     report.raw = samples;
 
     [report.P1, report.H1] = ranksum(samples{1}.fit_gen, samples{2}.fit_gen);
     [report.P2, report.H2] = ranksum(samples{1}.best_fit_gen, samples{2}.best_fit_gen);
 end
 
-function sample = sample_result(app, result, performance_percent)
+function sample = sample_result(app, result, avg_fitness_percentage)
     % first get the avg fits of the final gen
     sample.fit_gen = [];
     sample.best_fit_gen = [];
@@ -34,8 +36,8 @@ function sample = sample_result(app, result, performance_percent)
     sample.avg_final_fits = mean(final_fits);
     sample.avg_final_best_fits = mean(final_best_fits);
 
-    fit_thresh = sample.avg_final_fits * performance_percent;
-    best_fit_thresh = sample.avg_final_best_fits * performance_percent;
+    fit_thresh = sample.avg_final_fits * avg_fitness_percentage;
+    best_fit_thresh = sample.avg_final_best_fits * avg_fitness_percentage;
 
     for i = 1 : result.num_results
         child_result = load_target_result(app, false, result.ids(i));

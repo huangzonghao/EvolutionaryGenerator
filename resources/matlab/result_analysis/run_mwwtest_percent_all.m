@@ -25,7 +25,7 @@ elseif performance_percent > 1
     end
 end
 
-mwwtest_kernel = @mwwtest_result_percent;
+mwwtest_kernel = @mwwtest_fitness_percentage;
 mwwtest_name = strcat('percent_', num2str(performance_percent * 100));
 
 timestamp = datestr(now,'yyyy-mm-dd_HHMMSS');

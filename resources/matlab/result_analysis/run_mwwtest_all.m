@@ -14,7 +14,7 @@ end
 
 mwwtest_gen = app.mwwGenEditField.Value;
 
-mwwtest_kernel = @mwwtest_result_stats;
+mwwtest_kernel = @mwwtest_result_fitness;
 mwwtest_name = strcat('fitness_of_gen_', num2str(mwwtest_gen));
 
 timestamp = datestr(now,'yyyy-mm-dd_HHMMSS');

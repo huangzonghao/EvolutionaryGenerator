@@ -16,7 +16,7 @@ function run_mwwtest(app)
     end
 
     mwwtest_gen = app.mwwGenEditField.Value;
-    report = mwwtest_result_stats(app, result1, result2, mwwtest_gen);
+    report = mwwtest_result_fitness(app, result1, result2, mwwtest_gen);
 
     mbox = msgbox(sprintf(['All fits: H %d, P %d\n', ...
                            'Elite fits: H %d, P %d\n', ...
