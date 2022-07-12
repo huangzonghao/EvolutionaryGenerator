@@ -12,16 +12,21 @@ function generate_paper_plot2(app)
         end
     end
 
-    fig = figure('Position', [100, 100, 600, 600]);
+    sigstar_groups = {[1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]};
+    fig = figure('Position', [100, 100, 1900, 600]);
     if ~isempty(app.CompPlotNameField.Value)
         sgtitle(fig, app.CompPlotNameField.Value, 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 14);
     end
     % Subplot handles
-    p = {};
+    % p = {};
+    pn = panel(fig);
+    pn.pack(1, 3);
+    pn.select('all');
 
     % for i = 1 : 4
     for i = 1 : 3
-        p{i} = subplot(3, 1, i);
+        % p{i} = subplot(1, 3, i);
+        p{i} = pn(1,i).axis;
     end
 
     % Final QD-Score
@@ -58,17 +63,38 @@ function generate_paper_plot2(app)
         reliability_mat = [reliability_mat reliability_column];
     end
 
-    boxplot(p{1}, qd_score_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    p_qdscore = [];
+    p_globalperformance = [];
+    p_reliability = [];
+    for i = 1 : 4
+        for j = i + 1 : 5
+            [p_qdscore(end+1), ~] = ranksum(qd_score_mat(:,i), qd_score_mat(:,j));
+            [p_globalperformance(end+1), ~] = ranksum(global_performance_mat(:,i), global_performance_mat(:,j));
+            [p_reliability(end+1), ~] = ranksum(reliability_mat(:,i), reliability_mat(:,j));
+        end
+    end
+
+    boxplot(p{1}, qd_score_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'});
     title(p{1}, 'QD-Score', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    ylabel(p{1}, 'QD-Score', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    axes(p{1});
+    sigstar(sigstar_groups, p_qdscore);
 
-    boxplot(p{2}, global_performance_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    boxplot(p{2}, global_performance_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'});
     title(p{2}, 'Global Performance', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    ylabel(p{2}, 'Global Performance', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    axes(p{2});
+    sigstar(sigstar_groups, p_globalperformance);
 
-    boxplot(p{3}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
+    boxplot(p{3}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'});
     title(p{3}, 'Reliabilitiy / Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    ylabel(p{3}, 'Reliabilitiy / Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    axes(p{3});
+    sigstar(sigstar_groups, p_reliability);
 
     % boxplot(p{4}, reliability_mat, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'}, 'BoxStyle', 'filled');
     % title(p{4}, 'Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
+    % ylabel(p{4}, 'Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
 
     % plot_height = p{1}.Position(3);
     % plot_width = p{1}.Position(4);
