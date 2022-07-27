@@ -1,4 +1,5 @@
 function generate_paper_plot1(app)
+% The figure for archive comparison
     if length(app.targets_to_compare) ~= 2
         msgbox('Select 2 results for paper plot');
         return
@@ -8,13 +9,19 @@ function generate_paper_plot1(app)
         return
     end
 
+    plot_num_updates = true;
+
     feature_description2 = 'Leg Length SD';
     feature_description1 = 'Body Length';
 
     paper_fig = figure('Position', [100, 100, 800, 800]);
     paper_fig.PaperSize = [8.5, 8.5];
     fig_panel = panel(paper_fig);
-    fig_panel.pack(2, 2);
+    if plot_num_updates
+        fig_panel.pack(3, 2);
+    else
+        fig_panel.pack(2, 2);
+    end
     fig_panel.margintop = 10;
     fig_panel.marginbottom = 20;
     fig_panel.marginleft = 20; % so that we have some space for the heatmap colorbar
@@ -47,6 +54,7 @@ function generate_paper_plot1(app)
     hm1.FontSize = 15;
     hm1.FontName = 'Times New Roman';
     hm1.MissingDataLabel = 'Nan';
+    colormap(hm1, 'jet');
 
     % Gen 2000
     archive_map = nan([20, 20]);
@@ -68,6 +76,23 @@ function generate_paper_plot1(app)
     hm2.FontSize = 15;
     hm2.FontName = 'Times New Roman';
     hm2.MissingDataLabel = 'Nan';
+    colormap(hm2, 'jet');
+
+    % Num Updates
+    if plot_num_updates
+        fig_panel(3,1).select();
+        updates_per_bin = result.stat.map_stat(:, :, current_gen + 1);
+        updates_per_bin(updates_per_bin == 0) = NaN;
+        hm5 = heatmap(updates_per_bin);
+        hm5.NodeChildren(3).YDir='normal';
+        hm5.XLabel = feature_description2;
+        hm5.YLabel = feature_description1;
+        hm5.Title = 'H0 - Updates Per Bin';
+        hm5.FontColor = [0, 0, 0];
+        hm5.FontSize = 15;
+        hm5.FontName = 'Times New Roman';
+        hm5.MissingDataLabel = 'Nan';
+    end
 
     % Result 2
     archive_map = nan([20, 20]);
@@ -92,6 +117,7 @@ function generate_paper_plot1(app)
     hm3.FontSize = 15;
     hm3.FontName = 'Times New Roman';
     hm3.MissingDataLabel = 'Nan';
+    colormap(hm3, 'jet');
 
     % Gen 2000
     archive_map = nan([20, 20]);
@@ -113,6 +139,24 @@ function generate_paper_plot1(app)
     hm4.FontSize = 15;
     hm4.FontName = 'Times New Roman';
     hm4.MissingDataLabel = 'Nan';
+    colormap(hm4, 'jet');
+
+    % Num Updates
+    if plot_num_updates
+        fig_panel(3,2).select();
+        updates_per_bin = result.stat.map_stat(:, :, current_gen + 1);
+        updates_per_bin(updates_per_bin == 0) = NaN;
+        hm6 = heatmap(updates_per_bin);
+        hm6.NodeChildren(3).YDir='normal';
+        hm6.XLabel = feature_description2;
+        hm6.YLabel = feature_description1;
+        hm6.Title = 'H25 - Updates Per Bin';
+        hm6.FontColor = [0, 0, 0];
+        hm6.FontSize = 15;
+        hm6.FontName = 'Times New Roman';
+        hm6.MissingDataLabel = 'Nan';
+        % colormap(hm6, flipud(gray))
+    end
 
     % Finally adjust the color limits of plots
     c_min = min([hm1.ColorLimits(1), hm2.ColorLimits(1), hm3.ColorLimits(1), hm4.ColorLimits(1)]);
@@ -123,9 +167,14 @@ function generate_paper_plot1(app)
     hm4.ColorLimits = [c_min, c_max];
     hm1.MissingDataColor = [1, 1, 1];
     hm3.MissingDataColor = [1, 1, 1];
-
-    assignin('base', 'hm1', hm1);
-    assignin('base', 'hm2', hm2);
+    if plot_num_updates
+        c_min = min([hm5.ColorLimits(1), hm6.ColorLimits(1)]);
+        c_max = max([hm5.ColorLimits(2), hm6.ColorLimits(2)]);
+        hm5.ColorLimits = [c_min, c_max];
+        hm6.ColorLimits = [c_min, c_max];
+        hm5.MissingDataColor = [1, 1, 1];
+        hm6.MissingDataColor = [1, 1, 1];
+    end
 
     % Remove the excess axis labels
     for i = 2 : 20
@@ -138,13 +187,23 @@ function generate_paper_plot1(app)
             hm3.YDisplayLabels{i} = nan;
             hm4.XDisplayLabels{i} = nan;
             hm4.YDisplayLabels{i} = nan;
+            if plot_num_updates
+                hm5.XDisplayLabels{i} = nan;
+                hm5.YDisplayLabels{i} = nan;
+                hm6.XDisplayLabels{i} = nan;
+                hm6.YDisplayLabels{i} = nan;
+            end
         end
     end
     hm1.XLabel = '';
     hm3.XLabel = '';
     hm3.YLabel = '';
     hm4.YLabel = '';
-    colormap(paper_fig, 'jet');
+    if plot_num_updates
+        hm2.XLabel = '';
+        hm4.XLabel = '';
+        hm6.YLabel = '';
+    end
 
     % Save
     if ~isempty(app.CompPlotNameField.Value)
