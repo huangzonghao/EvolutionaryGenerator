@@ -68,6 +68,7 @@ function open_gen_all_plot(app)
     app.plot_handles.gen_plot.updates_per_bin_heat.Title = 'Total Updates Per Bin';
     app.plot_handles.gen_plot.updates_per_bin_heat.MissingDataLabel = 'Nan';
     app.plot_handles.gen_plot.updates_per_bin_heat.MissingDataColor = [1, 1, 1];
+    app.plot_handles.gen_plot.updates_per_bin_heat.CellLabelColor = 'none';
     colormap(app.plot_handles.gen_plot.updates_per_bin_heat, 'jet');
 
     plot_panel(2,3).select();
