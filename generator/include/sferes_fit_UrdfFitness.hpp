@@ -57,8 +57,8 @@ class UrdfFitness {
         }
 
         // reward x movement and penalize y movement
-        // _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY());
-        _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyAccumulatedY());
+        _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY());
+        // _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyAccumulatedY());
 
         // TODO: this part needs to be updated
         // Update Descriptors
