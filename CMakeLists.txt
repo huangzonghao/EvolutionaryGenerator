@@ -90,6 +90,7 @@ endif()
 configure_file(${PROJECT_IN_FILE_DIR}/evo_paths.h.in ${PROJECT_IN_FILE_OUTPUT_DIR}/evo_paths.h @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/robot_design.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/robot_design.m @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/result_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/result_analysis.m @ONLY)
+configure_file(${PROJECT_IN_FILE_DIR}/sensitivity_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/sensitivity_analysis.m @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/user_input_analysis.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/user_input_analysis.m @ONLY)
 configure_file(${PROJECT_IN_FILE_DIR}/task_scheduler.m.in ${PROJECT_MATLAB_OUTPUT_DIR}/task_scheduler.m @ONLY)
 
