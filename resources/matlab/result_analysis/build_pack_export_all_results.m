@@ -14,7 +14,7 @@ function build_pack_export_all_results(app)
             continue;
         end
         evo_params = load_evo_params(result.path);
-        build_stat(result.path, evo_params, [], false, []);
+        build_stat(result.path, evo_params, app.DumpRobotsCheckBox.Value, [], false, []);
 
         % export
         export_result(result, export_dir);

@@ -8,7 +8,7 @@
 %     robots is a 3d matrix: gen_size x 9 x nb_gen + 1
 % robots_dump.mat - robots_dump
 %     design_vector only, stored in 2d cell array. i.e. dv = robots_dump{i_gen}{i_robot}
-function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, orig_stat_loaded)
+function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, orig_stat, orig_stat_loaded)
     [~, result_basename, ~] = fileparts(result_path);
     nb_gen = evo_params.nb_gen;
     archive_size = evo_params.griddim_0 * evo_params.griddim_1;
@@ -23,7 +23,6 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
     % robots dump format:
     % Each generation is a cell containing all robots of that generation in the order of id
     % Each robot is a an array of genome
-    dump_robots = app.DumpRobotsCheckBox.Value;
     if dump_robots
         robots_dump = {};
     end
@@ -188,11 +187,6 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, orig_stat, or
         pop_fitness = curr_gen_robot(:, 11);
         stat.population_fits(i + 1) = mean(pop_fitness);
         stat.robot_fitness(:, i + 1) = pop_fitness;
-        if dump_robots
-            gen_robot_dump = curr_gen_robot(:, );
-            dv = robot_file_buffer(robot_file_buffer(:, 2)==id, 12:end);
-            dv = dv(~isnan(dv));
-        end
 
         if stat.has_parentage
             % Update parentage
