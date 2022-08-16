@@ -5,6 +5,9 @@ function refresh_result_list(app, varargin)
 %     basename: basename of result dir
 %     name: nickname or basename (when nickname not available)
 %     env: the environment that the result is trained on
+%     evo_params: struct containing training info of result
+%                 evo_params format: nb_gen_planned, init_size, gen_size, griddim_0, griddim_1
+%                                    feature_description1, feature_description2, nb_gen
 %     loaded: whether the result has been fully loaded
 
     params = inputParser;
@@ -56,6 +59,7 @@ function refresh_result_list(app, varargin)
             new_result.isgroup = false;
             new_result.basename = basename;
             new_result.name = basename;
+            new_result.evo_params = load_evo_params(app, tmp_path);
             [nickname, nickname_loaded] = load_nickname(tmp_path);
             new_result.env = 'other';
             if nickname_loaded
@@ -97,6 +101,33 @@ function refresh_result_list(app, varargin)
     app.ResultGroupLabel.Text = [group_basename, ' (', num2str(length(results)), ')'];
 
     load_virtual_results(app);
+end
+
+function [nickname, success] = load_nickname(result_path)
+    success = false;
+    nickname = "";
+    if isfile(fullfile(result_path, 'name.txt'))
+        fid = fopen(fullfile(result_path, 'name.txt'));
+        nickname = fscanf(fid, '%s');
+        fclose(fid);
+        success = true;
+    end
+end
+
+function evo_params = load_evo_params(app, result_path)
+    evo_xml = xml2struct(fullfile(result_path, 'evo_params.xml'));
+    evo_params.nb_gen_planned = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
+    evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
+    evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
+    evo_params.griddim_0 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{1}.Text);
+    evo_params.griddim_1 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{2}.Text);
+    evo_params.feature_description1 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{1}.Text;
+    evo_params.feature_description2 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{2}.Text;
+
+    statusfile_id = fopen(fullfile(result_path, 'status.txt'));
+    status_info = cell2mat(textscan(statusfile_id, '%d/%d%*[^\n]'));
+    fclose(statusfile_id);
+    evo_params.nb_gen = status_info(1);
 end
 
 function ret_str = get_result_list_string(app, result_idx)

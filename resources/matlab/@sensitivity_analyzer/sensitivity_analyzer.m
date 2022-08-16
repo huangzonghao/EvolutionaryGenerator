@@ -1,4 +1,4 @@
-classdef sensitivity_analysis_ui < matlab.apps.AppBase
+classdef sensitivity_analyzer < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -36,6 +36,17 @@ classdef sensitivity_analysis_ui < matlab.apps.AppBase
         current_result = {}
         virtual_results = {} % array containing the cache of virtual results
         plot_handles % containing handles to plots
+    end
+    
+    methods (Access = private)
+        sensitivity_analyzer_init(app)
+        refresh_result_list(app, varargin)
+        load_group(app)
+        load_result(app, result_idx_to_load)
+        load_result_robots(app, result_idx_to_load)
+        result = load_target_result(app, is_virtual, id)
+
+        analyze_body_length(app)
     end
 
     % Callbacks that handle component events
@@ -76,17 +87,17 @@ classdef sensitivity_analysis_ui < matlab.apps.AppBase
 
         % Button pushed function: BodyWidthButton
         function BodyWidthButtonPushed(app, event)
-            
+
         end
 
         % Button pushed function: AverageLegLengthButton
         function AverageLegLengthButtonPushed(app, event)
-            
+
         end
 
         % Button pushed function: MaxLegLengthButton
         function MaxLegLengthButtonPushed(app, event)
-            
+
         end
     end
 
@@ -208,7 +219,7 @@ classdef sensitivity_analysis_ui < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = sensitivity_analysis_ui(varargin)
+        function app = sensitivity_analyzer(varargin)
 
             runningApp = getRunningApp(app);
 

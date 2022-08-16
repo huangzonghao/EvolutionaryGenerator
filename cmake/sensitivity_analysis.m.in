@@ -4,7 +4,8 @@
 
 function sensitivity_analysis()
 
-addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'sensitivity_analysis'));
-sensitivity_analysis_ui('@EVOGEN_PYTHON_SCRIPTS_PATH@', '@EVOGEN_EXE_PATH@', '@RESULT_OUTPUT_DIR@')
+addpath('@EVOGEN_MATLAB_SCRIPTS_PATH@');
+addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'tools'));
+sensitivity_analyzer('@EVOGEN_PYTHON_SCRIPTS_PATH@', '@EVOGEN_EXE_PATH@', '@RESULT_OUTPUT_DIR@')
 
 end % function
