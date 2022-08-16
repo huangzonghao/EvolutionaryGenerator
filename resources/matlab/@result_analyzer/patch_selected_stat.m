@@ -22,19 +22,18 @@ function patch_selected_stat(app)
         result = app.results{app.ResultsListBox.Value{i}};
         if dump_robots
             waitbar(double(i) / double(num_results), wb, sprintf("Dumping robots for %s (%d / %d)", result.name, i, num_results));
-            dump_robots_kernel(result.path);
+            dump_robots_kernel(result.path, result.evo_params);
         else
             waitbar(double(i) / double(num_results), wb, sprintf("Patching %s (%d / %d)", result.name, i, num_results));
-            patch_stat(result.path);
+            patch_stat(result.path, result.evo_params);
         end
     end
     close(wb);
     refresh_result_list(app);
 end
 
-function patch_stat(result_path)
+function patch_stat(result_path, evo_params)
     % first load the existing stat, and then check and load the missed ones
-    evo_params = load_evo_params(result_path);
     nb_gen = evo_params.nb_gen;
     [stat, stat_loaded] = load_stat(result_path);
     need_to_save = false;
@@ -142,9 +141,8 @@ function patch_stat(result_path)
     end
 end
 
-function dump_robots_kernel(result_path)
+function dump_robots_kernel(result_path, evo_params)
     robots_dump = {};
-    evo_params = load_evo_params(result_path);
     nb_gen = evo_params.nb_gen;
     for i = 0 : nb_gen
         curr_gen_robot = readmatrix(fullfile(result_path, strcat('/robots/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
@@ -157,4 +155,15 @@ function dump_robots_kernel(result_path)
         robots_dump{i + 1} = tmp_gen;
     end
     save(fullfile(result_path, 'robots_dump.mat'), 'robots_dump', '-v7.3');
+end
+
+function [stat, stat_loaded] = load_stat(result_dir)
+    stat_loaded = false;
+    stat = [];
+    stat_file = fullfile(result_dir, 'stat.mat');
+    if isfile(stat_file)
+        % TODO: the behavior of this load is the reason that I can't merge this code into ui
+        load(stat_file);
+        stat_loaded = true;
+    end
 end

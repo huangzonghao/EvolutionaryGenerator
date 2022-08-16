@@ -1,4 +1,4 @@
-classdef result_analysis_ui < matlab.apps.AppBase
+classdef result_analyzer < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -144,6 +144,92 @@ classdef result_analysis_ui < matlab.apps.AppBase
 
         % TODO: need to remove the following
         archive_ids
+    end
+
+    methods (Access = private)
+        %% System tools
+        result_analysis_init(app)
+        open_folder(app)
+
+        %% File System
+        refresh_result_list(app, varargin)
+        select_result(app, mode)
+        load_gen(app, gen_to_load)
+        load_group(app)
+        load_result(app, result_idx_to_load)
+        load_result_robots(app, result_idx_to_load)
+        result = load_target_result(app, is_virtual, id)
+        load_virtual_results(app)
+        save_nickname(app)
+        add_target_to_compare(app, adding_virtual)
+        add_virtual_result(app)
+        move_target_in_compare_list(app, move_up)
+        delete_from_compare_list(app, do_remove_all)
+        delete_virtual_result(app)
+
+        %% File navigation and manipulation
+        build_pack_export_all_results(app)
+        build_selected_stat(app)
+        [stat, stat_loaded] = build_stat(app, result_path, evo_params, dump_robots, orig_stat, orig_stat_loaded) % static
+        export_archive_map(app)
+        export_compare_plot_data(app)
+        export_group(app)
+        export_pickle_for_group(app)
+        export_result(app, result, dest_path) % static
+        export_robot(app)
+        patch_selected_stat(app)
+        pack_selected_results(app)
+
+        %% Evaluation
+        compute_benchmark(app)
+        compare_different_version_fitness(app)
+        reevaluate_fitness(app)
+        regenerate_archive_map(app)
+        regenerate_archive_map_kernel(app, result_id)
+
+        %% Plotting
+        open_gen_all_plot(app)
+        generate_all_compare_plots(app)
+        generate_all_single_result_plots(app)
+        generate_all_virtual_result_plots(app)
+        generate_combined_archive_map(app)
+        generate_paper_plot1(app)
+        generate_paper_plot2(app)
+        generate_paper_plot3(app)
+        generate_video_fitness_plot(app)
+        plot_avg_age_of_map(app)
+        plot_avg_longevity_of_gen(app)
+        plot_bin_updates(app)
+        plot_gen_all(app)
+        plot_group_stat(app)
+        plot_parentage_related(app)
+        plot_parentage_stat(app)
+        plot_parentage_trace(app)
+        plot_qq_for_compare(app)
+        plot_qq_for_virtual_result(app)
+        plot_result_compares(app, do_clean_plot)
+        plot_result_stat(app)
+
+        %% Statistical Tests
+        report = mwwtest_fitness_percentage(app, v_result_1, v_result_2, avg_fitness_percentage)
+        report = mwwtest_result_coverage(app, result1, result2, coverage_percentage)
+        report = mwwtest_result_fitness(app, v_result_1, v_result_2, gen)
+        report = ttest_all_archived(app, result1, result2, gen)
+        report = ttest_result_stats(app, result1, result2, gen)
+        run_anova(app)
+        run_mwwtest(app)
+        run_mwwtest_all(app)
+        run_mwwtest_coverage_all(app)
+        run_mwwtest_percent_all(app)
+        run_ttest(app)
+        run_ttest_all(app)
+        run_vartest(app)
+
+        %% Simulation & Video
+        calibrate_for_video(app)
+        simulate_for_video(app)
+        simulate_from_archive_map(app)
+        sim_report = simulate_robot(app, sim_configs)
     end
 
     % Callbacks that handle component events
@@ -1276,7 +1362,7 @@ classdef result_analysis_ui < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = result_analysis_ui(varargin)
+        function app = result_analyzer(varargin)
 
             runningApp = getRunningApp(app);
 

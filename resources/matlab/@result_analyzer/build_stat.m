@@ -8,7 +8,7 @@
 %     robots is a 3d matrix: gen_size x 9 x nb_gen + 1
 % robots_dump.mat - robots_dump
 %     design_vector only, stored in 2d cell array. i.e. dv = robots_dump{i_gen}{i_robot}
-function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, orig_stat, orig_stat_loaded)
+function [stat, stat_loaded] = build_stat(app, result_path, evo_params, dump_robots, orig_stat, orig_stat_loaded)
     [~, result_basename, ~] = fileparts(result_path);
     nb_gen = evo_params.nb_gen;
     archive_size = evo_params.griddim_0 * evo_params.griddim_1;

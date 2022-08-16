@@ -33,7 +33,7 @@ function export_group(app)
     num_results = length(app.results);
     for i = 1 : num_results
         waitbar(double(i) / double(num_results + 1), wb, sprintf("Copying files"));
-        export_result(app.results{i}, dest_group_dir);
+        export_result(app, app.results{i}, dest_group_dir);
     end
     close(wb);
     figure(app.MainFigure);
