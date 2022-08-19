@@ -66,14 +66,14 @@ function fig = generate_combined_archive_map(app)
 end
 
 function archive_map = get_result_archive_map(result, gen)
-    griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
-    archive_map = nan(griddim);
+    grid_dim = result.evo_params.grid_dim;
+    archive_map = nan(grid_dim);
     current_gen_archive = result.archive{gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
-    % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-    fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
+    % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+    fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     app.archive_ids(sub2ind(size(archive_map), x, y)) = [1:length(fitness)];
 end

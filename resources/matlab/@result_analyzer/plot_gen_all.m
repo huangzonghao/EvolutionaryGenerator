@@ -11,30 +11,30 @@ function plot_gen_all(app)
     % if we can create a handle then it's guaranteed that we have a current_result
     result = app.current_result;
     current_gen = app.current_gen;
-    griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
+    grid_dim = result.evo_params.grid_dim;
 
-    archive_map = nan(griddim);
-    app.archive_ids = zeros(griddim);
+    archive_map = nan(grid_dim);
+    app.archive_ids = zeros(grid_dim);
     current_gen_archive = result.archive{current_gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
     if app.SanitizeArchiveCheckBox.Value == true && length(fitness) == length(archive_map(:))
-        % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-        fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
+        % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+        fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     end
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     app.archive_ids(sub2ind(size(archive_map), x, y)) = [1:length(fitness)];
     app.current_result.current_archive_map = archive_map;
 
-    parentage_map = nan(griddim);
+    parentage_map = nan(grid_dim);
     if isfield(result.stat, 'has_parentage') && result.stat.has_parentage
         parentage_dist = result.stat.robot_parentage(sub2ind(size(result.stat.robot_parentage), current_gen_archive(:,2) + 1, current_gen_archive(:,1) + 1));
         parentage_map(sub2ind(size(parentage_map), x, y)) = parentage_dist;
     end
 
     ages = current_gen_archive(:, 1);
-    age_map = nan(griddim);
+    age_map = nan(grid_dim);
     age_map(sub2ind(size(age_map), x, y)) = double(current_gen) * ones(size(ages)) - ages;
     updates_per_bin = result.stat.map_stat(:, :, current_gen + 1);
     updates_per_bin(updates_per_bin == 0) = NaN;
@@ -52,7 +52,7 @@ function plot_gen_all(app)
     drawnow;
     app.plot_handles.gen_plot.info_text.String = sprintf("%s - Gen %d / %d, Coverage %d / %d", ...
                                             result.name, current_gen, result.evo_params.nb_gen, ...
-                                            length(fitness), griddim(1) * griddim(2));
+                                            length(fitness), prod(grid_dim));
     % Reset the title text proterties
     % TODO: for some reason we have to update this title font set up here, and
     % settings in open_gen_all_plot.m won't work.

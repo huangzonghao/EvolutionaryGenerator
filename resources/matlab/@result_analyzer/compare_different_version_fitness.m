@@ -8,8 +8,12 @@ function compare_different_version_fitness(app)
     end
 
     result = app.current_result;
+    if result.version != 1
+        msgbox('Cannot compare different fitness, result version is not 1');
+        return
+    end
     current_gen = app.current_gen;
-    griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
+    grid_dim = result.evo_params.grid_dim;
 
     extra_stats_1_path = fullfile(result.path, 'extra_stats.mat');
     extra_stats_2_path = fullfile(result.path, 'extra_stats_2.mat');
@@ -45,7 +49,7 @@ function compare_different_version_fitness(app)
         for i_row = 1 : num_rows
             for i_col = 1 : num_cols
                 p(i_row, i_col).select();
-                app.plot_handles.fitness_compare.p{i_row, i_col} = heatmap(zeros(griddim));
+                app.plot_handles.fitness_compare.p{i_row, i_col} = heatmap(zeros(grid_dim));
                 app.plot_handles.fitness_compare.p{i_row, i_col}.NodeChildren(3).YDir='normal';
                 app.plot_handles.fitness_compare.p{i_row, i_col}.Title = titles(i_row, i_col);
                 app.plot_handles.fitness_compare.p{i_row, i_col}.MissingDataLabel = 'Nan';
@@ -53,18 +57,18 @@ function compare_different_version_fitness(app)
                 colormap(app.plot_handles.fitness_compare.p{i_row, i_col}, 'jet');
             end
         end
-        app.plot_handles.fitness_compare.p{1, 1}.YLabel = result.evo_params.feature_description1;
-        app.plot_handles.fitness_compare.p{2, 1}.YLabel = result.evo_params.feature_description1;
-        app.plot_handles.fitness_compare.p{2, 1}.XLabel = result.evo_params.feature_description2;
-        app.plot_handles.fitness_compare.p{2, 2}.XLabel = result.evo_params.feature_description2;
-        app.plot_handles.fitness_compare.p{2, 3}.XLabel = result.evo_params.feature_description2;
+        app.plot_handles.fitness_compare.p{1, 1}.YLabel = result.evo_params.feature_description(1);
+        app.plot_handles.fitness_compare.p{2, 1}.YLabel = result.evo_params.feature_description(1);
+        app.plot_handles.fitness_compare.p{2, 1}.XLabel = result.evo_params.feature_description(2);
+        app.plot_handles.fitness_compare.p{2, 2}.XLabel = result.evo_params.feature_description(2);
+        app.plot_handles.fitness_compare.p{2, 3}.XLabel = result.evo_params.feature_description(2);
     end
 
     % TODO: how to formulate the archive maps
-    archive_map = nan(griddim);
-    archive_map2 = nan(griddim);
-    archive_map3 = nan(griddim);
-    archive_ids = zeros(griddim);
+    archive_map = nan(grid_dim);
+    archive_map2 = nan(grid_dim);
+    archive_map3 = nan(grid_dim);
+    archive_ids = zeros(grid_dim);
     current_gen_archive = result.archive{current_gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
@@ -77,10 +81,10 @@ function compare_different_version_fitness(app)
     fitness3 = extra_stats{2}.fitness2(sub2ind(fitness2_size, gen_ids, robot_ids));
 
     % if app.SanitizeArchiveCheckBox.Value == true
-        % % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-        % fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
-        % fitness2(sub2ind(size(archive_map2), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map2), 1:griddim(1), 1 + ones(1, griddim(1))));
-        % fitness3(sub2ind(size(archive_map3), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map3), 1:griddim(1), 1 + ones(1, griddim(1))));
+        % % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+        % fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
+        % fitness2(sub2ind(size(archive_map2), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map2), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
+        % fitness3(sub2ind(size(archive_map3), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map3), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     % end
 
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;

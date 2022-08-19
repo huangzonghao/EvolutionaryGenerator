@@ -37,18 +37,18 @@ function merged_archive = process_virtual_result(app, v_id)
     vr_ref = app.virtual_results{v_id};
 
     result = load_target_result(app, false, vr_ref.ids(1));
-    griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
-    merged_archive = -Inf(griddim);
+    grid_dim = result.evo_params.grid_dim;
+    merged_archive = -Inf(grid_dim);
     for i = 1 : vr_ref.num_results
         result = load_target_result(app, false, vr_ref.ids(i));
 
-        archive_map = -Inf(griddim);
+        archive_map = -Inf(grid_dim);
         current_gen_archive = result.archive{end};
         x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
         y = current_gen_archive(:, 4) + 1;
         fitness = current_gen_archive(:, 5);
-        % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-        fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
+        % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+        fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
 
         archive_map(sub2ind(size(archive_map), x, y)) = fitness;
         merged_archive = max(merged_archive, archive_map);

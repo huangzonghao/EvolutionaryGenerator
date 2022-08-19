@@ -16,7 +16,7 @@ function simulate_from_archive_map(app)
     fid_x = str2double(app.RobotIDXField.Value);
     fid_y = str2double(app.RobotIDYField.Value);
     if isnan(fid_x) || isnan(fid_y) || fid_x <= 0 || ...
-       fid_x > result.evo_params.griddim_0 || fid_y <=0 || fid_y > result.evo_params.griddim_1
+       fid_x > result.evo_params.grid_dim(1) || fid_y <=0 || fid_y > result.evo_params.grid_dim(2)
         msgbox(sprintf("Error: Invalid robot coord (%d, %d)", fid_y, fid_x));
         return
     end

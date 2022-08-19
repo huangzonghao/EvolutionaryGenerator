@@ -13,7 +13,7 @@ function build_pack_export_all_results(app)
         if isfile(fullfile(result.path, 'stat.mat'));
             continue;
         end
-        app.build_stat(result.path, result.evo_params, app.DumpRobotsCheckBox.Value, [], false, []);
+        app.build_stat(result, app.DumpRobotsCheckBox.Value, [], false, []);
 
         % export
         app.export_result(result, export_dir);

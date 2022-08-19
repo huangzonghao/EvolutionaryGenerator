@@ -16,8 +16,8 @@ function plot_bin_updates(app)
     p.pack('h', {1/2, 1/2});
     p(1).select();
     bar3(map_stat, 1, 'b');
-    xlim([0.5, result.evo_params.griddim_1 + 0.5]);
-    ylim([0.5, result.evo_params.griddim_0 + 0.5]);
+    xlim([0.5, result.evo_params.grid_dim(2) + 0.5]);
+    ylim([0.5, result.evo_params.grid_dim(1) + 0.5]);
     p(2).select();
     heatmap(map_stat);
 

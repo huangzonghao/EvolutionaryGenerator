@@ -34,15 +34,15 @@ function generate_paper_plot1(app)
     % Result 1
     archive_map = nan([20, 20]);
     result = load_target_result(app, false, app.targets_to_compare{1}.id);
-    griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
+    grid_dim = result.evo_params.grid_dim;
     % Gen 0
     current_gen = 0;
     current_gen_archive = result.archive{current_gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
-    % % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-    % fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
+    % % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+    % fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     fig_panel(1,1).select();
     hm1 = heatmap(archive_map);
@@ -63,8 +63,8 @@ function generate_paper_plot1(app)
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
-    % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-    fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
+    % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+    fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     fig_panel(2,1).select();
     hm2 = heatmap(archive_map);
@@ -97,15 +97,15 @@ function generate_paper_plot1(app)
     % Result 2
     archive_map = nan([20, 20]);
     result = load_target_result(app, false, app.targets_to_compare{2}.id);
-    griddim = [result.evo_params.griddim_0, result.evo_params.griddim_1];
+    grid_dim = result.evo_params.grid_dim;
     % Gen 0
     current_gen = 0;
     current_gen_archive = result.archive{current_gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
-    % % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-    % fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
+    % % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+    % fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     fig_panel(1,2).select();
     hm3 = heatmap(archive_map);
@@ -126,8 +126,8 @@ function generate_paper_plot1(app)
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
-    % sanitize the second dimension (here griddim(1) gives the size of first dimension)
-    fitness(sub2ind(size(archive_map), 1:griddim(1), ones(1, griddim(1)))) = 0.1 * rand(griddim(1), 1) + fitness(sub2ind(size(archive_map), 1:griddim(1), 1 + ones(1, griddim(1))));
+    % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+    fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     fig_panel(2,2).select();
     hm4 = heatmap(archive_map);

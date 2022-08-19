@@ -6,8 +6,9 @@ function refresh_result_list(app, varargin)
 %     name: nickname or basename (when nickname not available)
 %     env: the environment that the result is trained on
 %     evo_params: struct containing training info of result
-%                 evo_params format: nb_gen_planned, init_size, gen_size, griddim_0, griddim_1
-%                                    feature_description1, feature_description2, nb_gen
+%                 evo_params format: nb_gen_planned, init_size, gen_size, grid_dim
+%                                    feature_description, nb_gen
+%     version: a version number indicating the data format
 %     loaded: whether the result has been fully loaded
 
     params = inputParser;
@@ -61,6 +62,7 @@ function refresh_result_list(app, varargin)
             new_result.name = basename;
             new_result.evo_params = load_evo_params(app, tmp_path);
             [nickname, nickname_loaded] = load_nickname(tmp_path);
+            new_result.version = load_version(tmp_path);
             new_result.env = 'other';
             if nickname_loaded
                 new_result.name = nickname;
@@ -119,15 +121,28 @@ function evo_params = load_evo_params(app, result_path)
     evo_params.nb_gen_planned = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
     evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
     evo_params.gen_size = str2double(evo_xml.boost_serialization{2}.EvoParams.pop_size_.Text);
-    evo_params.griddim_0 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{1}.Text);
-    evo_params.griddim_1 = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{2}.Text);
-    evo_params.feature_description1 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{1}.Text;
-    evo_params.feature_description2 = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{2}.Text;
+    evo_params.grid_dim = [];
+    for i = 1 : length(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item)
+        evo_params.grid_dim(i) = str2double(evo_xml.boost_serialization{2}.EvoParams.grid_shape_.item{i}.Text);
+    end
+    evo_params.feature_description = "";
+    for i = 1 : length(evo_xml.boost_serialization{2}.EvoParams.feature_description_.item)
+        evo_params.feature_description(i) = str2double(evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{i}.Text);
+    end
 
     statusfile_id = fopen(fullfile(result_path, 'status.txt'));
     status_info = cell2mat(textscan(statusfile_id, '%d/%d%*[^\n]'));
     fclose(statusfile_id);
     evo_params.nb_gen = status_info(1);
+end
+
+function version = load_version(result_path)
+    version = 1;
+    if isfile(fullfile(result_path, 'version.txt'))
+        fid = fopen(fullfile(result_path, 'version.txt'));
+        version = fscanf(fid, '%d');
+        fclose(fid);
+    end
 end
 
 function ret_str = get_result_list_string(app, result_idx)
@@ -144,7 +159,6 @@ end
 function result_is_valid = verify_result_dir(dir_path)
     result_is_valid = false;
     if isdir(fullfile(dir_path, 'gridmaps')) && ...
-       isdir(fullfile(dir_path, 'gridstats')) && ...
        isdir(fullfile(dir_path, 'robots')) && ...
        isfile(fullfile(dir_path, 'evo_params.xml')) && ...
        isfile(fullfile(dir_path, 'status.txt'))

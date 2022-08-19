@@ -4,7 +4,7 @@ function export_robot(app)
     % Note the XY has been flipped already in gui layout
     fid_x = str2double(app.RobotIDXField.Value);
     fid_y = str2double(app.RobotIDYField.Value);
-    if fid_x <= 0 || fid_x > result.evo_params.griddim_0 || fid_y <=0 || fid_y > result.evo_params.griddim_1
+    if fid_x <= 0 || fid_x > result.evo_params.grid_dim(1) || fid_y <=0 || fid_y > result.evo_params.grid_dim(2)
         msgbox(sprintf("Error: Invalid robot coord (%d, %d)", fid_y, fid_x));
     end
     id_in_archive = app.archive_ids(fid_x, fid_y);

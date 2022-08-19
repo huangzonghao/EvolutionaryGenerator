@@ -8,28 +8,30 @@
 %     robots is a 3d matrix: gen_size x 9 x nb_gen + 1
 % robots_dump.mat - robots_dump
 %     design_vector only, stored in 2d cell array. i.e. dv = robots_dump{i_gen}{i_robot}
-function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, orig_stat, orig_stat_loaded)
-    [~, result_basename, ~] = fileparts(result_path);
-    nb_gen = evo_params.nb_gen;
-    archive_size = evo_params.griddim_0 * evo_params.griddim_1;
+function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_stat_loaded)
+    [~, result_basename, ~] = fileparts(result.path);
+    num_dim = length(result.evo_params.grid_dim);
+    nb_gen = result.evo_params.nb_gen;
+    archive_size = prod(result.evo_params.grid_dim);
 
     % robots format:
-    % [p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness]
+    % v1: [gid, id, p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness, gene]
+    % v2: [gid, id, p1_gid, p1_id, p2_gid, p2_id, fitness, f_id1, ... , f_idn, f1, ... , fn, gene]
     % nb_gen + 1 because init seeds are gen 0
     % Note the robot id starts from 0, so always +1 when retriving data from matlab array
     % data goes into the table is guaranteed to be sorted
-    robots = zeros(evo_params.gen_size, 9, nb_gen + 1);
+    if result.version == 1
+        robots = zeros(result.evo_params.gen_size, 9, nb_gen + 1);
+    end
 
     % robots dump format:
     % Each generation is a cell containing all robots of that generation in the order of id
     % Each robot is a an array of genome
-    if dump_robots
-        robots_dump = {};
-    end
+    robots_dump = {};
 
     % Parentage
     stat.has_parentage = false;
-    bag_file_path = fullfile(result_path, 'Bag_*.json');
+    bag_file_path = fullfile(result.path, 'Bag_*.json');
     bag_file = dir(bag_file_path);
     if ~isempty(bag_file)
         if length(bag_file) > 1
@@ -44,8 +46,8 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
         else
             num_seeds = jsobj.total_count;
         end
-        if num_seeds > 0 && num_seeds < evo_params.gen_size % otherwise would be meaningless to build parentage
-            stat.robot_parentage = zeros(evo_params.gen_size, nb_gen + 1);
+        if num_seeds > 0 && num_seeds < result.evo_params.gen_size % otherwise would be meaningless to build parentage
+            stat.robot_parentage = zeros(result.evo_params.gen_size, nb_gen + 1);
             stat.robot_parentage(1 : num_seeds, 1) = 1; % user designed seeds has percentage 100%
             stat.archive_parentage = zeros(1, nb_gen + 1);
             stat.archive_parentage_over_map = zeros(1, nb_gen + 1);
@@ -58,7 +60,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
 
             top15_hp = [];
             top15_lp = [];
-            tmp_parentage_map = zeros(evo_params.griddim_0, evo_params.griddim_1);
+            tmp_parentage_map = zeros(result.evo_params.grid_dim);
         end
     end
 
@@ -66,9 +68,9 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
     if (orig_stat_loaded)
         stat = orig_stat;
     else
-        stat.elite_robot_selection = false(evo_params.gen_size, nb_gen + 1); % entries of value 1 indicate the corresponding robot has made it to 10% of the archive map at some generation
-        stat.robot_fitness = zeros(evo_params.gen_size, nb_gen + 1);
-        stat.robot_longevity = double(-1) * ones(evo_params.gen_size, nb_gen + 1);
+        stat.elite_robot_selection = false(result.evo_params.gen_size, nb_gen + 1); % entries of value 1 indicate the corresponding robot has made it to 10% of the archive map at some generation
+        stat.robot_fitness = zeros(result.evo_params.gen_size, nb_gen + 1);
+        stat.robot_longevity = double(-1) * ones(result.evo_params.gen_size, nb_gen + 1);
         stat.archive_fits = zeros(1, nb_gen + 1);
         stat.archive_std = zeros(1, nb_gen + 1);
         stat.archive_age = zeros(1, nb_gen + 1);
@@ -79,7 +81,9 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
         stat.qd_score = zeros(1, nb_gen + 1); % best fitness of archive
         stat.population_fits = zeros(1, nb_gen + 1);
         stat.coverage = zeros(1, nb_gen + 1);
-        stat.map_stat = zeros(evo_params.griddim_0, evo_params.griddim_1, nb_gen + 1);
+        if result.version == 1
+            stat.map_stat = zeros(result.evo_params.grid_dim(1), result.evo_params.grid_dim(2), nb_gen + 1);
+        end
 
         stat.clean_archive_fits = zeros(1, nb_gen + 1);
         stat.clean_archive_std = zeros(1, nb_gen + 1);
@@ -104,15 +108,18 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
         end
 
         % Load gridmaps
-        % gridmap format : gen_id, id, f_id1, f_id2, fitness
-        curr_gen_archive = readmatrix(fullfile(result_path, strcat('/gridmaps/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+        % gridmap format :
+        % Version 1 [gen_id, id, f_id1, f_id2, fitness]
+        % Version 1 [gen_id, id, fitness, f_id1, ..., f_idn]
+        curr_gen_archive = readmatrix(fullfile(result.path, strcat('/gridmaps/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
 
-        fitness = curr_gen_archive(:, 5);
+        if result.version == 1
+            fitness = curr_gen_archive(:, 5);
+        elseif result.version == 2
+            fitness = curr_gen_archive(:, 3);
+        end
+
         age = double(i) * ones(size(curr_gen_archive, 1), 1) - curr_gen_archive(:, 1);
-        clean_fitness = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 5);
-        clean_age = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 1);
-        clean_age = double(i) * ones(size(clean_age)) - clean_age;
-
         stat.archive_fits(i + 1) = mean(fitness);
         stat.archive_std(i + 1) = std(fitness);
         stat.archive_age(i + 1) = mean(age);
@@ -123,27 +130,36 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
         max10_gen_ids = curr_gen_archive(max10_idx, 1) + 1;
         max10_ids = curr_gen_archive(max10_idx, 2) + 1;
         stat.elite_robot_selection(sub2ind(size(stat.elite_robot_selection), max10_ids, max10_gen_ids)) = true;
-
-        stat.clean_archive_fits(i + 1) = mean(clean_fitness);
-        stat.clean_archive_std(i + 1) = std(clean_fitness);
-        stat.clean_archive_age(i + 1) = mean(age);
-        [clean_max10_fitness, clean_max10_idx] = maxk(clean_fitness, ceil(length(clean_fitness) * 0.1));
-        % stat.best_fits(i + 1) = max10_fitness(1);
-        stat.best_fits(i + 1) = clean_max10_fitness(1);
-        stat.qd_score(i + 1) = sum(clean_fitness);
-        stat.clean_elite_archive_fits(i + 1) = mean(clean_max10_fitness);
-        stat.clean_elite_archive_std(i + 1) = std(clean_max10_fitness);
-        stat.clean_elite_archive_age(i + 1) = mean(clean_age(clean_max10_idx));
-
         stat.coverage(i + 1) = length(fitness) / archive_size;
+
+        if result.version == 1
+            clean_fitness = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 5);
+            clean_age = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 1);
+            clean_age = double(i) * ones(size(clean_age)) - clean_age;
+            stat.clean_archive_fits(i + 1) = mean(clean_fitness);
+            stat.clean_archive_std(i + 1) = std(clean_fitness);
+            stat.clean_archive_age(i + 1) = mean(clean_age);
+            [clean_max10_fitness, clean_max10_idx] = maxk(clean_fitness, ceil(length(clean_fitness) * 0.1));
+            stat.clean_elite_archive_fits(i + 1) = mean(clean_max10_fitness);
+            stat.clean_elite_archive_std(i + 1) = std(clean_max10_fitness);
+            stat.clean_elite_archive_age(i + 1) = mean(clean_age(clean_max10_idx));
+            stat.best_fits(i + 1) = clean_max10_fitness(1);
+            stat.qd_score(i + 1) = sum(clean_fitness);
+        elseif result.version == 2
+            stat.best_fits(i + 1) = max10_fitness(1);
+            stat.qd_score(i + 1) = sum(fitness);
+        end
+
         archive{i + 1} = curr_gen_archive;
 
         % Load gridstats
-        stat_mat = readmatrix(fullfile(result_path, strcat('/gridstats/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
-        stat_mat = stat_mat(1 : evo_params.griddim_0, 1 : evo_params.griddim_1); % a lasy way to remove the nan values due to the trailing comma in gridstats
-        stat.map_stat(:,:,i + 1) = stat_mat;
-        if i > 0
-            stat.map_stat(:,:,i + 1) = stat.map_stat(:,:,i + 1) + stat.map_stat(:,:,i);
+        if result.version == 1
+            stat_mat = readmatrix(fullfile(result.path, strcat('/gridstats/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+            stat_mat = stat_mat(1 : result.evo_params.grid_dim(1), 1 : result.evo_params.grid_dim(2)); % a lasy way to remove the nan values due to the trailing comma in gridstats
+            stat.map_stat(:,:,i + 1) = stat_mat;
+            if i > 0
+                stat.map_stat(:,:,i + 1) = stat.map_stat(:,:,i + 1) + stat.map_stat(:,:,i);
+            end
         end
 
         % process each indiv's age
@@ -170,8 +186,10 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
         end
 
         % Load robots
-        % robots format from file: gen_id, id, p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness, robot_gene
-        curr_gen_robot = readmatrix(fullfile(result_path, strcat('/robots/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
+        % robots format from file:
+        % v1: [gid, id, p1_gid, p1_id, p2_gid, p2_id, f_id1, f_id2, f1, f2, fitness, gene]
+        % v2: [gid, id, p1_gid, p1_id, p2_gid, p2_id, fitness, f_id1, ... , f_idn, f1, ... , fn, gene]
+        curr_gen_robot = readmatrix(fullfile(result.path, strcat('/robots/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
         % sort entries to make them in the order of id -- need to do this because of a stupid bug I made
         %     in the training code that caused the results to be recorded in the randomized parent order
         curr_gen_robot = sortrows(curr_gen_robot, 2);
@@ -184,7 +202,11 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
             end
             robots_dump{i + 1} = tmp_gen;
         end
-        pop_fitness = curr_gen_robot(:, 11);
+        if result.version == 1
+            pop_fitness = curr_gen_robot(:, 11);
+        elseif result.version == 2
+            pop_fitness = curr_gen_robot(:, 7);
+        end
         stat.population_fits(i + 1) = mean(pop_fitness);
         stat.robot_fitness(:, i + 1) = pop_fitness;
 
@@ -192,7 +214,7 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
             % Update parentage
             if i > 0
                 % TODO: how to vectorize the following
-                for j = 1 : evo_params.gen_size
+                for j = 1 : result.evo_params.gen_size
                     r = robots(j, :, i + 1);
                     % Note: always need to add 1 when using raw gen_id and id
                     stat.robot_parentage(j, i + 1) = 0.5 * (stat.robot_parentage(r(2)+1, r(1)+1) + stat.robot_parentage(r(4)+1, r(3)+1));
@@ -228,11 +250,11 @@ function [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, 
         prev_gen_archive = curr_gen_archive;
     end
     close(wb);
-    save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
-    save(fullfile(result_path, 'robots.mat'), 'robots', '-v7.3');
-    save(fullfile(result_path, 'archive.mat'), 'archive', '-v7.3');
+    save(fullfile(result.path, 'stat.mat'), 'stat', '-v7.3');
+    save(fullfile(result.path, 'robots.mat'), 'robots', '-v7.3');
+    save(fullfile(result.path, 'archive.mat'), 'archive', '-v7.3');
     if dump_robots
-        save(fullfile(result_path, 'robots_dump.mat'), 'robots_dump', '-v7.3');
+        save(fullfile(result.path, 'robots_dump.mat'), 'robots_dump', '-v7.3');
     end
 
     stat_loaded = true;
