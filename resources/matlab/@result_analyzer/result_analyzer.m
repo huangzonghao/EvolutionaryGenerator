@@ -148,7 +148,7 @@ classdef result_analyzer < matlab.apps.AppBase
 
     methods (Access = private)
         %% System tools
-        result_analysis_init(app)
+        result_analyzer_init(app)
         open_folder(app)
 
         %% File System
@@ -240,7 +240,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.evogen_python_path = evogen_python_path;
             app.evogen_exe_path = evogen_exe_path;
             app.evogen_results_path = evogen_results_path;
-            result_analysis_init(app);
+            result_analyzer_init(app);
         end
 
         % Button pushed function: PrevResultButton
