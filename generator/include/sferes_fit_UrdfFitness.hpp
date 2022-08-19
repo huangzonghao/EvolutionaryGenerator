@@ -10,6 +10,7 @@
 namespace sferes {
 namespace fit {
 
+// TODO: the dimension of archive map here is hard coded.
 class UrdfFitness {
   public:
     const std::vector<double>& desc() const { return _desc; }
@@ -28,8 +29,7 @@ class UrdfFitness {
     template <typename Indiv>
     void eval(Indiv& ind, SimulationManager& sm) {
         if (!ind.valid()) {
-            _desc[0] = -2;
-            _desc[1] = -2;
+            write_desc(-2);
             _dead = true;
             return;
         }
@@ -50,8 +50,7 @@ class UrdfFitness {
         sm.LoadUrdfString(robot.get_urdf_string());
         sm.RunSimulation();
         if (sm.CheckRobotSelfCollision() == true) {
-            _desc[0] = -3;
-            _desc[1] = -3;
+            write_desc(-3);
             _dead = true;
             return;
         }
@@ -60,17 +59,21 @@ class UrdfFitness {
         _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyDisplacementY());
         // _value = sm.GetRootBodyDisplacementX() - 0.5 * std::abs(sm.GetRootBodyAccumulatedY());
 
-        // TODO: this part needs to be updated
         // Update Descriptors
         // Note: descriptor needs to be in range [0, 1]
-        // double body_length = robot.get_body_length();
-        // _desc[0] = robot.get_body_size(1) / body_length;
-        // _desc[0] /=  2; // assuming the range of the origin ratio is [0, 2], ignoring the rest
-        // _desc[0] = ind.data(1);
+
+        // Feature 0 -- Body Length
         _desc[0] = range_to_unit(robot.get_body_length(), 0.5, 2.3);
+
+        // Feature 1 -- Leg Length SD
+        double max_leg_length = 0;
         double avg_leg_length = 0;
+        double tmp_leg_length = 0;
         for (int i = 0; i < num_legs; ++i) {
-            avg_leg_length += robot.legs[i].length();
+            tmp_leg_length = robot.legs[i].length();
+            avg_leg_length += tmp_leg_length;
+            if (tmp_leg_length > max_leg_length)
+                max_leg_length = tmp_leg_length;
         }
 
         avg_leg_length /= num_legs;
@@ -79,16 +82,21 @@ class UrdfFitness {
             sd += std::pow(robot.legs[i].length() - avg_leg_length, 2);
         }
         sd = std::sqrt(sd / num_legs);
-
-        // _desc[1] = avg_leg_length / body_length;
-        // _desc[1] /= 8; // assuming range [0, 8];
         _desc[1] = range_to_unit(sd, 0, 1); // assuming range [0, 1];
+
+        // Feature 2 -- Average Leg Length
+        // Longest link 1, shortest link 0.2 --> Longest leg 4.5, shortest leg 0.2
+        _desc[2] = range_to_unit(avg_leg_length, 0.2, 4.5);
+
+        // Feature 3 -- Max Leg Length
+        _desc[3] = range_to_unit(max_leg_length, 0.2, 4.5);
 
         // regulate descriptor
         for (auto& e : _desc)
             e = std::clamp(e, 0.0, 1.0);
     }
-    static constexpr const char* descriptor_name[2] = {"body length", "leg length sd"};
+    static constexpr const char* descriptor_name[4] = {"body length", "leg length sd",
+                                                       "average leg length", "max leg length"};
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
@@ -101,7 +109,7 @@ class UrdfFitness {
     //     * Gene is invalid (too short)
     //     * Self-collided at initial pose
     bool _dead = false;
-    std::vector<double> _desc = {-1.0, -1.0};
+    std::vector<double> _desc = {-1.0, -1.0, -1.0, -1.0};
     double _novelty = -std::numeric_limits<double>::infinity();
     double _curiosity = 0;
     double _lq = 0;
@@ -110,6 +118,13 @@ class UrdfFitness {
     // scale the value within the given range to [0, 1]
     inline double range_to_unit(double raw, double min, double max) {
         return (raw - min) / (max - min);
+    }
+
+  private:
+    // Set flag in descriptors.
+    void write_desc(double value) {
+        for (int i = 0; i < _desc.size(); ++i)
+            _desc[i] = value;
     }
 };
 

@@ -71,12 +71,15 @@ struct PhenID {
 template <typename Genome, typename Fit>
 class EvoGenPhen {
   public:
+    // TODO: hard coded grid dimension
     typedef Fit fit_t;
     typedef Genome gen_t;
     typedef PhenID phen_id_t;
 
     template<typename G, typename F>
     friend std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e);
+
+    int grid_dim = 2;
 
     // scale up a value in [0, 1] to [min, max]
     inline double gene_to_range(double raw, double min, double max) {
@@ -99,9 +102,9 @@ class EvoGenPhen {
     }
 
     EvoGenPhen() {}
-    EvoGenPhen(const std::vector<double>& gene, double min_p, double max_p)
-        : _gene(gene), _min_p(min_p), _max_p(max_p) {}
-    EvoGenPhen(double min_p, double max_p) : _min_p(min_p), _max_p(max_p) {}
+    EvoGenPhen(const std::vector<double>& gene, double min_p, double max_p, int dim)
+        : _gene(gene) { set_params(min_p, max_p, dim); }
+    EvoGenPhen(double min_p, double max_p, int dim) { set_params(min_p, max_p, dim); }
     EvoGenPhen(const EvoParams& evo_params) { set_params(evo_params); }
     EvoGenPhen(const std::vector<double>& gene, const EvoParams& evo_params)
         : _gene(gene) { set_params(evo_params); }
@@ -119,8 +122,15 @@ class EvoGenPhen {
     Fit& fit() { return _fit; }
     const Fit& fit() const { return _fit; }
 
-    void set_grid_id(int g0, int g1) { _grid_id[0] = g0; _grid_id[1] = g1; }
-    const std::array<int, 2>& grid_id() { return _grid_id; }
+    void set_grid_id(const std::vector<int> new_id) {
+        if (new_id.size() != _grid_id.size()) {
+            std::cout << "Error: grid id dimension doesn't match, phen grid id dim: "
+                      << _grid_id.size() << ", passed in grid id dim: " << new_id.size()
+                      << std::endl;
+        }
+        _grid_id = new_id;
+    }
+    const std::vector<int>& grid_id() { return _grid_id; }
 
     Genome& gen()  { return _gene; }
     const Genome& gen() const { return _gene; }
@@ -138,11 +148,12 @@ class EvoGenPhen {
                std::shared_ptr<EvoGenPhen>& o1,
                std::shared_ptr<EvoGenPhen>& o2) {
         if (!o1) {
-            o1 = std::make_shared<EvoGenPhen>(_min_p, _max_p);
+            // TODO: should probably use a copy constructor here
+            o1 = std::make_shared<EvoGenPhen>(_min_p, _max_p, grid_dim);
             o1->set_parent(_id, i2->id());
         }
         if (!o2) {
-            o2 = std::make_shared<EvoGenPhen>(_min_p, _max_p);
+            o2 = std::make_shared<EvoGenPhen>(_min_p, _max_p, grid_dim);
             o2->set_parent(_id, i2->id());
         }
         _gene.cross(i2->gen(), o1->gen(), o2->gen());
@@ -220,9 +231,16 @@ class EvoGenPhen {
             os << p << " " << std::endl;
     }
 
+    void set_params(double min_p, double max_p, int dim) {
+        _min_p = min_p;
+        _max_p = max_p;
+        grid_dim = dim;
+        _grid_id.resize(grid_dim);
+        for (auto& id : _grid_id) id = -1;
+    }
+
     void set_params(const EvoParams& evo_params) {
-        _max_p = evo_params.phen_data_max();
-        _min_p = evo_params.phen_data_min();
+        set_params(evo_params.phen_data_min(), evo_params.phen_data_max(), evo_params.grid_shape().size());
     }
 
     const RobotRepresentation& get_robot() { return _robot; }
@@ -232,8 +250,7 @@ class EvoGenPhen {
         ar & BOOST_SERIALIZATION_NVP(_id);
         ar & BOOST_SERIALIZATION_NVP(_gene);
         ar & BOOST_SERIALIZATION_NVP(_fit);
-        ar & BOOST_SERIALIZATION_NVP(_grid_id[0]);
-        ar & BOOST_SERIALIZATION_NVP(_grid_id[1]);
+        ar & BOOST_SERIALIZATION_NVP(_grid_id);
     }
 
   protected:
@@ -244,7 +261,7 @@ class EvoGenPhen {
     double _max_p;
     bool _valid = false;
     const double pos[3] = {0.01, 0.25, 0.49};
-    std::array<int, 2> _grid_id = {-1, -1}; // meaning this phen has not been added to archive map
+    std::vector<int> _grid_id; // initialize all values to -1.
     RobotRepresentation _robot;
 };
 

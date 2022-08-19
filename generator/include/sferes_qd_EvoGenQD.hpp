@@ -30,11 +30,14 @@ class EvoGenQD
 
     friend class ea::EvoGenEA<Phen, Eval, Stat, exact_t>;
 
+    // Note the default constructor should only be used when resuming.
+    // The member structs are incomplete without proper calls of set_params.
     EvoGenQD() {}
     EvoGenQD(const EvoParams& evo_params, const SimulatorParams& sim_params)
         : ea::EvoGenEA<Phen, Eval, Stat, exact_t>(evo_params), _sim_params(sim_params)
     {
         this->_eval.set_sim_params(_sim_params);
+        this->_container.set_params(_evo_params);
     }
 
     void init_pop() {
@@ -59,6 +62,7 @@ class EvoGenQD
         }
 
         this->_eval_pop(_init_pop);
+
         _add(_init_pop, _added);
         _container.get_full_content(this->_pop);
     }
@@ -109,7 +113,7 @@ class EvoGenQD
     // container and both of the sub population (offspring and parents)
     void _add(pop_t& pop_off, std::vector<bool>& added, pop_t& pop_parents)
     {
-        _container.reset_stat();
+        // _container.reset_stat();
         added.resize(pop_off.size());
         for (size_t i = 0; i < pop_off.size(); ++i)
             added[i] = _add_to_container(pop_off[i], pop_parents[i]);
@@ -119,7 +123,7 @@ class EvoGenQD
     // Same function, but without the need of parent.
     void _add(pop_t& pop_off, std::vector<bool>& added)
     {
-        _container.reset_stat();
+        // _container.reset_stat();
         added.resize(pop_off.size());
         for (size_t i = 0; i < pop_off.size(); ++i)
             added[i] = _container.add(pop_off[i]);

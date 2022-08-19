@@ -17,7 +17,7 @@ class EvoParams {
     const bool output_all_robots() const { return output_all_robots_; }
     const double phen_data_min() const { return phen_data_min_; }
     const double phen_data_max() const { return phen_data_max_; }
-    const std::vector<size_t>& grid_shape() const { return grid_shape_; }
+    const std::vector<int>& grid_shape() const { return grid_shape_; }
     bool output_enabled() const { return enable_output_; }
     std::vector<std::string>& feature_description() { return feature_description_; }
 
@@ -53,7 +53,16 @@ class EvoParams {
     bool output_all_robots_ = false;
     double phen_data_min_ = 0.5; // gen data is always in [0, 1]
     double phen_data_max_ = 1.5;
-    std::vector<size_t> grid_shape_ = {20, 20};
+    // TODO: figure out a proper arrangement for the grid shape configuration
+    // The grid shape seems to be highly related to the source code, i.e. the
+    // evaluation of different need to be encoded into the fitness evaluation,
+    // which guarantees that the number of dimensions needed to be fixed at compilation
+    // time. And the configuration of the container of the gridmap (boost::multi_array)
+    // also needs to know the dimension at compilation time.
+    // So what could be configured at run time is the number of bins of each dimension.
+    // And if we pre-code the different possible gridshape dimensions into the code,
+    // a run time selection maybe possible
+    std::vector<int> grid_shape_ = {8, 8, 8, 8};
     std::vector<std::string> feature_description_;
 };
 

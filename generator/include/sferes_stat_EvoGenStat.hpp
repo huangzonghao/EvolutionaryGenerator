@@ -12,7 +12,12 @@ class EvoGenStat {
   public:
     template <typename E> void make_stat_dir(const E& ea) {
         std::filesystem::create_directory(ea.res_dir() + "/gridmaps");
-        std::filesystem::create_directory(ea.res_dir() + "/gridstats");
+        // std::filesystem::create_directory(ea.res_dir() + "/gridstats");
+        // Version 2.0 -- Adjusted the order of gridmap recording. Now fitness shows
+        //     in front of descriptor/grid_id to allow different grid_id dimensions
+        std::ofstream ofs(ea.res_dir() + "/version.txt");
+        ofs << "2.0" << std::endl;
+        ofs.close();
         if (output_all_robots_)
             std::filesystem::create_directory(ea.res_dir() + "/robots");
     }
@@ -53,12 +58,10 @@ class EvoGenStat {
             ofs << (*it)->id().gen << "," << (*it)->id().id << "," // 1, 2
                 << (*it)->id().p1_gen << "," << (*it)->id().p1_id << "," // 3, 4
                 << (*it)->id().p2_gen << "," << (*it)->id().p2_id << "," // 5, 6
-                << (*it)->grid_id()[0] << "," << (*it)->grid_id()[1] << "," // 7, 8
-                << (*it)->fit().desc()[0] << "," << (*it)->fit().desc()[1] << "," // 9, 10
-                << (*it)->fit().value(); // 11
-
-            for (size_t i = 0; i < (*it)->size(); ++i)
-                ofs << "," << (*it)->data(i);
+                << (*it)->fit().value(); // 7
+            for (const auto& id : (*it)->grid_id()) ofs << id << ",";
+            for (const auto& desc : (*it)->fit().desc()) ofs << desc << ",";
+            for (const auto& gene : (*it)->data()) ofs << gene << ",";
             ofs << std::endl;
         }
         ofs.close();
@@ -70,20 +73,21 @@ class EvoGenStat {
         ofs.precision(5);
         for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it) {
             ofs << (*it)->id().gen << "," << (*it)->id().id << ","
-                << (*it)->grid_id()[0] << "," << (*it)->grid_id()[1] << ","
-                << (*it)->fit().value() << std::endl;
+                << (*it)->fit().value() << ",";
+            for (const auto& id : (*it)->grid_id()) ofs << id << ",";
+            ofs << std::endl;
         }
         ofs.close();
 
-        std::ofstream ofs2(ea.res_dir() + "/gridstats/" + std::to_string(ea.gen() + 1) + ".csv");
-        const auto& map_stat = ea.container().stat();
-        for (int i = 0; i < ea.container().grid_shape[0]; ++i) {
-            for (int j = 0; j < ea.container().grid_shape[1]; ++j) {
-                ofs2 << map_stat[i][j] << ",";
-            }
-            ofs2 << std::endl;
-        }
-        ofs2.close();
+        // std::ofstream ofs2(ea.res_dir() + "/gridstats/" + std::to_string(ea.gen() + 1) + ".csv");
+        // const auto& map_stat = ea.container().stat();
+        // for (int i = 0; i < ea.container().grid_shape[0]; ++i) {
+            // for (int j = 0; j < ea.container().grid_shape[1]; ++j) {
+                // ofs2 << map_stat[i][j] << ",";
+            // }
+            // ofs2 << std::endl;
+        // }
+        // ofs2.close();
     }
 
     template <typename EA>
