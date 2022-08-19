@@ -146,6 +146,11 @@ classdef result_analyzer < matlab.apps.AppBase
         archive_ids
     end
 
+    methods (Static)
+        [stat, stat_loaded] = build_stat(result_path, evo_params, dump_robots, orig_stat, orig_stat_loaded)
+        export_result(result, dest_path)
+    end
+
     methods (Access = private)
         %% System tools
         result_analyzer_init(app)
@@ -170,12 +175,10 @@ classdef result_analyzer < matlab.apps.AppBase
         %% File navigation and manipulation
         build_pack_export_all_results(app)
         build_selected_stat(app)
-        [stat, stat_loaded] = build_stat(app, result_path, evo_params, dump_robots, orig_stat, orig_stat_loaded) % static
         export_archive_map(app)
         export_compare_plot_data(app)
         export_group(app)
         export_pickle_for_group(app)
-        export_result(app, result, dest_path) % static
         export_robot(app)
         patch_selected_stat(app)
         pack_selected_results(app)

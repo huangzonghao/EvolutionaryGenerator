@@ -1,4 +1,4 @@
-function export_result(app, result, dest_path)
+function export_result(result, dest_path)
 % export a single result to dest_path
 % result: the result struct
 % dest_path: path to the dest folder. The result will be placed in dest_path/result_basename

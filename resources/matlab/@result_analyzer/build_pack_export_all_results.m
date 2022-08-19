@@ -13,10 +13,10 @@ function build_pack_export_all_results(app)
         if isfile(fullfile(result.path, 'stat.mat'));
             continue;
         end
-        build_stat(app, result.path, result.evo_params, app.DumpRobotsCheckBox.Value, [], false, []);
+        app.build_stat(result.path, result.evo_params, app.DumpRobotsCheckBox.Value, [], false, []);
 
         % export
-        export_result(app, result, export_dir);
+        app.export_result(result, export_dir);
         cmd_str = "start tar -czf " + export_dir + "/" + result.basename + "_processed.tar.gz -C " + export_dir + " " + result.basename;
         system(cmd_str);
 
