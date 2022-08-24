@@ -147,6 +147,7 @@ classdef result_analyzer < matlab.apps.AppBase
     end
 
     methods (Static)
+        pack_result(result_path)
         [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_stat_loaded)
         export_result(result, dest_path)
     end
