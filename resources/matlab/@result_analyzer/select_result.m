@@ -39,7 +39,7 @@ function select_result(app, mode)
 
     grid_dim_str = '';
     for i = 1 : length(result.evo_params.grid_dim)
-        grid_dim_str = grid_dim_str + num2str(result.evo_params.grid_dim(i)) + 'x';
+        grid_dim_str = strcat(grid_dim_str, num2str(result.evo_params.grid_dim(i)), 'x');
     end
     app.ResultInfoTextLabel.Text = ...
         sprintf(['# of Gen Finished: %d/%d\n', ...
