@@ -158,12 +158,13 @@ class EvoGenQD
         this->_eval.set_sim_params(_sim_params);
     }
 
-    void _load_state_extra(boost::archive::binary_iarchive& ia) {
+    bool _load_state_extra(boost::archive::binary_iarchive& ia) {
         for (size_t i = 0; i < this->_pop.size(); ++i) {
             this->_pop[i]->set_params(this->_evo_params);
             this->_pop[i]->develop();
         }
         _add(this->_pop, _added);
+        return true;
     }
 
     void _populate_params_extra() {

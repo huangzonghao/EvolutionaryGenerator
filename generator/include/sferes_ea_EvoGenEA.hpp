@@ -74,7 +74,19 @@ class EvoGenEA : public stc::Any<Exact> {
         _load_config(_res_dir + "/evo_params.xml");
         _populate_params();
         srand(_evo_params.rand_seed());
-        _load_state(_res_dir + "/dumps/gen_" + std::to_string(dump_gen_id) + ".dat");
+        // The stat dump happen before the memory dump at each iteration, so if
+        // we can read the memory dump successfully, we are guaranteed to have a
+        // complete stat recording for that iteration.
+        while (!_load_state(_res_dir + "/dumps/gen_" + std::to_string(dump_gen_id) + ".dat")) {
+            // if the initial generation is not completely dumped, just return
+            // the whole job and let user manually relaunch it later on. This
+            // should be an extremely rare case.
+            if (dump_gen_id == 0) {
+                return;
+            } else {
+                dump_gen_id--;
+            }
+        }
         _gen = _gen + 1;
         std::cout<<"Resuming at gen: "<< _gen + 1 << std::endl;
         for (; _gen < _nb_gen; ++_gen)
@@ -124,7 +136,7 @@ class EvoGenEA : public stc::Any<Exact> {
     const typename boost::fusion::result_of::value_at_c<stat_t, I>::type& stat() const {
         return boost::fusion::at_c<I>(_stat);
     }
-    void load(const std::string& fname) { _load_state(fname); }
+    bool load(const std::string& fname) { return _load_state(fname); }
 
     void update_stats_init() {
         boost::fusion::at_c<0>(_stat).init(stc::exact(*this));
@@ -220,21 +232,27 @@ class EvoGenEA : public stc::Any<Exact> {
         stc::exact(this)->_dump_state_extra(oa);
     }
     void _dump_state_extra(boost::archive::binary_oarchive& oa) const {}
-    void _load_state(const std::string& fname) {
+    bool _load_state(const std::string& fname) {
         std::ifstream ifs(fname, std::ios::binary);
         if (ifs.fail()) {
             std::cerr << "Cannot open :" << fname
                       << "(does file exist ?)" << std::endl;
-            exit(1);
+            return false;;
         }
-        boost::archive::binary_iarchive ia(ifs);
-        ia >> BOOST_SERIALIZATION_NVP(_gen)
-           >> BOOST_SERIALIZATION_NVP(_last_epoch_time)
-           >> BOOST_SERIALIZATION_NVP(_total_time)
-           >> BOOST_SERIALIZATION_NVP(_pop);
-        stc::exact(this)->_load_state_extra(ia);
+        try {
+            boost::archive::binary_iarchive ia(ifs);
+            ia >> BOOST_SERIALIZATION_NVP(_gen)
+                >> BOOST_SERIALIZATION_NVP(_last_epoch_time)
+                >> BOOST_SERIALIZATION_NVP(_total_time)
+                >> BOOST_SERIALIZATION_NVP(_pop);
+            return stc::exact(this)->_load_state_extra(ia);
+
+        } catch (...) {
+            std::cerr << "Cannot read :" << fname << std::endl;
+            return false;;
+        }
     }
-    void _load_state_extra(boost::archive::binary_iarchive& ia) {}
+    bool _load_state_extra(boost::archive::binary_iarchive& ia) {}
     // TODO: this populate_params thing seems so weird, needs to be removed
     void _populate_params() {
         _nb_gen = _evo_params.nb_gen();
