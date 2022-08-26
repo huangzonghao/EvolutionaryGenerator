@@ -4,7 +4,7 @@
 
 function task_scheduler()
 
-addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'task_scheduler'));
-task_scheduler_ui('@PROJECT_WORKSPACE_DIR@', '@EVOGEN_EXE_PATH@', '@EVOGEN_TASK_LAUNCHER_PATH@');
+addpath('@EVOGEN_MATLAB_SCRIPTS_PATH@');
+task_scheduler('@PROJECT_WORKSPACE_DIR@', '@EVOGEN_EXE_PATH@', '@EVOGEN_TASK_LAUNCHER_PATH@');
 
 end % function

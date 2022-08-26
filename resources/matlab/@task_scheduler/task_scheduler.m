@@ -1,4 +1,4 @@
-classdef task_scheduler_ui < matlab.apps.AppBase
+classdef task_scheduler < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -65,6 +65,20 @@ classdef task_scheduler_ui < matlab.apps.AppBase
              % fields of job struct:
              % bag_file, env, num_gen, pop_size, sim_time,
              % nickname, comment, in_scheduler(bool), job_id(int)
+    end
+
+    methods (Access = private)
+        add_job(app)
+        clear_bag_selection(app)
+        launch_job_file(app)
+        load_selected_job(app)
+        refresh_bag_list(app)
+        refresh_job_files_list(app)
+        refresh_jobs_list(app)
+        remove_job(app)
+        save_schedule_file(app)
+        task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen_task_launcher_path)
+        update_job_file_info_label(app)
     end
 
     % Callbacks that handle component events
@@ -440,7 +454,7 @@ classdef task_scheduler_ui < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = task_scheduler_ui(varargin)
+        function app = task_scheduler(varargin)
 
             runningApp = getRunningApp(app);
 
