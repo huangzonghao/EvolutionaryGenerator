@@ -6,6 +6,7 @@ namespace qd {
 namespace selector {
 
 // Fill in the shortlist with selected ones from candidates
+// This is a selector with duplicated selections.
 template <typename Phen>
 struct Uniform {
     typedef std::shared_ptr<Phen> indiv_t;
