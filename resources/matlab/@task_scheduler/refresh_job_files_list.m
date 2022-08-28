@@ -1,6 +1,9 @@
 function refresh_job_files_list(app)
     app.JobFilesListBox.Items = {};
     dirs = dir(app.jobfile_dir);
+    T = struct2table(dirs);
+    sortedT = sortrows(T, 'datenum', 'descend');
+    dirs = table2struct(sortedT);
     for i = 1 : length(dirs)
         if (dirs(i).isdir || ~verify_jobfile_name(dirs(i).name))
             continue;

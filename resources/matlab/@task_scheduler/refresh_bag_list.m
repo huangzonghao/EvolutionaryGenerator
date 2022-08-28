@@ -1,6 +1,9 @@
 function refresh_bag_list(app)
     app.BagFilesListBox.Items = {};
     dirs = dir(app.bagfile_dir);
+    T = struct2table(dirs);
+    sortedT = sortrows(T, 'datenum', 'descend');
+    dirs = table2struct(sortedT);
     for i = 1 : length(dirs)
         if (dirs(i).isdir || ~verify_bagfile_name(dirs(i).name))
             continue;
