@@ -23,5 +23,9 @@ function task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen
     app.SimTimeEditField.Value = 60;
     app.SessionTimeEditField.Value = 30;
 
+    app.NumDimEditField.Value = 2;
+    grid_dim_string = num2str([20, 20], '%d,');
+    app.GridDimensionEditField.Value = grid_dim_string(1:end-1);
+
     refresh_bag_list(app);
 end

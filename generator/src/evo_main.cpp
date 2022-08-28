@@ -130,6 +130,7 @@ void new_training_from_job(EvoGenTrainingConfigs& training_configs,
     std::filesystem::path evo_params_path(EvoGen_Params_Dir + "/evo_params.xml");
     evo_params.Load(evo_params_path.string());
 
+    evo_params.set_grid_shape(training_configs.grid_dim());
     evo_params.set_nb_gen(training_configs.num_gen());
     evo_params.set_pop_size(training_configs.pop_size());
 
@@ -199,6 +200,8 @@ void process_job_file(const std::string& job_file_basename) {
     time_t t = time(0);
     char time_buffer [80];
     bool start_new_job = false;
+    std::string js_ver_str = jsobj["format_ver"].get<std::string>();
+    double js_ver = std::stod(js_ver_str);
     std::string group_name(jsobj["group_name"]);
     // prepare for the output fstream
     std::ofstream ofs;
@@ -258,6 +261,9 @@ void process_job_file(const std::string& job_file_basename) {
                 EvoGenTrainingConfigs training_configs;
                 training_configs.set_num_gen(job["num_gen"]);
                 training_configs.set_pop_size(job["pop_size"]);
+                if (js_ver >= 1.29) { // grid_dim introducde in ver 1.3
+                    training_configs.set_grid_dim(job["grid_dim"]);
+                }
                 training_configs.set_env(job["env"]);
                 training_configs.set_sim_time(job["sim_time"]);
                 training_configs.set_output_dir(job["result_dir"]);

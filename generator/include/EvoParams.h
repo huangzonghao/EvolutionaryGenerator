@@ -21,6 +21,7 @@ class EvoParams {
     bool output_enabled() const { return enable_output_; }
     std::vector<std::string>& feature_description() { return feature_description_; }
 
+    void set_grid_shape(const std::vector<int>& grid_shape) { grid_shape_ = grid_shape; }
     void set_nb_gen(size_t nb_gen) { nb_gen_ = nb_gen; }
     void set_pop_size(size_t pop_size) { pop_size_ = pop_size; }
 
@@ -62,7 +63,7 @@ class EvoParams {
     // So what could be configured at run time is the number of bins of each dimension.
     // And if we pre-code the different possible gridshape dimensions into the code,
     // a run time selection maybe possible
-    std::vector<int> grid_shape_ = {8, 8, 8, 8};
+    std::vector<int> grid_shape_ = {20, 20};
     std::vector<std::string> feature_description_;
 };
 

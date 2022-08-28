@@ -13,6 +13,8 @@ class EvoGenTrainingConfigs {
     void set_num_gen(int new_num_gen) { num_gen_ = new_num_gen; }
     int pop_size() { return pop_size_; }
     void set_pop_size(int new_pop_size) { pop_size_ = new_pop_size; }
+    std::vector<int>& grid_dim() { return grid_dim_; }
+    void set_grid_dim(const std::vector<int>& grid_dim) { grid_dim_ = grid_dim; }
 
     // Simulation
     const std::string& env() { return env_; }
@@ -27,6 +29,7 @@ class EvoGenTrainingConfigs {
   private:
     int num_gen_ = 0;
     int pop_size_ = 0;
+    std::vector<int> grid_dim_;
     double sim_time_ = 0;
     std::string env_ = "";
     std::string output_dir_ = "";

@@ -11,6 +11,13 @@ function add_job(app)
     new_job.comments = string(app.JobCommentsTextArea.Value);
     new_job.ignore_random_pop_in_bag = app.IgnoreRandomPopInBagCheckBox.Value;
     nickname = app.NicknameEditField.Value;
+    num_dim = app.NumDimEditField.Value;
+    dim_array = str2num(app.GridDimensionEditField.Value);
+    if num_dim ~= length(dim_array)
+        msgbox("Grid dimension and the number of bins of each dimension doesn't match. Cannot add job");
+        return
+    end
+    new_job.grid_dim = dim_array;
 
     % functional fields
     new_job.num_runs = 0;

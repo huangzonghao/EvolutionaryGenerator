@@ -13,7 +13,8 @@ function save_schedule_file(app)
     % Change log
     % 1.1: add ignore_random_pop_in_bag
     % 1.2: add session_time
-    jsobj.format_ver = '1.2';
+    % 1.3: add grid_dim and number of bins per dimension
+    jsobj.format_ver = '1.3';
 
     middlename = '';
     if ~isempty(app.OutputFileNameEditField.Value)

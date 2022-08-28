@@ -30,6 +30,10 @@ classdef task_scheduler < matlab.apps.AppBase
         SaveButton                    matlab.ui.control.Button
         RemoveButton                  matlab.ui.control.Button
         JobEditorPanel                matlab.ui.container.Panel
+        GridDimensionEditField        matlab.ui.control.EditField
+        BinsEditFieldLabel            matlab.ui.control.Label
+        NumDimEditField               matlab.ui.control.NumericEditField
+        DimensionsEditFieldLabel      matlab.ui.control.Label
         StartIndexEditField           matlab.ui.control.NumericEditField
         StartIndexEditFieldLabel      matlab.ui.control.Label
         NicknameEditField             matlab.ui.control.EditField
@@ -79,6 +83,7 @@ classdef task_scheduler < matlab.apps.AppBase
         save_schedule_file(app)
         task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen_task_launcher_path)
         update_job_file_info_label(app)
+        grid_dimension_update(app)
     end
 
     % Callbacks that handle component events
@@ -143,6 +148,11 @@ classdef task_scheduler < matlab.apps.AppBase
         function CLCButtonPushed(app, event)
             clc;
         end
+
+        % Value changed function: NumDimEditField
+        function NumDimEditFieldValueChanged(app, event)
+            grid_dimension_update(app);
+        end
     end
 
     % Component initialization
@@ -164,7 +174,7 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create CreateJobButton
             app.CreateJobButton = uibutton(app.JobEditorPanel, 'push');
             app.CreateJobButton.ButtonPushedFcn = createCallbackFcn(app, @CreateJobButtonPushed, true);
-            app.CreateJobButton.Position = [229 35 74 23];
+            app.CreateJobButton.Position = [229 5 74 23];
             app.CreateJobButton.Text = 'Create Job';
 
             % Create RefreshBagFileListButton
@@ -247,17 +257,17 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create JobCommentsTextAreaLabel
             app.JobCommentsTextAreaLabel = uilabel(app.JobEditorPanel);
             app.JobCommentsTextAreaLabel.HorizontalAlignment = 'right';
-            app.JobCommentsTextAreaLabel.Position = [205 293 90 22];
+            app.JobCommentsTextAreaLabel.Position = [205 229 90 22];
             app.JobCommentsTextAreaLabel.Text = 'Job Comments:';
 
             % Create JobCommentsTextArea
             app.JobCommentsTextArea = uitextarea(app.JobEditorPanel);
-            app.JobCommentsTextArea.Position = [215 174 108 116];
+            app.JobCommentsTextArea.Position = [215 127 108 92];
 
             % Create RepsLabel
             app.RepsLabel = uilabel(app.JobEditorPanel);
             app.RepsLabel.HorizontalAlignment = 'right';
-            app.RepsLabel.Position = [215 63 47 22];
+            app.RepsLabel.Position = [215 33 47 22];
             app.RepsLabel.Text = '# Reps:';
 
             % Create NumRepsEditField
@@ -266,30 +276,54 @@ classdef task_scheduler < matlab.apps.AppBase
             app.NumRepsEditField.RoundFractionalValues = 'on';
             app.NumRepsEditField.ValueDisplayFormat = '%.0f';
             app.NumRepsEditField.HorizontalAlignment = 'center';
-            app.NumRepsEditField.Position = [272 63 50 20];
+            app.NumRepsEditField.Position = [272 33 50 20];
             app.NumRepsEditField.Value = 1;
 
             % Create NicknameEditFieldLabel
             app.NicknameEditFieldLabel = uilabel(app.JobEditorPanel);
             app.NicknameEditFieldLabel.HorizontalAlignment = 'right';
-            app.NicknameEditFieldLabel.Position = [213 147 62 22];
+            app.NicknameEditFieldLabel.Position = [213 105 62 22];
             app.NicknameEditFieldLabel.Text = 'Nickname:';
 
             % Create NicknameEditField
             app.NicknameEditField = uieditfield(app.JobEditorPanel, 'text');
             app.NicknameEditField.HorizontalAlignment = 'center';
-            app.NicknameEditField.Position = [231 124 89 20];
+            app.NicknameEditField.Position = [231 82 89 20];
 
             % Create StartIndexEditFieldLabel
             app.StartIndexEditFieldLabel = uilabel(app.JobEditorPanel);
             app.StartIndexEditFieldLabel.HorizontalAlignment = 'right';
-            app.StartIndexEditFieldLabel.Position = [216 95 67 22];
+            app.StartIndexEditFieldLabel.Position = [216 54 67 22];
             app.StartIndexEditFieldLabel.Text = 'Start Index:';
 
             % Create StartIndexEditField
             app.StartIndexEditField = uieditfield(app.JobEditorPanel, 'numeric');
             app.StartIndexEditField.Limits = [0 Inf];
-            app.StartIndexEditField.Position = [291 95 28 22];
+            app.StartIndexEditField.Position = [291 54 28 22];
+
+            % Create DimensionsEditFieldLabel
+            app.DimensionsEditFieldLabel = uilabel(app.JobEditorPanel);
+            app.DimensionsEditFieldLabel.HorizontalAlignment = 'right';
+            app.DimensionsEditFieldLabel.Position = [212 295 80 22];
+            app.DimensionsEditFieldLabel.Text = '# Dimensions:';
+
+            % Create NumDimEditField
+            app.NumDimEditField = uieditfield(app.JobEditorPanel, 'numeric');
+            app.NumDimEditField.Limits = [0 6];
+            app.NumDimEditField.RoundFractionalValues = 'on';
+            app.NumDimEditField.ValueChangedFcn = createCallbackFcn(app, @NumDimEditFieldValueChanged, true);
+            app.NumDimEditField.HorizontalAlignment = 'center';
+            app.NumDimEditField.Position = [295 294 29 22];
+
+            % Create BinsEditFieldLabel
+            app.BinsEditFieldLabel = uilabel(app.JobEditorPanel);
+            app.BinsEditFieldLabel.HorizontalAlignment = 'right';
+            app.BinsEditFieldLabel.Position = [210 280 42 22];
+            app.BinsEditFieldLabel.Text = '# Bins:';
+
+            % Create GridDimensionEditField
+            app.GridDimensionEditField = uieditfield(app.JobEditorPanel, 'text');
+            app.GridDimensionEditField.Position = [213 258 109 22];
 
             % Create JobFileEditorPanel
             app.JobFileEditorPanel = uipanel(app.MainFigure);
