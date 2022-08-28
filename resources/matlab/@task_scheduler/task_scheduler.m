@@ -15,6 +15,7 @@ classdef task_scheduler < matlab.apps.AppBase
         JobFilesListBox               matlab.ui.control.ListBox
         AvailableJobFilesLabel        matlab.ui.control.Label
         JobFileEditorPanel            matlab.ui.container.Panel
+        SaveJobEditButton             matlab.ui.control.Button
         SessionTimeEditField          matlab.ui.control.NumericEditField
         SessionTimeminEditFieldLabel  matlab.ui.control.Label
         GroupCommentsTextArea         matlab.ui.control.TextArea
@@ -73,7 +74,9 @@ classdef task_scheduler < matlab.apps.AppBase
     end
 
     methods (Access = private)
+        job = format_job(app)
         add_job(app)
+        edit_job(app)
         clear_bag_selection(app)
         launch_job_file(app)
         load_selected_job(app)
@@ -98,6 +101,11 @@ classdef task_scheduler < matlab.apps.AppBase
         % Button pushed function: CreateJobButton
         function CreateJobButtonPushed(app, event)
             add_job(app);
+        end
+
+        % Button pushed function: SaveJobEditButton
+        function SaveJobEditButtonPushed(app, event)
+            edit_job(app);
         end
 
         % Button pushed function: RemoveButton
@@ -363,7 +371,7 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create LoadJobButton
             app.LoadJobButton = uibutton(app.JobFileEditorPanel, 'push');
             app.LoadJobButton.ButtonPushedFcn = createCallbackFcn(app, @LoadJobButtonPushed, true);
-            app.LoadJobButton.Position = [226 443 71 23];
+            app.LoadJobButton.Position = [226 443 49 23];
             app.LoadJobButton.Text = 'Load';
 
             % Create CreatedJobsListBoxLabel
@@ -422,6 +430,12 @@ classdef task_scheduler < matlab.apps.AppBase
             app.SessionTimeEditField.RoundFractionalValues = 'on';
             app.SessionTimeEditField.ValueDisplayFormat = '%.0f';
             app.SessionTimeEditField.Position = [311 91 36 22];
+
+            % Create SaveJobEditButton
+            app.SaveJobEditButton = uibutton(app.JobFileEditorPanel, 'push');
+            app.SaveJobEditButton.ButtonPushedFcn = createCallbackFcn(app, @SaveJobEditButtonPushed, true);
+            app.SaveJobEditButton.Position = [279 443 67 23];
+            app.SaveJobEditButton.Text = 'Save Edit';
 
             % Create JobFIleLauncherPanel
             app.JobFIleLauncherPanel = uipanel(app.MainFigure);
