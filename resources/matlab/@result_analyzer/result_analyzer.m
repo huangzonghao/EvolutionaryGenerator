@@ -7,6 +7,20 @@ classdef result_analyzer < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        PlotGenButton                  matlab.ui.control.Button
+        Feature2DropDown               matlab.ui.control.DropDown
+        Feature2DropDownLabel          matlab.ui.control.Label
+        Feature1DropDown               matlab.ui.control.DropDown
+        Feature1DropDownLabel          matlab.ui.control.Label
+        GenLabel                       matlab.ui.control.Label
+        GenIDField                     matlab.ui.control.EditField
+        GenStepField                   matlab.ui.control.EditField
+        LoadFirstButton                matlab.ui.control.Button
+        LoadLastButton                 matlab.ui.control.Button
+        LoadPrevStepButton             matlab.ui.control.Button
+        LoadNextStepButton             matlab.ui.control.Button
+        LoadPrevButton                 matlab.ui.control.Button
+        LoadNextButton                 matlab.ui.control.Button
         UpdateFitAfterSim              matlab.ui.control.CheckBox
         RegenerateArchiveButton        matlab.ui.control.Button
         EnableResultEditCheckBox       matlab.ui.control.CheckBox
@@ -43,18 +57,8 @@ classdef result_analyzer < matlab.apps.AppBase
         StatEndGenField                matlab.ui.control.EditField
         FromLabel                      matlab.ui.control.Label
         StatStartGenField              matlab.ui.control.EditField
-        GenLabel                       matlab.ui.control.Label
-        GenIDField                     matlab.ui.control.EditField
         ResultInfoTextLabel            matlab.ui.control.Label
         ResultInfoLabel                matlab.ui.control.Label
-        PlotGenButton                  matlab.ui.control.Button
-        GenStepField                   matlab.ui.control.EditField
-        LoadFirstButton                matlab.ui.control.Button
-        LoadLastButton                 matlab.ui.control.Button
-        LoadPrevStepButton             matlab.ui.control.Button
-        LoadNextStepButton             matlab.ui.control.Button
-        LoadPrevButton                 matlab.ui.control.Button
-        LoadNextButton                 matlab.ui.control.Button
         ResultNameLabel                matlab.ui.control.Label
         AddResultToCompareButton       matlab.ui.control.Button
         LoadResultGroupButton          matlab.ui.control.Button
@@ -602,6 +606,16 @@ classdef result_analyzer < matlab.apps.AppBase
         function CalibrateForVideoButtonPushed(app, event)
             calibrate_for_video(app);
         end
+
+        % Value changed function: Feature1DropDown
+        function Feature1DropDownValueChanged(app, event)
+            plot_gen_all(app);
+        end
+
+        % Value changed function: Feature2DropDown
+        function Feature2DropDownValueChanged(app, event)
+            plot_gen_all(app);
+        end
     end
 
     % Component initialization
@@ -984,7 +998,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.BuildSelectedResultStatButton = uibutton(app.SingleResultsPanel, 'push');
             app.BuildSelectedResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildSelectedResultStatButtonPushed, true);
             app.BuildSelectedResultStatButton.Tag = 'loadresult';
-            app.BuildSelectedResultStatButton.Position = [280 454 62 22];
+            app.BuildSelectedResultStatButton.Position = [280 445 62 22];
             app.BuildSelectedResultStatButton.Text = 'Build';
 
             % Create PatchResultStatButton
@@ -1019,102 +1033,41 @@ classdef result_analyzer < matlab.apps.AppBase
             app.ResultNameLabel.Position = [384 499 196 30];
             app.ResultNameLabel.Text = 'Load a result to view';
 
-            % Create LoadNextButton
-            app.LoadNextButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
-            app.LoadNextButton.Position = [472 311 25 22];
-            app.LoadNextButton.Text = '>';
-
-            % Create LoadPrevButton
-            app.LoadPrevButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
-            app.LoadPrevButton.Position = [447 311 25 22];
-            app.LoadPrevButton.Text = '<';
-
-            % Create LoadNextStepButton
-            app.LoadNextStepButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
-            app.LoadNextStepButton.Position = [494 290 30 22];
-            app.LoadNextStepButton.Text = '+';
-
-            % Create LoadPrevStepButton
-            app.LoadPrevStepButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
-            app.LoadPrevStepButton.Position = [423 290 30 22];
-            app.LoadPrevStepButton.Text = '-';
-
-            % Create LoadLastButton
-            app.LoadLastButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
-            app.LoadLastButton.Position = [497 311 25 22];
-            app.LoadLastButton.Text = '>>';
-
-            % Create LoadFirstButton
-            app.LoadFirstButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
-            app.LoadFirstButton.Position = [422 311 25 22];
-            app.LoadFirstButton.Text = '<<';
-
-            % Create GenStepField
-            app.GenStepField = uieditfield(app.SingleResultsPanel, 'text');
-            app.GenStepField.ValueChangedFcn = createCallbackFcn(app, @GenStepFieldValueChanged, true);
-            app.GenStepField.HorizontalAlignment = 'center';
-            app.GenStepField.Position = [454 290 39 22];
-
-            % Create PlotGenButton
-            app.PlotGenButton = uibutton(app.SingleResultsPanel, 'push');
-            app.PlotGenButton.ButtonPushedFcn = createCallbackFcn(app, @PlotGenButtonPushed, true);
-            app.PlotGenButton.Position = [506 335 64 22];
-            app.PlotGenButton.Text = 'Plot Gen';
-
             % Create ResultInfoLabel
             app.ResultInfoLabel = uilabel(app.SingleResultsPanel);
             app.ResultInfoLabel.FontSize = 13;
             app.ResultInfoLabel.FontWeight = 'bold';
-            app.ResultInfoLabel.Position = [388 468 77 22];
+            app.ResultInfoLabel.Position = [348 488 77 22];
             app.ResultInfoLabel.Text = 'Result Info:';
 
             % Create ResultInfoTextLabel
             app.ResultInfoTextLabel = uilabel(app.SingleResultsPanel);
             app.ResultInfoTextLabel.VerticalAlignment = 'top';
-            app.ResultInfoTextLabel.Position = [400 363 191 105];
+            app.ResultInfoTextLabel.Position = [350 359 137 129];
             app.ResultInfoTextLabel.Text = '';
-
-            % Create GenIDField
-            app.GenIDField = uieditfield(app.SingleResultsPanel, 'text');
-            app.GenIDField.ValueChangedFcn = createCallbackFcn(app, @GenIDFieldValueChanged, true);
-            app.GenIDField.HorizontalAlignment = 'center';
-            app.GenIDField.Position = [440 335 58 22];
-
-            % Create GenLabel
-            app.GenLabel = uilabel(app.SingleResultsPanel);
-            app.GenLabel.FontSize = 13;
-            app.GenLabel.FontWeight = 'bold';
-            app.GenLabel.Position = [407 335 35 22];
-            app.GenLabel.Text = 'Gen:';
 
             % Create StatStartGenField
             app.StatStartGenField = uieditfield(app.SingleResultsPanel, 'text');
             app.StatStartGenField.HorizontalAlignment = 'center';
-            app.StatStartGenField.Position = [427 266 41 22];
+            app.StatStartGenField.Position = [545 394 41 22];
 
             % Create FromLabel
             app.FromLabel = uilabel(app.SingleResultsPanel);
             app.FromLabel.FontSize = 13;
             app.FromLabel.FontWeight = 'bold';
-            app.FromLabel.Position = [387 266 41 22];
+            app.FromLabel.Position = [505 394 41 22];
             app.FromLabel.Text = 'From:';
 
             % Create StatEndGenField
             app.StatEndGenField = uieditfield(app.SingleResultsPanel, 'text');
             app.StatEndGenField.HorizontalAlignment = 'center';
-            app.StatEndGenField.Position = [494 266 62 22];
+            app.StatEndGenField.Position = [544 370 42 22];
 
             % Create ToLabel
             app.ToLabel = uilabel(app.SingleResultsPanel);
             app.ToLabel.FontSize = 13;
             app.ToLabel.FontWeight = 'bold';
-            app.ToLabel.Position = [473 266 25 22];
+            app.ToLabel.Position = [523 370 25 22];
             app.ToLabel.Text = 'To:';
 
             % Create StatPlotButton
@@ -1240,7 +1193,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.ExportforPlottingButton.ButtonPushedFcn = createCallbackFcn(app, @ExportforPlottingButtonPushed, true);
             app.ExportforPlottingButton.WordWrap = 'on';
             app.ExportforPlottingButton.FontSize = 11;
-            app.ExportforPlottingButton.Position = [280 393 62 33];
+            app.ExportforPlottingButton.Position = [280 384 62 33];
             app.ExportforPlottingButton.Text = 'Export for Plotting';
 
             % Create ExportRobotButton
@@ -1270,13 +1223,14 @@ classdef result_analyzer < matlab.apps.AppBase
             app.PackSelectedResultsButton.ButtonPushedFcn = createCallbackFcn(app, @PackSelectedResultsButtonPushed, true);
             app.PackSelectedResultsButton.Tag = 'loadresult';
             app.PackSelectedResultsButton.WordWrap = 'on';
-            app.PackSelectedResultsButton.Position = [280 429 62 22];
+            app.PackSelectedResultsButton.Position = [280 420 62 22];
             app.PackSelectedResultsButton.Text = 'Pack';
 
             % Create DumpRobotsCheckBox
             app.DumpRobotsCheckBox = uicheckbox(app.SingleResultsPanel);
             app.DumpRobotsCheckBox.Text = 'Dump Robots';
-            app.DumpRobotsCheckBox.Position = [282 474 95 22];
+            app.DumpRobotsCheckBox.WordWrap = 'on';
+            app.DumpRobotsCheckBox.Position = [282 466 67 30];
 
             % Create ExportPickleButton
             app.ExportPickleButton = uibutton(app.SingleResultsPanel, 'push');
@@ -1336,6 +1290,94 @@ classdef result_analyzer < matlab.apps.AppBase
             app.UpdateFitAfterSim.WordWrap = 'on';
             app.UpdateFitAfterSim.FontSize = 10;
             app.UpdateFitAfterSim.Position = [490 61 66 47];
+
+            % Create LoadNextButton
+            app.LoadNextButton = uibutton(app.SingleResultsPanel, 'push');
+            app.LoadNextButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextButtonPushed, true);
+            app.LoadNextButton.Position = [544 444 25 22];
+            app.LoadNextButton.Text = '>';
+
+            % Create LoadPrevButton
+            app.LoadPrevButton = uibutton(app.SingleResultsPanel, 'push');
+            app.LoadPrevButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevButtonPushed, true);
+            app.LoadPrevButton.Position = [519 444 25 22];
+            app.LoadPrevButton.Text = '<';
+
+            % Create LoadNextStepButton
+            app.LoadNextStepButton = uibutton(app.SingleResultsPanel, 'push');
+            app.LoadNextStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadNextStepButtonPushed, true);
+            app.LoadNextStepButton.Position = [566 423 30 22];
+            app.LoadNextStepButton.Text = '+';
+
+            % Create LoadPrevStepButton
+            app.LoadPrevStepButton = uibutton(app.SingleResultsPanel, 'push');
+            app.LoadPrevStepButton.ButtonPushedFcn = createCallbackFcn(app, @LoadPrevStepButtonPushed, true);
+            app.LoadPrevStepButton.Position = [495 423 30 22];
+            app.LoadPrevStepButton.Text = '-';
+
+            % Create LoadLastButton
+            app.LoadLastButton = uibutton(app.SingleResultsPanel, 'push');
+            app.LoadLastButton.ButtonPushedFcn = createCallbackFcn(app, @LoadLastButtonPushed, true);
+            app.LoadLastButton.Position = [569 444 25 22];
+            app.LoadLastButton.Text = '>>';
+
+            % Create LoadFirstButton
+            app.LoadFirstButton = uibutton(app.SingleResultsPanel, 'push');
+            app.LoadFirstButton.ButtonPushedFcn = createCallbackFcn(app, @LoadFirstButtonPushed, true);
+            app.LoadFirstButton.Position = [494 444 25 22];
+            app.LoadFirstButton.Text = '<<';
+
+            % Create GenStepField
+            app.GenStepField = uieditfield(app.SingleResultsPanel, 'text');
+            app.GenStepField.ValueChangedFcn = createCallbackFcn(app, @GenStepFieldValueChanged, true);
+            app.GenStepField.HorizontalAlignment = 'center';
+            app.GenStepField.Position = [526 423 39 22];
+
+            % Create GenIDField
+            app.GenIDField = uieditfield(app.SingleResultsPanel, 'text');
+            app.GenIDField.ValueChangedFcn = createCallbackFcn(app, @GenIDFieldValueChanged, true);
+            app.GenIDField.HorizontalAlignment = 'center';
+            app.GenIDField.Position = [528 468 58 22];
+
+            % Create GenLabel
+            app.GenLabel = uilabel(app.SingleResultsPanel);
+            app.GenLabel.FontSize = 13;
+            app.GenLabel.FontWeight = 'bold';
+            app.GenLabel.Position = [495 468 35 22];
+            app.GenLabel.Text = 'Gen:';
+
+            % Create Feature1DropDownLabel
+            app.Feature1DropDownLabel = uilabel(app.SingleResultsPanel);
+            app.Feature1DropDownLabel.HorizontalAlignment = 'right';
+            app.Feature1DropDownLabel.Position = [350 337 54 22];
+            app.Feature1DropDownLabel.Text = 'Feature 1';
+
+            % Create Feature1DropDown
+            app.Feature1DropDown = uidropdown(app.SingleResultsPanel);
+            app.Feature1DropDown.Items = {};
+            app.Feature1DropDown.ValueChangedFcn = createCallbackFcn(app, @Feature1DropDownValueChanged, true);
+            app.Feature1DropDown.Position = [355 317 158 22];
+            app.Feature1DropDown.Value = {};
+
+            % Create Feature2DropDownLabel
+            app.Feature2DropDownLabel = uilabel(app.SingleResultsPanel);
+            app.Feature2DropDownLabel.HorizontalAlignment = 'right';
+            app.Feature2DropDownLabel.Position = [347 296 57 22];
+            app.Feature2DropDownLabel.Text = 'Feature 2';
+
+            % Create Feature2DropDown
+            app.Feature2DropDown = uidropdown(app.SingleResultsPanel);
+            app.Feature2DropDown.Items = {};
+            app.Feature2DropDown.ValueChangedFcn = createCallbackFcn(app, @Feature2DropDownValueChanged, true);
+            app.Feature2DropDown.Position = [355 276 158 22];
+            app.Feature2DropDown.Value = {};
+
+            % Create PlotGenButton
+            app.PlotGenButton = uibutton(app.SingleResultsPanel, 'push');
+            app.PlotGenButton.ButtonPushedFcn = createCallbackFcn(app, @PlotGenButtonPushed, true);
+            app.PlotGenButton.WordWrap = 'on';
+            app.PlotGenButton.Position = [529 289 51 54];
+            app.PlotGenButton.Text = 'Plot Gen';
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);

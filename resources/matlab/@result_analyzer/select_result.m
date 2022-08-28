@@ -37,12 +37,14 @@ function select_result(app, mode)
     result = load_target_result(app, false, result_id);
     app.ResultsListBox.Value = {result_id};
 
+    num_dim = length(result.evo_params.grid_dim);
     grid_dim_str = '';
-    for i = 1 : length(result.evo_params.grid_dim)
+    for i = 1 : num_dim
         grid_dim_str = strcat(grid_dim_str, num2str(result.evo_params.grid_dim(i)), 'x');
     end
     app.ResultInfoTextLabel.Text = ...
-        sprintf(['# of Gen Finished: %d/%d\n', ...
+        sprintf(['# of Gen Finished:\n', ...
+                 '\t%d/%d\n', ...
                  'Progress: %.2f%%\n', ...
                  'Init size: %d\n', ...
                  'Pop size: %d\n', ...
@@ -52,7 +54,7 @@ function select_result(app, mode)
                 double(result.evo_params.nb_gen) / result.evo_params.nb_gen_planned * 100, ...
                 result.evo_params.init_size, ...
                 result.evo_params.gen_size, ...
-                length(result.evo_params.grid_dim), ...
+                num_dim, ...
                 grid_dim_str(1:end-1));
 
     app.StatStartGenField.Value = num2str(0);
@@ -64,5 +66,14 @@ function select_result(app, mode)
     app.current_result.plot_to_file = false;
     app.current_gen = -1;
 
+    % Set up the feature dropdown
+    for i = 1 : num_dim
+        app.Feature1DropDown.Items{i} = result.evo_params.feature_description{i};
+        app.Feature2DropDown.Items{i} = result.evo_params.feature_description{i};
+    end
+    app.Feature1DropDown.ItemsData = 1 : num_dim;
+    app.Feature2DropDown.ItemsData = 1 : num_dim;
+    app.Feature1DropDown.Value = 1;
+    app.Feature2DropDown.Value = 2;
     load_gen(app, str2double(app.GenIDField.Value));
 end

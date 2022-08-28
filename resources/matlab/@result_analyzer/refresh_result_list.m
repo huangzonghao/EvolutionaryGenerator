@@ -127,7 +127,7 @@ function evo_params = load_evo_params(app, result_path)
     end
     evo_params.feature_description = "";
     for i = 1 : length(evo_xml.boost_serialization{2}.EvoParams.feature_description_.item)
-        evo_params.feature_description(i) = str2double(evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{i}.Text);
+        evo_params.feature_description(i) = evo_xml.boost_serialization{2}.EvoParams.feature_description_.item{i}.Text;
     end
 
     statusfile_id = fopen(fullfile(result_path, 'status.txt'));
