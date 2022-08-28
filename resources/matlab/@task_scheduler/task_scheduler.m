@@ -7,6 +7,7 @@ classdef task_scheduler < matlab.apps.AppBase
         CLCButton                     matlab.ui.control.Button
         RehashButton                  matlab.ui.control.Button
         JobFIleLauncherPanel          matlab.ui.container.Panel
+        OpenResultFolderButton        matlab.ui.control.Button
         JobFileStatusLabel            matlab.ui.control.Label
         JobFileInfoLabel              matlab.ui.control.Label
         RefreshJobFileListButton      matlab.ui.control.Button
@@ -112,6 +113,11 @@ classdef task_scheduler < matlab.apps.AppBase
         % Button pushed function: OpenJobFileFolderButton
         function OpenJobFileFolderButtonPushed(app, event)
             winopen(app.jobfile_dir);
+        end
+
+        % Button pushed function: OpenResultFolderButton
+        function OpenResultFolderButtonPushed(app, event)
+            winopen(fullfile(app.workspace_dir, 'Results'));
         end
 
         % Button pushed function: LoadJobButton
@@ -461,6 +467,13 @@ classdef task_scheduler < matlab.apps.AppBase
             app.JobFileStatusLabel.FontWeight = 'bold';
             app.JobFileStatusLabel.Position = [220 320 110 22];
             app.JobFileStatusLabel.Text = 'Job File Status:';
+
+            % Create OpenResultFolderButton
+            app.OpenResultFolderButton = uibutton(app.JobFIleLauncherPanel, 'push');
+            app.OpenResultFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenResultFolderButtonPushed, true);
+            app.OpenResultFolderButton.WordWrap = 'on';
+            app.OpenResultFolderButton.Position = [255 8 71 50];
+            app.OpenResultFolderButton.Text = 'Open Result Folder';
 
             % Create MiscellaneousPanel
             app.MiscellaneousPanel = uipanel(app.MainFigure);
