@@ -16,4 +16,8 @@ robot_dump_file = fullfile(result.path, 'robots_dump.mat');
 if isfile(robot_dump_file)
     copyfile(robot_dump_file, dest_result_dir);
 end
+version_file = fullfile(result.path, 'version.txt');
+if isfile(version_file)
+    copyfile(version_file, dest_result_dir);
+end
 end
