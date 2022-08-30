@@ -43,7 +43,7 @@ function simulate_for_video(app)
     for i_target = 1 : num_results
         load_result_robots(app, app.targets_to_compare{i_target}.id);
         result = load_target_result(app, false, app.targets_to_compare{i_target}.id);
-        sim_configs = video_simulation_configs(result.env);
+        sim_configs = app.video_simulation_configs(result.env);
         sim_configs.result_id = result.id;
         sim_configs.robot_color = plot_colors(i_target,:);
         if production_mode

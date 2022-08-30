@@ -16,7 +16,7 @@ function sim_report = simulate_robot(app, sim_configs)
     if isfolder(fullfile(result.path, '/robots'))
         robot_file_buffer = readmatrix(fullfile(result.path, strcat('/robots/', num2str(sim_configs.gen_id), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
         current_robot = robot_file_buffer(robot_file_buffer(:, 2)==sim_configs.robot_id, :);
-        dv = current_robot(12:end);
+        dv = current_robot(8 + 2 * num_dim:end);
     elseif isfile(fullfile(result.path, '/robots_dump.mat'));
         if isfield(result, 'robots_dump')
             robots_dump = result.robots_dump;

@@ -43,7 +43,7 @@ function reevaluate_fitness(app)
         nb_gen = result.evo_params.nb_gen;
         gen_size = result.evo_params.gen_size;
 
-        sim_configs = video_simulation_configs(result.env);
+        sim_configs = app.video_simulation_configs(result.env);
         sim_configs.robot_color = plot_colors(1,:);
         sim_configs.result_id = result.id;
         if ~with_vis

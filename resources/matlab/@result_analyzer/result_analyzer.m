@@ -154,6 +154,7 @@ classdef result_analyzer < matlab.apps.AppBase
         pack_result(result_path)
         [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_stat_loaded)
         export_result(result, dest_path)
+        sim_configs = video_simulation_configs(env)
     end
 
     methods (Access = private)

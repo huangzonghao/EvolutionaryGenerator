@@ -31,9 +31,13 @@ function simulate_from_archive_map(app)
     current_gen_archive = result.archive{current_gen + 1};
     robot_gen = current_gen_archive(id_in_archive, 1);
     robot_id = current_gen_archive(id_in_archive, 2);
-    old_fitness = current_gen_archive(id_in_archive, 5);
+    if result.id < 2
+        old_fitness = current_gen_archive(id_in_archive, 5);
+    else
+        old_fitness = current_gen_archive(id_in_archive, 3);
+    end
 
-    sim_configs = video_simulation_configs(result.env);
+    sim_configs = app.video_simulation_configs(result.env);
     sim_configs.result_id = result.id;
     sim_configs.gen_id = robot_gen;
     sim_configs.robot_id = robot_id;

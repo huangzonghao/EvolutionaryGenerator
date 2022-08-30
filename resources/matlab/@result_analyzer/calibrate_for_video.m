@@ -39,7 +39,7 @@ function calibrate_for_video(app)
         result = load_target_result(app, false, app.targets_to_compare{i_target}.id);
         waitbar(double(i_target) / double(num_results), wb_result, ...
                 sprintf("Processing %d / %d (Curr: %s)", i_target, num_results, result.name));
-        sim_configs = video_simulation_configs(result.env);
+        sim_configs = app.video_simulation_configs(result.env);
         sim_configs.result_id = result.id;
         % sim_configs.robot_color = plot_colors(i_target,:);
         sim_configs.mode = 'no_visualization';
