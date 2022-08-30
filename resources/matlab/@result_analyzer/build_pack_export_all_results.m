@@ -14,7 +14,7 @@ function build_pack_export_all_results(app)
         result = app.results{i};
         % build
         if ~isfile(fullfile(result.path, 'stat.mat'));
-            app.build_stat(result, app.DumpRobotsCheckBox.Value, [], false, []);
+            app.build_stat(result, app.DumpRobotsCheckBox.Value, [], false);
         end
 
         % export
