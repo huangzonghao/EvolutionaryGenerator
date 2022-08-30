@@ -72,7 +72,8 @@ function archive_map = get_result_archive_map(result, gen)
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;
     fitness = current_gen_archive(:, 5);
-    % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
+    % sanitize the second dimension (here grid_dim(1) gives the size of first dimension); uncomment the following line to sanitize 2 lines
+    % fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 2 + ones(1, grid_dim(1))));
     fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
     app.archive_ids(sub2ind(size(archive_map), x, y)) = [1:length(fitness)];
