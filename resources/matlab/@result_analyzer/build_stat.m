@@ -20,9 +20,7 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
     % nb_gen + 1 because init seeds are gen 0
     % Note the robot id starts from 0, so always +1 when retriving data from matlab array
     % data goes into the table is guaranteed to be sorted
-    if result.version == 1
-        robots = zeros(result.evo_params.gen_size, 9, nb_gen + 1);
-    end
+    robots = zeros(result.evo_params.gen_size, 5 + 2 * num_dim, nb_gen + 1);
 
     % robots dump format:
     % Each generation is a cell containing all robots of that generation in the order of id
@@ -33,6 +31,7 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
     stat.has_parentage = false;
     bag_file_path = fullfile(result.path, 'Bag_*.json');
     bag_file = dir(bag_file_path);
+    if result.version < 2 % Temporarily disable parentage for new results
     if ~isempty(bag_file)
         if length(bag_file) > 1
             msgbox(sprintf('Error: multiple user input bag files found in %s', result_basename));
@@ -63,6 +62,7 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
             tmp_parentage_map = zeros(result.evo_params.grid_dim);
         end
     end
+    end
 
     % TODO: how to resume from loaded stat with the new changes -- set i_start smartly
     if (orig_stat_loaded)
@@ -81,7 +81,7 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
         stat.qd_score = zeros(1, nb_gen + 1); % best fitness of archive
         stat.population_fits = zeros(1, nb_gen + 1);
         stat.coverage = zeros(1, nb_gen + 1);
-        if result.version == 1
+        if result.version < 2
             stat.map_stat = zeros(result.evo_params.grid_dim(1), result.evo_params.grid_dim(2), nb_gen + 1);
         end
 
@@ -132,7 +132,7 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
         stat.elite_robot_selection(sub2ind(size(stat.elite_robot_selection), max10_ids, max10_gen_ids)) = true;
         stat.coverage(i + 1) = length(fitness) / archive_size;
 
-        if result.version == 1
+        if result.version < 2
             clean_fitness = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 5);
             clean_age = curr_gen_archive(curr_gen_archive(:,3) ~= 0, 1);
             clean_age = double(i) * ones(size(clean_age)) - clean_age;
@@ -145,7 +145,7 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
             stat.clean_elite_archive_age(i + 1) = mean(clean_age(clean_max10_idx));
             stat.best_fits(i + 1) = clean_max10_fitness(1);
             stat.qd_score(i + 1) = sum(clean_fitness);
-        elseif result.version == 2
+        else
             stat.best_fits(i + 1) = max10_fitness(1);
             stat.qd_score(i + 1) = sum(fitness);
         end
@@ -153,35 +153,35 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
         archive{i + 1} = curr_gen_archive;
 
         % Load gridstats
-        if result.version == 1
+        if result.version < 2
             stat_mat = readmatrix(fullfile(result.path, strcat('/gridstats/', num2str(i), '.csv')), delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
             stat_mat = stat_mat(1 : result.evo_params.grid_dim(1), 1 : result.evo_params.grid_dim(2)); % a lasy way to remove the nan values due to the trailing comma in gridstats
             stat.map_stat(:,:,i + 1) = stat_mat;
             if i > 0
                 stat.map_stat(:,:,i + 1) = stat.map_stat(:,:,i + 1) + stat.map_stat(:,:,i);
             end
-        end
 
-        % process each indiv's age
-        if i > 0 % TODO: see if we can remove this condition
-            % Note curr_gen_archive and prev_gen_archive may have different size
-            f_ids = curr_gen_archive(age == 0, 3:4);
-            prev_f_ids = prev_gen_archive(:, 3:4);
-            [~, dead_selection] = ismember(f_ids, prev_f_ids, 'rows');
-            dead_selection = dead_selection(dead_selection ~= 0);
-            dead_gen_ids = prev_gen_archive(dead_selection, 1) + 1;
-            dead_ids = prev_gen_archive(dead_selection, 2) + 1;
+            % process each indiv's age
+            if i > 0 % TODO: see if we can remove this condition
+                % Note curr_gen_archive and prev_gen_archive may have different size
+                f_ids = curr_gen_archive(age == 0, 3:4);
+                prev_f_ids = prev_gen_archive(:, 3:4);
+                [~, dead_selection] = ismember(f_ids, prev_f_ids, 'rows');
+                dead_selection = dead_selection(dead_selection ~= 0);
+                dead_gen_ids = prev_gen_archive(dead_selection, 1) + 1;
+                dead_ids = prev_gen_archive(dead_selection, 2) + 1;
 
-            % A robot show up in map in gen k and get replaced in gen k + 1 would have a longevity of 1
-            stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 1) * ones(size(dead_gen_ids)) - dead_gen_ids;
+                % A robot show up in map in gen k and get replaced in gen k + 1 would have a longevity of 1
+                stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 1) * ones(size(dead_gen_ids)) - dead_gen_ids;
 
-            % If this is the final gen, kill all robot in final + 1 gen and calculate longevity again
-            % Note this cannot be merged with the above process, otherwise we would lost tracking of
-            % robots got replaced in the final gen
-            if i == nb_gen
-                dead_gen_ids = curr_gen_archive(:, 1) + 1;
-                dead_ids = curr_gen_archive(:, 2) + 1;
-                stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 2) * ones(size(dead_gen_ids)) - dead_gen_ids;
+                % If this is the final gen, kill all robot in final + 1 gen and calculate longevity again
+                % Note this cannot be merged with the above process, otherwise we would lost tracking of
+                % robots got replaced in the final gen
+                if i == nb_gen
+                    dead_gen_ids = curr_gen_archive(:, 1) + 1;
+                    dead_ids = curr_gen_archive(:, 2) + 1;
+                    stat.robot_longevity(sub2ind(size(stat.robot_longevity), dead_ids, dead_gen_ids)) = double(i + 2) * ones(size(dead_gen_ids)) - dead_gen_ids;
+                end
             end
         end
 
@@ -193,18 +193,18 @@ function [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_s
         % sort entries to make them in the order of id -- need to do this because of a stupid bug I made
         %     in the training code that caused the results to be recorded in the randomized parent order
         curr_gen_robot = sortrows(curr_gen_robot, 2);
-        robots(:, 1:9, i + 1) = curr_gen_robot(:, 3:11);
+        robots(:, 1 : 5+2*num_dim, i + 1) = curr_gen_robot(:, 3 : 7 + 2 * num_dim);
         if dump_robots
             tmp_gen = {};
             for j = 1 : size(curr_gen_robot, 1)
-                dv = curr_gen_robot(j, 12:end);
+                dv = curr_gen_robot(j, 8 + 2 * num_dim:end);
                 tmp_gen{j} = dv(~isnan(dv));
             end
             robots_dump{i + 1} = tmp_gen;
         end
-        if result.version == 1
+        if result.version < 2
             pop_fitness = curr_gen_robot(:, 11);
-        elseif result.version == 2
+        else
             pop_fitness = curr_gen_robot(:, 7);
         end
         stat.population_fits(i + 1) = mean(pop_fitness);
