@@ -95,7 +95,7 @@ class UrdfFitness {
         for (auto& e : _desc)
             e = std::clamp(e, 0.0, 1.0);
     }
-    static constexpr const char* descriptor_name[4] = {"body length", "leg length sd",
+    static constexpr const char* descriptor_names[4] = {"body length", "leg length sd",
                                                        "average leg length", "max leg length"};
 
     template<class Archive>

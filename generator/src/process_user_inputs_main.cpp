@@ -131,7 +131,7 @@ void process_user_inputs(const std::filesystem::path& dir_path) {
     // Add meta info
     output_jsobj["user_id"] = jsobjs[0]["user_id"];
     output_jsobj["env_string"] = meta_jsobj["env_string"];
-    output_jsobj["feature_description"] = {std::string(fit_t::descriptor_name[0]), std::string(fit_t::descriptor_name[1])};
+    output_jsobj["feature_description"] = {fit_t::descriptor_name[0], fit_t::descriptor_name[1]};
 
     for (int i = 0; i < design_files.size(); ++i) {
         auto& jsobj = jsobjs[i];

@@ -24,6 +24,12 @@ class EvoParams {
     void set_grid_shape(const std::vector<int>& grid_shape) { grid_shape_ = grid_shape; }
     void set_nb_gen(size_t nb_gen) { nb_gen_ = nb_gen; }
     void set_pop_size(size_t pop_size) { pop_size_ = pop_size; }
+    bool set_feature_description(const char* const* descriptor_names) {
+        feature_description_.clear();
+        feature_description_.resize(grid_shape_.size());
+        for (int i = 0; i < grid_shape_.size(); ++i)
+            feature_description_[i] = std::string(descriptor_names[i]);
+    }
 
     bool Save(const std::string& filename) const;
     bool Load(const std::string& filename);
