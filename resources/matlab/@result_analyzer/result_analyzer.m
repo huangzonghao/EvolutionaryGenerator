@@ -136,6 +136,7 @@ classdef result_analyzer < matlab.apps.AppBase
         generator_name
 
         % Containers
+        meta_info % fields: results_path
         result_group_path = string.empty
         results = {} % array containing the cache of the loaded results
         virtual_results = {} % array containing the cache of virtual results

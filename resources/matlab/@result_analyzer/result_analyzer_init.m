@@ -29,5 +29,15 @@ function result_analyzer_init(app)
     app.ReEvalTypeDropDown.ItemsData = 1 : length(app.ReEvalTypeDropDown.Items);
     app.ReEvalTypeDropDown.Value = 1;
 
+    if isfile('result_analyzer_meta_info.mat')
+        meta_info_container = load('result_analyzer_meta_info.mat');
+        meta_info = meta_info_container.meta_info;
+    else
+        meta_info = {};
+        meta_info.results_path = app.evogen_results_path;
+        save('result_analyzer_meta_info.mat', 'meta_info', '-v7.3');
+    end
+    app.meta_info = meta_info;
+
     refresh_result_list(app);
 end
