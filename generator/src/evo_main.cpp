@@ -211,45 +211,64 @@ void process_job_file(const std::string& job_file_basename) {
         // run the job
         if (job["done"] == false) {
             if (job["num_runs"] == 0) {
-                t = time(0);
-                strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
-                // generate name for the result dir
-                std::string result_dir = Result_Output_Dir + "/";
-                if (!group_name.empty())
-                    result_dir += group_name + "_";
-                if (job["nickname"] != "") {
-                    result_dir += job["nickname"].get<std::string>() + "_";
-                } else {
-                    std::string env_name_converted(job["env"]);
-                    std::replace(env_name_converted.begin(), env_name_converted.end(), '.', '_');
-                    result_dir += env_name_converted + "_";
-                }
-                result_dir += time_buffer;
-                job["result_dir"] = result_dir;
+                if (job["type"] == std::string("new")) {
+                    t = time(0);
+                    strftime(time_buffer, 80, "%Y%m%d_%H%M%S", localtime(&t));
+                    // generate name for the result dir
+                    std::string result_dir = Result_Output_Dir + "/";
+                    if (!group_name.empty())
+                        result_dir += group_name + "_";
+                    if (job["nickname"] != "") {
+                        result_dir += job["nickname"].get<std::string>() + "_";
+                    } else {
+                        std::string env_name_converted(job["env"]);
+                        std::replace(env_name_converted.begin(), env_name_converted.end(), '.', '_');
+                        result_dir += env_name_converted + "_";
+                    }
+                    result_dir += time_buffer;
+                    job["result_dir"] = result_dir;
 
-                // create and copy necessary files to the result dir
-                // we are copying those files at the beginning (instead of the end)
-                // so that partial results could be useful with all those info
-                std::filesystem::create_directories(result_dir);
-                if (job["nickname"] != "") {
-                    ofs.open(result_dir + "/name.txt");
-                    ofs << job["nickname"].get<std::string>();
-                    ofs.close();
-                }
-                if (jsobj["group_comments"] != "") {
-                    ofs.open(result_dir + "/group_comment.txt");
-                    ofs << jsobj["group_comments"].get<std::string>();
-                    ofs.close();
-                }
-                if (job["comments"] != "") {
-                    ofs.open(result_dir + "/job_comment.txt");
-                    ofs << job["comments"].get<std::string>();
-                    ofs.close();
+                    // create and copy necessary files to the result dir
+                    // we are copying those files at the beginning (instead of the end)
+                    // so that partial results could be useful with all those info
+                    std::filesystem::create_directories(result_dir);
+                    if (job["nickname"] != "") {
+                        ofs.open(result_dir + "/name.txt");
+                        ofs << job["nickname"].get<std::string>();
+                        ofs.close();
+                    }
+                    if (jsobj["group_comments"] != "") {
+                        ofs.open(result_dir + "/group_comment.txt");
+                        ofs << jsobj["group_comments"].get<std::string>();
+                        ofs.close();
+                    }
+                    if (job["comments"] != "") {
+                        ofs.open(result_dir + "/job_comment.txt");
+                        ofs << job["comments"].get<std::string>();
+                        ofs.close();
+                    }
+
+                    strftime(time_buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&t));
+                    job["start_time"] = time_buffer;
+                    start_new_job = true;
+                } else if (job["type"] == std::string("continue")) {
+                    const std::string& result_path = job["result_path"];
+                    job["result_dir"] = result_path;
+                    // Modify the evo_params file as necessary
+                    std::string evo_params_path(result_path + "/evo_params.xml");
+                    EvoParams evo_params;
+                    evo_params.Load(evo_params_path);
+                    int target_nb_gen = job["num_gen"];
+                    if (target_nb_gen > 0 && target_nb_gen != evo_params.nb_gen()) {
+                        evo_params.set_nb_gen(target_nb_gen);
+                        evo_params.Save(evo_params_path);
+                    }
+                    strftime(time_buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&t));
+                    job["start_time"] = time_buffer;
+                    // TODO: for completed results, we want to preserve the old
+                    // job_report.txt
                 }
 
-                strftime(time_buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&t));
-                job["start_time"] = time_buffer;
-                start_new_job = true;
             }
 
             job["num_runs"] = job["num_runs"].get<int>() + 1;

@@ -32,6 +32,10 @@ classdef task_scheduler < matlab.apps.AppBase
         SaveButton                    matlab.ui.control.Button
         RemoveButton                  matlab.ui.control.Button
         JobEditorPanel                matlab.ui.container.Panel
+        JobTypeDropDown               matlab.ui.control.DropDown
+        JobTypeLabel                  matlab.ui.control.Label
+        LoadedResultDetailLabel       matlab.ui.control.Label
+        LoadExistingResultButton      matlab.ui.control.Button
         GridDimensionEditField        matlab.ui.control.EditField
         BinsEditFieldLabel            matlab.ui.control.Label
         NumDimEditField               matlab.ui.control.NumericEditField
@@ -71,10 +75,12 @@ classdef task_scheduler < matlab.apps.AppBase
              % fields of job struct:
              % bag_file, env, num_gen, pop_size, sim_time,
              % nickname, comment, in_scheduler(bool), job_id(int)
+        result_loaded % a struct holding the informaiton of the loaded existing
+                      % result
     end
 
     methods (Access = private)
-        job = format_job(app)
+        job = format_job(app, job_config)
         add_job(app)
         edit_job(app)
         clear_bag_selection(app)
@@ -88,6 +94,7 @@ classdef task_scheduler < matlab.apps.AppBase
         task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen_task_launcher_path)
         update_job_file_info_label(app)
         grid_dimension_update(app)
+        load_existing_result(app);
     end
 
     % Callbacks that handle component events
@@ -167,6 +174,11 @@ classdef task_scheduler < matlab.apps.AppBase
         function NumDimEditFieldValueChanged(app, event)
             grid_dimension_update(app);
         end
+
+        % Button pushed function: LoadExistingResultButton
+        function LoadExistingResultButtonPushed(app, event)
+            load_existing_result(app);
+        end
     end
 
     % Component initialization
@@ -193,7 +205,7 @@ classdef task_scheduler < matlab.apps.AppBase
 
             % Create RefreshBagFileListButton
             app.RefreshBagFileListButton = uibutton(app.JobEditorPanel, 'push');
-            app.RefreshBagFileListButton.Position = [156 462 50 20];
+            app.RefreshBagFileListButton.Position = [156 409 50 20];
             app.RefreshBagFileListButton.Text = 'Refresh';
 
             % Create IgnoreRandomPopInBagCheckBox
@@ -206,18 +218,19 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create ClearBagSelectionButton
             app.ClearBagSelectionButton = uibutton(app.JobEditorPanel, 'push');
             app.ClearBagSelectionButton.ButtonPushedFcn = createCallbackFcn(app, @ClearBagSelectionButtonPushed, true);
-            app.ClearBagSelectionButton.Position = [104 462 50 20];
+            app.ClearBagSelectionButton.Position = [104 409 50 20];
             app.ClearBagSelectionButton.Text = 'Clear';
 
             % Create BagFilesLabel
             app.BagFilesLabel = uilabel(app.JobEditorPanel);
-            app.BagFilesLabel.Position = [8 460 59 22];
+            app.BagFilesLabel.FontWeight = 'bold';
+            app.BagFilesLabel.Position = [8 407 63 22];
             app.BagFilesLabel.Text = 'Bag Files:';
 
             % Create BagFilesListBox
             app.BagFilesListBox = uilistbox(app.JobEditorPanel);
             app.BagFilesListBox.Items = {};
-            app.BagFilesListBox.Position = [1 0 208 461];
+            app.BagFilesListBox.Position = [1 176 208 233];
             app.BagFilesListBox.Value = {};
 
             % Create EnvLabel
@@ -338,6 +351,32 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create GridDimensionEditField
             app.GridDimensionEditField = uieditfield(app.JobEditorPanel, 'text');
             app.GridDimensionEditField.Position = [213 258 109 22];
+
+            % Create LoadExistingResultButton
+            app.LoadExistingResultButton = uibutton(app.JobEditorPanel, 'push');
+            app.LoadExistingResultButton.ButtonPushedFcn = createCallbackFcn(app, @LoadExistingResultButtonPushed, true);
+            app.LoadExistingResultButton.Position = [28 144 125 22];
+            app.LoadExistingResultButton.Text = 'Load Existing Result';
+
+            % Create LoadedResultDetailLabel
+            app.LoadedResultDetailLabel = uilabel(app.JobEditorPanel);
+            app.LoadedResultDetailLabel.VerticalAlignment = 'top';
+            app.LoadedResultDetailLabel.WordWrap = 'on';
+            app.LoadedResultDetailLabel.Position = [8 7 198 130];
+            app.LoadedResultDetailLabel.Text = '';
+
+            % Create JobTypeLabel
+            app.JobTypeLabel = uilabel(app.JobEditorPanel);
+            app.JobTypeLabel.HorizontalAlignment = 'right';
+            app.JobTypeLabel.FontWeight = 'bold';
+            app.JobTypeLabel.Position = [4 451 61 22];
+            app.JobTypeLabel.Text = 'Job Type:';
+
+            % Create JobTypeDropDown
+            app.JobTypeDropDown = uidropdown(app.JobEditorPanel);
+            app.JobTypeDropDown.Items = {};
+            app.JobTypeDropDown.Position = [71 451 117 22];
+            app.JobTypeDropDown.Value = {};
 
             % Create JobFileEditorPanel
             app.JobFileEditorPanel = uipanel(app.MainFigure);

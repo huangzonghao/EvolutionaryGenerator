@@ -13,6 +13,10 @@ function task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen
     app.jobfile_dir = fullfile(app.workspace_dir, 'Jobs');
 
     % Init fields
+    app.JobTypeDropDown.Items{1} = 'new';
+    app.JobTypeDropDown.Items{2} = 'continue';
+    app.JobTypeDropDown.Value = 'new';
+
     app.EnvironmentDropDown.Items{1} = 'ground';
     app.EnvironmentDropDown.Items{2} = 'Sine2.obj';
     app.EnvironmentDropDown.Items{3} = 'Valley5.obj';
