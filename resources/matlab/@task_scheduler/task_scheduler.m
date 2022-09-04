@@ -7,6 +7,7 @@ classdef task_scheduler < matlab.apps.AppBase
         CLCButton                     matlab.ui.control.Button
         RehashButton                  matlab.ui.control.Button
         JobFIleLauncherPanel          matlab.ui.container.Panel
+        OpenJobFolderButton           matlab.ui.control.Button
         OpenResultFolderButton        matlab.ui.control.Button
         JobFileStatusLabel            matlab.ui.control.Label
         JobFileInfoLabel              matlab.ui.control.Label
@@ -133,6 +134,11 @@ classdef task_scheduler < matlab.apps.AppBase
         % Button pushed function: OpenResultFolderButton
         function OpenResultFolderButtonPushed(app, event)
             winopen(fullfile(app.workspace_dir, 'Results'));
+        end
+
+        % Button pushed function: OpenJobFolderButton
+        function OpenJobFolderButtonPushed(app, event)
+            winopen(fullfile(app.workspace_dir, 'Jobs'));
         end
 
         % Button pushed function: LoadJobButton
@@ -497,7 +503,8 @@ classdef task_scheduler < matlab.apps.AppBase
             app.LaunchJobFileButton = uibutton(app.JobFIleLauncherPanel, 'push');
             app.LaunchJobFileButton.ButtonPushedFcn = createCallbackFcn(app, @LaunchJobFileButtonPushed, true);
             app.LaunchJobFileButton.WordWrap = 'on';
-            app.LaunchJobFileButton.Position = [222 361 68 58];
+            app.LaunchJobFileButton.FontWeight = 'bold';
+            app.LaunchJobFileButton.Position = [222 386 68 52];
             app.LaunchJobFileButton.Text = 'Launch Job File';
 
             % Create RefreshJobFileListButton
@@ -511,22 +518,29 @@ classdef task_scheduler < matlab.apps.AppBase
             app.JobFileInfoLabel = uilabel(app.JobFIleLauncherPanel);
             app.JobFileInfoLabel.VerticalAlignment = 'top';
             app.JobFileInfoLabel.WordWrap = 'on';
-            app.JobFileInfoLabel.Position = [219 144 144 172];
+            app.JobFileInfoLabel.Position = [219 180 144 172];
             app.JobFileInfoLabel.Text = '';
 
             % Create JobFileStatusLabel
             app.JobFileStatusLabel = uilabel(app.JobFIleLauncherPanel);
             app.JobFileStatusLabel.FontSize = 14;
             app.JobFileStatusLabel.FontWeight = 'bold';
-            app.JobFileStatusLabel.Position = [220 320 110 22];
+            app.JobFileStatusLabel.Position = [220 356 110 22];
             app.JobFileStatusLabel.Text = 'Job File Status:';
 
             % Create OpenResultFolderButton
             app.OpenResultFolderButton = uibutton(app.JobFIleLauncherPanel, 'push');
             app.OpenResultFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenResultFolderButtonPushed, true);
             app.OpenResultFolderButton.WordWrap = 'on';
-            app.OpenResultFolderButton.Position = [255 8 71 50];
+            app.OpenResultFolderButton.Position = [227 8 50 50];
             app.OpenResultFolderButton.Text = 'Open Result Folder';
+
+            % Create OpenJobFolderButton
+            app.OpenJobFolderButton = uibutton(app.JobFIleLauncherPanel, 'push');
+            app.OpenJobFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenJobFolderButtonPushed, true);
+            app.OpenJobFolderButton.WordWrap = 'on';
+            app.OpenJobFolderButton.Position = [289 8 50 50];
+            app.OpenJobFolderButton.Text = 'Open Job Folder';
 
             % Create MiscellaneousPanel
             app.MiscellaneousPanel = uipanel(app.MainFigure);
