@@ -136,8 +136,8 @@ function plot_gen_all(app)
             saveas(app.plot_handles.gen_plot.handle, fullfile(result.plot_dir, ['gen_all_', result.name, '_gen', num2str(app.current_gen), '.', result.plot_format{i_format}]));
         end
     else
-        % Note the swapping of f_ids(1, 1), f_ids(1, 2) here
-        app.RobotIDXField.Value = num2str(f_ids(1, 2));
-        app.RobotIDYField.Value = num2str(f_ids(1, 1));
+        % Automatically poping up the best performing robot in the archive map
+        app.RobotIDXField.Value = num2str(f_ids(1, 1));
+        app.RobotIDYField.Value = num2str(f_ids(1, 2));
     end
 end
