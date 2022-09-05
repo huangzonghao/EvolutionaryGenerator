@@ -120,6 +120,8 @@ function plot_gen_all(app)
     ylabel(app.plot_handles.gen_plot.archive_surf_ax, f1_string);
     app.plot_handles.gen_plot.archive_heat.XLabel = f2_string;
     app.plot_handles.gen_plot.archive_heat.YLabel = f1_string;
+    app.Feature1Label.Text = f1_string;
+    app.Feature2Label.Text = f2_string;
     if result.version < 2
         app.plot_handles.gen_plot.parentage_heat.XLabel = f2_string;
         app.plot_handles.gen_plot.parentage_heat.YLabel = f1_string;
