@@ -136,6 +136,12 @@ function patch_stat(result_path, evo_params)
     % end
     % need_to_save = true;
 
+    % Patch the wrong robots records that missed a comma (fixed in aa320f8)
+    % curr_path = pwd;
+    % cd(fullfile(result_path, 'robots'));
+    % system("wsl for i in *; do sed -i 's/\(-*[0-9],\)/,\1/7' $i; done");
+    % cd(curr_path);
+
     if need_to_save
         save(fullfile(result_path, 'stat.mat'), 'stat', '-v7.3');
     end
