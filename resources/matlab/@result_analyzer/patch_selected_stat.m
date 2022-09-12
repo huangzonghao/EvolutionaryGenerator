@@ -137,6 +137,7 @@ function patch_stat(result_path, evo_params)
     % need_to_save = true;
 
     % Patch the wrong robots records that missed a comma (fixed in aa320f8)
+    % Pure bash command: OLD=$PWD; for i in 4D_*; do cd "$i/robots"; for j in *; do sed -i 's/\(-*[0-9],\)/,\1/7' $j; done; cd "$OLD"; done
     % curr_path = pwd;
     % cd(fullfile(result_path, 'robots'));
     % system("wsl for i in *; do sed -i 's/\(-*[0-9],\)/,\1/7' $i; done");
