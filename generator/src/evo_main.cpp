@@ -73,6 +73,7 @@ void new_training(EvoParams& evo_params,
 
         std::ifstream ifs(bagfile_fullpath);
         json jsobj = json::parse(ifs);
+        ifs.close();
 
         std::cout << "Training with bag file " << bagfile_basename << ", total seed count " << jsobj["total_count"] << std::endl;
 
@@ -340,6 +341,16 @@ void process_job_file(const std::string& job_file_basename) {
 int main(int argc, char **argv) {
     if (argc < 2) {
         const auto& exe_name = std::filesystem::path(std::string(argv[0])).filename().string();
+        std::string git_hash_file = EvoGen_Workspace_Dir + "/git_commit_hash.txt";
+        if (std::filesystem::exists(git_hash_file)) {
+            std::ifstream ifs(git_hash_file);
+            if (ifs.good()) {
+                std::string git_hash;
+                std::getline(ifs, git_hash);
+                std::cout << exe_name << " at git commit: " << git_hash << std::endl;
+            }
+            ifs.close();
+        }
         std::cout << "Usage:"  << std::endl;
         std::cout << "    1) To start new training with random seeds: " << exe_name << " new"  << std::endl;
         std::cout << "    2) To start new training with user seeds: " << exe_name << " new user <bag_file_basename>"  << std::endl;
