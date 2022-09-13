@@ -88,15 +88,23 @@ class UrdfFitness {
         // Longest link 1, shortest link 0.2 --> Longest leg 4.5, shortest leg 0.2
         _desc[2] = range_to_unit(avg_leg_length, 0.2, 4.5);
 
-        // Feature 3 -- Max Leg Length
-        _desc[3] = range_to_unit(max_leg_length, 0.2, 4.5);
+        // // Feature 3 -- Max Leg Length
+        // _desc[3] = range_to_unit(max_leg_length, 0.2, 4.5);
+
+        // Feature 3 -- Total Num of Links
+        int total_num_links = 0;
+        for (int i = 0; i < num_legs; ++i) {
+            total_num_links += robot.legs[i].num_links;
+        }
+        // minimum 2 legs with 2 links per leg; maximum 6 legs with 3 links per leg
+        _desc[3] = range_to_unit(total_num_links, 4, 18);
 
         // regulate descriptor
         for (auto& e : _desc)
             e = std::clamp(e, 0.0, 1.0);
     }
-    static constexpr const char* descriptor_names[4] = {"body length", "leg length sd",
-                                                       "average leg length", "max leg length"};
+    static constexpr const char* descriptor_names[4] = {"Body Length", "Leg Length SD",
+                                                        "Avg Leg Length", "Total Num of Links"};
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
