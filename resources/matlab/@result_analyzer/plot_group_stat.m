@@ -46,5 +46,8 @@ function plot_group_stat(app)
             end
             close(fig);
         end
+    else
+        msgbox('No result has parentage information, no plot generated');
+        return
     end
 end
