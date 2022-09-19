@@ -60,7 +60,7 @@ function refresh_result_list(app, varargin)
             new_result.isgroup = false;
             new_result.basename = basename;
             new_result.name = basename;
-            new_result.evo_params = load_evo_params(app, tmp_path);
+            new_result.evo_params = load_evo_params(tmp_path);
             [nickname, nickname_loaded] = load_nickname(tmp_path);
             new_result.version = load_version(tmp_path);
             new_result.env = 'other';
@@ -97,7 +97,7 @@ function refresh_result_list(app, varargin)
     app.ResultsListBox.Items = {};
     app.ResultsListBox.ItemsData = [];
     for i = 1 : length(results)
-        app.ResultsListBox.Items{i} = get_result_list_string(app, i);
+        app.ResultsListBox.Items{i} = get_result_list_string(app.results{i});
         app.ResultsListBox.ItemsData{i} = i;
     end
     app.ResultGroupLabel.Text = [group_basename, ' (', num2str(length(results)), ')'];
@@ -116,7 +116,7 @@ function [nickname, success] = load_nickname(result_path)
     end
 end
 
-function evo_params = load_evo_params(app, result_path)
+function evo_params = load_evo_params(result_path)
     evo_xml = xml2struct(fullfile(result_path, 'evo_params.xml'));
     evo_params.nb_gen_planned = str2double(evo_xml.boost_serialization{2}.EvoParams.nb_gen_.Text);
     evo_params.init_size = str2double(evo_xml.boost_serialization{2}.EvoParams.init_size_.Text);
@@ -145,8 +145,7 @@ function version = load_version(result_path)
     end
 end
 
-function ret_str = get_result_list_string(app, result_idx)
-    result = app.results{result_idx};
+function ret_str = get_result_list_string(result)
     ret_str = '';
     % first check if the statistics has been built
     if ~isfile(fullfile(result.path, 'stat.mat'));
