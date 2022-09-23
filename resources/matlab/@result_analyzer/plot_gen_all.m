@@ -2,10 +2,11 @@ function plot_gen_all(app)
 % Plot all plots related to a specific generation
 
     % Configure panels here
-    if ~isfield(app.plot_handles.gen_plot, 'handle') || ~ishandle(app.plot_handles.gen_plot.handle)
+    gen_plot = app.plot_handles.gen_plot;
+    if ~isfield(gen_plot, 'handle') || ~ishandle(gen_plot.handle)
         return
     elseif ~app.current_result.plot_to_file
-        figure(app.plot_handles.gen_plot.handle);
+        figure(gen_plot.handle);
     end
 
     f1_selection = app.Feature1DropDown.Value;
@@ -19,7 +20,7 @@ function plot_gen_all(app)
     result = app.current_result;
     current_gen = app.current_gen;
     grid_dim = result.evo_params.grid_dim;
-    map_size = app.plot_handles.gen_plot.map_size;
+    map_size = gen_plot.map_size;
     % check if the size of the selected grid dimensions match the ones of the map
     if map_size(1) ~= grid_dim(f1_selection) || ...
        map_size(2) ~= grid_dim(f2_selection)
@@ -83,57 +84,55 @@ function plot_gen_all(app)
     surf_archive_map = zeros(size(archive_map));
     tmp_idx = ~isnan(archive_map);
     surf_archive_map(tmp_idx) = archive_map(tmp_idx);
-    app.plot_handles.gen_plot.archive_surf.ZData = surf_archive_map;
-    app.plot_handles.gen_plot.archive_surf.ZData = surf_archive_map;
-    app.plot_handles.gen_plot.archive_heat.ColorData = archive_map;
+    gen_plot.archive_surf.ZData = surf_archive_map;
+    gen_plot.archive_surf.ZData = surf_archive_map;
+    gen_plot.archive_heat.ColorData = archive_map;
     if result.version < 2
-        app.plot_handles.gen_plot.updates_per_bin_heat.ColorData = updates_per_bin;
-        app.plot_handles.gen_plot.parentage_heat.ColorData = parentage_map;
-        app.plot_handles.gen_plot.bin_age_heat.ColorData = age_map;
-        app.plot_handles.gen_plot.archive_hist.Data = fitness;
-    else
-        app.plot_handles.gen_plot.archive_hist.Data = fitness_all;
-    end
-    drawnow;
-    if result.version < 2
-        app.plot_handles.gen_plot.info_text.String = ...
+        gen_plot.updates_per_bin_heat.ColorData = updates_per_bin;
+        gen_plot.parentage_heat.ColorData = parentage_map;
+        gen_plot.bin_age_heat.ColorData = age_map;
+        gen_plot.archive_hist.Data = fitness;
+        gen_plot.info_text.String = ...
             sprintf("%s - Gen %d / %d, Coverage %d / %d", ...
             result.name, current_gen, result.evo_params.nb_gen, ...
             length(fitness), prod(map_size));
     else
-        app.plot_handles.gen_plot.info_text.String = ...
+        gen_plot.archive_hist.Data = fitness_all;
+        gen_plot.info_text.String = ...
             sprintf("%s - Gen %d / %d, 2D Coverage %d / %d, Coverage %d / %d", ...
             result.name, current_gen, result.evo_params.nb_gen, ...
             length(fitness), prod(map_size), ...
             length(fitness_all), prod(grid_dim));
     end
+    drawnow;
+
     % Reset the title text proterties
     % TODO: for some reason we have to update this title font set up here, and
     % settings in open_gen_all_plot.m won't work.
-    app.plot_handles.gen_plot.archive_surf_title.FontSize = 11;
-    app.plot_handles.gen_plot.archive_surf_title.FontWeight = 'bold';
-    app.plot_handles.gen_plot.archive_hist_title.FontSize = 11;
-    app.plot_handles.gen_plot.archive_hist_title.FontWeight = 'bold';
+    gen_plot.archive_surf_title.FontSize = 11;
+    gen_plot.archive_surf_title.FontWeight = 'bold';
+    gen_plot.archive_hist_title.FontSize = 11;
+    gen_plot.archive_hist_title.FontWeight = 'bold';
 
     % Update the feature labels
-    xlabel(app.plot_handles.gen_plot.archive_surf_ax, f2_string);
-    ylabel(app.plot_handles.gen_plot.archive_surf_ax, f1_string);
-    app.plot_handles.gen_plot.archive_heat.XLabel = f2_string;
-    app.plot_handles.gen_plot.archive_heat.YLabel = f1_string;
+    xlabel(gen_plot.archive_surf_ax, f2_string);
+    ylabel(gen_plot.archive_surf_ax, f1_string);
+    gen_plot.archive_heat.XLabel = f2_string;
+    gen_plot.archive_heat.YLabel = f1_string;
     app.Feature1Label.Text = f1_string;
     app.Feature2Label.Text = f2_string;
     if result.version < 2
-        app.plot_handles.gen_plot.parentage_heat.XLabel = f2_string;
-        app.plot_handles.gen_plot.parentage_heat.YLabel = f1_string;
-        app.plot_handles.gen_plot.updates_per_bin_heat.XLabel = f2_string;
-        app.plot_handles.gen_plot.updates_per_bin_heat.YLabel = f1_string;
-        app.plot_handles.gen_plot.bin_age_heat.XLabel = f2_string;
-        app.plot_handles.gen_plot.bin_age_heat.YLabel = f1_string;
+        gen_plot.parentage_heat.XLabel = f2_string;
+        gen_plot.parentage_heat.YLabel = f1_string;
+        gen_plot.updates_per_bin_heat.XLabel = f2_string;
+        gen_plot.updates_per_bin_heat.YLabel = f1_string;
+        gen_plot.bin_age_heat.XLabel = f2_string;
+        gen_plot.bin_age_heat.YLabel = f1_string;
     end
 
     if result.plot_to_file
         for i_format = 1 : length(result.plot_format)
-            saveas(app.plot_handles.gen_plot.handle, fullfile(result.plot_dir, ['gen_all_', result.name, '_gen', num2str(app.current_gen), '.', result.plot_format{i_format}]));
+            saveas(gen_plot.handle, fullfile(result.plot_dir, ['gen_all_', result.name, '_gen', num2str(app.current_gen), '.', result.plot_format{i_format}]));
         end
     else
         % Automatically poping up the best performing robot in the archive map
