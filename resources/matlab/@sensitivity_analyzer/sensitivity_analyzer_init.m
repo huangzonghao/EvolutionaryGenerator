@@ -1,4 +1,6 @@
 function sensitivity_analysis_init(app)
+    movegui(app.MainFigure, 'center');
+
     if (ispc)
         app.simulator_name = strcat(app.simulator_basename, '.exe');
         app.generator_name = strcat(app.generator_basename, '.exe');

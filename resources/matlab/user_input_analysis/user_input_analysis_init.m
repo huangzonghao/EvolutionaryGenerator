@@ -1,4 +1,6 @@
 function user_input_analysis_init(app, evogen_exe_path, evogen_user_input_path, evogen_results_path)
+    movegui(app.MainFigure, 'center');
+
     if (ispc)
         app.simulator_name = strcat(app.simulator_basename, '.exe');
     else

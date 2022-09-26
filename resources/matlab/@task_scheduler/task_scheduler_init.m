@@ -1,4 +1,6 @@
 function task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen_task_launcher_path)
+    movegui(app.MainFigure, 'center');
+
     % Init paths
     app.workspace_dir = evogen_workspace_path;
     app.task_launcher_path = evogen_task_launcher_path;
