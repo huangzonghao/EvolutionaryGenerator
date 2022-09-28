@@ -7,6 +7,7 @@ classdef result_analyzer < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        DetailedMapCheckBox            matlab.ui.control.CheckBox
         Feature1Label                  matlab.ui.control.Label
         Feature2Label                  matlab.ui.control.Label
         PlotGenButton                  matlab.ui.control.Button
@@ -1381,7 +1382,9 @@ classdef result_analyzer < matlab.apps.AppBase
             app.PlotGenButton = uibutton(app.SingleResultsPanel, 'push');
             app.PlotGenButton.ButtonPushedFcn = createCallbackFcn(app, @PlotGenButtonPushed, true);
             app.PlotGenButton.WordWrap = 'on';
-            app.PlotGenButton.Position = [520 276 51 54];
+            app.PlotGenButton.FontSize = 14;
+            app.PlotGenButton.FontWeight = 'bold';
+            app.PlotGenButton.Position = [523 279 63 52];
             app.PlotGenButton.Text = 'Plot Gen';
 
             % Create Feature2Label
@@ -1395,6 +1398,11 @@ classdef result_analyzer < matlab.apps.AppBase
             app.Feature1Label.HorizontalAlignment = 'right';
             app.Feature1Label.Position = [384 8 151 22];
             app.Feature1Label.Text = 'Feature 1';
+
+            % Create DetailedMapCheckBox
+            app.DetailedMapCheckBox = uicheckbox(app.SingleResultsPanel);
+            app.DetailedMapCheckBox.Text = 'Detailed Map';
+            app.DetailedMapCheckBox.Position = [355 363 93 22];
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);

@@ -139,4 +139,84 @@ function plot_gen_all(app)
         app.RobotIDXField.Value = num2str(f_ids(1, 1));
         app.RobotIDYField.Value = num2str(f_ids(1, 2));
     end
+
+    % Plot the detailed archive map
+    if result.version >= 2
+        if app.DetailedMapCheckBox.Value
+            gen_plot.dam_handle = plot_detailed_archive_maps(gen_plot, result.evo_params, current_gen_archive);
+            % parfeval(@plot_detailed_archive_maps, 0, gen_plot, result.evo_params, current_gen_archive);
+        end
+    end
+
+    app.plot_handles.gen_plot = gen_plot;
+end
+
+% TODO: make this function run asynchronously.
+function dam_handle = plot_detailed_archive_maps(gen_plot, evo_params, current_gen_archive)
+    % TODO: currently the detailed archive map is highly customized for the 4D map.
+    grid_dim = evo_params.grid_dim;
+    map_size = gen_plot.map_size;
+    if length(grid_dim) ~= 4
+        disp('returned');
+        return
+    end
+
+    if ~isfield(gen_plot, 'dam_handle') || ... % dam: detailed archive map
+       ~ishandle(gen_plot.dam_handle.fig)
+
+        % mbox = msgbox('Creating detailed archive map ...');
+        wb = waitbar(0, 'Creating detailed archive map ...');
+        % Need to figure out how to setup title and the right figure physical size
+        % dam_handle = figure('outerposition',[180, 40, 1600, 1000]); % size for 1080p monitor
+        dam_handle = {};
+
+        dam_handle.fig = figure('outerposition',[180, 40, 1600, 1000]);
+        dam_handle.fig.Name = 'Detailed Archive Map';
+        dam_handle.fig.NumberTitle = 'off';
+        dam_handle.group = uitabgroup; % tabgroup
+        num_maps = double(grid_dim(3) * grid_dim(4));
+        counter = double(0);
+        for i_forth = 1 : grid_dim(4)
+            new_tab.handle = uitab(dam_handle.group, ...
+                                   'Title', strcat(evo_params.feature_description(4), ' - ', ...
+                                   num2str(i_forth))); % build tab
+            axes('Parent', new_tab.handle);
+            for i_third = 1 : grid_dim(3)
+                subplot(2, 4, i_third);
+                new_tab.heat{i_third} = heatmap(zeros(map_size));
+                new_tab.heat{i_third}.NodeChildren(3).YDir='normal';
+                new_tab.heat{i_third}.Title = strcat(evo_params.feature_description(3), ' - ', num2str(i_third));
+                new_tab.heat{i_third}.MissingDataLabel = 'Nan';
+                new_tab.heat{i_third}.MissingDataColor = [1, 1, 1];
+                new_tab.heat{i_third}.XLabel = evo_params.feature_description(2);
+                new_tab.heat{i_third}.YLabel = evo_params.feature_description(1);
+                colormap(new_tab.heat{i_third}, 'jet');
+
+                counter = counter + 1;
+            end
+
+            waitbar(counter / num_maps, wb)
+            dam_handle.tab{i_forth} = new_tab;
+        end
+        close(wb);
+    else
+        dam_handle = gen_plot.dam_handle;
+    end
+
+    % Now update the plots here
+    % Archive format each row: [gen_id, id, fitness, f_id1, f_id2, ...]
+    for i_forth = 1 : grid_dim(4)
+        tab_fits = current_gen_archive(current_gen_archive(:, 4 + 3) == i_forth - 1, :);
+        for i_third = 1 : grid_dim(3)
+            tmp_archive = nan(map_size);
+            tmp_fits = tab_fits(tab_fits(:, 3 + 3) == i_third - 1, :);
+            % if app.SanitizeArchiveCheckBox.Value == true && length(fitness) == length(tmp_archive(:))
+            % % sanitize the second dimension (here map_size(1) gives the size of first dimension)
+            % fitness(sub2ind(size(tmp_archive), 1:map_size(1), ones(1, map_size(1)))) = 0.1 * rand(map_size(1), 1) + fitness(sub2ind(size(tmp_archive), 1:map_size(1), 1 + ones(1, map_size(1))));
+            % end
+            tmp_archive(sub2ind(size(tmp_archive), tmp_fits(:, 1 + 3) + 1, tmp_fits(:, 2 + 3) + 1)) = tmp_fits(:, 3);
+
+            dam_handle.tab{i_forth}.heat{i_third}.ColorData = tmp_archive;
+        end
+    end
 end
