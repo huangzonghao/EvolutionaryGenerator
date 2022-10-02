@@ -86,7 +86,8 @@ class UrdfFitness {
 
         // Feature 2 -- Average Leg Length
         // Longest link 1, shortest link 0.2 --> Longest leg 4.5, shortest leg 0.2
-        _desc[2] = range_to_unit(avg_leg_length, 0.2, 4.5);
+        // Now chose 4 as the maximum, as 4.5 was rarely reached.
+        _desc[2] = range_to_unit(avg_leg_length, 0.2, 4);
 
         // // Feature 3 -- Max Leg Length
         // _desc[3] = range_to_unit(max_leg_length, 0.2, 4.5);
