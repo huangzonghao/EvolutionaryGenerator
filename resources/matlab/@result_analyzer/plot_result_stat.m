@@ -107,6 +107,9 @@ function plot_result_stat(app)
     % Coverage Plot
     subplot(num_subplots, 1, 4);
     p3 = plot(start_gen : end_gen, stat.coverage(start_gen + 1 : end_gen + 1), 'b');
+    hold on;
+    plot(start_gen : end_gen, ones(1, end_gen - start_gen + 1) * 0.5,'Color','k','LineStyle','--');
+    hold off;
     title('Coverage');
     ylim([0 1]);
     xlabel('generation');
