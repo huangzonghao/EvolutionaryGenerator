@@ -39,7 +39,7 @@ function generate_all_plots_for_this_result(app, result, root_dir)
     if isfield(app.plot_handles.gen_plot, 'handle') && ishandle(app.plot_handles.gen_plot.handle)
         close(app.plot_handles.gen_plot.handle);
     end
-    open_gen_all_plot(app);
+
     % gen 0
     app.current_gen = 0;
     plot_gen_all(app);

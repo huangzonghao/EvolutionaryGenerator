@@ -201,7 +201,6 @@ classdef result_analyzer < matlab.apps.AppBase
         regenerate_archive_map_kernel(app, result_id)
 
         %% Plotting
-        open_gen_all_plot(app)
         generate_all_compare_plots(app)
         generate_all_single_result_plots(app)
         generate_all_virtual_result_plots(app)
@@ -318,7 +317,10 @@ classdef result_analyzer < matlab.apps.AppBase
 
         % Value changed function: SanitizeArchiveCheckBox
         function SanitizeArchiveCheckBoxValueChanged(app, event)
-            plot_gen_all(app);
+            if isfield(app.plot_handles.gen_plot, 'handle') && ...
+               ishandle(app.plot_handles.gen_plot.handle)
+                plot_gen_all(app);
+            end
         end
 
         % Button pushed function: ComparePlotButton
@@ -468,7 +470,6 @@ classdef result_analyzer < matlab.apps.AppBase
 
         % Button pushed function: PlotGenButton
         function PlotGenButtonPushed(app, event)
-            open_gen_all_plot(app);
             plot_gen_all(app);
         end
 
@@ -614,12 +615,25 @@ classdef result_analyzer < matlab.apps.AppBase
 
         % Value changed function: Feature1DropDown
         function Feature1DropDownValueChanged(app, event)
-            plot_gen_all(app);
+            if isfield(app.plot_handles.gen_plot, 'handle') && ...
+               ishandle(app.plot_handles.gen_plot.handle)
+                plot_gen_all(app);
+            end
         end
 
         % Value changed function: Feature2DropDown
         function Feature2DropDownValueChanged(app, event)
-            plot_gen_all(app);
+            if isfield(app.plot_handles.gen_plot, 'handle') && ...
+               ishandle(app.plot_handles.gen_plot.handle)
+                plot_gen_all(app);
+            end
+        end
+
+        % Value changed function: DetailedMapCheckBox
+        function DetailedMapCheckBoxValueChanged(app, event)
+            if (app.DetailedMapCheckBox.Value)
+                plot_gen_all(app);
+            end
         end
     end
 
@@ -1401,6 +1415,7 @@ classdef result_analyzer < matlab.apps.AppBase
 
             % Create DetailedMapCheckBox
             app.DetailedMapCheckBox = uicheckbox(app.SingleResultsPanel);
+            app.DetailedMapCheckBox.ValueChangedFcn = createCallbackFcn(app, @DetailedMapCheckBoxValueChanged, true);
             app.DetailedMapCheckBox.Text = 'Detailed Map';
             app.DetailedMapCheckBox.Position = [355 363 93 22];
 

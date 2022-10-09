@@ -64,7 +64,10 @@ function simulate_from_archive_map(app)
             save(fullfile(result.path, 'robots.mat'), 'robots', '-v7.3');
             save(fullfile(result.path, 'archive.mat'), 'archive', '-v7.3');
             msgbox(sprintf("Fitness updated from %.4f to %.4f", old_fitness, sim_report.fitness));
-            plot_gen_all(app);
+            if isfield(app.plot_handles.gen_plot, 'handle') && ...
+               ishandle(app.plot_handles.gen_plot.handle)
+                plot_gen_all(app);
+            end
         else
             msgbox(['Fitness: ', num2str(sim_report.fitness)]);
         end
