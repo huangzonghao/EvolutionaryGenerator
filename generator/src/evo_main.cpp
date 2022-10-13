@@ -15,6 +15,7 @@
 
 using json = nlohmann::json;
 
+// TODO: pass in training config here so that we can replace sim_params and evo_params later on
 void new_training(EvoParams& evo_params,
                   SimulatorParams& sim_params,
                   const std::string& bagfile_basename,
@@ -134,6 +135,7 @@ void new_training_from_job(EvoGenTrainingConfigs& training_configs,
     evo_params.set_grid_shape(training_configs.grid_dim());
     evo_params.set_nb_gen(training_configs.num_gen());
     evo_params.set_pop_size(training_configs.pop_size());
+    evo_params.input_sampling = static_cast<EvoParams::UserDesignSampling>(training_configs.user_design_sampling());
 
     sim_params.SetEnv(training_configs.env());
     sim_params.SetTimeout(training_configs.sim_time());
@@ -290,6 +292,12 @@ void process_job_file(const std::string& job_file_basename) {
                 std::string bagfile_basename = job["bagfile"];
                 if (bagfile_basename != "") {
                     bagfile_basename.erase(bagfile_basename.find(".json"), 5);
+                }
+
+                if (job["user_input_sampling"] != "") {
+                    if (job["user_input_sampling"] == "random") {
+                        training_configs.set_user_design_sampling(EvoGenTrainingConfigs::RANDOM);
+                    }
                 }
 
                 std::cout << "Launching new job " << job["result_dir"] << std::endl;

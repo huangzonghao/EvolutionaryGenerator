@@ -88,6 +88,29 @@ inline std::vector<int> randomized_indices(size_t size)
     return ids;
 }
 
+template<class BidiIter>
+BidiIter random_unique(BidiIter begin, BidiIter end, size_t num_random) {
+    size_t left = std::distance(begin, end);
+    while (num_random--) {
+        BidiIter r = begin;
+        std::advance(r, std::rand()%left);
+        std::swap(*begin, *r);
+        ++begin;
+        --left;
+    }
+    return begin;
+}
+
+// randomly select m elements from n elements (n >= m).
+// using Fisher-Yates shuffle
+inline std::vector<int> rand_m_from_n(size_t m, size_t n) {
+    std::vector<int> ids(n);
+    for (int i = 0; i < n; ++i) ids[i] = i;
+    random_unique(ids.begin(), ids.end(), m);
+    ids.resize(m);
+    return ids;
+}
+
 /// return a random it in the list
 template <typename T>
 inline typename std::list<T>::iterator rand_in_list(std::list<T>& l)

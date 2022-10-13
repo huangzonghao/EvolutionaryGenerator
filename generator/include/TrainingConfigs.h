@@ -8,6 +8,8 @@
 
 class EvoGenTrainingConfigs {
   public:
+    enum UserDesignSampling { ALL = 0, RANDOM };
+
     // Evolution
     int num_gen() { return num_gen_; }
     void set_num_gen(int new_num_gen) { num_gen_ = new_num_gen; }
@@ -15,6 +17,8 @@ class EvoGenTrainingConfigs {
     void set_pop_size(int new_pop_size) { pop_size_ = new_pop_size; }
     std::vector<int>& grid_dim() { return grid_dim_; }
     void set_grid_dim(const std::vector<int>& grid_dim) { grid_dim_ = grid_dim; }
+    EvoGenTrainingConfigs::UserDesignSampling user_design_sampling() { return input_sampling_; }
+    void set_user_design_sampling(enum UserDesignSampling input_sampling) { input_sampling_ = input_sampling; }
 
     // Simulation
     const std::string& env() { return env_; }
@@ -33,6 +37,7 @@ class EvoGenTrainingConfigs {
     double sim_time_ = 0;
     std::string env_ = "";
     std::string output_dir_ = "";
+    enum UserDesignSampling input_sampling_ = ALL;
 };
 
 #endif /* end of include guard: EVOGEN_GENERATOR_INCLUDE_TRAININGCONFIGS_H_ */

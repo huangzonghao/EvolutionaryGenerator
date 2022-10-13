@@ -7,6 +7,10 @@
 
 class EvoParams {
   public:
+    // TODO: merge the defination here with the one in training_configs
+    enum UserDesignSampling { ALL = 0, RANDOM };
+    enum UserDesignSampling input_sampling = ALL;
+
     size_t& rand_seed() { return rand_seed_; }
     const size_t rand_seed() const { return rand_seed_; }
     const size_t nb_gen() const { return nb_gen_; }

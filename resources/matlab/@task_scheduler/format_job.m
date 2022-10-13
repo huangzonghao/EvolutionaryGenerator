@@ -40,6 +40,11 @@ function job = format_job(app, job_config)
         job.ignore_random_pop_in_bag = app.IgnoreRandomPopInBagCheckBox.Value;
         job.nickname = app.NicknameEditField.Value;
         job.grid_dim = dim_array;
+        if app.UserInputsSamplingCheckBox.Value
+            job.user_input_sampling = 'random'; % randomly sample designs in bag for init pop
+        else
+            job.user_input_sampling = 'all'; % use all designs in bag as init pop
+        end
     elseif strcmp(job_config.type, 'continue')
         result = job_config.result;
         job.type = 'continue';
