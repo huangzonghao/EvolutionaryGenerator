@@ -25,7 +25,8 @@ class Grid {
   public:
     // TODO: see how to get dim and gridshape to a configurable parameter
     // The main obstacle seems to be the boost::multi_aray
-    static const size_t dim = 4;
+    // static const size_t dim = 4;
+    static const size_t dim = 2;
     typedef std::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
     typedef typename pop_t::iterator it_t;
