@@ -13,8 +13,12 @@ class EvoGenTrainingConfigs {
     // Evolution
     int num_gen() { return num_gen_; }
     void set_num_gen(int new_num_gen) { num_gen_ = new_num_gen; }
+    int init_pop_size() { return init_pop_size_; }
+    void set_init_pop_size(int new_size) { init_pop_size_ = new_size; }
     int pop_size() { return pop_size_; }
-    void set_pop_size(int new_pop_size) { pop_size_ = new_pop_size; }
+    void set_pop_size(int new_size) { pop_size_ = new_size; }
+    int num_user_inputs() { return num_user_inputs_; }
+    void set_num_user_inputs(int new_size) { num_user_inputs_ = new_size; }
     std::vector<int>& grid_dim() { return grid_dim_; }
     void set_grid_dim(const std::vector<int>& grid_dim) { grid_dim_ = grid_dim; }
     EvoGenTrainingConfigs::UserDesignSampling user_design_sampling() { return input_sampling_; }
@@ -32,7 +36,9 @@ class EvoGenTrainingConfigs {
 
   private:
     int num_gen_ = 0;
+    int init_pop_size_ = 0;
     int pop_size_ = 0;
+    int num_user_inputs_ = 0;
     std::vector<int> grid_dim_;
     double sim_time_ = 0;
     std::string env_ = "";

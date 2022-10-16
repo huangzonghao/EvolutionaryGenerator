@@ -35,6 +35,7 @@ function job = format_job(app, job_config)
         job.env = app.EnvironmentDropDown.Value;
         job.num_gen = app.NumGenEditField.Value;
         job.pop_size = app.PopSizeEditField.Value;
+        job.init_pop_size = app.InitPopEditField.Value;
         job.sim_time = app.SimTimeEditField.Value;
         job.comments = string(app.JobCommentsTextArea.Value);
         job.ignore_random_pop_in_bag = app.IgnoreRandomPopInBagCheckBox.Value;
@@ -45,6 +46,8 @@ function job = format_job(app, job_config)
         else
             job.user_input_sampling = 'all'; % use all designs in bag as init pop
         end
+        % TODO: this field needs to be disabled when not sampling user inputs
+        job.num_user_inputs = app.NumUserInputsEditField.Value;
     elseif strcmp(job_config.type, 'continue')
         result = job_config.result;
         job.type = 'continue';

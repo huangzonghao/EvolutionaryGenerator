@@ -26,8 +26,10 @@ function task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen
 
     app.NumGenEditField.Value = 6000;
     app.PopSizeEditField.Value = 30;
+    app.InitPopEditField.Value = 30;
     app.SimTimeEditField.Value = 60;
     app.SessionTimeEditField.Value = 30;
+    app.NumUserInputsEditField.Value = 25;
 
     app.NumDimEditField.Value = 2;
     grid_dim_string = num2str([20, 20], '%d,');

@@ -46,11 +46,13 @@ class EvoGenQD
 
         // Feed in user seeds if exist
         if (_init_seeds) {
+            int num_seeds_to_load = 0;
             switch (this->_evo_params.input_sampling) {
             case EvoParams::UserDesignSampling::RANDOM:
-                if (_init_size < _init_seeds->size()) {
-                    const std::vector<int>& init_seed_idx = misc::rand_m_from_n(_init_size, _init_seeds->size());
-                    for (int i = 0; i < _init_size; ++i) {
+                num_seeds_to_load = this->_evo_params.num_user_inputs;
+                if (num_seeds_to_load <= _init_seeds->size()) {
+                    const std::vector<int>& init_seed_idx = misc::rand_m_from_n(num_seeds_to_load, _init_seeds->size());
+                    for (int i = 0; i < num_seeds_to_load; ++i) {
                         _init_pop.emplace_back(std::make_shared<Phen>(_init_seeds->at(init_seed_idx[i]), this->_evo_params));
                         _init_pop.back()->set_id(0, i);
                     }
@@ -66,7 +68,7 @@ class EvoGenQD
             default:
                 // Allowing overfill of user seeds
                 // int num_seeds_to_load = std::min(_init_size, _init_seeds->size());
-                int num_seeds_to_load = _init_seeds->size();
+                num_seeds_to_load = _init_seeds->size();
                 for (int i = 0; i < num_seeds_to_load; ++i) {
                     _init_pop.emplace_back(std::make_shared<Phen>(_init_seeds->at(i), this->_evo_params));
                     _init_pop.back()->set_id(0, i);

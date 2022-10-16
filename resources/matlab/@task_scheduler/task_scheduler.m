@@ -33,6 +33,10 @@ classdef task_scheduler < matlab.apps.AppBase
         SaveButton                    matlab.ui.control.Button
         RemoveButton                  matlab.ui.control.Button
         JobEditorPanel                matlab.ui.container.Panel
+        InitPopEditField              matlab.ui.control.NumericEditField
+        InitPopEditFieldLabel         matlab.ui.control.Label
+        NumUserInputsEditField        matlab.ui.control.NumericEditField
+        UserInputsLabel               matlab.ui.control.Label
         UserInputsSamplingCheckBox    matlab.ui.control.CheckBox
         JobTypeDropDown               matlab.ui.control.DropDown
         JobTypeLabel                  matlab.ui.control.Label
@@ -219,7 +223,7 @@ classdef task_scheduler < matlab.apps.AppBase
             app.IgnoreRandomPopInBagCheckBox = uicheckbox(app.JobEditorPanel);
             app.IgnoreRandomPopInBagCheckBox.Text = 'Ignore Random Pop In Bag';
             app.IgnoreRandomPopInBagCheckBox.WordWrap = 'on';
-            app.IgnoreRandomPopInBagCheckBox.Position = [219 323 103 36];
+            app.IgnoreRandomPopInBagCheckBox.Position = [219 320 103 36];
             app.IgnoreRandomPopInBagCheckBox.Value = true;
 
             % Create ClearBagSelectionButton
@@ -243,19 +247,19 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create EnvLabel
             app.EnvLabel = uilabel(app.JobEditorPanel);
             app.EnvLabel.HorizontalAlignment = 'right';
-            app.EnvLabel.Position = [211 460 76 22];
-            app.EnvLabel.Text = 'Environment:';
+            app.EnvLabel.Position = [198 459 30 22];
+            app.EnvLabel.Text = 'Env:';
 
             % Create EnvironmentDropDown
             app.EnvironmentDropDown = uidropdown(app.JobEditorPanel);
             app.EnvironmentDropDown.Items = {};
-            app.EnvironmentDropDown.Position = [233 436 91 26];
+            app.EnvironmentDropDown.Position = [233 455 91 26];
             app.EnvironmentDropDown.Value = {};
 
             % Create GenEditFieldLabel
             app.GenEditFieldLabel = uilabel(app.JobEditorPanel);
             app.GenEditFieldLabel.HorizontalAlignment = 'right';
-            app.GenEditFieldLabel.Position = [221 408 42 22];
+            app.GenEditFieldLabel.Position = [221 433 42 22];
             app.GenEditFieldLabel.Text = '# Gen:';
 
             % Create NumGenEditField
@@ -264,39 +268,39 @@ classdef task_scheduler < matlab.apps.AppBase
             app.NumGenEditField.RoundFractionalValues = 'on';
             app.NumGenEditField.ValueDisplayFormat = '%.0f';
             app.NumGenEditField.HorizontalAlignment = 'center';
-            app.NumGenEditField.Position = [273 408 50 20];
+            app.NumGenEditField.Position = [273 433 50 20];
 
             % Create PopSizeLabel
             app.PopSizeLabel = uilabel(app.JobEditorPanel);
             app.PopSizeLabel.HorizontalAlignment = 'right';
-            app.PopSizeLabel.Position = [212 381 57 22];
+            app.PopSizeLabel.Position = [212 406 57 22];
             app.PopSizeLabel.Text = 'Pop Size:';
 
             % Create PopSizeEditField
             app.PopSizeEditField = uieditfield(app.JobEditorPanel, 'numeric');
             app.PopSizeEditField.HorizontalAlignment = 'center';
-            app.PopSizeEditField.Position = [273 383 50 20];
+            app.PopSizeEditField.Position = [273 408 50 20];
 
             % Create SimTimeLabel
             app.SimTimeLabel = uilabel(app.JobEditorPanel);
             app.SimTimeLabel.HorizontalAlignment = 'right';
-            app.SimTimeLabel.Position = [210 357 59 22];
+            app.SimTimeLabel.Position = [210 354 59 22];
             app.SimTimeLabel.Text = 'Sim Time:';
 
             % Create SimTimeEditField
             app.SimTimeEditField = uieditfield(app.JobEditorPanel, 'numeric');
             app.SimTimeEditField.HorizontalAlignment = 'center';
-            app.SimTimeEditField.Position = [273 358 50 20];
+            app.SimTimeEditField.Position = [273 355 50 20];
 
             % Create JobCommentsTextAreaLabel
             app.JobCommentsTextAreaLabel = uilabel(app.JobEditorPanel);
             app.JobCommentsTextAreaLabel.HorizontalAlignment = 'right';
-            app.JobCommentsTextAreaLabel.Position = [205 185 90 22];
+            app.JobCommentsTextAreaLabel.Position = [205 175 90 22];
             app.JobCommentsTextAreaLabel.Text = 'Job Comments:';
 
             % Create JobCommentsTextArea
             app.JobCommentsTextArea = uitextarea(app.JobEditorPanel);
-            app.JobCommentsTextArea.Position = [215 113 108 75];
+            app.JobCommentsTextArea.Position = [215 113 108 65];
 
             % Create RepsLabel
             app.RepsLabel = uilabel(app.JobEditorPanel);
@@ -338,7 +342,7 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create DimensionsEditFieldLabel
             app.DimensionsEditFieldLabel = uilabel(app.JobEditorPanel);
             app.DimensionsEditFieldLabel.HorizontalAlignment = 'right';
-            app.DimensionsEditFieldLabel.Position = [212 242 80 22];
+            app.DimensionsEditFieldLabel.Position = [212 230 80 22];
             app.DimensionsEditFieldLabel.Text = '# Dimensions:';
 
             % Create NumDimEditField
@@ -347,17 +351,17 @@ classdef task_scheduler < matlab.apps.AppBase
             app.NumDimEditField.RoundFractionalValues = 'on';
             app.NumDimEditField.ValueChangedFcn = createCallbackFcn(app, @NumDimEditFieldValueChanged, true);
             app.NumDimEditField.HorizontalAlignment = 'center';
-            app.NumDimEditField.Position = [295 241 29 22];
+            app.NumDimEditField.Position = [295 229 29 22];
 
             % Create BinsEditFieldLabel
             app.BinsEditFieldLabel = uilabel(app.JobEditorPanel);
             app.BinsEditFieldLabel.HorizontalAlignment = 'right';
-            app.BinsEditFieldLabel.Position = [210 227 42 22];
+            app.BinsEditFieldLabel.Position = [210 215 42 22];
             app.BinsEditFieldLabel.Text = '# Bins:';
 
             % Create GridDimensionEditField
             app.GridDimensionEditField = uieditfield(app.JobEditorPanel, 'text');
-            app.GridDimensionEditField.Position = [213 205 109 22];
+            app.GridDimensionEditField.Position = [213 193 109 22];
 
             % Create LoadExistingResultButton
             app.LoadExistingResultButton = uibutton(app.JobEditorPanel, 'push');
@@ -389,8 +393,31 @@ classdef task_scheduler < matlab.apps.AppBase
             app.UserInputsSamplingCheckBox = uicheckbox(app.JobEditorPanel);
             app.UserInputsSamplingCheckBox.Text = 'Random Sampling User Inputs';
             app.UserInputsSamplingCheckBox.WordWrap = 'on';
-            app.UserInputsSamplingCheckBox.Position = [219 278 103 42];
-            app.UserInputsSamplingCheckBox.Value = true;
+            app.UserInputsSamplingCheckBox.Position = [219 279 103 42];
+
+            % Create UserInputsLabel
+            app.UserInputsLabel = uilabel(app.JobEditorPanel);
+            app.UserInputsLabel.HorizontalAlignment = 'right';
+            app.UserInputsLabel.Position = [212 255 80 22];
+            app.UserInputsLabel.Text = '# User Inputs';
+
+            % Create NumUserInputsEditField
+            app.NumUserInputsEditField = uieditfield(app.JobEditorPanel, 'numeric');
+            app.NumUserInputsEditField.Limits = [0 Inf];
+            app.NumUserInputsEditField.RoundFractionalValues = 'on';
+            app.NumUserInputsEditField.HorizontalAlignment = 'center';
+            app.NumUserInputsEditField.Position = [295 254 29 22];
+
+            % Create InitPopEditFieldLabel
+            app.InitPopEditFieldLabel = uilabel(app.JobEditorPanel);
+            app.InitPopEditFieldLabel.HorizontalAlignment = 'right';
+            app.InitPopEditFieldLabel.Position = [219 383 50 22];
+            app.InitPopEditFieldLabel.Text = 'Init Pop:';
+
+            % Create InitPopEditField
+            app.InitPopEditField = uieditfield(app.JobEditorPanel, 'numeric');
+            app.InitPopEditField.HorizontalAlignment = 'center';
+            app.InitPopEditField.Position = [273 385 50 20];
 
             % Create JobFileEditorPanel
             app.JobFileEditorPanel = uipanel(app.MainFigure);

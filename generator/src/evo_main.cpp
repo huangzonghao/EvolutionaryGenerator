@@ -134,8 +134,10 @@ void new_training_from_job(EvoGenTrainingConfigs& training_configs,
 
     evo_params.set_grid_shape(training_configs.grid_dim());
     evo_params.set_nb_gen(training_configs.num_gen());
+    evo_params.set_init_size(training_configs.init_pop_size());
     evo_params.set_pop_size(training_configs.pop_size());
     evo_params.input_sampling = static_cast<EvoParams::UserDesignSampling>(training_configs.user_design_sampling());
+    evo_params.num_user_inputs = training_configs.num_user_inputs();
 
     sim_params.SetEnv(training_configs.env());
     sim_params.SetTimeout(training_configs.sim_time());
@@ -283,8 +285,12 @@ void process_job_file(const std::string& job_file_basename) {
                 EvoGenTrainingConfigs training_configs;
                 training_configs.set_num_gen(job["num_gen"]);
                 training_configs.set_pop_size(job["pop_size"]);
-                if (js_ver >= 1.29) { // grid_dim introducde in ver 1.3
+                if (js_ver >= 1.3) {
                     training_configs.set_grid_dim(job["grid_dim"]);
+                }
+                if (js_ver >= 1.6) {
+                    training_configs.set_init_pop_size(job["init_pop_size"]);
+                    training_configs.set_num_user_inputs(job["num_user_inputs"]);
                 }
                 training_configs.set_env(job["env"]);
                 training_configs.set_sim_time(job["sim_time"]);
@@ -294,7 +300,7 @@ void process_job_file(const std::string& job_file_basename) {
                     bagfile_basename.erase(bagfile_basename.find(".json"), 5);
                 }
 
-                if (job["user_input_sampling"] != "") {
+                if (js_ver >= 1.5) {
                     if (job["user_input_sampling"] == "random") {
                         training_configs.set_user_design_sampling(EvoGenTrainingConfigs::RANDOM);
                     }

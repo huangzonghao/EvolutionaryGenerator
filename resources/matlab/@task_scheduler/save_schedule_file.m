@@ -16,7 +16,8 @@ function save_schedule_file(app)
     % 1.3: add grid_dim and number of bins per dimension
     % 1.4: add 'continue' job
     % 1.5: add user_input_sampling, which configs how to use user designs as init pop
-    jsobj.format_ver = '1.5';
+    % 1.6: add init pop size and number of user inputs to use for sampled init pop.
+    jsobj.format_ver = '1.6';
 
     middlename = '';
     if ~isempty(app.OutputFileNameEditField.Value)

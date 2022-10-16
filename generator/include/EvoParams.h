@@ -7,9 +7,11 @@
 
 class EvoParams {
   public:
-    // TODO: merge the defination here with the one in training_configs
+    // TODO: merge the public defination here with the one in training_configs,
+    // right now they are not stored in the serialized file
     enum UserDesignSampling { ALL = 0, RANDOM };
     enum UserDesignSampling input_sampling = ALL;
+    int num_user_inputs = 0;
 
     size_t& rand_seed() { return rand_seed_; }
     const size_t rand_seed() const { return rand_seed_; }
@@ -27,6 +29,7 @@ class EvoParams {
 
     void set_grid_shape(const std::vector<int>& grid_shape) { grid_shape_ = grid_shape; }
     void set_nb_gen(size_t nb_gen) { nb_gen_ = nb_gen; }
+    void set_init_size(size_t init_size) { init_size_ = init_size; }
     void set_pop_size(size_t pop_size) { pop_size_ = pop_size; }
     bool set_feature_description(const char* const* descriptor_names) {
         feature_description_.clear();
