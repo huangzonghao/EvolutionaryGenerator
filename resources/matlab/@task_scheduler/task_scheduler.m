@@ -7,6 +7,7 @@ classdef task_scheduler < matlab.apps.AppBase
         CLCButton                     matlab.ui.control.Button
         RehashButton                  matlab.ui.control.Button
         JobFIleLauncherPanel          matlab.ui.container.Panel
+        ArchiveJobFileButton          matlab.ui.control.Button
         OpenJobFolderButton           matlab.ui.control.Button
         OpenResultFolderButton        matlab.ui.control.Button
         JobFileStatusLabel            matlab.ui.control.Label
@@ -102,7 +103,8 @@ classdef task_scheduler < matlab.apps.AppBase
         task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen_task_launcher_path)
         update_job_file_info_label(app)
         grid_dimension_update(app)
-        load_existing_result(app);
+        load_existing_result(app)
+        archive_selected_job_file(app)
     end
 
     % Callbacks that handle component events
@@ -205,6 +207,11 @@ classdef task_scheduler < matlab.apps.AppBase
         % Value changed function: JobTypeDropDown
         function JobTypeDropDownValueChanged(app, event)
             toggle_job_type(app);
+        end
+
+        % Button pushed function: ArchiveJobFileButton
+        function ArchiveJobFileButtonPushed(app, event)
+            archive_selected_job_file(app);
         end
     end
 
@@ -601,6 +608,14 @@ classdef task_scheduler < matlab.apps.AppBase
             app.OpenJobFolderButton.WordWrap = 'on';
             app.OpenJobFolderButton.Position = [75 11 50 50];
             app.OpenJobFolderButton.Text = 'Open Job Folder';
+
+            % Create ArchiveJobFileButton
+            app.ArchiveJobFileButton = uibutton(app.JobFIleLauncherPanel, 'push');
+            app.ArchiveJobFileButton.ButtonPushedFcn = createCallbackFcn(app, @ArchiveJobFileButtonPushed, true);
+            app.ArchiveJobFileButton.WordWrap = 'on';
+            app.ArchiveJobFileButton.FontWeight = 'bold';
+            app.ArchiveJobFileButton.Position = [155 157 61 52];
+            app.ArchiveJobFileButton.Text = 'Archive';
 
             % Create MiscellaneousPanel
             app.MiscellaneousPanel = uipanel(app.MainFigure);
