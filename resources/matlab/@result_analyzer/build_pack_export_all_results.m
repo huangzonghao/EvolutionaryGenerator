@@ -8,7 +8,9 @@ function build_pack_export_all_results(app)
         return
     end
     export_dir = fullfile(app.result_group_path, 'Processed');
-    [~, ~, ~] = mkdir(export_dir);
+    if ~isfolder(export_dir)
+        mkdir(export_dir);
+    end
     wb = waitbar(double(0), ['Processing 1 / ', num2str(num_results)], 'Name', 'Processing all results');
     for i = 1 : num_results
         result = app.results{i};

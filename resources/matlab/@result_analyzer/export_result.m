@@ -4,6 +4,10 @@ function export_result(result, dest_path)
 % dest_path: path to the dest folder. The result will be placed in dest_path/result_basename
 
 dest_result_dir = fullfile(dest_path, result.basename);
+if isfolder(dest_result_dir)
+    msgbox(sprintf("Error: destination folder exists -- %s", dest_result_dir));
+    return
+end
 mkdir(dest_result_dir);
 copyfile(fullfile(result.path, 'archive.mat'), dest_result_dir);
 copyfile(fullfile(result.path, 'robots.mat'), dest_result_dir);

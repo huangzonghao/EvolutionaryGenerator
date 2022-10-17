@@ -23,7 +23,9 @@ function export_group(app)
         [~, group_basename, ~] = fileparts(app.result_group_path);
     % end
     dest_group_dir = fullfile(dest_path, group_basename);
-    mkdir(dest_group_dir);
+    if ~isfolder(dest_group_dir)
+        mkdir(dest_group_dir);
+    end
     copyfile(fullfile(source_group_dir, 'result_list.mat'), dest_group_dir);
     virtual_result_file = fullfile(source_group_dir, 'virtual_results.mat');
     if isfile(virtual_result_file)
