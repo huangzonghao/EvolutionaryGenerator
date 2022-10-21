@@ -7,12 +7,11 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
+#include "sferes_phen_EvoGenPhen.hpp"
 #include "EvoParams.h"
 
 namespace sferes {
-namespace qd {
 namespace container {
-
 namespace nov { // novelty related settings
     static const size_t deep = 2;
     static const double l = 1;
@@ -20,14 +19,13 @@ namespace nov { // novelty related settings
     static const double eps = 0.01;
 }
 
-template <typename Phen>
-class Grid {
+class EvoGenArchiveContainer {
   public:
     // TODO: see how to get dim and gridshape to a configurable parameter
     // The main obstacle seems to be the boost::multi_aray
     // static const size_t dim = 4;
     static const size_t dim = 2;
-    typedef std::shared_ptr<Phen> indiv_t;
+    typedef std::shared_ptr<sferes::phen::EvoGenPhen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
     typedef typename pop_t::iterator it_t;
     typedef typename std::vector<std::vector<indiv_t>> front_t;
@@ -240,7 +238,6 @@ class Grid {
 };
 
 } // namespace container
-} // namespace qd
 } // namespace sferes
 
 #endif /* end of include guard: EVOGEN_GENERATOR_SFERES_QD_CONTAINER_GRID_HPP_ */

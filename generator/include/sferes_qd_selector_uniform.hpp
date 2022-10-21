@@ -1,15 +1,16 @@
 #ifndef EVOGEN_GENERATOR_SFERES_QD_SELECTOR_UNIFORM_HPP_
 #define EVOGEN_GENERATOR_SFERES_QD_SELECTOR_UNIFORM_HPP_
 
+#include "sferes_phen_EvoGenPhen.hpp"
+
 namespace sferes {
 namespace qd {
 namespace selector {
 
 // Fill in the shortlist with selected ones from candidates
 // This is a selector with duplicated selections.
-template <typename Phen>
 struct Uniform {
-    typedef std::shared_ptr<Phen> indiv_t;
+    typedef std::shared_ptr<sferes::phen::EvoGenPhen> indiv_t;
 
     void operator()(std::vector<indiv_t>& shortlist,
                     const std::vector<indiv_t>& candidates) const

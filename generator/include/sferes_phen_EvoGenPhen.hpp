@@ -5,6 +5,9 @@
 #include <iostream>
 #include <boost/serialization/nvp.hpp>
 
+#include "sferes_fit_UrdfFitness.hpp"
+#include "sferes_gen_EvoGenFloat.hpp"
+// #include "sferes_fit_RobogamiFitness.hpp"
 #include "RobotRepresentation.h"
 #include "MeshInfo.h"
 #include "EvoParams.h"
@@ -68,16 +71,15 @@ struct PhenID {
     }
 };
 
-template <typename Genome, typename Fit>
 class EvoGenPhen {
   public:
     // TODO: hard coded grid dimension
-    typedef Fit fit_t;
-    typedef Genome gen_t;
+    typedef sferes::fit::UrdfFitness fit_t;
+    // typedef sferes::fit::RobogamiFitness fit_t;
+    typedef sferes::gen::EvoGenFloat gen_t;
     typedef PhenID phen_id_t;
 
-    template<typename G, typename F>
-    friend std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e);
+    friend std::ostream& operator<<(std::ostream& output, const EvoGenPhen& e);
 
     int grid_dim = 2;
 
@@ -117,10 +119,11 @@ class EvoGenPhen {
     }
 
     PhenID& id() { return _id; }
+    const PhenID& id() const { return _id; }
 
     bool valid() { return _valid; }
-    Fit& fit() { return _fit; }
-    const Fit& fit() const { return _fit; }
+    fit_t& fit() { return _fit; }
+    const fit_t& fit() const { return _fit; }
 
     void set_grid_id(const std::vector<int> new_id) {
         if (new_id.size() != _grid_id.size()) {
@@ -132,9 +135,9 @@ class EvoGenPhen {
     }
     const std::vector<int>& grid_id() { return _grid_id; }
 
-    Genome& gen()  { return _gene; }
-    const Genome& gen() const { return _gene; }
-    const RobotRepresentation& robot() { return _robot; }
+    gen_t& gen()  { return _gene; }
+    const gen_t& gen() const { return _gene; }
+    const RobotRepresentation& robot() const { return _robot; }
 
     void mutate() { _gene.mutate(); }
     // actually the random inits are guaranteed to be valid
@@ -254,8 +257,8 @@ class EvoGenPhen {
     }
 
   protected:
-    Genome _gene;
-    Fit _fit;
+    gen_t _gene;
+    fit_t _fit;
     PhenID _id;
     double _min_p;
     double _max_p;
@@ -265,8 +268,7 @@ class EvoGenPhen {
     RobotRepresentation _robot;
 };
 
-template<typename G, typename F>
-std::ostream& operator<<(std::ostream& output, const EvoGenPhen<G, F>& e) {
+std::ostream& operator<<(std::ostream& output, const EvoGenPhen& e) {
     output << e.robot();
     return output;
 }

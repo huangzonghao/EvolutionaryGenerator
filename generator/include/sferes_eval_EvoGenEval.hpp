@@ -5,6 +5,7 @@
 #include <thread>
 #include <vector>
 
+#include "sferes_phen_EvoGenPhen.hpp"
 #include "MeshInfo.h"
 #include "SimulationManager.h"
 #include "SimulatorParams.h"
@@ -56,8 +57,7 @@ class EvoGenEval {
         mesh_info.init();
     }
 
-    template<typename Phen>
-    void eval_kernel(const std::vector<std::shared_ptr<Phen>>& pop,
+    void eval_kernel(const std::vector<std::shared_ptr<sferes::phen::EvoGenPhen>>& pop,
                      const std::shared_ptr<SimulationManager>& sm,
                      size_t start_idx, size_t end_idx)
     {
@@ -69,8 +69,7 @@ class EvoGenEval {
         }
     }
 
-    template<typename Phen>
-    void eval(std::vector<std::shared_ptr<Phen>>& pop, size_t begin, size_t end) {
+    void eval(std::vector<std::shared_ptr<sferes::phen::EvoGenPhen>>& pop, size_t begin, size_t end) {
         assert(pop.size());
         assert(begin < pop.size());
         assert(end <= pop.size());
@@ -80,12 +79,12 @@ class EvoGenEval {
         size_t num_leftovers = pop.size() % num_threads;
         size_t element_cursor = 0;
         for (int i = 0; i < num_leftovers; ++i) {
-            threads[i] = std::make_shared<std::thread>(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
+            threads[i] = std::make_shared<std::thread>(&EvoGenEval::eval_kernel, this, pop, sms[i],
                                                        element_cursor, element_cursor + batch_size + 1);
             element_cursor += batch_size + 1;
         }
         for (int i = num_leftovers; i < num_threads; ++i) {
-            threads[i] = std::make_shared<std::thread>(&EvoGenEval::eval_kernel<Phen>, this, pop, sms[i],
+            threads[i] = std::make_shared<std::thread>(&EvoGenEval::eval_kernel, this, pop, sms[i],
                                                        element_cursor, element_cursor + batch_size);
             element_cursor += batch_size;
         }

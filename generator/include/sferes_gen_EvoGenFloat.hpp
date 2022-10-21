@@ -25,7 +25,6 @@ namespace evo_float {
 
 // polynomial mutation. Cf Deb 2001, p 124 ; param: gen_eta_m
 // perturbation of the order O(1/eta_m)
-template<typename Ev>
 struct Mutation_f {
     double operator()(double raw, double min = 0.0, double max = 1.0) {
         assert(gen_eta_m != -1.0f);
@@ -161,7 +160,7 @@ class EvoGenFloat {
     }
 
   protected:
-    evo_float::Mutation_f<EvoGenFloat> _mutation_op;
+    evo_float::Mutation_f _mutation_op;
     evo_float::CrossOver_f<EvoGenFloat> _cross_over_op;
     std::vector<double> _data;
     int _max_size = 0;
