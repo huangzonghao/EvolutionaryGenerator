@@ -3,7 +3,6 @@
 
 // #include <tbb/parallel_for_each.h>
 #include <cmath>
-#include <boost/multi_array.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
@@ -19,33 +18,71 @@ namespace nov { // novelty related settings
     static const double eps = 0.01;
 }
 
+class Grid {
+  public:
+    using indiv_t = std::shared_ptr<sferes::phen::EvoGenPhen>;
+    using grid_index_t = std::vector<int>;
+
+    Grid() {}
+    Grid(const grid_index_t& grid_shape) { resize(grid_shape); }
+
+    int grid_dim() const { return dimension_; }
+    void resize(const grid_index_t& grid_shape) {
+        dimension_ = grid_shape.size();
+        grid_shape_ = grid_shape;
+        num_elements_.resize(dimension_);
+        num_elements_[0] = grid_shape_[0];
+        for (int i = 1; i < dimension_; ++i)
+            num_elements_[i] = num_elements_[i-1] * grid_shape_[i];
+        data_.resize(num_elements_.back());
+    }
+    const std::vector<indiv_t>& vec() const { return data_; }
+    indiv_t* data() { return data_.data(); }
+    int num_elements() { return num_elements_.back(); }
+    indiv_t& operator()(const grid_index_t& grid_idx) {
+        return data_[idx_convert(grid_idx)];
+    }
+    indiv_t& operator[](int idx) {
+        return data_[idx];
+    }
+
+  private:
+    int idx_convert(const grid_index_t& grid_idx) {
+        int idx = grid_idx[0];
+        for (int i = 1; i < dimension_; ++i) {
+            idx += grid_idx[i] * num_elements_[i-1];
+        }
+        return idx;
+    }
+    grid_index_t idx_convert(int idx) {
+        grid_index_t grid_idx(dimension_);
+        grid_idx[0] = idx % num_elements_[0];
+        idx -= grid_idx[0];
+        for (int i = 1; i < dimension_; ++i) {
+            grid_idx[i] = idx % num_elements_[i];
+            idx -= grid_idx[i] * num_elements_[i-1];
+        }
+        return grid_idx;
+    }
+    int dimension_ = 0;
+    std::vector<int> grid_shape_;
+    std::vector<int> num_elements_; // num_elements of each level.
+                                    // num_elements_[0] = grid_shape_[0]
+                                    // num_elements_[1] = grid_shape_[0] * grid_shape_[1]
+                                    // num_elements_.back() is the total number of elements of the entire container
+    std::vector<indiv_t> data_;
+};
+
 class EvoGenArchiveContainer {
   public:
-    // TODO: see how to get dim and gridshape to a configurable parameter
-    // The main obstacle seems to be the boost::multi_aray
-    // static const size_t dim = 4;
-    static const size_t dim = 2;
     typedef std::shared_ptr<sferes::phen::EvoGenPhen> indiv_t;
-    typedef typename std::vector<indiv_t> pop_t;
-    typedef typename pop_t::iterator it_t;
-    typedef typename std::vector<std::vector<indiv_t>> front_t;
-
-    typedef boost::multi_array<indiv_t, dim> map_t;
-    typedef boost::multi_array<int, dim> stat_t;
-    typedef typename map_t::multi_array_base::index_range index_range_t;
-    typedef boost::detail::multi_array::index_gen<dim, dim> index_gen_t;
-    typedef typename map_t::template const_array_view<dim>::type view_t;
-    // TODO: convert this thing to vector
-    using behav_index_t = std::vector<int>;
-    typedef std::array<double, dim> point_t;
-
-    // TODO: make sure all behav_index_t works
-    behav_index_t grid_shape;
-    int grid_dim = 2;
+    typedef std::vector<indiv_t> pop_t;
+    typedef std::vector<int> index_t;
+    typedef std::vector<double> point_t;
 
     // TODO: re-enable stat recording
-    Grid() {
-        // _stat.resize(grid_shape);
+    EvoGenArchiveContainer() {
+        // _stat.resize(_grid_shape);
         // reset_stat();
     }
 
@@ -54,22 +91,23 @@ class EvoGenArchiveContainer {
             // *it = 0;
     // }
 
-    // Set parameters seem to be called only when resuming?
-    // Not during initialization?
     void set_params(const EvoParams& evo_params) {
-        grid_shape = evo_params.grid_shape();
-        grid_dim = grid_shape.size();
-        // allocate space for _array and _array_parents
-        _array.resize(grid_shape);
-        // _stat.resize(grid_shape);
+        _grid_shape = evo_params.grid_shape();
+        if (_grid_shape.size() > 0) {
+            _grid.resize(_grid_shape);
+        } else {
+            std::cout << "Grid Map with dimension " << _grid_shape.size() << "not implemented" << std::endl;
+            exit(1);
+        }
+        // _stat.resize(_grid_shape);
     }
 
-    template <typename I> behav_index_t get_index(const I& indiv) const {
-        point_t p = get_point(indiv);
-        behav_index_t behav_pos(grid_dim);
-        for (int i = 0; i < grid_dim; ++i) {
-            behav_pos[i] = round(p[i] * (grid_shape[i] - 1));
-            assert(behav_pos[i] < grid_shape[i]);
+    index_t get_index(const indiv_t& indiv) const {
+        const auto& p = get_point(indiv);
+        index_t behav_pos(_grid.grid_dim());
+        for (int i = 0; i < _grid.grid_dim(); ++i) {
+            behav_pos[i] = round(p[i] * (_grid_shape[i] - 1));
+            assert(behav_pos[i] < _grid_shape[i]);
         }
         return behav_pos;
     }
@@ -77,9 +115,9 @@ class EvoGenArchiveContainer {
     void get_full_content(std::vector<indiv_t>& container) const {
         container.resize(_num_filled);
         int counter = 0;
-        for (const indiv_t* ind = _array.data(); ind < (_array.data() + _array.num_elements()); ++ind)
-            if (*ind) container[counter++] = *ind;
-
+        for (const auto& ind : _grid.vec()) {
+            if (ind) container[counter++] = ind;
+        }
         assert(counter == _num_filled);
     }
 
@@ -87,26 +125,26 @@ class EvoGenArchiveContainer {
         if (i1->fit().dead())
             return false;
 
-        behav_index_t behav_pos = get_index(i1);
+        index_t behav_pos = get_index(i1);
 
         const double epsilon = 0.00;
-        if (!_array(behav_pos)) {
+        if (!_grid(behav_pos)) {
             _num_filled++;
             goto add_to_container;
         }
-        if (i1->fit().value() - _array(behav_pos)->fit().value() > epsilon)
+        if (i1->fit().value() - _grid(behav_pos)->fit().value() > epsilon)
             goto add_to_container;
         // TODO: why?
         // same fitness but the features are closer to the center of map
-        if (std::abs(i1->fit().value() - _array(behav_pos)->fit().value()) <= epsilon &&
-            _dist_center(i1) < _dist_center(_array(behav_pos)))
+        if (std::abs(i1->fit().value() - _grid(behav_pos)->fit().value()) <= epsilon &&
+            _dist_center(i1) < _dist_center(_grid(behav_pos)))
                 goto add_to_container;
 
         return false;
 
       add_to_container:
         i1->set_grid_id(behav_pos);
-        _array(behav_pos) = i1;
+        _grid(behav_pos) = i1;
         // _stat(behav_pos) += 1;
         return true;
     }
@@ -119,45 +157,37 @@ class EvoGenArchiveContainer {
             _update_indiv(parents[i]);
     }
 
-    const map_t& archive() const { return _array; }
+    // const Grid& archive() const { return _grid; }
     // const stat_t& stat() const { return _stat; }
-
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version) {
-        ar & BOOST_SERIALIZATION_NVP(_num_filled);
-        ar & BOOST_SERIALIZATION_NVP(_array);
-        // ar & BOOST_SERIALIZATION_NVP(_stat);
-    }
 
   protected:
     // TODO: the way it converts double to int seems to be different from what
     //           I have been using
-    // Converts the descriptor into a Point_t
+    // Converts the descriptor into a point
     // Ignoring the rest of data in descriptor
-    template <typename I> point_t get_point(const I& indiv) const {
-        point_t p;
-        for (size_t i = 0; i < grid_dim; ++i) {
+    point_t get_point(const indiv_t& indiv) const {
+        point_t p(_grid.grid_dim());
+        for (size_t i = 0; i < _grid.grid_dim(); ++i) {
             assert(indiv->fit().desc()[i] >= 0.0);
             assert(indiv->fit().desc()[i] <= 1.0);
             p[i] = indiv->fit().desc()[i];
         }
-
         return p;
     }
 
-    template <typename I> double _dist_center(const I& indiv) {
+    double _dist_center(const indiv_t& indiv) {
         /* Returns distance to center of behavior descriptor cell */
         double dist = 0.0;
-        point_t p = get_point(indiv);
-        for (size_t i = 0; i < grid_dim; ++i)
-            dist += pow(p[i] - (double)round(p[i] * (double)(grid_shape[i] - 1)) / (double)(grid_shape[i] - 1), 2);
+        const auto& p = get_point(indiv);
+        for (size_t i = 0; i < _grid.grid_dim(); ++i)
+            dist += pow(p[i] - (double)round(p[i] * (double)(_grid_shape[i] - 1)) / (double)(_grid_shape[i] - 1), 2);
 
         dist = sqrt(dist);
         return dist;
     }
 
     void _update_novelty() {
-        // tbb::parallel_for(tbb::blocked_range<indiv_t*>(_array.data(), _array.data() + _array.num_elements()),
+        // tbb::parallel_for(tbb::blocked_range<indiv_t*>(_grid.data(), _grid.data() + _grid.num_elements()),
                           // [&](const tbb::blocked_range<indiv_t*>& r) {
                               // for (indiv_t* indiv = r.begin(); indiv != r.end(); ++indiv) {
                                   // if (*indiv)
@@ -200,36 +230,39 @@ class EvoGenArchiveContainer {
             return;
         }
 
-        int count = 0;
-        view_t neighborhood = get_neighborhood(indiv);
-        std::vector<indiv_t> neigh;
-        iterate(neighborhood, neigh); // convert a boost multiarray to std::vector
+        // TODO: Need to re-enable novelty in the future. But right now I am
+        // not sure how to use them
+        // int count = 0;
+        // view_t neighborhood = get_neighborhood(indiv);
+        // std::vector<indiv_t> neigh;
+        // iterate(neighborhood, neigh); // convert a boost multiarray to std::vector
 
-        indiv->fit().set_novelty(-(double)neigh.size()); // the more neighbors you have, the less novel you are
-        for (auto& n : neigh)
-            if (n->fit().value() < indiv->fit().value())
-                count++;
+        // indiv->fit().set_novelty(-(double)neigh.size()); // the more neighbors you have, the less novel you are
+        // for (auto& n : neigh)
+            // if (n->fit().value() < indiv->fit().value())
+                // count++;
 
-        indiv->fit().set_local_quality(count);
+        // indiv->fit().set_local_quality(count);
     }
 
     // TODO: figure what nov::deep is doing here
-    inline view_t get_neighborhood(indiv_t indiv) const {
-        behav_index_t ind = get_index(indiv);
-        index_gen_t indix;
-        int i = 0;
-        for (auto it = indix.ranges_.begin(); it != indix.ranges_.end(); it++) {
-            *it = index_range_t(std::max((int)ind[i] - (int)nov::deep, 0),
-                                std::min(ind[i] + nov::deep + 1, (size_t)grid_shape[i])); // bound! so stop at id[i]+2-1
+    // inline view_t get_neighborhood(indiv_t indiv) const {
+        // index_t ind = get_index(indiv);
+        // index_gen_t indix;
+        // int i = 0;
+        // for (auto it = indix.ranges_.begin(); it != indix.ranges_.end(); it++) {
+            // *it = int(std::max((int)ind[i] - (int)nov::deep, 0),
+                      // std::min(ind[i] + nov::deep + 1, (size_t)_grid_shape[i])); // bound! so stop at id[i]+2-1
 
-            i++;
-        }
+            // i++;
+        // }
 
-        view_t ngbh = _array[indix];
-        return ngbh;
-    }
+        // view_t ngbh = _grid[indix];
+        // return ngbh;
+    // }
 
-    map_t _array;
+    index_t _grid_shape;
+    Grid _grid;
     // stat stores the number of times that each bin is updated
     // TODO: need to store it as sparse matrix instead of a condesed matrix,
     // especially when the offspring size is small and grid map is large.

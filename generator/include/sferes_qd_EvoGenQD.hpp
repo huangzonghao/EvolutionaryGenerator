@@ -37,6 +37,7 @@ class EvoGenQD
         : ea::EvoGenEA<Phen, Eval, Stat, exact_t>(evo_params), _sim_params(sim_params)
     {
         this->_eval.set_sim_params(_sim_params);
+        // TODO: dereference the runtime polymorphism here
         this->_container.set_params(_evo_params);
     }
 
