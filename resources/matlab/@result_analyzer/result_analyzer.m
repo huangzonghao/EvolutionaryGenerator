@@ -7,6 +7,7 @@ classdef result_analyzer < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        GenerateDLDatasetButton        matlab.ui.control.Button
         DetailedMapCheckBox            matlab.ui.control.CheckBox
         Feature1Label                  matlab.ui.control.Label
         Feature2Label                  matlab.ui.control.Label
@@ -209,6 +210,7 @@ classdef result_analyzer < matlab.apps.AppBase
         generate_paper_plot2(app)
         generate_paper_plot3(app)
         generate_video_fitness_plot(app)
+        generate_deeplearning_dataset(app)
         plot_avg_age_of_map(app)
         plot_avg_longevity_of_gen(app)
         plot_bin_updates(app)
@@ -634,6 +636,11 @@ classdef result_analyzer < matlab.apps.AppBase
             if (app.DetailedMapCheckBox.Value)
                 plot_gen_all(app);
             end
+        end
+
+        % Button pushed function: GenerateDLDatasetButton
+        function GenerateDLDatasetButtonPushed(app, event)
+            generate_deeplearning_dataset(app);
         end
     end
 
@@ -1418,6 +1425,14 @@ classdef result_analyzer < matlab.apps.AppBase
             app.DetailedMapCheckBox.ValueChangedFcn = createCallbackFcn(app, @DetailedMapCheckBoxValueChanged, true);
             app.DetailedMapCheckBox.Text = 'Detailed Map';
             app.DetailedMapCheckBox.Position = [355 363 93 22];
+
+            % Create GenerateDLDatasetButton
+            app.GenerateDLDatasetButton = uibutton(app.SingleResultsPanel, 'push');
+            app.GenerateDLDatasetButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateDLDatasetButtonPushed, true);
+            app.GenerateDLDatasetButton.WordWrap = 'on';
+            app.GenerateDLDatasetButton.FontSize = 11;
+            app.GenerateDLDatasetButton.Position = [355 10 65 45];
+            app.GenerateDLDatasetButton.Text = 'Generate DL Dataset';
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);
