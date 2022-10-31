@@ -7,6 +7,7 @@ classdef result_analyzer < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        CleanResultsButton             matlab.ui.control.Button
         PlotDropDownButton             matlab.ui.control.Button
         PlotSelectionDropDown          matlab.ui.control.DropDown
         PlotsDropDownLabel             matlab.ui.control.Label
@@ -188,6 +189,7 @@ classdef result_analyzer < matlab.apps.AppBase
         export_robot(app)
         patch_selected_stat(app)
         pack_selected_results(app)
+        clean_results(app)
 
         %% Evaluation
         compute_benchmark(app)
@@ -602,6 +604,11 @@ classdef result_analyzer < matlab.apps.AppBase
         % Button pushed function: PlotDropDownButton
         function PlotDropDownButtonPushed(app, event)
             plot_from_dropdown(app);
+        end
+
+        % Button pushed function: CleanResultsButton
+        function CleanResultsButtonPushed(app, event)
+            clean_results(app);
         end
     end
 
@@ -1356,6 +1363,14 @@ classdef result_analyzer < matlab.apps.AppBase
             app.PlotDropDownButton.FontWeight = 'bold';
             app.PlotDropDownButton.Position = [526 234 63 31];
             app.PlotDropDownButton.Text = 'Plot';
+
+            % Create CleanResultsButton
+            app.CleanResultsButton = uibutton(app.SingleResultsPanel, 'push');
+            app.CleanResultsButton.ButtonPushedFcn = createCallbackFcn(app, @CleanResultsButtonPushed, true);
+            app.CleanResultsButton.Tag = 'loadresult';
+            app.CleanResultsButton.WordWrap = 'on';
+            app.CleanResultsButton.Position = [435 163 74 36];
+            app.CleanResultsButton.Text = 'Clean Results';
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);
