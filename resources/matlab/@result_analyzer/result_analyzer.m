@@ -7,6 +7,9 @@ classdef result_analyzer < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        PlotDropDownButton             matlab.ui.control.Button
+        PlotSelectionDropDown          matlab.ui.control.DropDown
+        PlotsDropDownLabel             matlab.ui.control.Label
         GenerateDLDatasetButton        matlab.ui.control.Button
         DetailedMapCheckBox            matlab.ui.control.CheckBox
         Feature1Label                  matlab.ui.control.Label
@@ -28,7 +31,6 @@ classdef result_analyzer < matlab.apps.AppBase
         UpdateFitAfterSim              matlab.ui.control.CheckBox
         RegenerateArchiveButton        matlab.ui.control.Button
         EnableResultEditCheckBox       matlab.ui.control.CheckBox
-        CompareFitnessButton           matlab.ui.control.Button
         NextResultButton               matlab.ui.control.Button
         PrevResultButton               matlab.ui.control.Button
         ExportforPublishingButton      matlab.ui.control.Button
@@ -47,16 +49,9 @@ classdef result_analyzer < matlab.apps.AppBase
         NicknameLabel                  matlab.ui.control.Label
         NickNameSaveButton             matlab.ui.control.Button
         OpenFolderButton               matlab.ui.control.Button
-        ParentageTreeButton            matlab.ui.control.Button
         RobotIDYField                  matlab.ui.control.EditField
         RobotIDXField                  matlab.ui.control.EditField
         SimulateRobotButton            matlab.ui.control.Button
-        LongevityofGenButton           matlab.ui.control.Button
-        ParentagePlotsButton           matlab.ui.control.Button
-        ParentageStatButton            matlab.ui.control.Button
-        AvgAgeofMapButton              matlab.ui.control.Button
-        BinUpdatesButton               matlab.ui.control.Button
-        StatPlotButton                 matlab.ui.control.Button
         ToLabel                        matlab.ui.control.Label
         StatEndGenField                matlab.ui.control.EditField
         FromLabel                      matlab.ui.control.Label
@@ -202,6 +197,7 @@ classdef result_analyzer < matlab.apps.AppBase
         regenerate_archive_map_kernel(app, result_id)
 
         %% Plotting
+        plot_from_dropdown(app)
         generate_all_compare_plots(app)
         generate_all_single_result_plots(app)
         generate_all_virtual_result_plots(app)
@@ -302,19 +298,9 @@ classdef result_analyzer < matlab.apps.AppBase
             load_gen(app, app.current_result.evo_params.nb_gen);
         end
 
-        % Button pushed function: StatPlotButton
-        function StatPlotButtonPushed(app, event)
-            plot_result_stat(app);
-        end
-
         % Button pushed function: ExportArchiveMapButton
         function ExportArchiveMapButtonPushed(app, event)
             export_archive_map(app);
-        end
-
-        % Button pushed function: CompareFitnessButton
-        function CompareFitnessButtonPushed(app, event)
-            compare_different_version_fitness(app);
         end
 
         % Value changed function: SanitizeArchiveCheckBox
@@ -420,34 +406,9 @@ classdef result_analyzer < matlab.apps.AppBase
             app.gen_step = max(str2double(app.GenStepField.Value), 0);
         end
 
-        % Button pushed function: ParentageTreeButton
-        function ParentageTreeButtonPushed(app, event)
-            plot_parentage_trace(app);
-        end
-
-        % Button pushed function: BinUpdatesButton
-        function BinUpdatesButtonPushed(app, event)
-            plot_bin_updates(app);
-        end
-
-        % Button pushed function: AvgAgeofMapButton
-        function AvgAgeofMapButtonPushed(app, event)
-            plot_avg_age_of_map(app);
-        end
-
-        % Button pushed function: LongevityofGenButton
-        function LongevityofGenButtonPushed(app, event)
-            plot_avg_longevity_of_gen(app);
-        end
-
         % Button pushed function: RefreshResultListButton
         function RefreshResultListButtonPushed(app, event)
             refresh_result_list(app, 'ForceUpdate', true);
-        end
-
-        % Button pushed function: ParentageStatButton
-        function ParentageStatButtonPushed(app, event)
-            plot_parentage_stat(app);
         end
 
         % Button pushed function: BuildSelectedResultStatButton
@@ -488,11 +449,6 @@ classdef result_analyzer < matlab.apps.AppBase
         % Button pushed function: MoveCompareDownButton
         function MoveCompareDownButtonPushed(app, event)
             move_target_in_compare_list(app, false);
-        end
-
-        % Button pushed function: ParentagePlotsButton
-        function ParentagePlotsButtonPushed(app, event)
-            plot_parentage_related(app);
         end
 
         % Button pushed function: GroupStatButton
@@ -641,6 +597,11 @@ classdef result_analyzer < matlab.apps.AppBase
         % Button pushed function: GenerateDLDatasetButton
         function GenerateDLDatasetButtonPushed(app, event)
             generate_deeplearning_dataset(app);
+        end
+
+        % Button pushed function: PlotDropDownButton
+        function PlotDropDownButtonPushed(app, event)
+            plot_from_dropdown(app);
         end
     end
 
@@ -1096,49 +1057,6 @@ classdef result_analyzer < matlab.apps.AppBase
             app.ToLabel.Position = [523 370 25 22];
             app.ToLabel.Text = 'To:';
 
-            % Create StatPlotButton
-            app.StatPlotButton = uibutton(app.SingleResultsPanel, 'push');
-            app.StatPlotButton.ButtonPushedFcn = createCallbackFcn(app, @StatPlotButtonPushed, true);
-            app.StatPlotButton.Position = [350 247 64 22];
-            app.StatPlotButton.Text = 'Statistics';
-
-            % Create BinUpdatesButton
-            app.BinUpdatesButton = uibutton(app.SingleResultsPanel, 'push');
-            app.BinUpdatesButton.ButtonPushedFcn = createCallbackFcn(app, @BinUpdatesButtonPushed, true);
-            app.BinUpdatesButton.Tag = 'loadresult';
-            app.BinUpdatesButton.Position = [425 247 76 22];
-            app.BinUpdatesButton.Text = 'Bin Updates';
-
-            % Create AvgAgeofMapButton
-            app.AvgAgeofMapButton = uibutton(app.SingleResultsPanel, 'push');
-            app.AvgAgeofMapButton.ButtonPushedFcn = createCallbackFcn(app, @AvgAgeofMapButtonPushed, true);
-            app.AvgAgeofMapButton.Tag = 'loadresult';
-            app.AvgAgeofMapButton.Position = [348 212 100 22];
-            app.AvgAgeofMapButton.Text = 'Avg Age of Map';
-
-            % Create ParentageStatButton
-            app.ParentageStatButton = uibutton(app.SingleResultsPanel, 'push');
-            app.ParentageStatButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageStatButtonPushed, true);
-            app.ParentageStatButton.Tag = 'loadresult';
-            app.ParentageStatButton.Position = [504 247 89 22];
-            app.ParentageStatButton.Text = 'Parentage Stat';
-
-            % Create ParentagePlotsButton
-            app.ParentagePlotsButton = uibutton(app.SingleResultsPanel, 'push');
-            app.ParentagePlotsButton.ButtonPushedFcn = createCallbackFcn(app, @ParentagePlotsButtonPushed, true);
-            app.ParentagePlotsButton.Tag = 'loadresult';
-            app.ParentagePlotsButton.WordWrap = 'on';
-            app.ParentagePlotsButton.Position = [525 207 67 34];
-            app.ParentagePlotsButton.Text = 'Parentage Plots';
-
-            % Create LongevityofGenButton
-            app.LongevityofGenButton = uibutton(app.SingleResultsPanel, 'push');
-            app.LongevityofGenButton.ButtonPushedFcn = createCallbackFcn(app, @LongevityofGenButtonPushed, true);
-            app.LongevityofGenButton.Tag = 'loadresult';
-            app.LongevityofGenButton.WordWrap = 'on';
-            app.LongevityofGenButton.Position = [430 161 82 36];
-            app.LongevityofGenButton.Text = 'Longevity of Gen';
-
             % Create SimulateRobotButton
             app.SimulateRobotButton = uibutton(app.SingleResultsPanel, 'push');
             app.SimulateRobotButton.ButtonPushedFcn = createCallbackFcn(app, @SimulateRobotButtonPushed, true);
@@ -1157,14 +1075,6 @@ classdef result_analyzer < matlab.apps.AppBase
             app.RobotIDYField = uieditfield(app.SingleResultsPanel, 'text');
             app.RobotIDYField.HorizontalAlignment = 'center';
             app.RobotIDYField.Position = [537 35 39 22];
-
-            % Create ParentageTreeButton
-            app.ParentageTreeButton = uibutton(app.SingleResultsPanel, 'push');
-            app.ParentageTreeButton.ButtonPushedFcn = createCallbackFcn(app, @ParentageTreeButtonPushed, true);
-            app.ParentageTreeButton.Tag = 'loadresult';
-            app.ParentageTreeButton.WordWrap = 'on';
-            app.ParentageTreeButton.Position = [517 163 78 34];
-            app.ParentageTreeButton.Text = 'Parentage Tree';
 
             % Create OpenFolderButton
             app.OpenFolderButton = uibutton(app.SingleResultsPanel, 'push');
@@ -1288,14 +1198,6 @@ classdef result_analyzer < matlab.apps.AppBase
             app.NextResultButton.Position = [512 525 56 29];
             app.NextResultButton.Text = 'Dn';
 
-            % Create CompareFitnessButton
-            app.CompareFitnessButton = uibutton(app.SingleResultsPanel, 'push');
-            app.CompareFitnessButton.ButtonPushedFcn = createCallbackFcn(app, @CompareFitnessButtonPushed, true);
-            app.CompareFitnessButton.Tag = 'loadresult';
-            app.CompareFitnessButton.WordWrap = 'on';
-            app.CompareFitnessButton.Position = [456 206 63 35];
-            app.CompareFitnessButton.Text = 'Compare Fitness';
-
             % Create EnableResultEditCheckBox
             app.EnableResultEditCheckBox = uicheckbox(app.SingleResultsPanel);
             app.EnableResultEditCheckBox.Text = 'Enable Result  Edit';
@@ -1405,7 +1307,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.PlotGenButton.WordWrap = 'on';
             app.PlotGenButton.FontSize = 14;
             app.PlotGenButton.FontWeight = 'bold';
-            app.PlotGenButton.Position = [523 279 63 52];
+            app.PlotGenButton.Position = [523 296 63 42];
             app.PlotGenButton.Text = 'Plot Gen';
 
             % Create Feature2Label
@@ -1433,6 +1335,27 @@ classdef result_analyzer < matlab.apps.AppBase
             app.GenerateDLDatasetButton.FontSize = 11;
             app.GenerateDLDatasetButton.Position = [355 10 65 45];
             app.GenerateDLDatasetButton.Text = 'Generate DL Dataset';
+
+            % Create PlotsDropDownLabel
+            app.PlotsDropDownLabel = uilabel(app.SingleResultsPanel);
+            app.PlotsDropDownLabel.HorizontalAlignment = 'right';
+            app.PlotsDropDownLabel.Position = [357 256 36 22];
+            app.PlotsDropDownLabel.Text = 'Plots:';
+
+            % Create PlotSelectionDropDown
+            app.PlotSelectionDropDown = uidropdown(app.SingleResultsPanel);
+            app.PlotSelectionDropDown.Items = {};
+            app.PlotSelectionDropDown.Position = [355 235 147 22];
+            app.PlotSelectionDropDown.Value = {};
+
+            % Create PlotDropDownButton
+            app.PlotDropDownButton = uibutton(app.SingleResultsPanel, 'push');
+            app.PlotDropDownButton.ButtonPushedFcn = createCallbackFcn(app, @PlotDropDownButtonPushed, true);
+            app.PlotDropDownButton.WordWrap = 'on';
+            app.PlotDropDownButton.FontSize = 14;
+            app.PlotDropDownButton.FontWeight = 'bold';
+            app.PlotDropDownButton.Position = [526 234 63 31];
+            app.PlotDropDownButton.Text = 'Plot';
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);

@@ -31,6 +31,12 @@ function result_analyzer_init(app)
     app.ReEvalTypeDropDown.ItemsData = 1 : length(app.ReEvalTypeDropDown.Items);
     app.ReEvalTypeDropDown.Value = 1;
 
+    app.PlotSelectionDropDown.Items = ["Statistics", "Bin Updates", "Parentage Stat", ...
+                                       "Parentage Plots", "Avg Age of Map", "Longevity of Gen", ...
+                                       "Parentage Tree", "Compare Fitness"];
+    app.PlotSelectionDropDown.ItemsData = 1 : length(app.PlotSelectionDropDown.Items);
+    app.PlotSelectionDropDown.Value = 1;
+
     if isfile('result_analyzer_meta_info.mat')
         meta_info_container = load('result_analyzer_meta_info.mat');
         meta_info = meta_info_container.meta_info;
