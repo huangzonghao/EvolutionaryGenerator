@@ -154,6 +154,7 @@ classdef result_analyzer < matlab.apps.AppBase
         pack_result(result_path)
         [stat, stat_loaded] = build_stat(result, dump_robots, orig_stat, orig_stat_loaded)
         export_result(result, dest_path)
+        clean_result(result)
         sim_configs = video_simulation_configs(env)
     end
 
@@ -179,7 +180,7 @@ classdef result_analyzer < matlab.apps.AppBase
         delete_virtual_result(app)
 
         %% File navigation and manipulation
-        build_pack_export_all_results(app)
+        build_clean_pack_results(app)
         build_selected_stat(app)
         export_archive_map(app)
         export_compare_plot_data(app)
