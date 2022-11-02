@@ -31,6 +31,11 @@ function result_analyzer_init(app)
     app.ReEvalTypeDropDown.ItemsData = 1 : length(app.ReEvalTypeDropDown.Items);
     app.ReEvalTypeDropDown.Value = 1;
 
+    app.ResultExportOptionDropDown.Items = ["Clean Build Pack", "Plotting Only", ...
+                                            "Publishing", "Pickle"];
+    app.ResultExportOptionDropDown.ItemsData = 1 : length(app.ResultExportOptionDropDown.Items);
+    app.ResultExportOptionDropDown.Value = 1;
+
     app.PlotSelectionDropDown.Items = ["Statistics", "Bin Updates", "Parentage Stat", ...
                                        "Parentage Plots", "Avg Age of Map", "Longevity of Gen", ...
                                        "Parentage Tree", "Compare Fitness"];
