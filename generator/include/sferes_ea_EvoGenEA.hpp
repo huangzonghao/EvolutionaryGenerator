@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
+#include <regex>
 #include <fstream>
 #include <filesystem>
 #include <chrono>
@@ -230,8 +232,43 @@ class EvoGenEA : public stc::Any<Exact> {
            << BOOST_SERIALIZATION_NVP(_total_time)
            << BOOST_SERIALIZATION_NVP(_pop);
         stc::exact(this)->_dump_state_extra(oa);
+        if (_gen % 100 == 0)
+            _clean_up_dump_dir(3);
     }
     void _dump_state_extra(boost::archive::binary_oarchive& oa) const {}
+    // The init and latest dump is always kept
+    // The num_of_dump_to_keep controls how many other latest dumps to keep
+    void _clean_up_dump_dir(int num_of_dump_to_keep) const {
+        if (num_of_dump_to_keep < 0) {
+            num_of_dump_to_keep = 0;
+        }
+        // sort the dump files in alphabetical order (need to use natural sort)
+        //     or by timestamp. The default order of std::filesystem::directory_entry is alphabetic.
+        // std::set<std::filesystem::directory_entry> sorted_list;
+        // auto compare_by_time = [](std::filesystem::directory_entry e1, std::filesystem::directory_entry e2)
+                               // { return e1.last_write_time() < e2.last_write_time(); };
+        // std::set<std::filesystem::directory_entry, decltype(compare_by_time)> sorted_list(compare_by_time);
+        std::set<std::filesystem::directory_entry, std::function<bool(std::filesystem::directory_entry, std::filesystem::directory_entry)>>
+            sorted_list([](std::filesystem::directory_entry e1, std::filesystem::directory_entry e2)
+                        { return e1.last_write_time() < e2.last_write_time(); });
+        std::regex rx("^gen_([0-9]+).dat");
+        for (const auto &entry : std::filesystem::directory_iterator(_res_dir + "/dumps")) {
+            if (std::regex_match(std::string(entry.path().filename().string()), rx)) {
+                sorted_list.insert(entry);
+            }
+        }
+
+        if (sorted_list.size() > 2 + num_of_dump_to_keep) {
+            int counter = 0;
+            for (const auto &entry : sorted_list) {
+                // The lastest dump show up the last in the result list
+                if (counter > 0 && counter < sorted_list.size() - 1 - num_of_dump_to_keep) {
+                    std::filesystem::remove(entry.path());
+                }
+                ++counter;
+            }
+        }
+    }
     bool _load_state(const std::string& fname) {
         std::ifstream ifs(fname, std::ios::binary);
         if (ifs.fail()) {
