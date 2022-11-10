@@ -1,4 +1,8 @@
 function export_robot(app)
+    if isempty(app.current_result)
+        return
+    end
+
     result = app.current_result;
 
     % Note the XY has been flipped already in gui layout
