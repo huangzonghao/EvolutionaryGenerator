@@ -48,15 +48,33 @@ function generate_paper_plot2(app)
             global_performance_column(i_result) = result.stat.best_fits(end);
 
             current_gen_archive = result.archive{result.evo_params.nb_gen};
-            x = current_gen_archive(:, 3) + 1;
-            y = current_gen_archive(:, 4) + 1;
-            fitness = current_gen_archive(:, 5);
+            if result.version < 2
+                f_ids(:, 1) = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
+                f_ids(:, 2) = current_gen_archive(:, 4) + 1;
+                fitness = current_gen_archive(:, 5);
+            else
+                f1_selection = 1;
+                f2_selection = 2;
+                f_ids(:, 1) = current_gen_archive(:, f1_selection + 3) + 1; % remember matlab index starts from 1
+                f_ids(:, 2) = current_gen_archive(:, f2_selection + 3) + 1;
+                fitness_all = current_gen_archive(:, 3);
+
+                % Remove duplicates of (f_id1, f_id2) based on fitness -- reprojecting
+                %     the multi-dimension grid map to a 2D map
+                f_ids(:, 3) = fitness_all;
+                f_ids(:, 4) = 1 : length(fitness_all);
+                f_ids = sortrows(f_ids, 3, 'descend');
+                [~, unik_ids, ~] = unique(f_ids(:, 1:2), 'rows', 'stable');
+                f_ids = f_ids(unik_ids, :);
+                fitness = f_ids(:, 3);
+            end
             grid_dim = result.evo_params.grid_dim;
             archive_map = -Inf(grid_dim);
             % sanitize the second dimension (here grid_dim(1) gives the size of first dimension)
             fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
-            archive_map(sub2ind(size(archive_map), x, y)) = fitness;
+            archive_map(sub2ind(size(archive_map), f_ids(:, 1), f_ids(:, 2))) = fitness;
             reliability_column(i_result) = sum(sum(archive_map ./ virtual_result.benchmark_archive)) / length(archive_map(:));
+            f_ids = [];
         end
         qd_score_mat = [qd_score_mat qd_column];
         global_performance_mat = [global_performance_mat global_performance_column / virtual_result.benchmark_best_fit];
