@@ -85,7 +85,7 @@ class EvoGenQD
 
         this->_eval_pop(_init_pop);
 
-        _add(_init_pop, _added);
+        _add_to_container(_init_pop, _added);
         _container.get_full_content(this->_pop);
     }
 
@@ -112,7 +112,7 @@ class EvoGenQD
         // Evaluation of the offspring
         this->_eval_pop(_offspring);
         // Addition of the offspring to the container
-        _add(_offspring, _added, _parents);
+        _add_to_container(_offspring, _added, _parents);
         // Copy of the containt of the container into the _pop object.
         _container.get_full_content(this->_pop);
     }
@@ -133,17 +133,25 @@ class EvoGenQD
   protected:
     // Add the offspring into the container and update the score of the individuals from the
     // container and both of the sub population (offspring and parents)
-    void _add(pop_t& pop_off, std::vector<bool>& added, pop_t& pop_parents)
+    void _add_to_container(pop_t& pop_off, std::vector<bool>& added, pop_t& pop_parents)
     {
         // _container.reset_stat();
         added.resize(pop_off.size());
-        for (size_t i = 0; i < pop_off.size(); ++i)
-            added[i] = _add_to_container(pop_off[i], pop_parents[i]);
+        for (size_t i = 0; i < pop_off.size(); ++i) {
+            // TODO JBM: curiosity is hardcoded here...
+            if (_container.add(pop_off[i])) {
+                pop_parents[i]->fit().set_curiosity(pop_parents[i]->fit().curiosity() + 1);
+                added[i] = true;
+            } else {
+                pop_parents[i]->fit().set_curiosity(pop_parents[i]->fit().curiosity() - 0.5);
+                added[i] = false;
+            }
+        }
         _container.update(pop_off, pop_parents);
     }
 
     // Same function, but without the need of parent.
-    void _add(pop_t& pop_off, std::vector<bool>& added)
+    void _add_to_container(pop_t& pop_off, std::vector<bool>& added)
     {
         // _container.reset_stat();
         added.resize(pop_off.size());
@@ -151,20 +159,6 @@ class EvoGenQD
             added[i] = _container.add(pop_off[i]);
         pop_t empty;
         _container.update(pop_off, empty);
-    }
-
-    // add to the container procedure.
-    // TODO JBM: curiosity is hardcoded here...
-    bool _add_to_container(indiv_t i1, indiv_t parent)
-    {
-        if (_container.add(i1)) {
-            parent->fit().set_curiosity(parent->fit().curiosity() + 1);
-            return true;
-        }
-        else {
-            parent->fit().set_curiosity(parent->fit().curiosity() - 0.5);
-            return false;
-        }
     }
 
     void _dump_config_extra() const {
@@ -185,7 +179,7 @@ class EvoGenQD
             this->_pop[i]->set_params(this->_evo_params);
             this->_pop[i]->develop();
         }
-        _add(this->_pop, _added);
+        _add_to_container(this->_pop, _added);
         return true;
     }
 
