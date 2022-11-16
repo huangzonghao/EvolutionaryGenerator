@@ -18,28 +18,50 @@ namespace qd {
 template <typename Phen, typename Eval, typename Stat, typename Selector,
           typename Container, typename Exact = stc::Itself>
 class EvoGenQD
-    : public ea::EvoGenEA<Phen, Eval, Stat,
+    : public ea::EvoGenEA<Phen, Stat,
             typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, Selector,
                                              Container, Exact>, Exact>::ret> {
   public:
     typedef typename stc::FindExact<EvoGenQD<Phen, Eval, Stat, Selector, Container, Exact>,
                                     Exact>::ret exact_t;
     typedef Phen phen_t;
+    typedef Eval eval_t;
     typedef std::shared_ptr<Phen> indiv_t;
     typedef typename std::vector<indiv_t> pop_t;
 
-    friend class ea::EvoGenEA<Phen, Eval, Stat, exact_t>;
+    friend class ea::EvoGenEA<Phen, Stat, exact_t>;
 
     // Note the default constructor should only be used when resuming.
     // The member structs are incomplete without proper calls of set_params.
     EvoGenQD() {}
     EvoGenQD(const EvoParams& evo_params, const SimulatorParams& sim_params)
-        : ea::EvoGenEA<Phen, Eval, Stat, exact_t>(evo_params), _sim_params(sim_params)
+        : ea::EvoGenEA<Phen, Stat, exact_t>(evo_params), _sim_params(sim_params)
     {
         this->_eval.set_sim_params(_sim_params);
         // TODO: dereference the runtime polymorphism here
         this->_container.set_params(_evo_params);
     }
+
+    void _eval_pop(pop_t& pop, size_t start = 0, size_t end = 0) {
+        if (end == 0)
+            end = pop.size();
+        _eval.eval(pop, start, end);
+    }
+    const eval_t& eval() const { return _eval; }
+    eval_t& eval() { return _eval; }
+    size_t nb_evals() const { return _eval.nb_evals(); }
+    const Container& container() const { return _container; }
+    const pop_t& offspring() const { return _offspring; }
+    pop_t& offspring() { return _offspring; }
+    const pop_t& parents() const { return _parents; }
+    pop_t& parents() { return _parents; }
+    const pop_t& get_init_pop() const { return _init_pop; }
+    const std::vector<bool>& added() const { return _added; }
+    std::vector<bool>& added() { return _added; }
+    const double last_epoch_time() const { return  this->_last_epoch_time; }
+    const int num_valid_robots_last_batch() const { return _eval.num_valids(); }
+    const int gen_pop_size() const { return _pop_size; }
+    void set_init_seeds(const std::shared_ptr<std::vector<std::vector<double>>>& new_seeds) { _init_seeds = new_seeds; }
 
     void init_pop() {
         assert(_init_size != 0);
@@ -117,19 +139,6 @@ class EvoGenQD
         _container.get_full_content(this->_pop);
     }
 
-    const Container& container() const { return _container; }
-    const pop_t& offspring() const { return _offspring; }
-    pop_t& offspring() { return _offspring; }
-    const pop_t& parents() const { return _parents; }
-    pop_t& parents() { return _parents; }
-    const pop_t& get_init_pop() const { return _init_pop; }
-    const std::vector<bool>& added() const { return _added; }
-    std::vector<bool>& added() { return _added; }
-    const double last_epoch_time() const { return  this->_last_epoch_time; }
-    const int num_valid_robots_last_batch() const { return _eval.num_valids(); }
-    const int gen_pop_size() const { return _pop_size; }
-    void set_init_seeds(const std::shared_ptr<std::vector<std::vector<double>>>& new_seeds) { _init_seeds = new_seeds; }
-
   protected:
     // Add the offspring into the container and update the score of the individuals from the
     // container and both of the sub population (offspring and parents)
@@ -204,6 +213,7 @@ class EvoGenQD
 
     Selector _selector;
     Container _container;
+    eval_t _eval;
 
     pop_t _init_pop;
     pop_t _parents;

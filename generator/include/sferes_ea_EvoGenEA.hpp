@@ -36,11 +36,10 @@ struct RefreshStat_f {
     template<typename T> void operator() (T & x) const { x.refresh(_ea); }
 };
 
-template<typename Phen, typename Eval, typename Stat, typename Exact = stc::Itself>
+template<typename Phen, typename Stat, typename Exact = stc::Itself>
 class EvoGenEA : public stc::Any<Exact> {
   public:
     typedef Phen phen_t;
-    typedef Eval eval_t;
     typedef Stat stat_t;
     typedef std::vector<std::shared_ptr<Phen>> pop_t;
 
@@ -126,8 +125,6 @@ class EvoGenEA : public stc::Any<Exact> {
 
     const pop_t& pop() const { return _pop; };
     pop_t& pop() { return _pop; };
-    const eval_t& eval() const { return _eval; }
-    eval_t& eval() { return _eval; }
 
     // ---- stats ---
     const stat_t& stat() const { return _stat; }
@@ -165,7 +162,6 @@ class EvoGenEA : public stc::Any<Exact> {
     size_t _nb_gen = 1;
     size_t _progress_dump_period = -1;
     pop_t _pop;
-    eval_t _eval;
     stat_t _stat;
     std::string _res_dir;
     int _gen = -1;
@@ -306,14 +302,14 @@ class EvoGenEA : public stc::Any<Exact> {
 } // namespace ea
 } // namespace sferes
 
-#define SFERES_EVOGENEA(Class, Parent)                                                         \
-  template<typename Phen, typename Eval, typename Stat, typename Exact = stc::Itself>          \
-  class Class : public Parent < Phen, Eval, Stat,                                              \
-  typename stc::FindExact<Class<Phen, Eval, Stat, Exact>, Exact>::ret >
+// #define SFERES_EVOGENEA(Class, Parent)                                                         \
+  // template<typename Phen, typename Eval, typename Stat, typename Exact = stc::Itself>          \
+  // class Class : public Parent < Phen, Eval, Stat,                                              \
+  // typename stc::FindExact<Class<Phen, Eval, Stat, Exact>, Exact>::ret >
 
-// useful to call protected functions of derived classes from the Ea
-#define SFERES_EVOGENEA_FRIEND(Class) \
-      friend class EvoGenEA< Phen, Eval, Stat,                              \
-      typename stc::FindExact<Class<Phen, Eval, Stat, Exact>, Exact>::ret >
+// // useful to call protected functions of derived classes from the Ea
+// #define SFERES_EVOGENEA_FRIEND(Class) \
+      // friend class EvoGenEA< Phen, Eval, Stat,                              \
+      // typename stc::FindExact<Class<Phen, Eval, Stat, Exact>, Exact>::ret >
 
 #endif /* end of include guard: EVOGEN_GENERATOR_SFERES_EA_EVOGENEA_HPP_ */
