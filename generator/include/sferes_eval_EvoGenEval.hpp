@@ -6,8 +6,10 @@
 #include <vector>
 
 #include "sferes_phen_EvoGenPhen.hpp"
+#include "sferes_fit_UrdfFitness.hpp"
 #include "MeshInfo.h"
 #include "SimulationManager.h"
+#include "EvoParams.h"
 #include "SimulatorParams.h"
 
 extern MeshInfo mesh_info;
@@ -17,7 +19,8 @@ namespace eval {
 
 class EvoGenEval {
   public:
-    void set_sim_params(const SimulatorParams& sim_params) {
+    // TODO: replace sim_params and evo_params with training_configs
+    void init(EvoParams& evo_params, const SimulatorParams& sim_params) {
         if (sim_params.do_viz)
             num_threads = 1;
         else
@@ -55,16 +58,20 @@ class EvoGenEval {
 
         mesh_info.set_mesh_dir(sim_params.parts_dir);
         mesh_info.init();
+
+        _evaluator = sferes::fit::get_evaluator(evo_params.evaluator());
+        evo_params.set_feature_description(_evaluator->get_descriptor_names());
     }
 
     void eval_kernel(const std::vector<std::shared_ptr<sferes::phen::EvoGenPhen>>& pop,
                      const std::shared_ptr<SimulationManager>& sm,
                      size_t start_idx, size_t end_idx)
     {
+        const sferes::fit::Evaluator& evaluator = *_evaluator;
         for (size_t i = start_idx; i < end_idx; ++i) {
             pop[i]->develop();
-            pop[i]->fit().eval(*pop[i], *sm);
-            if (!pop[i]->fit().dead())
+            evaluator(*pop[i], *sm);
+            if (!pop[i]->fit().dead)
                 ++num_valid;
         }
     }
@@ -106,6 +113,7 @@ class EvoGenEval {
     size_t num_threads;
     std::vector<std::shared_ptr<std::thread>> threads;
     static std::atomic<int> num_valid;
+    std::shared_ptr<sferes::fit::Evaluator> _evaluator;
 };
 
 std::atomic<int> EvoGenEval::num_valid = std::atomic<int>(0);

@@ -17,7 +17,8 @@ function save_schedule_file(app)
     % 1.4: add 'continue' job
     % 1.5: add user_input_sampling, which configs how to use user designs as init pop
     % 1.6: add init pop size and number of user inputs to use for sampled init pop.
-    jsobj.format_ver = '1.6';
+    % 1.7: add evaluator selection (which fitness/descriptor to use).
+    jsobj.format_ver = '1.7';
 
     middlename = '';
     if ~isempty(app.OutputFileNameEditField.Value)

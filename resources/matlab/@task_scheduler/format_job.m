@@ -26,6 +26,11 @@ function job = format_job(app, job_config)
             return
         end
 
+        if num_dim ~= app.evaluators{app.EvaluatorDropDown.Value, 2}
+            msgbox("Specified grid dimension doesn't match the selected evaluator. Cannot add job");
+            return
+        end
+
         if isempty(app.BagFilesListBox.Value)
             job.bagfile = "";
         else
@@ -48,6 +53,7 @@ function job = format_job(app, job_config)
         end
         % TODO: this field needs to be disabled when not sampling user inputs
         job.num_user_inputs = app.NumUserInputsEditField.Value;
+        job.evaluator = app.evaluators{app.EvaluatorDropDown.Value, 1};
     elseif strcmp(job_config.type, 'continue')
         result = job_config.result;
         job.type = 'continue';

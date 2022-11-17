@@ -22,7 +22,9 @@ class EvoGenTrainingConfigs {
     std::vector<int>& grid_dim() { return grid_dim_; }
     void set_grid_dim(const std::vector<int>& grid_dim) { grid_dim_ = grid_dim; }
     EvoGenTrainingConfigs::UserDesignSampling user_design_sampling() { return input_sampling_; }
+    const std::string& evaluator() { return evaluator_; }
     void set_user_design_sampling(enum UserDesignSampling input_sampling) { input_sampling_ = input_sampling; }
+    void set_evaluator(const std::string& evaluator) { evaluator_ = evaluator; }
 
     // Simulation
     const std::string& env() { return env_; }
@@ -44,6 +46,7 @@ class EvoGenTrainingConfigs {
     std::string env_ = "";
     std::string output_dir_ = "";
     enum UserDesignSampling input_sampling_ = ALL;
+    std::string evaluator_;;
 };
 
 #endif /* end of include guard: EVOGEN_GENERATOR_INCLUDE_TRAININGCONFIGS_H_ */

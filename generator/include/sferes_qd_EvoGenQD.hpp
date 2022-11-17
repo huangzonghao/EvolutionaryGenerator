@@ -37,7 +37,7 @@ class EvoGenQD
     EvoGenQD(const EvoParams& evo_params, const SimulatorParams& sim_params)
         : ea::EvoGenEA<Phen, Stat, exact_t>(evo_params), _sim_params(sim_params)
     {
-        this->_eval.set_sim_params(_sim_params);
+        this->_eval.init(_evo_params, _sim_params);
         // TODO: dereference the runtime polymorphism here
         this->_container.set_params(_evo_params);
     }
@@ -149,10 +149,10 @@ class EvoGenQD
         for (size_t i = 0; i < pop_off.size(); ++i) {
             // TODO JBM: curiosity is hardcoded here...
             if (_container.add(pop_off[i])) {
-                pop_parents[i]->fit().set_curiosity(pop_parents[i]->fit().curiosity() + 1);
+                pop_parents[i]->fit().curiosity = pop_parents[i]->fit().curiosity + 1;
                 added[i] = true;
             } else {
-                pop_parents[i]->fit().set_curiosity(pop_parents[i]->fit().curiosity() - 0.5);
+                pop_parents[i]->fit().curiosity = pop_parents[i]->fit().curiosity - 0.5;
                 added[i] = false;
             }
         }
@@ -180,7 +180,7 @@ class EvoGenQD
         // TODO: the following load should be handled from outside -- probably in evo_main
         _sim_params.env_dir = this->_res_dir;
         _sim_params.parts_dir = this->_res_dir + "/robot_parts";
-        this->_eval.set_sim_params(_sim_params);
+        this->_eval.init(_evo_params, _sim_params);
     }
 
     bool _load_state_extra(boost::archive::binary_iarchive& ia) {

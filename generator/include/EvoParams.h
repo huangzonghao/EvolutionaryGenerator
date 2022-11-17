@@ -3,7 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/version.hpp>
 
 class EvoParams {
   public:
@@ -26,6 +28,7 @@ class EvoParams {
     const std::vector<int>& grid_shape() const { return grid_shape_; }
     bool output_enabled() const { return enable_output_; }
     std::vector<std::string>& feature_description() { return feature_description_; }
+    const std::string& evaluator() { return evaluator_; }
 
     void set_grid_shape(const std::vector<int>& grid_shape) { grid_shape_ = grid_shape; }
     void set_nb_gen(size_t nb_gen) { nb_gen_ = nb_gen; }
@@ -37,6 +40,7 @@ class EvoParams {
         for (int i = 0; i < grid_shape_.size(); ++i)
             feature_description_[i] = std::string(descriptor_names[i]);
     }
+    void set_evaluator(const std::string& evaluator) { evaluator_ = evaluator; }
 
     bool Save(const std::string& filename) const;
     bool Load(const std::string& filename);
@@ -55,6 +59,9 @@ class EvoParams {
         ar & BOOST_SERIALIZATION_NVP(phen_data_max_);
         ar & BOOST_SERIALIZATION_NVP(grid_shape_);
         ar & BOOST_SERIALIZATION_NVP(feature_description_);
+        if (version >= 1) {
+            ar & BOOST_SERIALIZATION_NVP(evaluator_);
+        }
     }
   private:
     bool enable_output_ = true;
@@ -78,6 +85,10 @@ class EvoParams {
     // a run time selection maybe possible
     std::vector<int> grid_shape_ = {20, 20};
     std::vector<std::string> feature_description_;
+    std::string evaluator_;
+
 };
+
+BOOST_CLASS_VERSION(EvoParams, 1)
 
 #endif /* end of include guard: EVOGEN_GENERATOR_EVOPARAMS_H_ */

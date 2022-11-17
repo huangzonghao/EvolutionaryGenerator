@@ -5,7 +5,6 @@
 #include <iostream>
 #include <boost/serialization/nvp.hpp>
 
-#include "sferes_fit_UrdfFitness.hpp"
 #include "sferes_gen_EvoGenFloat.hpp"
 // #include "sferes_fit_RobogamiFitness.hpp"
 #include "RobotRepresentation.h"
@@ -71,10 +70,41 @@ struct PhenID {
     }
 };
 
+class PhenFitness {
+  public:
+    // Set flag in descriptors.
+    void write_desc(double value) {
+        for (int i = 0; i < desc.size(); ++i)
+            desc[i] = value;
+    }
+    void clamp_desc() {
+        for (auto& e : desc)
+            e = std::clamp(e, 0.0, 1.0);
+    }
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+        ar & BOOST_SERIALIZATION_NVP(value);
+        ar & BOOST_SERIALIZATION_NVP(desc);
+    }
+
+    // A robot is dead if:
+    //     * Gene is invalid (too short)
+    //     * Self-collided at initial pose
+    bool dead = false;
+    // std::vector<double> _desc = {-1.0, -1.0, -1.0, -1.0};
+    std::vector<double> desc = {-1.0, -1.0};
+    double novelty = -std::numeric_limits<double>::infinity();
+    double curiosity = 0;
+    double local_quality = 0;
+    double value = 0;
+};
+
+// TODO: EvoGenPhen::_valid and PhenFitness::_dead is duplicated
 class EvoGenPhen {
   public:
     // TODO: hard coded grid dimension
-    typedef sferes::fit::UrdfFitness fit_t;
+    typedef PhenFitness fit_t;
     // typedef sferes::fit::RobogamiFitness fit_t;
     typedef sferes::gen::EvoGenFloat gen_t;
     typedef PhenID phen_id_t;
@@ -240,6 +270,7 @@ class EvoGenPhen {
         grid_dim = dim;
         _grid_id.resize(grid_dim);
         for (auto& id : _grid_id) id = -1;
+        _fit.desc.resize(dim);
     }
 
     void set_params(const EvoParams& evo_params) {

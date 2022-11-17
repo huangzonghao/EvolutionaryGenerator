@@ -25,6 +25,15 @@ function task_scheduler_init(app, evogen_workspace_path, evogen_exe_path, evogen
     app.EnvironmentDropDown.Items{3} = 'Valley5.obj';
     app.EnvironmentDropDown.Value = 'ground';
 
+    % format: str_name, dimension
+    app.evaluators = {'2d_v1_fit_v1', 2;
+                      '2d_v1_fit_v2', 2;
+                      '4d_v1_fit_v1', 4;
+                      '4d_v2_fit_v1', 4}
+    app.EvaluatorDropDown.Items = app.evaluators(:,1)';
+    app.EvaluatorDropDown.ItemsData = 1 : size(app.evaluators, 1);
+    app.EvaluatorDropDown.Value = 1;
+
     app.NumGenEditField.Value = 6000;
     app.PopSizeEditField.Value = 30;
     app.InitPopEditField.Value = 30;

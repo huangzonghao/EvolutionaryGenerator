@@ -35,6 +35,8 @@ classdef task_scheduler < matlab.apps.AppBase
         RemoveButton                  matlab.ui.control.Button
         JobEditorPanel                matlab.ui.container.Panel
         NewJobConfigsPanel            matlab.ui.container.Panel
+        EvaluatorDropDown             matlab.ui.control.DropDown
+        EvaluatorDropDownLabel        matlab.ui.control.Label
         NumRepsEditField              matlab.ui.control.NumericEditField
         RepsLabel                     matlab.ui.control.Label
         StartIndexEditField           matlab.ui.control.NumericEditField
@@ -73,6 +75,7 @@ classdef task_scheduler < matlab.apps.AppBase
     end
 
     properties (Access = public)
+        evaluators
         workspace_dir
         bagfile_dir
         jobfile_dir
@@ -418,12 +421,12 @@ classdef task_scheduler < matlab.apps.AppBase
             % Create JobCommentsTextAreaLabel
             app.JobCommentsTextAreaLabel = uilabel(app.NewJobConfigsPanel);
             app.JobCommentsTextAreaLabel.HorizontalAlignment = 'right';
-            app.JobCommentsTextAreaLabel.Position = [9 198 90 22];
+            app.JobCommentsTextAreaLabel.Position = [9 140 90 22];
             app.JobCommentsTextAreaLabel.Text = 'Job Comments:';
 
             % Create JobCommentsTextArea
             app.JobCommentsTextArea = uitextarea(app.NewJobConfigsPanel);
-            app.JobCommentsTextArea.Position = [12 136 108 65];
+            app.JobCommentsTextArea.Position = [12 78 108 65];
 
             % Create StartIndexEditFieldLabel
             app.StartIndexEditFieldLabel = uilabel(app.NewJobConfigsPanel);
@@ -450,6 +453,18 @@ classdef task_scheduler < matlab.apps.AppBase
             app.NumRepsEditField.HorizontalAlignment = 'center';
             app.NumRepsEditField.Position = [201 159 50 20];
             app.NumRepsEditField.Value = 1;
+
+            % Create EvaluatorDropDownLabel
+            app.EvaluatorDropDownLabel = uilabel(app.NewJobConfigsPanel);
+            app.EvaluatorDropDownLabel.HorizontalAlignment = 'right';
+            app.EvaluatorDropDownLabel.Position = [11 197 60 22];
+            app.EvaluatorDropDownLabel.Text = 'Evaluator:';
+
+            % Create EvaluatorDropDown
+            app.EvaluatorDropDown = uidropdown(app.NewJobConfigsPanel);
+            app.EvaluatorDropDown.Items = {};
+            app.EvaluatorDropDown.Position = [19 171 104 26];
+            app.EvaluatorDropDown.Value = {};
 
             % Create JobFileEditorPanel
             app.JobFileEditorPanel = uipanel(app.MainFigure);

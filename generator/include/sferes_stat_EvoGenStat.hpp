@@ -58,9 +58,9 @@ class EvoGenStat {
             ofs << (*it)->id().gen << "," << (*it)->id().id << "," // 1, 2
                 << (*it)->id().p1_gen << "," << (*it)->id().p1_id << "," // 3, 4
                 << (*it)->id().p2_gen << "," << (*it)->id().p2_id << "," // 5, 6
-                << (*it)->fit().value() << ","; // 7
+                << (*it)->fit().value << ","; // 7
             for (const auto& id : (*it)->grid_id()) ofs << id << ",";
-            for (const auto& desc : (*it)->fit().desc()) ofs << desc << ",";
+            for (const auto& desc : (*it)->fit().desc) ofs << desc << ",";
             for (const auto& gene : (*it)->data()) ofs << gene << ",";
             ofs << std::endl;
         }
@@ -73,7 +73,7 @@ class EvoGenStat {
         ofs.precision(5);
         for (auto it = ea.pop().begin(); it != ea.pop().end(); ++it) {
             ofs << (*it)->id().gen << "," << (*it)->id().id << ","
-                << (*it)->fit().value() << ",";
+                << (*it)->fit().value << ",";
             for (const auto& id : (*it)->grid_id()) ofs << id << ",";
             ofs << std::endl;
         }

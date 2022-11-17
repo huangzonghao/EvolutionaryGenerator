@@ -137,6 +137,7 @@ void new_training_from_job(EvoGenTrainingConfigs& training_configs,
     evo_params.set_init_size(training_configs.init_pop_size());
     evo_params.set_pop_size(training_configs.pop_size());
     evo_params.input_sampling = static_cast<EvoParams::UserDesignSampling>(training_configs.user_design_sampling());
+    evo_params.set_evaluator(training_configs.evaluator());
     evo_params.num_user_inputs = training_configs.num_user_inputs();
 
     sim_params.SetEnv(training_configs.env());
@@ -304,6 +305,10 @@ void process_job_file(const std::string& job_file_basename) {
                     if (job["user_input_sampling"] == "random") {
                         training_configs.set_user_design_sampling(EvoGenTrainingConfigs::RANDOM);
                     }
+                }
+
+                if (js_ver >= 1.7) {
+                    training_configs.set_evaluator(job["evaluator"]);
                 }
 
                 std::cout << "Launching new job " << job["result_dir"] << std::endl;

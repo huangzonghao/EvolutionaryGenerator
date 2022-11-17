@@ -122,7 +122,7 @@ class EvoGenArchiveContainer {
     }
 
     bool add(indiv_t i1) {
-        if (i1->fit().dead())
+        if (i1->fit().dead)
             return false;
 
         index_t behav_pos = get_index(i1);
@@ -132,11 +132,11 @@ class EvoGenArchiveContainer {
             _num_filled++;
             goto add_to_container;
         }
-        if (i1->fit().value() - _grid(behav_pos)->fit().value() > epsilon)
+        if (i1->fit().value - _grid(behav_pos)->fit().value > epsilon)
             goto add_to_container;
         // TODO: why?
         // same fitness but the features are closer to the center of map
-        if (std::abs(i1->fit().value() - _grid(behav_pos)->fit().value()) <= epsilon &&
+        if (std::abs(i1->fit().value - _grid(behav_pos)->fit().value) <= epsilon &&
             _dist_center(i1) < _dist_center(_grid(behav_pos)))
                 goto add_to_container;
 
@@ -168,9 +168,9 @@ class EvoGenArchiveContainer {
     point_t get_point(const indiv_t& indiv) const {
         point_t p(_grid.grid_dim());
         for (size_t i = 0; i < _grid.grid_dim(); ++i) {
-            assert(indiv->fit().desc()[i] >= 0.0);
-            assert(indiv->fit().desc()[i] <= 1.0);
-            p[i] = indiv->fit().desc()[i];
+            assert(indiv->fit().desc[i] >= 0.0);
+            assert(indiv->fit().desc[i] <= 1.0);
+            p[i] = indiv->fit().desc[i];
         }
         return p;
     }
@@ -224,9 +224,9 @@ class EvoGenArchiveContainer {
 
     // WARNING, individuals in population can be dead...
     void _update_indiv(indiv_t& indiv) {
-        if (indiv->fit().dead()) {
-            indiv->fit().set_novelty(-std::numeric_limits<double>::infinity());
-            indiv->fit().set_local_quality(-std::numeric_limits<double>::infinity());
+        if (indiv->fit().dead) {
+            indiv->fit().novelty = -std::numeric_limits<double>::infinity();
+            indiv->fit().local_quality = -std::numeric_limits<double>::infinity();
             return;
         }
 

@@ -22,7 +22,6 @@ typedef sferes::qd::EvoGenQD<phen_t,
 void EvoGenerator::run() {
     if (!evo_params_.output_enabled())
         std::cout << "Note: Output disabled" << std::endl;
-    evo_params_.set_feature_description(phen_t::fit_t::descriptor_names);
     qd_t qd(evo_params_, sim_params_);
     if (user_seeds_)
         qd.set_init_seeds(user_seeds_);
