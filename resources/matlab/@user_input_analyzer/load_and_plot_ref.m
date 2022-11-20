@@ -1,18 +1,24 @@
 function load_and_plot_ref(app, name)
-    name = string(name);
+% Select training result to generate left and right reference plot in the main_ref_plot
+% Currently left ref uses the initial population and right ref uses final population
+% of the selected result.
     % select result and load meta info
     training_result = load_training_result(app);
     if ~training_result.loaded
         return
     end
 
+    ref = app.main_ref_plot;
+
+    name = string(name);
     if name == "left"
         % TODO: too dirty -- somehow heatmap destroies the original axis
-        [app.heat_axes.left_heat, fitness] = plot_gen(app, {app.left_surf, app.left_heat}, training_result, 0);
+        [ref.heat_axes.left_heat, fitness] = plot_gen({ref.left_surf, ref.left_heat}, training_result, 0);
     elseif name == "right"
-        [app.heat_axes.right_heat, fitness] = plot_gen(app, {app.right_surf, app.right_heat}, training_result, training_result.nb_gen);
+        [ref.heat_axes.right_heat, fitness] = plot_gen({ref.right_surf, ref.right_heat}, training_result, training_result.nb_gen);
     end
 
+    app.main_ref_plot = ref;
     update_plots_range(app, min(fitness(:)), max(fitness(:)));
 end
 
@@ -42,7 +48,7 @@ function training_result = load_training_result(app)
     training_result.loaded = true;
 end
 
-function [heat_axis, fitness] = plot_gen(app, target_axes, training_result, gen_to_plot)
+function [heat_axis, fitness] = plot_gen(target_axes, training_result, gen_to_plot)
 
     archive_file = fullfile(training_result.result_path, ...
                             ['/gridmaps/', num2str(gen_to_plot), '.csv']);

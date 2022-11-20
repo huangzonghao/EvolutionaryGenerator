@@ -10,6 +10,7 @@ function plot_archive(app)
 
     open_plot(app);
 
+    ref = app.main_ref_plot;
     app.archive_map(:) = 0;
     app.map_stat(:) = 0;
 
@@ -21,34 +22,35 @@ function plot_archive(app)
         end
     end
 
-    app.map_surf.select();
+    ref.map_surf.select();
     surf(app.archive_map);
     title('Archive Map');
     xlabel(app.default_feature_description(2)); % x, y flipped in plot
     ylabel(app.default_feature_description(1));
     zlabel('Fitness');
 
-    app.map_heat.select();
+    ref.map_heat.select();
     % TODO: too dirty -- somehow heatmap destroies the original axis
-    app.heat_axes.map_heat = heatmap(app.archive_map);
+    ref.heat_axes.map_heat = heatmap(app.archive_map);
     title('Archive Map');
     xlabel(app.default_feature_description(2)); % x, y flipped in plot
     ylabel(app.default_feature_description(1));
 
     % bar3(app.MapStatViewerAxes, app.map_stat, 1, 'b');
-    app.stat_bar.select();
-    app.stacked_bar3(app.stat_bar.axis, app.map_stat);
+    ref.stat_bar.select();
+    app.stacked_bar3(ref.stat_bar.axis, app.map_stat);
     title('Updates per Bin');
     xlabel(app.default_feature_description(2)); % x, y flipped in plot
     ylabel(app.default_feature_description(1));
     zlabel('Number of robots');
 
-    app.stat_heat.select();
+    ref.stat_heat.select();
     % TODO: too dirty -- somehow heatmap destroies the original axis
-    app.heat_axes.map_stat = heatmap(sum(app.map_stat, 3));
+    ref.heat_axes.map_stat = heatmap(sum(app.map_stat, 3));
     title('Updates per Bin');
     xlabel(app.default_feature_description(2)); % x, y flipped in plot
     ylabel(app.default_feature_description(1));
 
+    app.main_ref_plot = ref;
     update_plots_range(app, min(app.archive_map(:)), max(app.archive_map(:)));
 end

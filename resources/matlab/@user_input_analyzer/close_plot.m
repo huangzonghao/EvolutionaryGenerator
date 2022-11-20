@@ -1,6 +1,7 @@
 function close_plot(app)
-    if ~ishandle(app.plot_fig)
+    ref = app.main_ref_plot;
+    if ~ishandle(ref.fig)
         return
     end
-    close(app.plot_fig);
+    close(ref.fig);
 end

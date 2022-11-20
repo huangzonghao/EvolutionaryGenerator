@@ -69,21 +69,7 @@ classdef user_input_analyzer < matlab.apps.AppBase
     end
 
     properties (Access = public)
-        % User Input ref plot
-        % TODO: merge the following into a structure
-        plot_fig
-        heat_axes
-        panel
-        map_surf
-        map_heat
-        stat_bar
-        stat_heat
-        left_surf
-        left_heat
-        right_surf
-        right_heat
-        archive_map
-
+        main_ref_plot = {}
         feature_plot_fig
         results = {}
         fitness_range = [Inf, -Inf];
@@ -101,6 +87,7 @@ classdef user_input_analyzer < matlab.apps.AppBase
         map_dim_1 = 20
         default_feature_description string
 
+        archive_map
         map_stat % one archive_map stat per env
         results_enabled = [] % a num_user x num_env matrix representing which result is enabled to show
         user_inputs_selected = [] % a n x 3 matrix storing the n selected user inputs to be saved to output bag, one for each row
