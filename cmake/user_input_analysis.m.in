@@ -4,8 +4,8 @@
 
 function user_input_analysis()
 
+addpath('@EVOGEN_MATLAB_SCRIPTS_PATH@');
 addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'tools'));
-addpath(fullfile('@EVOGEN_MATLAB_SCRIPTS_PATH@', 'user_input_analysis'));
-user_input_analysis_ui('@EVOGEN_EXE_PATH@', '@USER_INPUT_DIR@', '@RESULT_OUTPUT_DIR@')
+user_input_analyzer('@EVOGEN_EXE_PATH@', '@USER_INPUT_DIR@', '@RESULT_OUTPUT_DIR@')
 
 end % function

@@ -91,8 +91,8 @@ function plot_ver_features_kernel(app, result_id)
 
         % quiver map of features
         sph = subplot(result.num_env, subplot_num_columns, subplot_num_columns*i);
-        qh = quiverwcolorbar(feature_x(1:end-1), feature_y(1:end-1), len_x, len_y, ...
-                             fitness(2:end) - fitness(1:end-1), 1);
+        qh = app.quiverwcolorbar(feature_x(1:end-1), feature_y(1:end-1), len_x, len_y, ...
+                                 fitness(2:end) - fitness(1:end-1), 1);
 
         axis equal;
         xlim([-0.1, 1.1]);
@@ -109,8 +109,8 @@ function plot_ver_features_kernel(app, result_id)
         % quiver map of features for the compared result
         if app.compare_group == true
             sph = subplot(result.num_env, subplot_num_columns, subplot_num_columns*i - 2);
-            qh = quiverwcolorbar(compare_feature_x(1:end-1), compare_feature_y(1:end-1), compare_len_x, compare_len_y, ...
-                                 compare_fitness(2:end) - compare_fitness(1:end-1), 1);
+            qh = app.quiverwcolorbar(compare_feature_x(1:end-1), compare_feature_y(1:end-1), compare_len_x, compare_len_y, ...
+                                     compare_fitness(2:end) - compare_fitness(1:end-1), 1);
 
             axis equal;
             xlim([-0.1, 1.1]);

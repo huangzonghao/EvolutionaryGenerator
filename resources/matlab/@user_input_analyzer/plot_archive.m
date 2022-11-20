@@ -37,7 +37,7 @@ function plot_archive(app)
 
     % bar3(app.MapStatViewerAxes, app.map_stat, 1, 'b');
     app.stat_bar.select();
-    stacked_bar3(app.stat_bar.axis, app.map_stat);
+    app.stacked_bar3(app.stat_bar.axis, app.map_stat);
     title('Updates per Bin');
     xlabel(app.default_feature_description(2)); % x, y flipped in plot
     ylabel(app.default_feature_description(1));

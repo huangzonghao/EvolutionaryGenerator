@@ -1,4 +1,4 @@
-classdef user_input_analysis_ui < matlab.apps.AppBase
+classdef user_input_analyzer < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -109,6 +109,46 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
         random_robots = [] % a [n x max_gene_length] matrix containing gene for randomly generated robots
         default_env_order = ["ground", "Sine2.obj", "Valley5.obj"]
         auto_refresh_selected_list_on_next_enabled_update = true % controls if next update on results_enabled matrix would trigger an automatic update of the selected_robots_list
+    end
+
+    methods (Static)
+        hh = quiverwcolorbar(varargin)
+        h = stacked_bar3(target_ax, array)
+    end
+
+    methods (Access = private)
+        add_random_robots_to_bag(app)
+        add_to_archive(app, features, fitness, map_stat_id)
+        clear_added_robots_list(app)
+        clear_plot(app)
+        close_plot(app)
+        feature_plot_next_user(app)
+        feature_plot_prev_user(app)
+        generate_paper_plot(app)
+        generate_paper_plot2(app)
+        generate_paper_plot3(app)
+        load_and_plot_ref(app, name)
+        load_compare_group(app)
+        tmp_result = load_raw_user_input_file(app, input_file)
+        load_user_input_group(app)
+        open_plot(app)
+        plot_archive(app)
+        plot_ver_features(app)
+        plot_ver_fitness(app)
+        refresh_added_robots_list(app)
+        refresh_raw_user_input_list(app)
+        refresh_selected_robots_list(app)
+        remove_added(app)
+        reset_compare_group(app)
+        save_bag(app)
+        sort_added_robots_list_by_fitness(app)
+        sort_selected_robots_list_by_fitness(app)
+        take_screenshot(app)
+        update_listbox_text(app)
+        update_plots_range(app, new_min, new_max)
+        update_results_enabled(app, env_id)
+        user_analysis_pop_var(app)
+        user_input_analysis_init(app, evogen_exe_path, evogen_user_input_path, evogen_results_path)
     end
 
     % Callbacks that handle component events
@@ -730,7 +770,7 @@ classdef user_input_analysis_ui < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = user_input_analysis_ui(varargin)
+        function app = user_input_analyzer(varargin)
 
             runningApp = getRunningApp(app);
 
