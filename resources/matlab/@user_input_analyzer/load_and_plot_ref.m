@@ -12,10 +12,9 @@ function load_and_plot_ref(app, name)
 
     name = string(name);
     if name == "left"
-        % TODO: too dirty -- somehow heatmap destroies the original axis
-        [ref.heat_axes.left_heat, fitness] = plot_gen({ref.left_surf, ref.left_heat}, training_result, 0);
+        fitness = plot_gen(ref.left_surf, ref.left_heat, training_result, 0);
     elseif name == "right"
-        [ref.heat_axes.right_heat, fitness] = plot_gen({ref.right_surf, ref.right_heat}, training_result, training_result.nb_gen);
+        fitness = plot_gen(ref.right_surf, ref.right_heat, training_result, training_result.nb_gen);
     end
 
     app.main_ref_plot = ref;
@@ -48,28 +47,29 @@ function training_result = load_training_result(app)
     training_result.loaded = true;
 end
 
-function [heat_axis, fitness] = plot_gen(target_axes, training_result, gen_to_plot)
+function fitness = plot_gen(surf_obj, heat_obj, training_result, gen_to_plot)
 
     archive_file = fullfile(training_result.result_path, ...
                             ['/gridmaps/', num2str(gen_to_plot), '.csv']);
     archive_data = readmatrix(archive_file, delimitedTextImportOptions('DataLines',[1,Inf]), 'OutputType','double');
 
     % plot heatmap
-    archive_map = zeros(training_result.griddim_0, training_result.griddim_1);
+    archive_map = nan(training_result.griddim_0, training_result.griddim_1);
     x = archive_data(:, 3) + 1;
     y = archive_data(:, 4) + 1;
     fitness = archive_data(:, 5);
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
+    surf_archive_map = zeros(size(archive_map));
+    tmp_idx = ~isnan(archive_map);
+    surf_archive_map(tmp_idx) = archive_map(tmp_idx);
 
-    target_axes{1}.select();
-    surf(archive_map);
-    xlabel(training_result.feature_description2); % x, y flipped in plot
-    ylabel(training_result.feature_description1);
-    title(['Gen ', num2str(gen_to_plot)]);
+    surf_obj.handle.ZData = surf_archive_map;
+    xlabel(surf_obj.ax, training_result.feature_description2); % x, y flipped in plot
+    ylabel(surf_obj.ax, training_result.feature_description1);
+    title(surf_obj.ax, ['Gen ', num2str(gen_to_plot)]);
 
-    target_axes{2}.select();
-    heat_axis = heatmap(archive_map);
-    xlabel(training_result.feature_description2); % x, y flipped in plot
-    ylabel(training_result.feature_description1);
-    title(['Gen ', num2str(gen_to_plot)]);
+    heat_obj.ColorData = archive_map;
+    heat_obj.XLabel = training_result.feature_description2;
+    heat_obj.YLabel = training_result.feature_description1;
+    heat_obj.Title = ['Gen ', num2str(gen_to_plot)];
 end

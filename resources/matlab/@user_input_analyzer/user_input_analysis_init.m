@@ -16,7 +16,7 @@ function user_input_analysis_init(app, evogen_exe_path, evogen_user_input_path, 
     % setappdata(app.MainFigure, 'StoreTheLink', camera_link);
 
     % init params
-    app.archive_map = zeros(app.map_dim_0, app.map_dim_1);
+    app.archive_map = nan(app.map_dim_0, app.map_dim_1);
     app.map_stat = zeros(app.map_dim_0, app.map_dim_1, length(app.default_env_order));
     app.ScreenshotNameField.Value = "Screenshot.png";
     app.OutputBagNameField.Value = string.empty;
