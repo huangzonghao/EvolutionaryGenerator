@@ -50,8 +50,6 @@ classdef user_input_analyzer < matlab.apps.AppBase
         CompareUsertoTrainingPanel     matlab.ui.container.Panel
         ScreenshotNameField            matlab.ui.control.EditField
         PicFileLabel                   matlab.ui.control.Label
-        CloseFigButton                 matlab.ui.control.Button
-        OpenFigButton                  matlab.ui.control.Button
         ScreenShotButton               matlab.ui.control.Button
         RefRightButton                 matlab.ui.control.Button
         RefLeftButton                  matlab.ui.control.Button
@@ -108,7 +106,6 @@ classdef user_input_analyzer < matlab.apps.AppBase
         add_to_archive(app, features, fitness, map_stat_id)
         clear_added_robots_list(app)
         clear_plot(app)
-        close_plot(app)
         feature_plot_next_user(app)
         feature_plot_prev_user(app)
         generate_paper_plot(app)
@@ -270,16 +267,6 @@ classdef user_input_analyzer < matlab.apps.AppBase
         % Button pushed function: ScreenShotButton
         function ScreenShotButtonPushed(app, event)
             take_screenshot(app);
-        end
-
-        % Button pushed function: OpenFigButton
-        function OpenFigButtonPushed(app, event)
-            open_plot(app);
-        end
-
-        % Button pushed function: CloseFigButton
-        function CloseFigButtonPushed(app, event)
-            close_plot(app);
         end
 
         % Close request function: MainFigure
@@ -469,18 +456,6 @@ classdef user_input_analyzer < matlab.apps.AppBase
             app.ScreenShotButton.ButtonPushedFcn = createCallbackFcn(app, @ScreenShotButtonPushed, true);
             app.ScreenShotButton.Position = [13 78 78 22];
             app.ScreenShotButton.Text = 'ScreenShot';
-
-            % Create OpenFigButton
-            app.OpenFigButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
-            app.OpenFigButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFigButtonPushed, true);
-            app.OpenFigButton.Position = [13 42 54 22];
-            app.OpenFigButton.Text = 'OpenFig';
-
-            % Create CloseFigButton
-            app.CloseFigButton = uibutton(app.CompareUsertoTrainingPanel, 'push');
-            app.CloseFigButton.ButtonPushedFcn = createCallbackFcn(app, @CloseFigButtonPushed, true);
-            app.CloseFigButton.Position = [101 42 56 22];
-            app.CloseFigButton.Text = 'CloseFig';
 
             % Create PicFileLabel
             app.PicFileLabel = uilabel(app.CompareUsertoTrainingPanel);
