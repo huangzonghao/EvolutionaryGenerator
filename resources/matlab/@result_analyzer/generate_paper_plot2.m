@@ -41,8 +41,8 @@ function generate_paper_plot2(app)
     labels = {};
     for i_virtual = 1 : num_virtual_results
         virtual_result = app.virtual_results{app.targets_to_compare{i_virtual}.id};
-        labels{i_virtual} = virtual_result.name;
         num_results = virtual_result.num_results;
+        labels{i_virtual} = [virtual_result.name, '(', num2str(num_results), ')'];
         qd_tmp = zeros(1, num_results);
         global_performance_tmp = zeros(1, num_results);
         reliability_tmp = zeros(1, num_results);
