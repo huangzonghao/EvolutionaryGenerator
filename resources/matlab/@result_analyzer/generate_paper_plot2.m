@@ -12,7 +12,12 @@ function generate_paper_plot2(app)
         end
     end
 
-    sigstar_groups = {[1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]};
+    sigstar_groups = {};
+    for i = 1 : num_virtual_results - 1
+        for j = i + 1 : num_virtual_results
+            sigstar_groups{end + 1} = [i, j];
+        end
+    end
     fig = figure('Position', [100, 100, 1900, 600]);
     if ~isempty(app.CompPlotNameField.Value)
         sgtitle(fig, app.CompPlotNameField.Value, 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 14);
@@ -33,8 +38,10 @@ function generate_paper_plot2(app)
     qd_score_mat = {};
     global_performance_mat = {};
     reliability_mat = {};
+    labels = {};
     for i_virtual = 1 : num_virtual_results
         virtual_result = app.virtual_results{app.targets_to_compare{i_virtual}.id};
+        labels{i_virtual} = virtual_result.name;
         num_results = virtual_result.num_results;
         qd_tmp = zeros(1, num_results);
         global_performance_tmp = zeros(1, num_results);
@@ -84,8 +91,8 @@ function generate_paper_plot2(app)
     p_qdscore = [];
     p_globalperformance = [];
     p_reliability = [];
-    for i = 1 : 4
-        for j = i + 1 : 5
+    for i = 1 : num_virtual_results - 1
+        for j = i + 1 : num_virtual_results
             [p_qdscore(end+1), ~] = ranksum(qd_score_mat{i}, qd_score_mat{j});
             [p_globalperformance(end+1), ~] = ranksum(global_performance_mat{i}, global_performance_mat{j});
             [p_reliability(end+1), ~] = ranksum(reliability_mat{i}, reliability_mat{j});
@@ -106,21 +113,19 @@ function generate_paper_plot2(app)
         reliability_data = [reliability_data reliability_mat{i}];
         reliability_group = [reliability_group i * ones(size(reliability_mat{i}))];
     end
-    qd_score_data
-    qd_score_group
-    boxplot(p{1}, qd_score_data, qd_score_group, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'});
+    boxplot(p{1}, qd_score_data, qd_score_group, 'Labels', labels);
     title(p{1}, 'QD-Score', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
     ylabel(p{1}, 'QD-Score', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
     axes(p{1});
     sigstar(sigstar_groups, p_qdscore);
 
-    boxplot(p{2}, global_performance_data, global_performance_group, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'});
+    boxplot(p{2}, global_performance_data, global_performance_group, 'Labels', labels);
     title(p{2}, 'Global Performance', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
     ylabel(p{2}, 'Global Performance', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
     axes(p{2});
     sigstar(sigstar_groups, p_globalperformance);
 
-    boxplot(p{3}, reliability_data, reliability_group, 'Labels', {'H0', 'H5', 'H15', 'H25', 'H30'});
+    boxplot(p{3}, reliability_data, reliability_group, 'Labels', labels);
     title(p{3}, 'Reliabilitiy / Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
     ylabel(p{3}, 'Reliabilitiy / Precision', 'FontName', 'Times New Roman', 'FontWeight', 'bold', 'FontSize', 11);
     axes(p{3});
@@ -134,10 +139,10 @@ function generate_paper_plot2(app)
     % plot_width = p{1}.Position(4);
     % p{1}.Position(2) = p{2}.Position(2);
     % for i = 1 : 4
-    for i = 1 : 3
+    % for i = 1 : 3
         % p{i}.Position(3) = plot_height;
         % p{i}.Position(4) = plot_width;
-    end
+    % end
 
     % Save
     if ~isempty(app.CompPlotNameField.Value)
