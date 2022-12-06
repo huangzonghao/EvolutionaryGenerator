@@ -1,6 +1,10 @@
 function simulate_for_video(app)
 % Testing mode when only one result added to comparison target
 % Production mode when multiple results added
+% To use the script, change production mode to true, and if given 4 results, a
+% 'video_capture' folder will appear in the Matlab folder, containing the image sequence.
+% To generate the archive map with dots for robot position, generate the combined archive map
+% and set the export_plots to true
     production_mode = false;
     export_plots = false;
 
