@@ -116,8 +116,9 @@ function simulate_for_video(app)
             hm_s.XAxis.TickLabelRotation = 0; % undocumented function
             ax = axes(fig);
             for i_gen = 1 : length(gen_order)
+                gen = gen_order(i_gen);
                 for i_target = 1 : num_results
-                    robot_info = gen_reports{i_gen}.(['robot_', num2str(i_target)])
+                    robot_info = gen_reports{i_gen}.(['robot_', num2str(i_target)]);
                     plot(ax, robot_info.f2, robot_info.f1, '.', 'MarkerSize', 45, 'Color', plot_colors(i_target,:));
                     if i_target == 1
                         ax.Color = 'none';
