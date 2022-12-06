@@ -21,6 +21,7 @@ function move_target_in_compare_list(app, move_up)
 
     app.CompareListBox.Items{target_idx} = app.targets_to_compare{target_idx}.name;
     app.CompareListBox.Items{selected_idx} = app.targets_to_compare{selected_idx}.name;
+    app.CompareListBox.ItemsData = 1 : length(app.CompareListBox.Items);
     app.CompareListBox.Value = target_idx;
 end
 
