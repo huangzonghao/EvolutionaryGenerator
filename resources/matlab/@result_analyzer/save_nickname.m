@@ -8,28 +8,38 @@ function save_nickname(app)
         return
     end
 
-    if num_results == 1
-        result_path = app.results{app.ResultsListBox.Value{1}}.path;
-        fid = fopen(fullfile(result_path, 'name.txt'), 'wt');
-        fprintf(fid, app.NickNameField.Value);
-        fclose(fid);
-    else
+    if strcmp(app.NickNameField.Value(end), '_') % check if the given name is a prefix
         for i = 1 : num_results
             result = app.results{app.ResultsListBox.Value{i}};
-            % To get the numeric index
-            % result_idx = regexp(result.name, '_(\d+)$', 'tokens');
-            % result_idx = str2double(result_idx{1})
-            result_idx_str = regexp(result.name, '_\d+$', 'match');
-            result_idx_str = result_idx_str{1};
-            if ~isempty(result_idx_str)
-                new_name = strcat(app.NickNameField.Value, result_idx_str);
-            else
-                new_name = app.NickNameField.Value;
-            end
-
+            new_name = strcat(app.NickNameField.Value, result.name);
             fid = fopen(fullfile(result.path, 'name.txt'), 'wt');
             fprintf(fid, new_name);
             fclose(fid);
+        end
+    else
+        if num_results == 1
+            result_path = app.results{app.ResultsListBox.Value{1}}.path;
+            fid = fopen(fullfile(result_path, 'name.txt'), 'wt');
+            fprintf(fid, app.NickNameField.Value);
+            fclose(fid);
+        else
+            for i = 1 : num_results
+                result = app.results{app.ResultsListBox.Value{i}};
+                % To get the numeric index
+                % result_idx = regexp(result.name, '_(\d+)$', 'tokens');
+                % result_idx = str2double(result_idx{1})
+                result_idx_str = regexp(result.name, '_\d+$', 'match');
+                result_idx_str = result_idx_str{1};
+                if ~isempty(result_idx_str)
+                    new_name = strcat(app.NickNameField.Value, result_idx_str);
+                else
+                    new_name = app.NickNameField.Value;
+                end
+
+                fid = fopen(fullfile(result.path, 'name.txt'), 'wt');
+                fprintf(fid, new_name);
+                fclose(fid);
+            end
         end
     end
 
