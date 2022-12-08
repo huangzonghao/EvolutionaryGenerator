@@ -6,8 +6,13 @@ function generate_paper_plot2(app)
     end
     num_virtual_results = length(app.targets_to_compare);
     for i = 1 : num_virtual_results
-        if ~app.targets_to_compare{i}.isgroup
-            msgbox('Must be virtual result');
+        target = app.targets_to_compare{i};
+        if ~target.isgroup
+            msgbox(strcat('Error: ', target.name, ' is not virtual result'));
+            return
+        end
+        if ~isfield(target, 'benchmark_archive')
+            msgbox(strcat('Error: ', target.name, ' missing benchmark_archive'));
             return
         end
     end
