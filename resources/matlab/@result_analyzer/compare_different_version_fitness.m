@@ -12,7 +12,7 @@ function compare_different_version_fitness(app)
         msgbox('Cannot compare different fitness, result version is not 1');
         return
     end
-    current_gen = app.current_gen;
+    current_gen = app.current_result.gen;
     grid_dim = result.evo_params.grid_dim;
 
     extra_stats_1_path = fullfile(result.path, 'extra_stats.mat');
@@ -68,7 +68,6 @@ function compare_different_version_fitness(app)
     archive_map = nan(grid_dim);
     archive_map2 = nan(grid_dim);
     archive_map3 = nan(grid_dim);
-    archive_ids = zeros(grid_dim);
     current_gen_archive = result.archive{current_gen + 1};
     x = current_gen_archive(:, 3) + 1; % remember matlab index starts from 1
     y = current_gen_archive(:, 4) + 1;

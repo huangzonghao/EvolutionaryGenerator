@@ -76,5 +76,5 @@ function archive_map = get_result_archive_map(result, gen)
     % fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 2 + ones(1, grid_dim(1))));
     fitness(sub2ind(size(archive_map), 1:grid_dim(1), ones(1, grid_dim(1)))) = 0.1 * rand(grid_dim(1), 1) + fitness(sub2ind(size(archive_map), 1:grid_dim(1), 1 + ones(1, grid_dim(1))));
     archive_map(sub2ind(size(archive_map), x, y)) = fitness;
-    app.archive_ids(sub2ind(size(archive_map), x, y)) = [1:length(fitness)];
+    app.current_result.archive_ids(sub2ind(size(archive_map), x, y)) = [1:length(fitness)];
 end

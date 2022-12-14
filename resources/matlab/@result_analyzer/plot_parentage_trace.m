@@ -19,12 +19,12 @@ function plot_parentage_trace(app)
     end
 
     % The following code gets the gen_id and id of a robot, given f_id1 and f_id2
-    id_in_archive = app.archive_ids(fid_x, fid_y);
+    id_in_archive = app.current_result.archive_ids(fid_x, fid_y);
     if (id_in_archive == 0)
         msgbox("Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty");
         return
     end
-    current_gen_archive = result.archive{app.current_gen + 1};
+    current_gen_archive = result.archive{app.current_result.gen + 1};
     gen_id = current_gen_archive(id_in_archive, 1);
     id = current_gen_archive(id_in_archive, 2);
 

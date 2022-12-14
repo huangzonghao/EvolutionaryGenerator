@@ -41,13 +41,13 @@ function generate_all_plots_for_this_result(app, result, root_dir)
     end
 
     % gen 0
-    app.current_gen = 0;
+    app.current_result.gen = 0;
     plot_gen_all(app);
     % mid gen
-    app.current_gen = ceil(result.evo_params.nb_gen / 2);
+    app.current_result.gen = ceil(result.evo_params.nb_gen / 2);
     plot_gen_all(app);
     % final gen
-    app.current_gen = result.evo_params.nb_gen;
+    app.current_result.gen = result.evo_params.nb_gen;
     plot_gen_all(app);
     close(app.plot_handles.gen_plot.handle);
 

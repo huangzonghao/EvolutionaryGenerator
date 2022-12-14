@@ -12,7 +12,7 @@ function export_archive_map(app)
     if ~isfolder(root_dir)
         mkdir(root_dir);
     end
-    output_filename = fullfile(root_dir, [result.name, '_gen_', num2str(app.current_gen), '_archive_map.mat']);
+    output_filename = fullfile(root_dir, [result.name, '_gen_', num2str(app.current_result.gen), '_archive_map.mat']);
     % save(output_filename, 'archive_map', '-v7.3');
     msgbox(sprintf("Archive map data file write to %s", output_filename));
 

@@ -11,13 +11,13 @@ function export_robot(app)
     if fid_x <= 0 || fid_x > result.evo_params.grid_dim(1) || fid_y <=0 || fid_y > result.evo_params.grid_dim(2)
         msgbox(sprintf("Error: Invalid robot coord (%d, %d)", fid_y, fid_x));
     end
-    id_in_archive = app.archive_ids(fid_x, fid_y);
+    id_in_archive = app.current_result.archive_ids(fid_x, fid_y);
     if (id_in_archive == 0)
-        msgbox("Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty");
+        msgbox("Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_result.gen) + " empty");
         return
     end
 
-    current_gen = app.current_gen;
+    current_gen = app.current_result.gen;
     current_gen_archive = result.archive{current_gen + 1};
     gen_id = current_gen_archive(id_in_archive, 1);
     id = current_gen_archive(id_in_archive, 2);

@@ -64,7 +64,7 @@ function select_result(app, mode)
 
     app.current_result = result;
     app.current_result.plot_to_file = false;
-    app.current_gen = -1;
+    app.current_result.gen = -1;
 
     % Set up the feature dropdown
     for i = 1 : num_dim

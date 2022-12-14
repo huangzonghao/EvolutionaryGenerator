@@ -142,12 +142,8 @@ classdef result_analyzer < matlab.apps.AppBase
         targets_to_compare = {} % cell array containing the targets (raw result/virtual result) to compare
         current_result = {} % reference to the currently seleceted result
         current_virtual_result = {} % reference to the currently seleceted virtual result
-        current_gen = -1
         plot_handles % containing handles to plots
         compare_plot_config % struct containing the config for compare plots
-
-        % TODO: need to remove the following
-        archive_ids
     end
 
     methods (Static)
@@ -273,22 +269,22 @@ classdef result_analyzer < matlab.apps.AppBase
 
         % Button pushed function: LoadNextButton
         function LoadNextButtonPushed(app, event)
-            load_gen(app, app.current_gen + 1);
+            load_gen(app, app.current_result.gen + 1);
         end
 
         % Button pushed function: LoadPrevButton
         function LoadPrevButtonPushed(app, event)
-            load_gen(app, app.current_gen - 1);
+            load_gen(app, app.current_result.gen - 1);
         end
 
         % Button pushed function: LoadNextStepButton
         function LoadNextStepButtonPushed(app, event)
-            load_gen(app, app.current_gen + app.gen_step);
+            load_gen(app, app.current_result.gen + app.gen_step);
         end
 
         % Button pushed function: LoadPrevStepButton
         function LoadPrevStepButtonPushed(app, event)
-            load_gen(app, app.current_gen - app.gen_step);
+            load_gen(app, app.current_result.gen - app.gen_step);
         end
 
         % Button pushed function: LoadFirstButton

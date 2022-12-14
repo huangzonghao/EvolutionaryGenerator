@@ -18,7 +18,7 @@ function plot_gen_all(app)
 
     % if we can create a handle then it's guaranteed that we have a current_result
     result = app.current_result;
-    current_gen = app.current_gen;
+    current_gen = app.current_result.gen;
     grid_dim = result.evo_params.grid_dim;
     map_size = gen_plot.map_size;
     % check if the size of the selected grid dimensions match the ones of the map
@@ -31,7 +31,7 @@ function plot_gen_all(app)
     f2_string = result.evo_params.feature_description(f2_selection);
 
     archive_map = nan(map_size);
-    app.archive_ids = zeros(map_size);
+    app.current_result.archive_ids = zeros(map_size);
     current_gen_archive = result.archive{current_gen + 1};
     % f_ids: a N x 2 matrix holding the feature ids of the robots in the archive
     %     map. N is the number of robots. 1st column is the 1st feature, 2nd column
@@ -60,9 +60,9 @@ function plot_gen_all(app)
     end
     archive_map(sub2ind(size(archive_map), f_ids(:, 1), f_ids(:, 2))) = fitness;
     if result.version < 2
-        app.archive_ids(sub2ind(size(archive_map), f_ids(:, 1), f_ids(:, 2))) = [1:length(fitness)];
+        app.current_result.archive_ids(sub2ind(size(archive_map), f_ids(:, 1), f_ids(:, 2))) = [1:length(fitness)];
     else
-        app.archive_ids(sub2ind(size(archive_map), f_ids(:, 1), f_ids(:, 2))) = f_ids(:, 4);
+        app.current_result.archive_ids(sub2ind(size(archive_map), f_ids(:, 1), f_ids(:, 2))) = f_ids(:, 4);
     end
     app.current_result.current_archive_map = archive_map;
 

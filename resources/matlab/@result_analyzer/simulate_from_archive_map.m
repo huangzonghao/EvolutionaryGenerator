@@ -21,13 +21,13 @@ function simulate_from_archive_map(app)
         return
     end
 
-    id_in_archive = app.archive_ids(fid_x, fid_y);
+    id_in_archive = app.current_result.archive_ids(fid_x, fid_y);
     if (id_in_archive == 0)
         msgbox("Error: Cell (" + app.RobotIDXField.Value + ", " + app.RobotIDYField.Value + ") of Gen " + num2str(app.current_gen) + " empty");
         return
     end
 
-    current_gen = app.current_gen;
+    current_gen = app.current_result.gen;
     current_gen_archive = result.archive{current_gen + 1};
     robot_gen = current_gen_archive(id_in_archive, 1);
     robot_id = current_gen_archive(id_in_archive, 2);
