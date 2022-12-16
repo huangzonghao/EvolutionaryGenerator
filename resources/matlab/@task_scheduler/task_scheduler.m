@@ -163,6 +163,11 @@ classdef task_scheduler < matlab.apps.AppBase
             clear_bag_selection(app);
         end
 
+        % Button pushed function: RefreshBagFileListButton
+        function RefreshBagFileListButtonPushed(app, event)
+            refresh_bag_list(app);
+        end
+
         % Value changed function: JobFilesListBox
         function JobFilesListBoxValueChanged(app, event)
             update_job_file_info_label(app);
@@ -243,6 +248,7 @@ classdef task_scheduler < matlab.apps.AppBase
 
             % Create RefreshBagFileListButton
             app.RefreshBagFileListButton = uibutton(app.JobEditorPanel, 'push');
+            app.RefreshBagFileListButton.ButtonPushedFcn = createCallbackFcn(app, @RefreshBagFileListButtonPushed, true);
             app.RefreshBagFileListButton.Position = [156 411 50 20];
             app.RefreshBagFileListButton.Text = 'Refresh';
 
