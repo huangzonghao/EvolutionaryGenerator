@@ -68,6 +68,7 @@ classdef result_analyzer < matlab.apps.AppBase
         ResultGroupLabel               matlab.ui.control.Label
         ResultsListBox                 matlab.ui.control.ListBox
         VirtualResultsPanel            matlab.ui.container.Panel
+        ListBagFilesButton             matlab.ui.control.Button
         AutoGenerateVirtualResultButton  matlab.ui.control.Button
         ComputeBenchmarkButton         matlab.ui.control.Button
         MannWhitneyTestCoverageAllButton  matlab.ui.control.Button
@@ -176,6 +177,7 @@ classdef result_analyzer < matlab.apps.AppBase
         move_target_in_compare_list(app, move_up)
         delete_from_compare_list(app, do_remove_all)
         delete_virtual_result(app)
+        list_bag_files_of_virtual_results(app)
 
         %% File navigation and manipulation
         build_clean_pack_results(app)
@@ -604,6 +606,11 @@ classdef result_analyzer < matlab.apps.AppBase
         function ExportButtonPushed(app, event)
             export_from_dropdown(app);
         end
+
+        % Button pushed function: ListBagFilesButton
+        function ListBagFilesButtonPushed(app, event)
+            list_bag_files_of_virtual_results(app);
+        end
     end
 
     % Component initialization
@@ -951,6 +958,13 @@ classdef result_analyzer < matlab.apps.AppBase
             app.AutoGenerateVirtualResultButton.ButtonPushedFcn = createCallbackFcn(app, @AutoGenerateVirtualResultButtonPushed, true);
             app.AutoGenerateVirtualResultButton.Position = [182 506 57 22];
             app.AutoGenerateVirtualResultButton.Text = 'Auto';
+
+            % Create ListBagFilesButton
+            app.ListBagFilesButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.ListBagFilesButton.ButtonPushedFcn = createCallbackFcn(app, @ListBagFilesButtonPushed, true);
+            app.ListBagFilesButton.WordWrap = 'on';
+            app.ListBagFilesButton.Position = [182 276 57 36];
+            app.ListBagFilesButton.Text = 'List Bag Files';
 
             % Create SingleResultsPanel
             app.SingleResultsPanel = uipanel(app.MainFigure);
