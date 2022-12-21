@@ -68,6 +68,7 @@ classdef result_analyzer < matlab.apps.AppBase
         ResultGroupLabel               matlab.ui.control.Label
         ResultsListBox                 matlab.ui.control.ListBox
         VirtualResultsPanel            matlab.ui.container.Panel
+        AutoGenerateVirtualResultButton  matlab.ui.control.Button
         ComputeBenchmarkButton         matlab.ui.control.Button
         MannWhitneyTestCoverageAllButton  matlab.ui.control.Button
         mwwPercentEditField            matlab.ui.control.NumericEditField
@@ -171,6 +172,7 @@ classdef result_analyzer < matlab.apps.AppBase
         save_nickname(app)
         add_target_to_compare(app, adding_virtual)
         add_virtual_result(app)
+        auto_generate_virtual_results(app)
         move_target_in_compare_list(app, move_up)
         delete_from_compare_list(app, do_remove_all)
         delete_virtual_result(app)
@@ -328,6 +330,11 @@ classdef result_analyzer < matlab.apps.AppBase
         % Button pushed function: AddVirtualResultButton
         function AddVirtualResultButtonPushed(app, event)
             add_virtual_result(app);
+        end
+
+        % Button pushed function: AutoGenerateVirtualResultButton
+        function AutoGenerateVirtualResultButtonPushed(app, event)
+            auto_generate_virtual_results(app);
         end
 
         % Button pushed function: DeleteVirtualResultButton
@@ -836,21 +843,21 @@ classdef result_analyzer < matlab.apps.AppBase
             app.GenerateAllVirtualResultPlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllVirtualResultPlotsButtonPushed, true);
             app.GenerateAllVirtualResultPlotsButton.WordWrap = 'on';
             app.GenerateAllVirtualResultPlotsButton.FontSize = 11;
-            app.GenerateAllVirtualResultPlotsButton.Position = [182 10 65 45];
+            app.GenerateAllVirtualResultPlotsButton.Position = [10 75 65 45];
             app.GenerateAllVirtualResultPlotsButton.Text = 'Generate All Plots';
 
             % Create GroupStatButton
             app.GroupStatButton = uibutton(app.VirtualResultsPanel, 'push');
             app.GroupStatButton.ButtonPushedFcn = createCallbackFcn(app, @GroupStatButtonPushed, true);
             app.GroupStatButton.WordWrap = 'on';
-            app.GroupStatButton.Position = [182 346 57 36];
+            app.GroupStatButton.Position = [182 321 57 36];
             app.GroupStatButton.Text = 'Group Stat';
 
             % Create VirtualResultsListBox
             app.VirtualResultsListBox = uilistbox(app.VirtualResultsPanel);
             app.VirtualResultsListBox.Items = {};
             app.VirtualResultsListBox.Multiselect = 'on';
-            app.VirtualResultsListBox.Position = [1 1 176 524];
+            app.VirtualResultsListBox.Position = [1 257 176 268];
             app.VirtualResultsListBox.Value = {};
 
             % Create AddVirtualResultButton
@@ -862,7 +869,7 @@ classdef result_analyzer < matlab.apps.AppBase
             % Create DeleteVirtualResultButton
             app.DeleteVirtualResultButton = uibutton(app.VirtualResultsPanel, 'push');
             app.DeleteVirtualResultButton.ButtonPushedFcn = createCallbackFcn(app, @DeleteVirtualResultButtonPushed, true);
-            app.DeleteVirtualResultButton.Position = [182 509 57 22];
+            app.DeleteVirtualResultButton.Position = [182 475 57 22];
             app.DeleteVirtualResultButton.Text = 'Remove';
 
             % Create AddVirtualToCompareButton
@@ -871,7 +878,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.AddVirtualToCompareButton.WordWrap = 'on';
             app.AddVirtualToCompareButton.FontSize = 14;
             app.AddVirtualToCompareButton.FontWeight = 'bold';
-            app.AddVirtualToCompareButton.Position = [182 407 65 40];
+            app.AddVirtualToCompareButton.Position = [182 373 65 40];
             app.AddVirtualToCompareButton.Text = 'Add to Plot';
 
             % Create GroupNameLabel
@@ -887,48 +894,48 @@ classdef result_analyzer < matlab.apps.AppBase
             app.QQPlotForVirtualButton = uibutton(app.VirtualResultsPanel, 'push');
             app.QQPlotForVirtualButton.ButtonPushedFcn = createCallbackFcn(app, @QQPlotForVirtualButtonPushed, true);
             app.QQPlotForVirtualButton.WordWrap = 'on';
-            app.QQPlotForVirtualButton.Position = [182 309 57 22];
+            app.QQPlotForVirtualButton.Position = [4 222 57 22];
             app.QQPlotForVirtualButton.Text = 'QQ Plot';
 
             % Create mwwGenEditFieldLabel
             app.mwwGenEditFieldLabel = uilabel(app.VirtualResultsPanel);
             app.mwwGenEditFieldLabel.WordWrap = 'on';
-            app.mwwGenEditFieldLabel.Position = [182 279 57 17];
+            app.mwwGenEditFieldLabel.Position = [8 199 57 17];
             app.mwwGenEditFieldLabel.Text = 'mww Gen:';
 
             % Create mwwGenEditField
             app.mwwGenEditField = uieditfield(app.VirtualResultsPanel, 'numeric');
-            app.mwwGenEditField.Position = [182 252 65 22];
+            app.mwwGenEditField.Position = [8 172 65 22];
 
             % Create MannWhitneyTestAllButton
             app.MannWhitneyTestAllButton = uibutton(app.VirtualResultsPanel, 'push');
             app.MannWhitneyTestAllButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestAllButtonPushed, true);
             app.MannWhitneyTestAllButton.WordWrap = 'on';
-            app.MannWhitneyTestAllButton.Position = [184 213 60 36];
+            app.MannWhitneyTestAllButton.Position = [10 133 60 36];
             app.MannWhitneyTestAllButton.Text = 'mwwtest all';
 
             % Create MannWhitneyTestPercentAllButton
             app.MannWhitneyTestPercentAllButton = uibutton(app.VirtualResultsPanel, 'push');
             app.MannWhitneyTestPercentAllButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestPercentAllButtonPushed, true);
             app.MannWhitneyTestPercentAllButton.WordWrap = 'on';
-            app.MannWhitneyTestPercentAllButton.Position = [186 108 60 50];
+            app.MannWhitneyTestPercentAllButton.Position = [95 149 60 50];
             app.MannWhitneyTestPercentAllButton.Text = 'mwwtest percent all';
 
             % Create mwwLabel
             app.mwwLabel = uilabel(app.VirtualResultsPanel);
             app.mwwLabel.WordWrap = 'on';
-            app.mwwLabel.Position = [184 183 57 22];
+            app.mwwLabel.Position = [93 224 57 22];
             app.mwwLabel.Text = 'mww %:';
 
             % Create mwwPercentEditField
             app.mwwPercentEditField = uieditfield(app.VirtualResultsPanel, 'numeric');
-            app.mwwPercentEditField.Position = [184 161 65 22];
+            app.mwwPercentEditField.Position = [93 202 65 22];
 
             % Create MannWhitneyTestCoverageAllButton
             app.MannWhitneyTestCoverageAllButton = uibutton(app.VirtualResultsPanel, 'push');
             app.MannWhitneyTestCoverageAllButton.ButtonPushedFcn = createCallbackFcn(app, @MannWhitneyTestCoverageAllButtonPushed, true);
             app.MannWhitneyTestCoverageAllButton.WordWrap = 'on';
-            app.MannWhitneyTestCoverageAllButton.Position = [186 58 60 50];
+            app.MannWhitneyTestCoverageAllButton.Position = [95 99 60 50];
             app.MannWhitneyTestCoverageAllButton.Text = 'mwwtest coverage all';
 
             % Create ComputeBenchmarkButton
@@ -936,8 +943,14 @@ classdef result_analyzer < matlab.apps.AppBase
             app.ComputeBenchmarkButton.ButtonPushedFcn = createCallbackFcn(app, @ComputeBenchmarkButtonPushed, true);
             app.ComputeBenchmarkButton.Tag = 'loadresult';
             app.ComputeBenchmarkButton.WordWrap = 'on';
-            app.ComputeBenchmarkButton.Position = [179 454 74 51];
+            app.ComputeBenchmarkButton.Position = [179 420 74 51];
             app.ComputeBenchmarkButton.Text = 'Compute Benchmark';
+
+            % Create AutoGenerateVirtualResultButton
+            app.AutoGenerateVirtualResultButton = uibutton(app.VirtualResultsPanel, 'push');
+            app.AutoGenerateVirtualResultButton.ButtonPushedFcn = createCallbackFcn(app, @AutoGenerateVirtualResultButtonPushed, true);
+            app.AutoGenerateVirtualResultButton.Position = [182 506 57 22];
+            app.AutoGenerateVirtualResultButton.Text = 'Auto';
 
             % Create SingleResultsPanel
             app.SingleResultsPanel = uipanel(app.MainFigure);
