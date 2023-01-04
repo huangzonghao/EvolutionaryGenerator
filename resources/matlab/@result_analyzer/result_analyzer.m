@@ -7,6 +7,7 @@ classdef result_analyzer < matlab.apps.AppBase
         CLCButton                      matlab.ui.control.Button
         RehashButton                   matlab.ui.control.Button
         SingleResultsPanel             matlab.ui.container.Panel
+        ForceRebuildCheckBox           matlab.ui.control.CheckBox
         GenerateAllSingleResultPlotsButton  matlab.ui.control.Button
         ExportButton                   matlab.ui.control.Button
         ResultExportOptionDropDown     matlab.ui.control.DropDown
@@ -998,14 +999,14 @@ classdef result_analyzer < matlab.apps.AppBase
             app.BuildSelectedResultStatButton = uibutton(app.SingleResultsPanel, 'push');
             app.BuildSelectedResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @BuildSelectedResultStatButtonPushed, true);
             app.BuildSelectedResultStatButton.Tag = 'loadresult';
-            app.BuildSelectedResultStatButton.Position = [280 445 62 22];
+            app.BuildSelectedResultStatButton.Position = [280 407 62 22];
             app.BuildSelectedResultStatButton.Text = 'Build';
 
             % Create PatchResultStatButton
             app.PatchResultStatButton = uibutton(app.SingleResultsPanel, 'push');
             app.PatchResultStatButton.ButtonPushedFcn = createCallbackFcn(app, @PatchResultStatButtonPushed, true);
             app.PatchResultStatButton.Tag = 'loadresult';
-            app.PatchResultStatButton.Position = [280 394 62 22];
+            app.PatchResultStatButton.Position = [280 356 62 22];
             app.PatchResultStatButton.Text = 'Patch';
 
             % Create LoadResultGroupButton
@@ -1022,7 +1023,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.AddResultToCompareButton.WordWrap = 'on';
             app.AddResultToCompareButton.FontSize = 14;
             app.AddResultToCompareButton.FontWeight = 'bold';
-            app.AddResultToCompareButton.Position = [280 302 61 45];
+            app.AddResultToCompareButton.Position = [280 264 61 45];
             app.AddResultToCompareButton.Text = 'Add to Plot';
 
             % Create ResultNameLabel
@@ -1093,7 +1094,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.OpenFolderButton = uibutton(app.SingleResultsPanel, 'push');
             app.OpenFolderButton.ButtonPushedFcn = createCallbackFcn(app, @OpenFolderButtonPushed, true);
             app.OpenFolderButton.Tag = 'loadresult';
-            app.OpenFolderButton.Position = [280 92 82 22];
+            app.OpenFolderButton.Position = [280 80 82 22];
             app.OpenFolderButton.Text = 'Open Folder';
 
             % Create NickNameSaveButton
@@ -1101,18 +1102,18 @@ classdef result_analyzer < matlab.apps.AppBase
             app.NickNameSaveButton.ButtonPushedFcn = createCallbackFcn(app, @NickNameSaveButtonPushed, true);
             app.NickNameSaveButton.Tag = 'loadresult';
             app.NickNameSaveButton.WordWrap = 'on';
-            app.NickNameSaveButton.Position = [279 209 72 39];
+            app.NickNameSaveButton.Position = [279 176 72 39];
             app.NickNameSaveButton.Text = 'Set Nickname';
 
             % Create NicknameLabel
             app.NicknameLabel = uilabel(app.SingleResultsPanel);
             app.NicknameLabel.HorizontalAlignment = 'right';
-            app.NicknameLabel.Position = [276 274 62 22];
+            app.NicknameLabel.Position = [276 241 62 22];
             app.NicknameLabel.Text = 'Nickname:';
 
             % Create NickNameField
             app.NickNameField = uieditfield(app.SingleResultsPanel, 'text');
-            app.NickNameField.Position = [281 253 72 22];
+            app.NickNameField.Position = [281 220 72 22];
 
             % Create SelectResultButton
             app.SelectResultButton = uibutton(app.SingleResultsPanel, 'push');
@@ -1158,7 +1159,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.PackSelectedResultsButton.ButtonPushedFcn = createCallbackFcn(app, @PackSelectedResultsButtonPushed, true);
             app.PackSelectedResultsButton.Tag = 'loadresult';
             app.PackSelectedResultsButton.WordWrap = 'on';
-            app.PackSelectedResultsButton.Position = [280 420 62 22];
+            app.PackSelectedResultsButton.Position = [280 382 62 22];
             app.PackSelectedResultsButton.Text = 'Pack';
 
             % Create DumpRobotsCheckBox
@@ -1316,7 +1317,7 @@ classdef result_analyzer < matlab.apps.AppBase
             app.GenerateDLDatasetButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateDLDatasetButtonPushed, true);
             app.GenerateDLDatasetButton.WordWrap = 'on';
             app.GenerateDLDatasetButton.FontSize = 11;
-            app.GenerateDLDatasetButton.Position = [284 48 65 37];
+            app.GenerateDLDatasetButton.Position = [284 40 65 37];
             app.GenerateDLDatasetButton.Text = 'Generate DL Dataset';
 
             % Create PlotsDropDownLabel
@@ -1345,26 +1346,26 @@ classdef result_analyzer < matlab.apps.AppBase
             app.CleanResultsButton.ButtonPushedFcn = createCallbackFcn(app, @CleanResultsButtonPushed, true);
             app.CleanResultsButton.Tag = 'loadresult';
             app.CleanResultsButton.WordWrap = 'on';
-            app.CleanResultsButton.Position = [281 353 59 36];
+            app.CleanResultsButton.Position = [281 315 59 36];
             app.CleanResultsButton.Text = 'Clean Results';
 
             % Create ExportLabel
             app.ExportLabel = uilabel(app.SingleResultsPanel);
             app.ExportLabel.HorizontalAlignment = 'right';
-            app.ExportLabel.Position = [275 182 44 22];
+            app.ExportLabel.Position = [275 156 44 22];
             app.ExportLabel.Text = 'Export:';
 
             % Create ResultExportOptionDropDown
             app.ResultExportOptionDropDown = uidropdown(app.SingleResultsPanel);
             app.ResultExportOptionDropDown.Items = {};
-            app.ResultExportOptionDropDown.Position = [281 161 81 22];
+            app.ResultExportOptionDropDown.Position = [281 135 81 22];
             app.ResultExportOptionDropDown.Value = {};
 
             % Create ExportButton
             app.ExportButton = uibutton(app.SingleResultsPanel, 'push');
             app.ExportButton.ButtonPushedFcn = createCallbackFcn(app, @ExportButtonPushed, true);
             app.ExportButton.WordWrap = 'on';
-            app.ExportButton.Position = [282 132 62 26];
+            app.ExportButton.Position = [282 106 62 26];
             app.ExportButton.Text = 'Export';
 
             % Create GenerateAllSingleResultPlotsButton
@@ -1372,8 +1373,14 @@ classdef result_analyzer < matlab.apps.AppBase
             app.GenerateAllSingleResultPlotsButton.ButtonPushedFcn = createCallbackFcn(app, @GenerateAllSingleResultPlotsButtonPushed, true);
             app.GenerateAllSingleResultPlotsButton.WordWrap = 'on';
             app.GenerateAllSingleResultPlotsButton.FontSize = 11;
-            app.GenerateAllSingleResultPlotsButton.Position = [282 10 65 33];
+            app.GenerateAllSingleResultPlotsButton.Position = [282 4 65 33];
             app.GenerateAllSingleResultPlotsButton.Text = 'Generate All Plots';
+
+            % Create ForceRebuildCheckBox
+            app.ForceRebuildCheckBox = uicheckbox(app.SingleResultsPanel);
+            app.ForceRebuildCheckBox.Text = 'Force Rebuild';
+            app.ForceRebuildCheckBox.WordWrap = 'on';
+            app.ForceRebuildCheckBox.Position = [282 434 67 30];
 
             % Create DebugPanel
             app.DebugPanel = uipanel(app.MainFigure);

@@ -29,7 +29,7 @@ function build_clean_pack_results(app)
 
         result = app.results{result_idxs(i)};
         % build
-        if ~isfile(fullfile(result.path, 'stat.mat'));
+        if ~isfile(fullfile(result.path, 'stat.mat')) || app.ForceRebuildCheckBox.Value
             app.build_stat(result, app.DumpRobotsCheckBox.Value, [], false);
         elseif ~use_selected
             continue
