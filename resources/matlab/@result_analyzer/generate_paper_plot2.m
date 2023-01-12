@@ -11,7 +11,7 @@ function generate_paper_plot2(app)
             msgbox(strcat('Error: ', target.name, ' is not virtual result'));
             return
         end
-        if ~isfield(target, 'benchmark_archive')
+        if ~isfield(app.virtual_results{target.id}, 'benchmark_archive')
             msgbox(strcat('Error: ', target.name, ' missing benchmark_archive'));
             return
         end
